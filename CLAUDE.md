@@ -21,6 +21,7 @@ plugins/              → companion plugins (all lowercase)
   interform/          → design patterns + visual quality
   intercraft/         → agent-native architecture patterns
   interdev/           → MCP CLI developer tooling
+  intercheck/         → code quality guards + session health monitoring
   interject/          → ambient discovery + research engine (MCP)
   internext/          → work prioritization + tradeoff analysis
   intersearch/        → shared embedding + Exa search library
