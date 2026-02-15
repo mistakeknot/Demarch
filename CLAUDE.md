@@ -21,6 +21,7 @@ plugins/              → companion plugins (all lowercase)
   interform/          → design patterns + visual quality
   intercraft/         → agent-native architecture patterns
   interdev/           → MCP CLI developer tooling
+  internext/          → work prioritization + tradeoff analysis
   tldr-swinton/       → token-efficient code context (MCP)
   tool-time/          → tool usage analytics
   tuivision/          → TUI automation + visual testing (MCP)
