@@ -27,6 +27,7 @@ Each subproject keeps its own `.git` and GitHub repo. This monorepo provides sha
 | [intercraft](plugins/intercraft/) | 0.1.0 | Agent-native architecture patterns — design, review, and audit for agent-first applications |
 | [interdev](plugins/interdev/) | 0.1.0 | Developer tooling — MCP CLI interaction and tool discovery |
 | [interform](plugins/interform/) | 0.1.0 | Design patterns and visual quality — distinctive, production-grade interfaces |
+| [internext](plugins/internext/) | 0.1.0 | Work prioritization and next-task analysis — tradeoff-aware recommendations from project context |
 | [interslack](plugins/interslack/) | 0.1.0 | Slack integration — send messages, read channels, test integrations |
 | [tldr-swinton](plugins/tldr-swinton/) | 0.7.6 | Token-efficient code reconnaissance — diff-context, semantic search, structural patterns (MCP) |
 | [tool-time](plugins/tool-time/) | 0.3.1 | Tool usage analytics — tracks patterns via hooks, detects inefficiencies |
