@@ -2,22 +2,28 @@
 
 ## Overview
 
-Interverse is the physical monorepo containing the full inter-module ecosystem for Claude Code. 13 plugins, 1 hub (Clavain), 1 service (intermute), and shared infrastructure. Each module keeps its own `.git` — this is not a git monorepo, but a directory layout with independent repos.
+Interverse is the physical monorepo containing the full inter-module ecosystem for Claude Code. 19 plugins, 1 hub (Clavain), 1 service (intermute), and shared infrastructure. Each module keeps its own `.git` — this is not a git monorepo, but a directory layout with independent repos.
 
 ## Directory Layout
 
 | Path | Role | Description |
 |------|------|-------------|
 | `hub/clavain/` | Hub | Recursively self-improving multi-agent rig — brainstorm to ship |
+| `plugins/intercraft/` | Plugin | Agent-native architecture patterns and audit |
+| `plugins/interdev/` | Plugin | MCP CLI developer tooling and tool discovery |
 | `plugins/interdoc/` | Plugin | Recursive AGENTS.md generator with cross-AI critique |
 | `plugins/interfluence/` | Plugin | Voice profile analysis and style adaptation (MCP) |
-| `plugins/interflux/` | Plugin | Multi-agent document review + research engine (7 review agents, MCP) |
+| `plugins/interflux/` | Plugin | Multi-agent document review + research engine (MCP) |
+| `plugins/interform/` | Plugin | Design patterns and visual quality for interfaces |
+| `plugins/interject/` | Plugin | Ambient discovery and research engine (MCP, Python) |
 | `plugins/interkasten/` | Plugin | Bidirectional Notion sync with adaptive documentation (MCP) |
 | `plugins/interline/` | Plugin | Dynamic statusline for Claude Code |
 | `plugins/interlock/` | Plugin | Multi-agent file coordination via intermute (MCP) |
+| `plugins/internext/` | Plugin | Work prioritization and tradeoff analysis |
 | `plugins/interpath/` | Plugin | Product artifact generator (roadmaps, PRDs, changelogs) |
 | `plugins/interphase/` | Plugin | Phase tracking, gate validation, work discovery |
 | `plugins/interpub/` | Plugin | Safe plugin version bumping and publishing |
+| `plugins/interslack/` | Plugin | Slack integration via slackcli |
 | `plugins/interwatch/` | Plugin | Doc freshness monitoring and drift detection |
 | `plugins/tldr-swinton/` | Plugin | Token-efficient code context via MCP server |
 | `plugins/tool-time/` | Plugin | Tool usage analytics for Claude Code and Codex CLI |
@@ -36,8 +42,14 @@ clavain (hub)
 ├── interflux   (multi-agent review + research)
 ├── interpath   (product artifact generation)
 ├── interwatch  (doc freshness monitoring)
-└── interlock   (multi-agent file coordination)
+├── interlock   (multi-agent file coordination)
+├── intercraft  (agent-native architecture patterns)
+├── interdev    (MCP CLI developer tooling)
+├── interform   (design patterns + visual quality)
+├── internext   (work prioritization + tradeoff analysis)
+└── interslack  (Slack integration)
 
+interject (MCP)    ← ambient discovery engine, shares embeddings with tldr-swinton
 intermute (service) ← used by interlock for file reservation + messaging
 interpub           ← used to publish all plugins
 interdoc           ← generates AGENTS.md for all projects
@@ -58,7 +70,7 @@ marketplace        ← registry for all published plugins
 
 ## Development Workflow
 
-Each subproject is an independent git repo. To work on a specific module:
+Each subproject under `hub/`, `plugins/`, `services/`, and `infra/marketplace/` is an independent git repo with its own `.git`. The root `Interverse/` directory also has a `.git` for the monorepo skeleton, `scripts/`, and `docs/`. To work on a specific module:
 
 ```bash
 cd /root/projects/Interverse/plugins/interflux
@@ -91,7 +103,7 @@ Both methods call the same underlying engine (`scripts/interbump.sh`).
 
 ## Version Bumping (interbump)
 
-All plugins and the hub share a single version bump engine at `scripts/interbump.sh`. Each module's `scripts/bump-version.sh` is a thin wrapper (5 lines) that delegates to it.
+All plugins and the hub share a single version bump engine at `scripts/interbump.sh`. Each module's `scripts/bump-version.sh` is a thin wrapper that delegates to it.
 
 ### How it works
 
@@ -136,7 +148,7 @@ Symlinks at `/root/projects/<name>` point into this monorepo for backward compat
 4. **PUSH TO REMOTE** - This is MANDATORY:
    ```bash
    git pull --rebase
-   bd sync
+   bd sync              # sync beads issue tracker state to remote
    git push
    git status  # MUST show "up to date with origin"
    ```
