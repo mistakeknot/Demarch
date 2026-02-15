@@ -1,0 +1,23 @@
+# Interverse monorepo .gitignore
+# Each subproject has its own .git — ignore them all here.
+# Only the monorepo skeleton, beads, and shared docs are tracked.
+
+# ── Subproject directories (each has its own repo) ──
+hub/
+plugins/
+services/
+infra/
+
+# ── Beads runtime artifacts (beads' own .gitignore handles the rest) ──
+.beads/bd.sock.startlock
+.beads/daemon-error
+
+# ── Claude Code session artifacts ──
+.claude/settings.local.json
+.claude/*.log
+
+# ── Stale symlinks ──
+docs/docs
+
+# ── Clavain scratch (ephemeral session handoffs) ──
+.clavain/scratch/
