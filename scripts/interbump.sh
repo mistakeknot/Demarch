@@ -150,19 +150,49 @@ for vf in "${VERSION_FILES[@]}"; do
             update_json "$PLUGIN_ROOT/$vf" "$vf"
             ;;
         pyproject.toml)
+            # Match any version string — not anchored to $CURRENT, so
+            # already-drifted files still get updated correctly.
             update_sed "$PLUGIN_ROOT/$vf" \
-                "^version = \"$CURRENT\"" \
+                "^version = \"[0-9][0-9.]*\"" \
                 "version = \"$VERSION\"" \
                 "$vf"
             ;;
         docs/PRD.md)
             update_sed "$PLUGIN_ROOT/$vf" \
-                "^\*\*Version:\*\* $CURRENT" \
+                "^\*\*Version:\*\* [0-9][0-9.]*" \
                 "**Version:** $VERSION" \
                 "$vf"
             ;;
     esac
 done
+
+# --- Post-update verification ---
+VERIFY_FAILED=false
+for vf in "${VERSION_FILES[@]}"; do
+    case "$vf" in
+        *.json)
+            actual=$(jq -r '.version' "$PLUGIN_ROOT/$vf" 2>/dev/null || echo "")
+            ;;
+        pyproject.toml)
+            actual=$(grep -m1 '^version = ' "$PLUGIN_ROOT/$vf" 2>/dev/null | sed 's/version = "\(.*\)"/\1/')
+            ;;
+        docs/PRD.md)
+            actual=$(grep -m1 '^\*\*Version:\*\*' "$PLUGIN_ROOT/$vf" 2>/dev/null | sed 's/\*\*Version:\*\* //')
+            ;;
+        *)
+            continue
+            ;;
+    esac
+    if [ "$actual" != "$VERSION" ]; then
+        echo -e "  ${RED}VERIFY FAILED${NC} $vf: expected $VERSION, got '$actual'"
+        VERIFY_FAILED=true
+    fi
+done
+
+if $VERIFY_FAILED; then
+    echo -e "\n${RED}Error: Some version files were not updated correctly. Aborting.${NC}" >&2
+    exit 1
+fi
 
 # --- Update marketplace via jq ---
 if $DRY_RUN; then
