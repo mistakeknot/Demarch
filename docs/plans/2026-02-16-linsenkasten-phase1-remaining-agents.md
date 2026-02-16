@@ -1,9 +1,9 @@
-# Linsenkasten Phase 1 — Remaining Agents, MCP, Severity
+# Interlens Phase 1 — Remaining Agents, MCP, Severity
 **Phase:** planned (as of 2026-02-16)
 
 > **For Claude:** REQUIRED SUB-SKILL: Use clavain:executing-plans to implement this plan task-by-task.
 
-**Goal:** Complete Phase 1 of the Linsenkasten lens agents — create 4 remaining cognitive review agents (fd-decisions, fd-people, fd-resilience, fd-perception), wire MCP integration for dynamic lens retrieval, and formalize severity guidance and deduplication.
+**Goal:** Complete Phase 1 of the Interlens lens agents — create 4 remaining cognitive review agents (fd-decisions, fd-people, fd-resilience, fd-perception), wire MCP integration for dynamic lens retrieval, and formalize severity guidance and deduplication.
 
 **Architecture:** Four new `.md` agent files in `plugins/interflux/agents/review/` following the exact fd-systems template. MCP integration added as conditional instructions to all 5 lens agent files. Severity guidance and dedup rules confirmed in agent prompts + synthesis documentation.
 
@@ -70,7 +70,7 @@ Example 2: Context: User wrote a PRD that chooses a specific technology stack wi
 ```markdown
 ## Key Lenses
 
-<!-- Curated from Linsenkasten's Strategic Decision Making, Navigating Uncertainty, and Balance & Paradox frames.
+<!-- Curated from Interlens's Strategic Decision Making, Navigating Uncertainty, and Balance & Paradox frames.
      These 12 (of 288 total) were selected because they form a complete decision analysis toolkit:
      3 for decision traps/biases, 3 for uncertainty/optionality, 3 for paradox/trade-offs, 3 for process quality.
      Other cognitive domains (systems, people, perception) are reserved for their respective agents. -->
@@ -168,7 +168,7 @@ Key Lenses — 12 curated from Trust & Collaboration, Power & Agency, Communicat
 ```markdown
 ## Key Lenses
 
-<!-- Curated from Linsenkasten's Trust & Collaboration, Power & Agency, Communication & Dialogue,
+<!-- Curated from Interlens's Trust & Collaboration, Power & Agency, Communication & Dialogue,
      Leadership Dynamics, Organizational Culture & Teams, and Network & Social Systems frames.
      These 12 (of 288 total) were selected because they form a complete human systems analysis toolkit:
      3 for trust/safety, 3 for power/authority, 3 for communication/knowledge, 3 for culture/collaboration.
@@ -243,7 +243,7 @@ Key Lenses — 12 curated from Resilience & Adaptation, Creative Problem Solving
 ```markdown
 ## Key Lenses
 
-<!-- Curated from Linsenkasten's Resilience & Adaptation, Creative Problem Solving, Boundaries & Constraints,
+<!-- Curated from Interlens's Resilience & Adaptation, Creative Problem Solving, Boundaries & Constraints,
      Innovation & Creation, Innovation & Creative Destruction, Crisis & Opportunity, and Resource Dynamics & Constraints frames.
      These 12 (of 288 total) were selected because they form a complete adaptive capacity analysis toolkit:
      3 for resilience/antifragility, 3 for creative constraints, 3 for resource dynamics, 3 for innovation patterns.
@@ -316,7 +316,7 @@ Key Lenses — 12 curated from Perception & Reality, Knowledge & Sensemaking, In
 ```markdown
 ## Key Lenses
 
-<!-- Curated from Linsenkasten's Perception & Reality, Knowledge & Sensemaking, Information Ecology,
+<!-- Curated from Interlens's Perception & Reality, Knowledge & Sensemaking, Information Ecology,
      Time & Evolution, Temporal Dynamics & Evolution, and Transformation & Change frames.
      These 12 (of 288 total) were selected because they form a complete sensemaking analysis toolkit:
      3 for mental models, 3 for information quality, 3 for temporal reasoning, 3 for perceptual biases.
@@ -388,7 +388,7 @@ git add agents/review/fd-decisions.md agents/review/fd-people.md agents/review/f
 git commit -m "feat(F1b): create 4 remaining cognitive review agents
 
 Add fd-decisions, fd-people, fd-resilience, fd-perception. Each has 12 curated
-lenses from Linsenkasten's thematic frames, with no lens overlap between agents.
+lenses from Interlens's thematic frames, with no lens overlap between agents.
 
 Bead: iv-lz3l"
 ```
@@ -411,7 +411,7 @@ Insert the following section **before** `## Focus Rules` in each of the 5 lens a
 ```markdown
 ## MCP Enhancement (Optional)
 
-If the Linsenkasten MCP server is available (tools like `search_lenses`, `detect_thinking_gaps` are listed in available tools), enhance your review:
+If the Interlens MCP server is available (tools like `search_lenses`, `detect_thinking_gaps` are listed in available tools), enhance your review:
 
 1. **Per-section lens search**: For each section you review, call `search_lenses` with 2-3 keywords from that section to find relevant lenses beyond the hardcoded Key Lenses above
 2. **Gap detection**: After completing your review, call `detect_thinking_gaps` with a summary of the lenses you applied to identify uncovered analytical frames
@@ -419,7 +419,7 @@ If the Linsenkasten MCP server is available (tools like `search_lenses`, `detect
 
 **When MCP is unavailable** (tools not listed, or calls fail): Use the hardcoded Key Lenses above as your complete lens set. Include a NOTE finding at the end of your review:
 
-> **NOTE**: MCP server unavailable — review used fallback lens subset ({N}/288 lenses). Install linsenkasten-mcp for full coverage.
+> **NOTE**: MCP server unavailable — review used fallback lens subset ({N}/288 lenses). Install interlens-mcp for full coverage.
 
 MCP is an enhancement, not a requirement. The hardcoded Key Lenses are sufficient for a thorough review.
 ```
@@ -437,7 +437,7 @@ done
 ```bash
 cd /root/projects/Interverse/plugins/interflux
 git add agents/review/fd-*.md
-git commit -m "feat(F3): wire Linsenkasten MCP integration into lens agents
+git commit -m "feat(F3): wire Interlens MCP integration into lens agents
 
 All 5 cognitive agents now have conditional MCP instructions: use search_lenses
 and detect_thinking_gaps when available, fall back to hardcoded Key Lenses when not.
@@ -519,13 +519,13 @@ Bead: iv-lz3l"
 
 **Step 1: Run fd-decisions on the PRD**
 
-Invoke fd-decisions (via general-purpose subagent with the full agent prompt) on `docs/prds/2026-02-15-linsenkasten-flux-agents.md`.
+Invoke fd-decisions (via general-purpose subagent with the full agent prompt) on `docs/prds/2026-02-15-interlens-flux-agents.md`.
 
 Expected: 3-8 findings with P1-P3 severities, each referencing a specific section and a decision-quality lens.
 
 **Step 2: Run fd-people on the brainstorm**
 
-Invoke fd-people on `docs/brainstorms/2026-02-16-linsenkasten-phase1-agents-brainstorm.md`.
+Invoke fd-people on `docs/brainstorms/2026-02-16-interlens-phase1-agents-brainstorm.md`.
 
 **Step 3: Run fd-resilience on the plan**
 

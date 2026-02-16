@@ -1,4 +1,4 @@
-# Flux-Drive User & Product Review: Linsenkasten Flux Agents PRD
+# Flux-Drive User & Product Review: Interlens Flux Agents PRD
 
 ## Primary User
 
@@ -11,7 +11,7 @@
 - P2 | UX-1 | "User Experience" | Cognitive vs technical findings will blend confusingly in synthesis
 - P2 | UX-2 | "User Experience" | No clear trigger mechanism for when lens agents activate
 - P2 | UX-3 | "User Experience" | MCP failure modes are undefined — user doesn't know what they're missing
-- P3 | SCOPE-1 | "Scope & Value" | F0 (moving Linsenkasten) is unrelated scope creep bundled with feature
+- P3 | SCOPE-1 | "Scope & Value" | F0 (moving Interlens) is unrelated scope creep bundled with feature
 - P1 | SCOPE-2 | "Scope & Value" | 5 agents + MCP + domain profile + triage in one release is too large
 - P2 | PROBLEM-1 | "Problem Validation" | No evidence of user demand for cognitive review of documents
 - P3 | PROBLEM-2 | "Problem Validation" | Lens specificity untested — will findings be actionable or philosophical?
@@ -84,7 +84,7 @@ The PRD says triage will activate lens agents "when input is a document (.md, PR
 
 **Missing UX elements:**
 - Agent descriptions in the roster should clarify "reviews code structure" vs "reviews thinking quality"
-- First-time lens agent activation could show a one-line explainer: "New: cognitive review agents now available for documents (powered by Linsenkasten)"
+- First-time lens agent activation could show a one-line explainer: "New: cognitive review agents now available for documents (powered by Interlens)"
 - Triage output should GROUP agents: "Technical Review (4 agents)" vs "Cognitive Review (3 agents)"
 
 **Recommendation:** Add a `category` field to agent YAML frontmatter (`category: technical | cognitive`) and update the roster display to show agents in labeled groups. This makes the two review types visible and understandable.
@@ -123,7 +123,7 @@ This requires changes to `skills/flux-drive/phases/synthesize.md` which are NOT 
 
 ### MCP failure transparency (P2 | UX-3)
 
-F3 says lens agents should have "graceful degradation" when the Linsenkasten MCP server is unavailable — they fall back to "hardcoded key lenses from the agent file."
+F3 says lens agents should have "graceful degradation" when the Interlens MCP server is unavailable — they fall back to "hardcoded key lenses from the agent file."
 
 **User mental model problem:** The user invokes flux-drive the same way whether MCP is available or not. They see the same roster, approve the same agents, get findings back. But the **quality of findings secretly varies** based on whether MCP was reachable.
 
@@ -134,7 +134,7 @@ F3 says lens agents should have "graceful degradation" when the Linsenkasten MCP
 
 **Recommendation:** If MCP is unavailable, the agent should include a note in its findings:
 ```
-NOTE | LENS-SYS-0 | "Meta" | MCP server unavailable — review used fallback lens subset (12/288 lenses). Install linsenkasten-mcp for full coverage.
+NOTE | LENS-SYS-0 | "Meta" | MCP server unavailable — review used fallback lens subset (12/288 lenses). Install interlens-mcp for full coverage.
 ```
 
 This makes degradation **visible** instead of invisible. Users can decide if they trust the partial review or want to re-run after fixing MCP.
@@ -145,17 +145,17 @@ This makes degradation **visible** instead of invisible. Users can decide if the
 
 ### F0 is unrelated scope creep (P3 | SCOPE-1)
 
-**F0: Move Linsenkasten into Interverse** has nothing to do with creating lens agents. You could build lens agents without moving Linsenkasten (symlink stays, MCP server works from `/root/projects/Linsenkasten`). You could move Linsenkasten without building lens agents (just a directory migration).
+**F0: Move Interlens into Interverse** has nothing to do with creating lens agents. You could build lens agents without moving Interlens (symlink stays, MCP server works from `/root/projects/Interlens`). You could move Interlens without building lens agents (just a directory migration).
 
 **Why is it bundled?**
-The PRD doesn't explain. Likely reasoning: "We're integrating Linsenkasten tightly with interflux, so it should live in the monorepo." But that's an **infrastructure preference**, not a user-facing feature.
+The PRD doesn't explain. Likely reasoning: "We're integrating Interlens tightly with interflux, so it should live in the monorepo." But that's an **infrastructure preference**, not a user-facing feature.
 
 **Risk:** F0 is a 30-minute migration task that could fail (git history corruption, symlink breakage, MCP path reconfiguration). It has no user value on its own. If F0 fails, do F1-F5 get blocked?
 
 **Recommendation:** Decouple F0. Either:
 1. Move it to a separate "infra" issue (not a feature in this PRD)
 2. Make it F5.5 (nice-to-have cleanup after lens agents are validated)
-3. Skip it entirely (Linsenkasten stays at `/root/projects/Linsenkasten`, symlink remains)
+3. Skip it entirely (Interlens stays at `/root/projects/Interlens`, symlink remains)
 
 Bundling unrelated work is classic scope creep. Separate decisions that can be made independently.
 
@@ -291,7 +291,7 @@ Run Phase 0 (one agent, 3 documents) and measure these. If actionability < 50%, 
 2. Triage: If file is `.md`, score fd-lens-systems at 2 (keyword matching not needed for Phase 0)
 
 3. Manually invoke on 3 recent Interverse documents:
-   - A PRD (e.g., this Linsenkasten PRD)
+   - A PRD (e.g., this Interlens PRD)
    - A brainstorm
    - An architecture doc
 
@@ -307,7 +307,7 @@ Run Phase 0 (one agent, 3 documents) and measure these. If actionability < 50%, 
 ### If Phase 0 Succeeds: Phase 1 Scope
 
 1. Add remaining 4 agents (fd-lens-decisions, fd-lens-people, fd-lens-resilience, fd-lens-perception)
-2. Wire Linsenkasten MCP integration (F3)
+2. Wire Interlens MCP integration (F3)
 3. Implement severity mapping and synthesis changes (F4)
 4. Add conflict detection to synthesis (NEW: F6)
 
@@ -321,7 +321,7 @@ Run Phase 0 (one agent, 3 documents) and measure these. If actionability < 50%, 
 
 3. **Should lens agents be invocable standalone?** E.g., `/interflux:lens-review path/to/doc.md` runs ONLY cognitive agents, not technical agents? Might reduce cognitive load.
 
-4. **Can non-Interverse users use this?** If someone outside the ecosystem installs interflux, do lens agents work (via MCP) or do they need the full Linsenkasten setup?
+4. **Can non-Interverse users use this?** If someone outside the ecosystem installs interflux, do lens agents work (via MCP) or do they need the full Interlens setup?
 
 ---
 
@@ -335,13 +335,13 @@ The PRD proposes a valuable extension to flux-drive — cognitive review alongsi
 2. **Scope too large for first release** (P1 | SCOPE-2) — 5 agents + MCP + triage + domain profile is 3-5 days of work with high integration risk
 3. **UX gaps** (P2 | UX-1, UX-2, UX-3) — users won't understand cognitive vs technical findings, MCP degradation is invisible
 4. **Missing edge case handling** (P2 | FLOW-1, FLOW-2) — conflicting recommendations and deduplication strategy undefined
-5. **Unrelated scope creep** (P3 | SCOPE-1) — moving Linsenkasten is bundled unnecessarily
+5. **Unrelated scope creep** (P3 | SCOPE-1) — moving Interlens is bundled unnecessarily
 
 **What needs to change:**
 
 1. **Start with Phase 0:** Build ONE lens agent, test on 3 documents, validate user demand before scaling
 2. **Define finding format:** Lens findings must include concrete questions/actions, not just "consider this lens"
-3. **Separate F0:** Moving Linsenkasten is unrelated — decouple from this feature
+3. **Separate F0:** Moving Interlens is unrelated — decouple from this feature
 4. **Add conflict resolution:** Synthesis must detect when lens agents and core agents recommend opposite actions
 5. **Make MCP degradation visible:** Users should know when they're getting partial lens coverage
 

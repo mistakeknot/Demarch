@@ -18,7 +18,7 @@ fd-systems is the first cognitive review agent in the flux-drive protocol, intro
 - Defer-to contracts with all 7 technical agents establish clear adjacency boundaries
 
 **Key risks:**
-- The 12-lens selection from Linsenkasten's 288-lens catalog is justified in a comment but not validated against real document corpus
+- The 12-lens selection from Interlens's 288-lens catalog is justified in a comment but not validated against real document corpus
 - Cognitive agent category introduces a new axis of complexity without integration tests for cross-category synthesis
 - Future cognitive agents (4 reserved) share no architectural guidance beyond name reservation
 
@@ -158,7 +158,7 @@ This creates a **lens overlap** between fd-systems and the future fd-resilience 
 
 **Current state risk:** If fd-resilience is created without reclassifying lenses, both agents will flag overlapping concerns (e.g., "this system is over-adapted" from fd-systems AND "this system lacks resilience due to over-optimization" from fd-resilience). Synthesis will deduplicate by lens name, but the conceptual overlap will confuse users.
 
-**Recommendation:** Before creating fd-resilience, audit Linsenkasten's resilience lenses and decide:
+**Recommendation:** Before creating fd-resilience, audit Interlens's resilience lenses and decide:
 - Which lenses are pure resilience (belong in fd-resilience)?
 - Which lenses are systems-dynamics-applied-to-resilience (stay in fd-systems)?
 - Document the decision in both agents' "What NOT to Flag" sections.
@@ -218,7 +218,7 @@ This pattern is **well-defined and reusable**. When fd-decisions, fd-people, fd-
 - What coverage do they provide? (Are they sufficient for 80% of systems blind spots?)
 
 **Recommendation:** Add a section to fd-systems.md (or a reference doc in `agents/review/references/`) titled "Lens Selection Criteria" that documents:
-1. The source (Linsenkasten's Systems Dynamics, Emergence & Complexity, Resilience frames)
+1. The source (Interlens's Systems Dynamics, Emergence & Complexity, Resilience frames)
 2. Selection criteria (3 per category: feedback/causation, emergence, temporal dynamics, failure modes = 12 total)
 3. Coverage assessment (tested against 10 real PRDs/brainstorms, captured 95% of systems gaps)
 4. Extension path (if 12 lenses miss systemic issues repeatedly, how do we expand the set?)
@@ -231,7 +231,7 @@ This documents the architectural decision so future cognitive agents can apply t
 
 fd-systems hardcodes 12 lenses in its prompt (fd-systems.md:69-81). This is acceptable for Phase 0 (MVP validation) but creates **maintenance debt** for Phase 1+ (production).
 
-**Risk:** If Linsenkasten's lens catalog evolves (new lenses added, old lenses deprecated), fd-systems' lens list will drift out of sync. Manually updating 5 cognitive agents (fd-systems + 4 future) is error-prone.
+**Risk:** If Interlens's lens catalog evolves (new lenses added, old lenses deprecated), fd-systems' lens list will drift out of sync. Manually updating 5 cognitive agents (fd-systems + 4 future) is error-prone.
 
 **Future architecture (when MCP integration happens):** The PRD mentions "conditional MCP integration: agents call search_lenses and detect_thinking_gaps if MCP is available" (validate-fd-systems-on-prd.md:52-54). This is the **correct long-term pattern** — cognitive agents should query a lens catalog dynamically rather than hardcoding lists.
 
@@ -272,7 +272,7 @@ fd-systems reserves 4 future cognitive agents (fd-decisions, fd-people, fd-resil
 
 Concrete action: Create `agents/review/references/cognitive-agent-boundaries.md` with:
 - Table of 5 cognitive agents (systems, decisions, people, resilience, perception)
-- Lens allocation (which lenses from Linsenkasten's 288 belong in each agent)
+- Lens allocation (which lenses from Interlens's 288 belong in each agent)
 - Overlap rules (which lenses are shared, which defer-to contracts exist)
 - Extension criteria (when to add a 6th cognitive agent)
 
@@ -493,7 +493,7 @@ None. fd-systems is architecturally sound and safe to ship as-is.
 
 1. **Document cognitive agent boundary rules** (§3.1)
    - Create `agents/review/references/cognitive-agent-boundaries.md`
-   - Allocate Linsenkasten lenses across 5 cognitive agents (systems, decisions, people, resilience, perception)
+   - Allocate Interlens lenses across 5 cognitive agents (systems, decisions, people, resilience, perception)
    - Document overlap rules and defer-to contracts
    - Prevents boundary drift when fd-decisions/fd-people/etc. are added
 
@@ -562,13 +562,13 @@ When creating fd-decisions, fd-people, fd-resilience, fd-perception, apply this 
 
 1. **Pre-filter to documents only** (same as fd-systems)
 2. **Explicit defer-to contracts** with all technical agents + other cognitive agents
-3. **Lens-based review** with curated lens list from Linsenkasten
+3. **Lens-based review** with curated lens list from Interlens
 4. **Cognitive severity mapping** (Blind Spot → P1, Missed Lens → P2, Consider Also → P3)
 5. **Question-framing findings** (not lectures)
 
 **Lens allocation guidance:**
 
-| Agent | Cognitive Domain | Sample Lenses (from Linsenkasten) |
+| Agent | Cognitive Domain | Sample Lenses (from Interlens) |
 |-------|------------------|-----------------------------------|
 | fd-systems | Systems dynamics, feedback, emergence, temporal | Compounding Loops, BOTG, Hysteresis, Schelling Traps, Pace Layers |
 | fd-decisions | Decision quality, uncertainty, optionality | Sunk Cost Fallacy, Availability Heuristic, Expected Value, Real Options |
@@ -637,7 +637,7 @@ Target: 90% of findings should be actionable (users accept them as valid blind s
 **Reviewed file:** `/root/projects/Interverse/plugins/interflux/agents/review/fd-systems.md`
 **Lines:** 108
 **Agent category:** cognitive
-**Lens count:** 12 (from Linsenkasten's 288-lens catalog)
+**Lens count:** 12 (from Interlens's 288-lens catalog)
 **Defer-to contracts:** 7 technical agents + 4 reserved cognitive agents
 **Pre-filter:** Documents only (`.md`/`.txt`, PRD/brainstorm/plan/strategy, no code/diffs)
 **Severity mapping:** Blind Spot → P1, Missed Lens → P2, Consider Also → P3

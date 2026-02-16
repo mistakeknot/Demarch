@@ -8,7 +8,7 @@ Verdict: needs-changes
 
 ## Summary
 
-The PRD establishes a clear direction for integrating Linsenkasten into flux-drive, but has one critical inconsistency (severity system) and two moderate quality issues (naming convention, frontmatter spec). The acceptance criteria are testable but rely on weak validation methods. Open questions are well-framed but not all require pre-planning resolution.
+The PRD establishes a clear direction for integrating Interlens into flux-drive, but has one critical inconsistency (severity system) and two moderate quality issues (naming convention, frontmatter spec). The acceptance criteria are testable but rely on weak validation methods. Open questions are well-framed but not all require pre-planning resolution.
 
 ## Issues Found
 
@@ -51,7 +51,7 @@ If agents output `Blind Spot | LS-001 | "Systems Thinking" | Missing feedback lo
    - [ ] Findings format follows spec: `SEVERITY | ID | "Section" | Title` with P0-P3 severity levels
    ```
 
-3. **Add to F5 (domain profile):** Include this mapping in the linsenkasten domain profile's agent specifications so it's documented for future reference.
+3. **Add to F5 (domain profile):** Include this mapping in the interlens domain profile's agent specifications so it's documented for future reference.
 
 ---
 
@@ -97,14 +97,14 @@ Possible interpretations:
 - `fd-resilience.md` (resilience engineering)
 - `fd-perception.md` (perception/framing)
 
-Rationale: These are distinct review domains, same as `architecture` or `game-design`. The fact that they use Linsenkasten lenses as their mechanism is an implementation detail, not a namespace concern.
+Rationale: These are distinct review domains, same as `architecture` or `game-design`. The fact that they use Interlens lenses as their mechanism is an implementation detail, not a namespace concern.
 
 **Option B:** Keep `fd-lens-*` but document it as the canonical **domain name** in the domain profile:
 - Domain name: `lens-systems` (not `systems` with `lens` as a modifier)
 - Accept that flux-drive now has two naming patterns (original `fd-{noun}` + new `fd-{category}-{noun}`)
 - Update domain detection to recognize `lens-systems`, `lens-decisions`, etc. as top-level domains
 
-**Recommendation:** Use Option A. The domains are `systems`, `decisions`, `people`, `resilience`, `perception` — the fact that they're powered by Linsenkasten lenses is stated in the agent prompt, not the filename.
+**Recommendation:** Use Option A. The domains are `systems`, `decisions`, `people`, `resilience`, `perception` — the fact that they're powered by Interlens lenses is stated in the agent prompt, not the filename.
 
 ---
 
@@ -193,7 +193,7 @@ This is a P3 (not P2) because the weak validation is **detectable at review time
 
 Open Questions section lists three questions:
 1. Model choice (sonnet vs haiku)
-2. Where lens agents live long-term (interflux vs linsenkasten)
+2. Where lens agents live long-term (interflux vs interlens)
 3. Should agents produce "questions to ask" in addition to findings
 
 **Problem:**
@@ -219,7 +219,7 @@ Move Q1 and Q2 to a "Design Decisions" section:
 
 1. **Model choice:** Sonnet for all lens agents. Rationale: Cognitive gap detection requires nuanced interpretation of implicit assumptions and frame applicability — haiku's speed advantage is outweighed by analysis depth needs.
 
-2. **Agent location:** Lens agents live in `interflux/agents/review/`, not `linsenkasten/`. Rationale: They are part of the flux-drive review pipeline, not Linsenkasten MCP functionality. Linsenkasten is a **data source** (lens graph + MCP tools), not an agent runner.
+2. **Agent location:** Lens agents live in `interflux/agents/review/`, not `interlens/`. Rationale: They are part of the flux-drive review pipeline, not Interlens MCP functionality. Interlens is a **data source** (lens graph + MCP tools), not an agent runner.
 ```
 
 Reframe Q3 as a future iteration note:
@@ -235,11 +235,11 @@ Reframe Q3 as a future iteration note:
 
 ### 1. Add cross-reference integrity check to F1
 
-**Current:** F1 doesn't validate that agents reference **real** Linsenkasten lenses.
+**Current:** F1 doesn't validate that agents reference **real** Interlens lenses.
 
 **Suggestion:** Add to F1:
 ```
-- [ ] Each agent's lens listing (8-12 lenses) references lenses that exist in `linsenkasten/data/lenses/` or the consolidated frames data (no broken references to non-existent lenses)
+- [ ] Each agent's lens listing (8-12 lenses) references lenses that exist in `interlens/data/lenses/` or the consolidated frames data (no broken references to non-existent lenses)
 ```
 
 This prevents agents from listing "Systems Dynamics Lens" when the actual lens name is "Dynamic Systems Thinking" (broken reference).
@@ -248,12 +248,12 @@ This prevents agents from listing "Systems Dynamics Lens" when the actual lens n
 
 ### 2. Clarify F3 MCP wiring dependencies
 
-**Current:** F3 says "interflux to reference Linsenkasten MCP tools" but doesn't specify **how** — is this a plugin.json `mcpServers` entry? A runtime discovery mechanism? Hardcoded in agent prompts?
+**Current:** F3 says "interflux to reference Interlens MCP tools" but doesn't specify **how** — is this a plugin.json `mcpServers` entry? A runtime discovery mechanism? Hardcoded in agent prompts?
 
 **Suggestion:** Add to F3:
 ```
-- [ ] `linsenkasten-mcp` added to interflux's `.claude-plugin/plugin.json` mcpServers section with stdio transport pointing to `linsenkasten/packages/mcp/build/index.js`
-- [ ] Agent prompts include conditional instructions: "If linsenkasten-mcp tools are available (check via ToolSearch), call search_lenses/detect_thinking_gaps; otherwise use the hardcoded key lenses listed above"
+- [ ] `interlens-mcp` added to interflux's `.claude-plugin/plugin.json` mcpServers section with stdio transport pointing to `interlens/packages/mcp/build/index.js`
+- [ ] Agent prompts include conditional instructions: "If interlens-mcp tools are available (check via ToolSearch), call search_lenses/detect_thinking_gaps; otherwise use the hardcoded key lenses listed above"
 ```
 
 ---

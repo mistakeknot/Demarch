@@ -1,20 +1,20 @@
-# PRD: Linsenkasten Flux-Drive Lens Agents
+# PRD: Interlens Flux-Drive Lens Agents
 
-> **Revision 2** (post flux-drive review). Changes: phased delivery, renamed agents, fixed severity system, dropped F5, decoupled F0. See `docs/research/flux-drive/2026-02-15-linsenkasten-flux-agents/` for full review.
+> **Revision 2** (post flux-drive review). Changes: phased delivery, renamed agents, fixed severity system, dropped F5, decoupled F0. See `docs/research/flux-drive/2026-02-15-interlens-flux-agents/` for full review.
 
 ## Problem
 
-Flux-drive reviews code and technical artifacts but has no capability for reviewing **thinking quality** in strategy documents, PRDs, brainstorms, and plans. The Linsenkasten project contains 288 analytical lenses organized into a knowledge graph — a rich cognitive toolkit that's currently only accessible through direct MCP tool calls, not through the structured review pipeline.
+Flux-drive reviews code and technical artifacts but has no capability for reviewing **thinking quality** in strategy documents, PRDs, brainstorms, and plans. The Interlens project contains 288 analytical lenses organized into a knowledge graph — a rich cognitive toolkit that's currently only accessible through direct MCP tool calls, not through the structured review pipeline.
 
 ## Solution
 
-Create specialized "lens agents" for flux-drive that review documents through FLUX analytical frameworks. Deliver in phases: Phase 0 validates the concept with 1 agent, Phase 1 scales to all agents with MCP integration. Separately, move Linsenkasten into the Interverse monorepo.
+Create specialized "lens agents" for flux-drive that review documents through FLUX analytical frameworks. Deliver in phases: Phase 0 validates the concept with 1 agent, Phase 1 scales to all agents with MCP integration. Separately, move Interlens into the Interverse monorepo.
 
 ## Phased Delivery
 
 ### Phase 0: Prove It (MVP)
 **Goal:** Validate that lens-based cognitive review produces actionable findings.
-- F0: Move Linsenkasten into Interverse (independent, can happen first)
+- F0: Move Interlens into Interverse (independent, can happen first)
 - F1: Create ONE agent (`fd-systems`) with hardcoded lenses (no MCP dependency)
 - F2: Add basic triage pre-filter (exclude lens agents from code/diff reviews)
 - Test on 3 recent Interverse documents (PRD, brainstorm, architecture doc)
@@ -22,7 +22,7 @@ Create specialized "lens agents" for flux-drive that review documents through FL
 
 ### Phase 1: Scale It (if Phase 0 succeeds)
 - F1b: Add remaining 4 agents (`fd-decisions`, `fd-people`, `fd-resilience`, `fd-perception`)
-- F3: Wire Linsenkasten MCP integration for dynamic lens retrieval
+- F3: Wire Interlens MCP integration for dynamic lens retrieval
 - F4: Define severity mapping and synthesis deduplication
 
 ### Phase 2: Systematize It (future)
@@ -32,15 +32,15 @@ Create specialized "lens agents" for flux-drive that review documents through FL
 
 ## Features
 
-### F0: Move Linsenkasten into Interverse
-**What:** Migrate the Linsenkasten monorepo (`apps/api`, `apps/web`, `packages/mcp`) into `Interverse/plugins/linsenkasten/` with its own `.git`, following the same pattern as other subprojects.
+### F0: Move Interlens into Interverse
+**What:** Migrate the Interlens monorepo (`apps/api`, `apps/web`, `packages/mcp`) into `Interverse/plugins/interlens/` with its own `.git`, following the same pattern as other subprojects.
 **Phase:** Independent (can be done in parallel with F1)
 **Acceptance criteria:**
-- [ ] Linsenkasten lives at `plugins/linsenkasten/` with its own `.git`
-- [ ] Compat symlink at `/root/projects/Linsenkasten` points into Interverse
-- [ ] `CLAUDE.md` updated with linsenkasten entry in structure table
-- [ ] All existing Linsenkasten functionality works (MCP server, API, web)
-- [ ] GitHub remote preserved (origin → `mistakeknot/Linsenkasten`)
+- [ ] Interlens lives at `plugins/interlens/` with its own `.git`
+- [ ] Compat symlink at `/root/projects/Interlens` points into Interverse
+- [ ] `CLAUDE.md` updated with interlens entry in structure table
+- [ ] All existing Interlens functionality works (MCP server, API, web)
+- [ ] GitHub remote preserved (origin → `mistakeknot/Interlens`)
 
 ### F1: Create fd-systems Agent (Phase 0 MVP)
 **What:** Create `fd-systems.md` in `plugins/interflux/agents/review/`, following the standard flux-drive agent format. This is the first lens agent — validates the concept before building the other 4.
@@ -78,14 +78,14 @@ Create specialized "lens agents" for flux-drive that review documents through FL
 - [ ] When lens agents pass pre-filter, score using standard base_score (2 for documents mentioning systems/feedback/loops, 3 for architecture docs and strategy docs)
 - [ ] Lens agents report as category "cognitive" in triage table (distinct from technical agents)
 
-### F3: Linsenkasten MCP Wiring (Phase 1)
-**What:** Configure interflux to reference Linsenkasten MCP tools so lens agents can call `search_lenses`, `detect_thinking_gaps`, `find_contrasting_lenses` during review.
+### F3: Interlens MCP Wiring (Phase 1)
+**What:** Configure interflux to reference Interlens MCP tools so lens agents can call `search_lenses`, `detect_thinking_gaps`, `find_contrasting_lenses` during review.
 **Blocked by:** Phase 0 success gate
 **Acceptance criteria:**
-- [ ] Lens agent prompts include conditional instructions: "If linsenkasten-mcp tools are available (check via ToolSearch), call search_lenses/detect_thinking_gaps; otherwise use the hardcoded key lenses listed above"
+- [ ] Lens agent prompts include conditional instructions: "If interlens-mcp tools are available (check via ToolSearch), call search_lenses/detect_thinking_gaps; otherwise use the hardcoded key lenses listed above"
 - [ ] `search_lenses` used to find relevant lenses for each section of the document
 - [ ] `detect_thinking_gaps` used at end of review to identify uncovered frames
-- [ ] When MCP is unavailable, agent includes a NOTE finding: "MCP server unavailable — review used fallback lens subset (12/288 lenses). Install linsenkasten-mcp for full coverage."
+- [ ] When MCP is unavailable, agent includes a NOTE finding: "MCP server unavailable — review used fallback lens subset (12/288 lenses). Install interlens-mcp for full coverage."
 - [ ] No hard dependency — MCP enriches but doesn't gate the review
 
 ### F4: Severity Guidance and Deduplication (Phase 1)
@@ -99,21 +99,21 @@ Create specialized "lens agents" for flux-drive that review documents through FL
 ## Design Decisions (Resolved)
 
 1. **Model choice:** Sonnet for all lens agents. Cognitive gap detection requires nuanced interpretation — haiku would produce shallow findings.
-2. **Agent location:** Lens agents live in `interflux/agents/review/`, not linsenkasten. They are review pipeline components, not MCP tools. Linsenkasten provides the knowledge base; interflux orchestrates the review.
+2. **Agent location:** Lens agents live in `interflux/agents/review/`, not interlens. They are review pipeline components, not MCP tools. Interlens provides the knowledge base; interflux orchestrates the review.
 3. **Naming convention:** `fd-systems`, `fd-decisions`, `fd-people`, `fd-resilience`, `fd-perception` — following the `fd-{domain}` pattern (no `lens-` prefix). The frontmatter description disambiguates purpose.
 
 ## Non-goals
 
-- **Modifying the Linsenkasten API or web app** — we're consumers, not changing the source
+- **Modifying the Interlens API or web app** — we're consumers, not changing the source
 - **Replacing core fd-* agents** — lens agents complement, not replace, technical review
 - **Auto-generating agents from frames** — we manually curate agents based on frame consolidation analysis
 - **Making lens agents work on code** — they review documents only
-- **Domain profile for linsenkasten** — lens agents are cross-domain (apply to all document reviews), not project-domain-specific. Domain profiles are for project-specific agent generation.
+- **Domain profile for interlens** — lens agents are cross-domain (apply to all document reviews), not project-domain-specific. Domain profiles are for project-specific agent generation.
 - **"Questions to ask" field** — deferred to post-Phase 1 feedback. Lens findings use standard prose sections for now.
 
 ## Dependencies
 
-- Linsenkasten MCP server (`packages/mcp`) must be runnable (for Phase 1 F3)
+- Interlens MCP server (`packages/mcp`) must be runnable (for Phase 1 F3)
 - Flux-drive spec 1.0.0 scoring algorithm (for F2 triage changes)
 - Interflux plugin structure and agent format conventions
 - Thematic frames data (`lens_frames_thematic.json`) for key lens curation

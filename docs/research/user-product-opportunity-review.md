@@ -21,7 +21,7 @@ The Interverse ecosystem has 22 modules with strong individual capabilities but 
 **Sources analyzed:**
 - 22 module AGENTS.md/CLAUDE.md files
 - Beads issue tracker (50+ issues reviewed)
-- Recent brainstorms and PRDs (sprint resilience, interlock negotiation, linsenkasten lens agents)
+- Recent brainstorms and PRDs (sprint resilience, interlock negotiation, interlens lens agents)
 - Cross-module integration tracker (`iv-z1a0` and children)
 - Global CLAUDE.md and workflow patterns
 

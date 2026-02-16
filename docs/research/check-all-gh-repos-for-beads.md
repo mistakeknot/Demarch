@@ -25,7 +25,7 @@ These 30 repos returned 404 — no `.beads/issues.jsonl` file exists:
 2. Autarch
 3. Derkhan
 4. Horza
-5. Linsenkasten
+5. Interlens
 6. Mawhrin
 7. Ong-Back
 8. Ong-Lots

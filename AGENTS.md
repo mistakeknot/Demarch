@@ -2,7 +2,29 @@
 
 ## Overview
 
-Interverse is the physical monorepo containing the full inter-module ecosystem for Claude Code. 20 plugins, 1 shared library (intersearch), 1 hub (Clavain), 1 service (intermute), and shared infrastructure. Each module keeps its own `.git` — this is not a git monorepo, but a directory layout with independent repos.
+Interverse is the physical monorepo containing the full inter-module ecosystem for Claude Code. 22 plugins, 1 shared library (intersearch), 1 hub (Clavain), 1 service (intermute), and shared infrastructure. Each module keeps its own `.git` — this is not a git monorepo, but a directory layout with independent repos.
+
+## Instruction Loading Order
+
+Use nearest, task-scoped instruction loading instead of reading every instruction file in the repo.
+
+1. Read root `AGENTS.md` once at session start.
+2. Before editing files in a module, read that module's local `AGENTS.md`.
+3. If local `AGENTS.md` is missing, read that module's local `CLAUDE.md` as fallback.
+4. For cross-module changes, repeat steps 2-3 for each touched module.
+5. Resolve conflicts with this precedence: local `AGENTS.md` > local `CLAUDE.md` > root `AGENTS.md` > root `CLAUDE.md`.
+
+## Glossary
+
+| Term | Meaning |
+|------|---------|
+| **Beads** | File-based issue tracker (`bd` CLI). Each project can have a `.beads/` database. All active tracking is at Interverse root. |
+| **Hub** | The central orchestrator plugin — Clavain. All companion plugins integrate with it. |
+| **Plugin** | A Claude Code extension (skills, commands, hooks, agents, MCP servers) installed from the marketplace. |
+| **MCP** | Model Context Protocol — enables plugins to expose tools as server processes that Claude Code calls directly. |
+| **Companion** | A plugin that integrates with Clavain (listed in its manifest). Standalone plugins work independently. |
+| **Marketplace** | The `interagency-marketplace` registry at `infra/marketplace/` — JSON catalog of all published plugins. |
+| **Interspect** | Analytics subsystem inside Clavain — evidence collection, pattern detection, routing overrides. Not a standalone module. |
 
 ## Directory Layout
 
@@ -26,11 +48,14 @@ Interverse is the physical monorepo containing the full inter-module ecosystem f
 | `plugins/interphase/` | Plugin | Phase tracking, gate validation, work discovery |
 | `plugins/interpub/` | Plugin | Safe plugin version bumping and publishing |
 | `plugins/interslack/` | Plugin | Slack integration via slackcli |
+| `plugins/interstat/` | Plugin | Token efficiency benchmarking for agent workflows |
 | `plugins/interwatch/` | Plugin | Doc freshness monitoring and drift detection |
+| `plugins/interlens/` | Plugin | Cognitive augmentation lenses — planned, no manifest yet |
 | `plugins/tldr-swinton/` | Plugin | Token-efficient code context via MCP server |
 | `plugins/tool-time/` | Plugin | Tool usage analytics for Claude Code and Codex CLI |
 | `plugins/tuivision/` | Plugin | TUI automation and visual testing via MCP server |
 | `services/intermute/` | Service | Multi-agent coordination service (Go, SQLite) |
+| `infra/interbench/` | Infra | Eval harness for tldr-swinton capabilities (Go CLI) |
 | `infra/marketplace/` | Infra | interagency plugin marketplace registry |
 | `scripts/` | Shared | Cross-project scripts (interbump.sh) |
 | `docs/` | Docs | Shared documentation, brainstorms, research |
@@ -60,31 +85,89 @@ interfluence       ← standalone voice profiling
 interkasten        ← standalone Notion sync
 tldr-swinton       ← standalone code context MCP
 intercheck         ← standalone code quality guards + context monitoring
+interstat          ← standalone token efficiency benchmarking
+interlens           ← cognitive augmentation lenses (planned)
 tool-time          ← standalone usage analytics
 tuivision          ← standalone TUI testing MCP
 marketplace        ← registry for all published plugins
 ```
 
+## Bead Tracking
+
+All work is tracked at the **Interverse level** using the monorepo `.beads/` database. Module-level `.beads/` databases are read-only archives of historical closed beads.
+
+- Create beads from the Interverse root: `cd /root/projects/Interverse && bd create --title="[module] Description" ...`
+- Use `[module]` prefix in bead titles to identify the relevant module (e.g., `[interlock]`, `[interflux]`, `[clavain]`)
+- Filter by module: `bd list --status=open | grep -i interlock`
+- Cross-module beads use multiple prefixes: `[interlock/intermute]`
+
+### Roadmap
+
+The ecosystem roadmap is at [`docs/roadmap.md`](docs/roadmap.md) with machine-readable canonical output in [`docs/roadmap.json`](docs/roadmap.json). Regenerate both with `/interpath:roadmap` from the Interverse root. Propagate items to sub-module roadmaps with `/interpath:propagate`.
+
+`scripts/sync-roadmap-json.sh` also generates the canonical JSON rollup across `hub/`, `plugins/`, and `services/` roadmaps and cross-module dependencies.
+
 ## Naming Convention
 
-- All module directory names are **lowercase**: `interflux`, `intermute`, `interkasten`
+- All module directory names are **lowercase** (hyphens allowed): `interflux`, `intermute`, `tldr-swinton`, `tool-time`
 - In prose and documentation, use **lowercase**: `interflux provides review agents`
 - Exception: **Clavain** (proper noun, hub name) and **Interverse** (monorepo name)
 - GitHub repos: `github.com/mistakeknot/<lowercase-name>`
 
+## Prerequisites
+
+Required tools (all pre-installed on this server):
+
+| Tool | Used by | Purpose |
+|------|---------|---------|
+| `jq` | interbump, hooks | JSON manipulation |
+| `uv` | tldr-swinton, interject, intersearch | Python package management |
+| `go` (1.24+) | intermute, interlock, interbench | Go builds and tests |
+| `node`/`npm` | interkasten | MCP server build |
+| `python3` | tldr-swinton, tool-time, interject | CLI tools, analysis scripts |
+| `bd` | all | Beads issue tracker CLI |
+
+**Secrets** (in environment or dotfiles — never commit):
+- `INTERKASTEN_NOTION_TOKEN` — Notion API token for interkasten sync
+- `EXA_API_KEY` — Exa search API for interject and interflux research agents
+- `SLACK_TOKEN` — Slack API for interslack
+
 ## Development Workflow
 
-Each subproject under `hub/`, `plugins/`, `services/`, and `infra/marketplace/` is an independent git repo with its own `.git`. The root `Interverse/` directory also has a `.git` for the monorepo skeleton, `scripts/`, and `docs/`. To work on a specific module:
+Each subproject under `hub/`, `plugins/`, `services/`, and `infra/marketplace/` is an independent git repo with its own `.git`. The root `Interverse/` directory also has a `.git` for the monorepo skeleton (`scripts/`, `docs/`, `.beads/`, `CLAUDE.md`, `AGENTS.md`). **Git commands operate on whichever `.git` is nearest** — always verify with `git rev-parse --show-toplevel` if unsure which repo you're in. To work on a specific module:
 
 ```bash
 cd /root/projects/Interverse/plugins/interflux
 # Each has its own CLAUDE.md, AGENTS.md, .git
 ```
 
-### Testing plugins locally
+### Running and testing by module type
 
+**Plugins (hooks/skills/commands only):**
 ```bash
 claude --plugin-dir /root/projects/Interverse/plugins/<name>
+# Structural tests (if present):
+cd plugins/<name> && uv run pytest tests/structural/ -v
+```
+
+**MCP server plugins** (interkasten, interlock, interject, tldr-swinton, tuivision, interflux):
+```bash
+# Build/install the server first, then test via Claude Code:
+cd plugins/interkasten/server && npm install && npm run build && npm test
+cd plugins/interlock && bash scripts/build.sh && go test ./...
+cd plugins/tldr-swinton && uv tool install -e .  # installs `tldrs` CLI
+```
+
+**Service** (intermute):
+```bash
+cd services/intermute
+go run ./cmd/intermute     # starts on :7338
+go test ./...              # run all tests
+```
+
+**Infra** (interbench):
+```bash
+cd infra/interbench && go build -o interbench . && ./interbench --help
 ```
 
 ### Publishing
@@ -103,7 +186,34 @@ scripts/bump-version.sh 0.2.1            # bump + commit + push
 scripts/bump-version.sh 0.2.1 --dry-run  # preview only
 ```
 
-Both methods call the same underlying engine (`scripts/interbump.sh`).
+Both methods call the same underlying engine (`scripts/interbump.sh`). All `/interpath:*`, `/interpub:*`, etc. are **Claude Code slash commands** — run them inside a Claude Code session, not from a terminal.
+
+## Plugin Dev/Publish Gate
+
+Applies to work in `hub/clavain/` and `plugins/*`.
+
+Before claiming a plugin release is complete:
+
+1. Run module-appropriate checks from **Running and testing by module type**.
+2. Publish only via supported entrypoints:
+   - Claude Code: `/interpub:release <version>`
+   - Terminal (from plugin root): `scripts/bump-version.sh <version>`
+   - Optional preflight: `scripts/bump-version.sh <version> --dry-run`
+3. Do not hand-edit version files or marketplace versions for normal releases; `scripts/interbump.sh` is the source of truth.
+4. Release is complete only when both pushes succeed:
+   - plugin repo push
+   - `infra/marketplace` push
+5. If the plugin includes hooks, preserve the post-bump/cache-bridge behavior from `interbump` (do not bypass with ad-hoc scripts).
+6. After publish, restart Claude Code sessions so the new plugin version is picked up.
+
+### Cross-repo changes
+
+When a change spans multiple repos (e.g., adding an MCP tool to interlock that requires an intermute API change):
+
+1. Make changes in each repo independently
+2. Commit and push the **dependency first** (e.g., intermute before interlock)
+3. Reference the same Interverse-level bead in both commit messages
+4. Always verify you're in the right repo: `git rev-parse --show-toplevel`
 
 ## Version Bumping (interbump)
 
@@ -146,7 +256,7 @@ Symlinks at `/root/projects/<name>` point into this monorepo for backward compat
 
 **MANDATORY WORKFLOW:**
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
+1. **File beads for remaining work** - `bd create` for anything that needs follow-up
 2. **Run quality gates** (if code changed) - Tests, linters, builds
 3. **Update issue status** - Close finished work, update in-progress items
 4. **PUSH TO REMOTE** - This is MANDATORY:

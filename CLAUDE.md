@@ -27,7 +27,7 @@ plugins/              → companion plugins (all lowercase)
   interstat/          → token efficiency benchmarking
   internext/          → work prioritization + tradeoff analysis
   intersearch/        → shared embedding + Exa search library
-  linsenkasten/       → cognitive augmentation lenses (FLUX podcast)
+  interlens/          → cognitive augmentation lenses (FLUX podcast)
   tldr-swinton/       → token-efficient code context (MCP)
   tool-time/          → tool usage analytics
   tuivision/          → TUI automation + visual testing (MCP)

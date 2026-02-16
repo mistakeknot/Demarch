@@ -1,6 +1,6 @@
 ### Findings Index
 
-- SAFE | F0 | "Boundaries & Coupling" | Linsenkasten move follows monorepo pattern without introducing coupling
+- SAFE | F0 | "Boundaries & Coupling" | Interlens move follows monorepo pattern without introducing coupling
 - NEEDS-CHANGES | F1 | "Pattern Analysis" | Agent files deviate from fd-* naming convention and pre-filter pattern
 - SAFE | F2 | "Pattern Analysis" | Triage integration extends scoring algorithm cleanly
 - SAFE | F3 | "Boundaries & Coupling" | MCP wiring preserves enrichment-not-gating principle
@@ -14,7 +14,7 @@ Verdict: needs-changes
 
 ## Summary
 
-The PRD proposes a sound architectural integration of Linsenkasten analytical lenses into the flux-drive review pipeline. The monorepo migration (F0) follows established patterns. The MCP wiring (F3) correctly treats lens data as enrichment rather than hard dependency. The triage integration (F2) extends the existing scoring algorithm without requiring structural changes. The severity system (F4) maps cleanly to existing synthesis patterns.
+The PRD proposes a sound architectural integration of Interlens analytical lenses into the flux-drive review pipeline. The monorepo migration (F0) follows established patterns. The MCP wiring (F3) correctly treats lens data as enrichment rather than hard dependency. The triage integration (F2) extends the existing scoring algorithm without requiring structural changes. The severity system (F4) maps cleanly to existing synthesis patterns.
 
 However, two structural concerns require changes before implementation:
 
@@ -28,9 +28,9 @@ One feature (F5 domain profile) is likely YAGNI — the domain profile duplicate
 
 ## 1. Boundaries & Coupling
 
-### F0: Linsenkasten Move into Interverse (SAFE)
+### F0: Interlens Move into Interverse (SAFE)
 
-**Assessment:** The proposed migration follows the exact pattern used by other Interverse subprojects. Linsenkasten would live at `plugins/linsenkasten/` with its own `.git`, matching the structure of `plugins/interflux/`, `plugins/interdoc/`, etc. The compat symlink at `/root/projects/Linsenkasten` preserves existing tooling paths. No coupling is introduced — interflux would consume Linsenkasten's MCP server as a separate service, not as a hard dependency.
+**Assessment:** The proposed migration follows the exact pattern used by other Interverse subprojects. Interlens would live at `plugins/interlens/` with its own `.git`, matching the structure of `plugins/interflux/`, `plugins/interdoc/`, etc. The compat symlink at `/root/projects/Interlens` preserves existing tooling paths. No coupling is introduced — interflux would consume Interlens's MCP server as a separate service, not as a hard dependency.
 
 **Evidence from codebase:**
 - Interverse CLAUDE.md line 14-15: "Each subproject has its own `.git`. When working in a subproject, those take precedence."
@@ -38,14 +38,14 @@ One feature (F5 domain profile) is likely YAGNI — the domain profile duplicate
 - Existing pattern: `plugins/interflux/.git`, `plugins/interdoc/.git` — all subprojects maintain their own git history
 
 **Coupling analysis:**
-- Linsenkasten MCP server runs as separate process (stdio MCP)
+- Interlens MCP server runs as separate process (stdio MCP)
 - Lens agents call MCP tools via Claude Code's MCP infrastructure (not direct imports)
-- Failure isolation: If Linsenkasten MCP is unavailable, lens agents degrade to hardcoded lens lists (F3 acceptance criterion: "Graceful degradation")
-- No shared code between interflux agents and Linsenkasten packages — clean service boundary
+- Failure isolation: If Interlens MCP is unavailable, lens agents degrade to hardcoded lens lists (F3 acceptance criterion: "Graceful degradation")
+- No shared code between interflux agents and Interlens packages — clean service boundary
 
 **Recommendation:** Proceed with F0 as specified. The monorepo structure is correct.
 
-### F3: Linsenkasten MCP Wiring (SAFE)
+### F3: Interlens MCP Wiring (SAFE)
 
 **Assessment:** F3 correctly treats MCP integration as enrichment rather than gating. The acceptance criteria explicitly require "No hard dependency — MCP enriches but doesn't gate the review." This aligns with interflux's existing MCP pattern for Exa.
 
@@ -58,7 +58,7 @@ The PRD follows the same pattern: MCP tools (`search_lenses`, `detect_thinking_g
 **Boundary preservation:**
 - MCP tools are discovery aids, not the review logic itself
 - Agent files contain the analytical framework (the "mission" + decision lens)
-- Linsenkasten remains a standalone service — can be updated/deployed independently
+- Interlens remains a standalone service — can be updated/deployed independently
 - No version coupling: agents don't depend on specific lens IDs or frame structures
 
 **Recommendation:** Proceed with F3 as specified. The MCP integration preserves the enrichment-not-gating principle.
@@ -220,19 +220,19 @@ This is already how synthesis works (lines 54-89 of synthesis.md). When `fd-syst
 
 ### F5: Domain Profile (YAGNI)
 
-**Assessment:** F5 proposes creating `config/flux-drive/domains/linsenkasten.md` with:
+**Assessment:** F5 proposes creating `config/flux-drive/domains/interlens.md` with:
 
-- Detection signals (lens data files, `linsenkasten-mcp` in config)
+- Detection signals (lens data files, `interlens-mcp` in config)
 - Injection criteria for core agents (bullets added to fd-architecture, fd-quality, etc.)
 - Agent specifications for the 5 lens agents
 
 **Problem 1: Detection signals are circular**
 
-The detection signals include "FLUX/lens-related keywords" and "lens data files". But lens agents are meant to review **any strategy document**, not just Linsenkasten-related documents. The domain detection would trigger only for Linsenkasten's own documentation, which is not the intent.
+The detection signals include "FLUX/lens-related keywords" and "lens data files". But lens agents are meant to review **any strategy document**, not just Interlens-related documents. The domain detection would trigger only for Interlens's own documentation, which is not the intent.
 
 Compare to existing domain profiles: `web-api.md` detects web API projects (lines 131-176 of `index.yaml`). It doesn't detect "documents about web APIs" — it detects "projects that ARE web APIs."
 
-Lens agents are cross-domain — they should review strategy documents in **all** projects, not just projects detected as "linsenkasten domain."
+Lens agents are cross-domain — they should review strategy documents in **all** projects, not just projects detected as "interlens domain."
 
 **Problem 2: Injection criteria redundant with agent files**
 
@@ -240,7 +240,7 @@ The PRD says F5 should include "Injection criteria: domain-specific review bulle
 
 But this creates duplication:
 - `fd-systems.md` agent file already contains "Check for systems thinking blind spots"
-- `linsenkasten.md` domain profile would inject the same bullet into fd-architecture
+- `interlens.md` domain profile would inject the same bullet into fd-architecture
 
 This violates DRY and creates maintenance burden: updating a lens check requires changing both the agent file and the domain profile.
 
@@ -256,14 +256,14 @@ But lens agents are **plugin agents** (they live in `interflux/agents/review/`),
 
 **Use case for F5:**
 
-The only valid use case for a linsenkasten domain profile is if you want to **inject lens thinking into core agents** when reviewing Linsenkasten's own codebase. For example:
+The only valid use case for a interlens domain profile is if you want to **inject lens thinking into core agents** when reviewing Interlens's own codebase. For example:
 
-- When `fd-architecture` reviews Linsenkasten MCP server code, inject: "Check that lens search algorithms handle graph edge cases (orphan lenses, circular references)"
-- When `fd-correctness` reviews Linsenkasten API, inject: "Verify lens data consistency between JSON files and database"
+- When `fd-architecture` reviews Interlens MCP server code, inject: "Check that lens search algorithms handle graph edge cases (orphan lenses, circular references)"
+- When `fd-correctness` reviews Interlens API, inject: "Verify lens data consistency between JSON files and database"
 
-But this is a narrow use case (Linsenkasten self-review) and doesn't justify F5 for the broader lens agent feature.
+But this is a narrow use case (Interlens self-review) and doesn't justify F5 for the broader lens agent feature.
 
-**Recommendation:** Drop F5 entirely. Lens agents are plugin agents that apply to all document reviews, not domain-specific agents triggered by project detection. If later you want a linsenkasten domain profile for self-review, create it then (YAGNI).
+**Recommendation:** Drop F5 entirely. Lens agents are plugin agents that apply to all document reviews, not domain-specific agents triggered by project detection. If later you want a interlens domain profile for self-review, create it then (YAGNI).
 
 ---
 
@@ -348,7 +348,7 @@ Similarly, `fd-human-dynamics` with 100 lenses is coherent because it has a unif
 ### Alternative: Start with 1 Agent (Most Conservative)
 
 **Most YAGNI approach:** Start with a single `fd-lens-analyst` agent that:
-- Has access to all Linsenkasten MCP tools
+- Has access to all Interlens MCP tools
 - Uses `search_lenses` to dynamically find 5-10 relevant lenses for the document
 - Applies those lenses and reports findings
 
@@ -377,7 +377,7 @@ This reduces upfront complexity and defers specialization until usage patterns a
 
 The PRD lists dependencies (lines 76-82):
 
-- Linsenkasten MCP server (`packages/mcp`) must be runnable (for F3)
+- Interlens MCP server (`packages/mcp`) must be runnable (for F3)
 - Flux-drive spec 1.0.0 scoring algorithm (for F2 triage changes)
 - Interflux plugin structure and agent format conventions
 - Thematic frames data (`lens_frames_thematic.json`) for agent lens assignments
@@ -406,11 +406,11 @@ The PRD lists 3 open questions (lines 84-88). Architectural answers:
 
 **Answer:** Sonnet. Lens agents perform qualitative analysis (detecting assumptions, finding blind spots, recommending alternative framings). This requires nuanced reasoning and context synthesis — haiku would produce shallow findings. All existing review agents use `model: sonnet` (see `fd-architecture.md` line 4, `fd-quality.md` line 4).
 
-**Q2: Where do lens agents live long-term? In interflux or in Linsenkasten?**
+**Q2: Where do lens agents live long-term? In interflux or in Interlens?**
 
-**Answer:** Interflux. Lens agents are part of the review pipeline (they're review agents, not MCP tools). Linsenkasten provides the lens data and search tools; interflux orchestrates the review. This separation of concerns is clean: Linsenkasten = knowledge base, interflux = review orchestration.
+**Answer:** Interflux. Lens agents are part of the review pipeline (they're review agents, not MCP tools). Interlens provides the lens data and search tools; interflux orchestrates the review. This separation of concerns is clean: Interlens = knowledge base, interflux = review orchestration.
 
-If lens agents lived in Linsenkasten, every Linsenkasten update would require republishing the interflux plugin (tight coupling). Keeping them in interflux allows independent evolution.
+If lens agents lived in Interlens, every Interlens update would require republishing the interflux plugin (tight coupling). Keeping them in interflux allows independent evolution.
 
 **Q3: Should lens agents produce "questions to ask" in addition to findings?**
 

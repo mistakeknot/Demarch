@@ -1,4 +1,4 @@
-# Brainstorm: Linsenkasten Phase 1 — Remaining Lens Agents + MCP + Severity
+# Brainstorm: Interlens Phase 1 — Remaining Lens Agents + MCP + Severity
 **Bead:** iv-lz3l (primary), iv-3brk, iv-03z2
 
 ## Context
@@ -6,7 +6,7 @@
 Phase 0 is complete: fd-systems agent created, validated, triage pre-filter added. Phase 1 beads are unblocked (iv-lz3l's dependencies are all closed). This brainstorm covers the three remaining Phase 1 features:
 
 - **F1b** (iv-lz3l): Create fd-decisions, fd-people, fd-resilience, fd-perception
-- **F3** (iv-3brk): Wire Linsenkasten MCP integration into lens agents
+- **F3** (iv-3brk): Wire Interlens MCP integration into lens agents
 - **F4** (iv-03z2): Severity guidance and lens-aware deduplication
 
 ## What Exists
@@ -66,7 +66,7 @@ fd-systems already covers: Core Systems Dynamics, Emergence & Complexity, parts 
 
 ### Q2: How to structure MCP integration (F3)?
 **Approach:** Conditional instructions in each agent prompt:
-- If linsenkasten MCP tools available → use `search_lenses` to find relevant lenses per section, use `detect_thinking_gaps` at end
+- If interlens MCP tools available → use `search_lenses` to find relevant lenses per section, use `detect_thinking_gaps` at end
 - If MCP unavailable → fall back to hardcoded Key Lenses (the 10-12 curated ones)
 - Emit a NOTE finding when using fallback: "MCP unavailable — review used fallback lens subset"
 

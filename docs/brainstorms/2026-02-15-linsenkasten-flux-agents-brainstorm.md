@@ -1,13 +1,13 @@
-# Brainstorm: Linsenkasten Lenses as Flux-Drive Agents
+# Brainstorm: Interlens Lenses as Flux-Drive Agents
 
 **Date:** 2026-02-15
-**Prompt:** Analyze the lenses in Linsenkasten to see if we can group them into flux-drive agents
+**Prompt:** Analyze the lenses in Interlens to see if we can group them into flux-drive agents
 **Status:** Draft
 
 ## Context
 
-### What Linsenkasten Is
-Linsenkasten is a cognitive augmentation system built around **288 analytical lenses** from the FLUX podcast. Each lens is a named perspective for viewing problems differently (e.g., "Kobayashi Maru" — rewriting constraints, "Steelmanning" — arguing the other side's best case). Lenses are organized into:
+### What Interlens Is
+Interlens is a cognitive augmentation system built around **288 analytical lenses** from the FLUX podcast. Each lens is a named perspective for viewing problems differently (e.g., "Kobayashi Maru" — rewriting constraints, "Steelmanning" — arguing the other side's best case). Lenses are organized into:
 
 - **28 thematic frames** (overlapping clusters like "Balance & Paradox", "Systems Dynamics", "Trust & Collaboration")
 - **A relationship graph** with weighted edges (contrast, synthesis, concept overlap, temporal adjacency)
@@ -143,7 +143,7 @@ Not all 8 agents should run on every document. Triage signals:
 ## Integration Options
 
 ### Option A: Domain Profile (lightest touch)
-Create a `linsenkasten` domain profile in `config/flux-drive/domains/`. This injects lens-based review bullets into existing core agents. No new agents needed — existing fd-architecture gets "Check for systems thinking blind spots", fd-user-product gets "Check for trust dynamics in stakeholder analysis", etc.
+Create a `interlens` domain profile in `config/flux-drive/domains/`. This injects lens-based review bullets into existing core agents. No new agents needed — existing fd-architecture gets "Check for systems thinking blind spots", fd-user-product gets "Check for trust dynamics in stakeholder analysis", etc.
 
 **Pro:** Zero new agents, works with existing triage. **Con:** Shallow — bolting lens thinking onto code reviewers doesn't capture the depth of lens analysis.
 
@@ -158,12 +158,12 @@ One `fd-lens-analyst.md` agent that receives the document + a subset of relevant
 **Pro:** One slot, dynamic lens selection. **Con:** Less specialized — one agent doing 8 jobs. Prompt would be enormous.
 
 ### Option D: Parallel MCP Integration (most powerful)
-Agents call Linsenkasten MCP tools during review — `search_lenses` to find relevant lenses for each finding, `detect_thinking_gaps` to find uncovered frames, `find_contrasting_lenses` for dialectical analysis.
+Agents call Interlens MCP tools during review — `search_lenses` to find relevant lenses for each finding, `detect_thinking_gaps` to find uncovered frames, `find_contrasting_lenses` for dialectical analysis.
 
 **Pro:** Dynamic, draws from the full 288-lens catalog in real-time. **Con:** Requires MCP server running, adds latency, agents need MCP tool access.
 
 ### Recommended: Option B + D Hybrid
-Create 4-5 focused agents (not all 8 — consolidate further), and give each agent access to Linsenkasten MCP tools for dynamic lens retrieval. The agent file defines the analytical mission; the MCP tools provide the specific lenses on demand.
+Create 4-5 focused agents (not all 8 — consolidate further), and give each agent access to Interlens MCP tools for dynamic lens retrieval. The agent file defines the analytical mission; the MCP tools provide the specific lenses on demand.
 
 **Consolidate to 5 agents:**
 1. `fd-lens-systems` — systems thinking + emergence
@@ -176,9 +176,9 @@ Create 4-5 focused agents (not all 8 — consolidate further), and give each age
 
 1. **Should lens agents replace or complement existing fd-* agents for non-code documents?** Currently flux-drive is code-focused. Lens agents would extend it to strategy/planning documents.
 
-2. **Should lens agents be in interflux or in Linsenkasten?** If they're generic thinking-quality reviewers, they belong in interflux. If they're tightly coupled to the Linsenkasten knowledge base, they belong there.
+2. **Should lens agents be in interflux or in Interlens?** If they're generic thinking-quality reviewers, they belong in interflux. If they're tightly coupled to the Interlens knowledge base, they belong there.
 
-3. **MCP dependency:** If we go with Option D, the agents need the Linsenkasten MCP server running. Should there be a graceful fallback (hardcoded lens subsets) for when MCP is unavailable?
+3. **MCP dependency:** If we go with Option D, the agents need the Interlens MCP server running. Should there be a graceful fallback (hardcoded lens subsets) for when MCP is unavailable?
 
 4. **Severity system:** Standard fd-* agents use P0-P4 for bugs. What's the equivalent for "you didn't consider this analytical perspective"? Options: "Blind Spot" (high), "Missed Lens" (medium), "Consider Also" (low).
 
@@ -186,6 +186,6 @@ Create 4-5 focused agents (not all 8 — consolidate further), and give each age
 
 ## Summary
 
-The 28 Linsenkasten frames can be consolidated into **5 flux-drive agents** that review documents for thinking quality rather than code correctness. Combined with MCP tool access for dynamic lens retrieval, this creates a "cognitive review" capability alongside the existing technical review pipeline.
+The 28 Interlens frames can be consolidated into **5 flux-drive agents** that review documents for thinking quality rather than code correctness. Combined with MCP tool access for dynamic lens retrieval, this creates a "cognitive review" capability alongside the existing technical review pipeline.
 
 The recommended approach is **Option B+D (5 agent files + MCP integration)**, which gives each agent a focused analytical mission while leveraging the full 288-lens knowledge graph for specific recommendations.

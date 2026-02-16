@@ -1,45 +1,45 @@
-# Linsenkasten Flux-Drive Lens Agents — Implementation Plan
+# Interlens Flux-Drive Lens Agents — Implementation Plan
 **Phase:** planned (as of 2026-02-15T20:49:38Z)
 
 > **For Claude:** REQUIRED SUB-SKILL: Use clavain:executing-plans to implement this plan task-by-task.
 
-**Goal:** Implement Phase 0 of the Linsenkasten lens agents — move Linsenkasten into the Interverse monorepo, create one cognitive review agent (fd-systems), and add triage pre-filter rules so it only activates for document reviews.
+**Goal:** Implement Phase 0 of the Interlens lens agents — move Interlens into the Interverse monorepo, create one cognitive review agent (fd-systems), and add triage pre-filter rules so it only activates for document reviews.
 
-**Architecture:** Linsenkasten moves into `plugins/linsenkasten/` as a standalone subproject with its own `.git`. A new `fd-systems.md` agent file is added to interflux's `agents/review/` directory following the existing fd-* agent format. The triage pre-filter in `SKILL.md` gets a new "Cognitive filter" rule that excludes cognitive agents from code/diff inputs.
+**Architecture:** Interlens moves into `plugins/interlens/` as a standalone subproject with its own `.git`. A new `fd-systems.md` agent file is added to interflux's `agents/review/` directory following the existing fd-* agent format. The triage pre-filter in `SKILL.md` gets a new "Cognitive filter" rule that excludes cognitive agents from code/diff inputs.
 
 **Tech Stack:** Markdown (agent files), shell (migration), flux-drive triage scoring (SKILL.md prompt engineering)
 
 ---
 
-## Task 1: Move Linsenkasten into Interverse (F0)
+## Task 1: Move Interlens into Interverse (F0)
 
 **Files:**
-- Move: `/root/projects/Linsenkasten/` → `/root/projects/Interverse/plugins/linsenkasten/`
-- Create: `/root/projects/Linsenkasten` (compat symlink)
-- Modify: `/root/projects/Interverse/CLAUDE.md:26` (add linsenkasten to structure table)
+- Move: `/root/projects/Interlens/` → `/root/projects/Interverse/plugins/interlens/`
+- Create: `/root/projects/Interlens` (compat symlink)
+- Modify: `/root/projects/Interverse/CLAUDE.md:26` (add interlens to structure table)
 
-**Step 1: Move the Linsenkasten directory into plugins/**
+**Step 1: Move the Interlens directory into plugins/**
 
 ```bash
-mv /root/projects/Linsenkasten /root/projects/Interverse/plugins/linsenkasten
+mv /root/projects/Interlens /root/projects/Interverse/plugins/interlens
 ```
 
-Linsenkasten is currently a real directory at `/root/projects/Linsenkasten/` (not a symlink). It has its own `.git` with remote `origin → https://github.com/mistakeknot/Linsenkasten.git`. The move preserves everything including `.git`.
+Interlens is currently a real directory at `/root/projects/Interlens/` (not a symlink). It has its own `.git` with remote `origin → https://github.com/mistakeknot/Interlens.git`. The move preserves everything including `.git`.
 
 **Step 2: Create compat symlink**
 
 ```bash
-ln -s /root/projects/Interverse/plugins/linsenkasten /root/projects/Linsenkasten
+ln -s /root/projects/Interverse/plugins/interlens /root/projects/Interlens
 ```
 
 This follows the pattern used by all other subprojects (e.g., `/root/projects/interflux` → `Interverse/plugins/interflux`).
 
 **Step 3: Update CLAUDE.md structure table**
 
-In `/root/projects/Interverse/CLAUDE.md`, add `linsenkasten/` to the plugins section, maintaining alphabetical order. Insert after `interwatch/`:
+In `/root/projects/Interverse/CLAUDE.md`, add `interlens/` to the plugins section, maintaining alphabetical order. Insert after `interwatch/`:
 
 ```
-  linsenkasten/       → cognitive augmentation lenses (FLUX podcast)
+  interlens/       → cognitive augmentation lenses (FLUX podcast)
 ```
 
 **Step 4: Verify the migration**
@@ -48,15 +48,15 @@ Run these verification commands — all must pass:
 
 ```bash
 # .git preserved with correct remote
-cd /root/projects/Interverse/plugins/linsenkasten && git remote -v | grep -q "mistakeknot/Linsenkasten"
+cd /root/projects/Interverse/plugins/interlens && git remote -v | grep -q "mistakeknot/Interlens"
 
 # Compat symlink works
-readlink /root/projects/Linsenkasten | grep -q "Interverse/plugins/linsenkasten"
+readlink /root/projects/Interlens | grep -q "Interverse/plugins/interlens"
 
 # Key files accessible
-test -f /root/projects/Interverse/plugins/linsenkasten/apps/api/lens_frames_thematic.json
-test -d /root/projects/Interverse/plugins/linsenkasten/packages/mcp
-test -f /root/projects/Interverse/plugins/linsenkasten/CLAUDE.md
+test -f /root/projects/Interverse/plugins/interlens/apps/api/lens_frames_thematic.json
+test -d /root/projects/Interverse/plugins/interlens/packages/mcp
+test -f /root/projects/Interverse/plugins/interlens/CLAUDE.md
 ```
 
 Expected: All commands exit 0.
@@ -64,19 +64,19 @@ Expected: All commands exit 0.
 **Step 5: Set POSIX ACLs for claude-user access**
 
 ```bash
-setfacl -R -m u:claude-user:rwX /root/projects/Interverse/plugins/linsenkasten
-setfacl -R -m d:u:claude-user:rwX /root/projects/Interverse/plugins/linsenkasten
+setfacl -R -m u:claude-user:rwX /root/projects/Interverse/plugins/interlens
+setfacl -R -m d:u:claude-user:rwX /root/projects/Interverse/plugins/interlens
 ```
 
 **Step 6: Commit**
 
 ```bash
 cd /root/projects/Interverse
-git add CLAUDE.md plugins/linsenkasten
-git commit -m "feat(F0): move Linsenkasten into Interverse monorepo
+git add CLAUDE.md plugins/interlens
+git commit -m "feat(F0): move Interlens into Interverse monorepo
 
-Migrate Linsenkasten to plugins/linsenkasten/ with own .git preserved.
-Add compat symlink at /root/projects/Linsenkasten.
+Migrate Interlens to plugins/interlens/ with own .git preserved.
+Add compat symlink at /root/projects/Interlens.
 Update CLAUDE.md structure table.
 
 Bead: iv-5xac"
@@ -146,7 +146,7 @@ You are a Flux-drive Systems Thinking Reviewer. Your job is to evaluate whether 
 ```markdown
 ## Key Lenses
 
-<!-- Curated from Linsenkasten's Systems Dynamics, Emergence & Complexity, and Resilience frames.
+<!-- Curated from Interlens's Systems Dynamics, Emergence & Complexity, and Resilience frames.
      These 12 (of 288 total) were selected because they form a complete systems analysis toolkit:
      3 for feedback/causation, 3 for emergence, 3 for temporal dynamics, 3 for failure modes.
      Other cognitive domains (decisions, people, perception) are reserved for future agents. -->
@@ -232,7 +232,7 @@ git add agents/review/fd-systems.md
 git commit -m "feat(F1): create fd-systems cognitive review agent
 
 First lens agent for flux-drive Phase 0 MVP. Reviews documents for
-systems thinking blind spots using 12 curated lenses from Linsenkasten's
+systems thinking blind spots using 12 curated lenses from Interlens's
 Systems Dynamics, Emergence & Complexity, and Resilience frames.
 
 Bead: iv-6a1x"
@@ -316,8 +316,8 @@ Bead: iv-1d28"
 
 **Files:**
 - Test targets (read-only):
-  - `docs/prds/2026-02-15-linsenkasten-flux-agents.md` (PRD)
-  - `docs/brainstorms/2026-02-15-linsenkasten-flux-agents-brainstorm.md` (brainstorm)
+  - `docs/prds/2026-02-15-interlens-flux-agents.md` (PRD)
+  - `docs/brainstorms/2026-02-15-interlens-flux-agents-brainstorm.md` (brainstorm)
   - Pick one architecture doc from `docs/` directory
 
 **Step 1: Run fd-systems on the PRD**
@@ -325,7 +325,7 @@ Bead: iv-1d28"
 Invoke the fd-systems agent (via subagent_type or inline prompt) on the PRD:
 
 ```
-Target: docs/prds/2026-02-15-linsenkasten-flux-agents.md
+Target: docs/prds/2026-02-15-interlens-flux-agents.md
 Agent: fd-systems (use the agent prompt from agents/review/fd-systems.md)
 Expected: 3-8 findings with P1-P3 severities, each referencing a specific section and lens
 ```
@@ -334,7 +334,7 @@ The agent should be run as a `general-purpose` subagent with the full fd-systems
 
 **Step 2: Run fd-systems on the brainstorm**
 
-Same approach, targeting `docs/brainstorms/2026-02-15-linsenkasten-flux-agents-brainstorm.md`.
+Same approach, targeting `docs/brainstorms/2026-02-15-interlens-flux-agents-brainstorm.md`.
 
 **Step 3: Run fd-systems on a third document**
 
@@ -365,14 +365,14 @@ Note any prompt adjustments needed. If the agent produces low-quality findings, 
 ls /root/projects/Interverse/plugins/interflux/agents/review/*.md | wc -l
 # Expected: 8
 
-# Linsenkasten in monorepo
-test -d /root/projects/Interverse/plugins/linsenkasten/.git && echo "OK"
+# Interlens in monorepo
+test -d /root/projects/Interverse/plugins/interlens/.git && echo "OK"
 
 # Symlink works
-test -L /root/projects/Linsenkasten && echo "OK"
+test -L /root/projects/Interlens && echo "OK"
 
-# CLAUDE.md has linsenkasten
-grep -q "linsenkasten" /root/projects/Interverse/CLAUDE.md && echo "OK"
+# CLAUDE.md has interlens
+grep -q "interlens" /root/projects/Interverse/CLAUDE.md && echo "OK"
 
 # Cognitive filter in SKILL.md
 grep -q "Cognitive filter" /root/projects/Interverse/plugins/interflux/skills/flux-drive/SKILL.md && echo "OK"
@@ -381,7 +381,7 @@ grep -q "Cognitive filter" /root/projects/Interverse/plugins/interflux/skills/fl
 **Step 2: Close Phase 0 beads**
 
 ```bash
-bd close iv-5xac  # F0: Move Linsenkasten
+bd close iv-5xac  # F0: Move Interlens
 bd close iv-6a1x  # F1: fd-systems agent
 bd close iv-1d28  # F2: Triage pre-filter
 ```

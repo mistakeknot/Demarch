@@ -11,7 +11,7 @@
 - Interspect self-improvement system (full roadmap exists)
 - Merge agent / conflict resolution (Phase 4 brainstorm exists)
 - Cross-plugin dependencies (iv-z1a0 program with 7 children)
-- Linsenkasten flux agents (brainstorm exists)
+- Interlens flux agents (brainstorm exists)
 
 ---
 

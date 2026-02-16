@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use clavain:executing-plans to implement this plan task-by-task.
 
-**Goal:** Build a clodex MCP server that classifies document sections per agent domain using Codex spark, generate per-agent temp files with only relevant sections, and wire this into flux-drive's Phase 2 launch — reducing token consumption by 50-70%.
+**Goal:** Build a interserve MCP server that classifies document sections per agent domain using Codex spark, generate per-agent temp files with only relevant sections, and wire this into flux-drive's Phase 2 launch — reducing token consumption by 50-70%.
 
-**Architecture:** Go stdio MCP server (`plugins/clodex/`) delegates classification to `dispatch.sh --tier fast`. Returns structured JSON with section assignments + confidence scores. Orchestrator in `launch.md` calls `classify_sections`, writes per-agent temp files, and passes per-agent paths to Task dispatch. Cross-cutting agents (fd-architecture, fd-quality) always get the full document.
+**Architecture:** Go stdio MCP server (`plugins/interserve/`) delegates classification to `dispatch.sh --tier fast`. Returns structured JSON with section assignments + confidence scores. Orchestrator in `launch.md` calls `classify_sections`, writes per-agent temp files, and passes per-agent paths to Task dispatch. Cross-cutting agents (fd-architecture, fd-quality) always get the full document.
 
 **Tech Stack:** Go 1.23, `github.com/mark3labs/mcp-go` v0.43.2, Codex CLI via `dispatch.sh`, bash orchestration in flux-drive skills
 
@@ -14,39 +14,39 @@
 
 ---
 
-## Task 1: Scaffold clodex plugin directory
+## Task 1: Scaffold interserve plugin directory
 
 **Bead:** iv-j7uy (F0)
 **Phase:** planned (as of 2026-02-16T16:15:22Z)
 
 **Files:**
-- Create: `plugins/clodex/go.mod`
-- Create: `plugins/clodex/go.sum`
-- Create: `plugins/clodex/cmd/clodex-mcp/main.go`
-- Create: `plugins/clodex/bin/launch-mcp.sh`
-- Create: `plugins/clodex/.claude-plugin/plugin.json`
-- Create: `plugins/clodex/CLAUDE.md`
+- Create: `plugins/interserve/go.mod`
+- Create: `plugins/interserve/go.sum`
+- Create: `plugins/interserve/cmd/interserve-mcp/main.go`
+- Create: `plugins/interserve/bin/launch-mcp.sh`
+- Create: `plugins/interserve/.claude-plugin/plugin.json`
+- Create: `plugins/interserve/CLAUDE.md`
 
 **Step 1: Create go.mod**
 
 ```
-plugins/clodex/go.mod
+plugins/interserve/go.mod
 ```
 ```go
-module github.com/mistakeknot/clodex
+module github.com/mistakeknot/interserve
 
 go 1.23.0
 
 require github.com/mark3labs/mcp-go v0.43.2
 ```
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go mod tidy`
+Run: `cd /root/projects/Interverse/plugins/interserve && go mod tidy`
 Expected: go.sum generated, dependencies resolved
 
 **Step 2: Create main.go entry point**
 
 ```
-plugins/clodex/cmd/clodex-mcp/main.go
+plugins/interserve/cmd/interserve-mcp/main.go
 ```
 ```go
 package main
@@ -56,17 +56,17 @@ import (
 	"os"
 
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/mistakeknot/clodex/internal/tools"
+	"github.com/mistakeknot/interserve/internal/tools"
 )
 
 func main() {
 	s := server.NewMCPServer(
-		"clodex",
+		"interserve",
 		"0.1.0",
 		server.WithToolCapabilities(true),
 	)
 
-	dispatchPath := os.Getenv("CLODEX_DISPATCH_PATH")
+	dispatchPath := os.Getenv("INTERSERVE_DISPATCH_PATH")
 	if dispatchPath == "" {
 		dispatchPath = "/root/projects/Interverse/hub/clavain/scripts/dispatch.sh"
 	}
@@ -74,7 +74,7 @@ func main() {
 	tools.RegisterAll(s, dispatchPath)
 
 	if err := server.ServeStdio(s); err != nil {
-		fmt.Fprintf(os.Stderr, "clodex-mcp: %v\n", err)
+		fmt.Fprintf(os.Stderr, "interserve-mcp: %v\n", err)
 		os.Exit(1)
 	}
 }
@@ -83,47 +83,47 @@ func main() {
 **Step 3: Create launch-mcp.sh**
 
 ```
-plugins/clodex/bin/launch-mcp.sh
+plugins/interserve/bin/launch-mcp.sh
 ```
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BINARY="${SCRIPT_DIR}/clodex-mcp"
+BINARY="${SCRIPT_DIR}/interserve-mcp"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 if [[ ! -x "$BINARY" ]]; then
     if ! command -v go &>/dev/null; then
-        echo '{"error":"go not found — cannot build clodex-mcp. Install Go 1.23+ and restart."}' >&2
+        echo '{"error":"go not found — cannot build interserve-mcp. Install Go 1.23+ and restart."}' >&2
         exit 1
     fi
     cd "$PROJECT_ROOT"
-    go build -o "$BINARY" ./cmd/clodex-mcp/ 2>&1 >&2
+    go build -o "$BINARY" ./cmd/interserve-mcp/ 2>&1 >&2
 fi
 
 exec "$BINARY" "$@"
 ```
 
-Run: `chmod +x plugins/clodex/bin/launch-mcp.sh`
+Run: `chmod +x plugins/interserve/bin/launch-mcp.sh`
 
 **Step 4: Create plugin.json**
 
 ```
-plugins/clodex/.claude-plugin/plugin.json
+plugins/interserve/.claude-plugin/plugin.json
 ```
 ```json
 {
-  "name": "clodex",
+  "name": "interserve",
   "version": "0.1.0",
   "description": "Codex spark classifier — lightweight section classification via MCP",
   "mcpServers": {
-    "clodex": {
+    "interserve": {
       "type": "stdio",
       "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh",
       "args": [],
       "env": {
-        "CLODEX_DISPATCH_PATH": "/root/projects/Interverse/hub/clavain/scripts/dispatch.sh"
+        "INTERSERVE_DISPATCH_PATH": "/root/projects/Interverse/hub/clavain/scripts/dispatch.sh"
       }
     }
   }
@@ -133,10 +133,10 @@ plugins/clodex/.claude-plugin/plugin.json
 **Step 5: Create CLAUDE.md**
 
 ```
-plugins/clodex/CLAUDE.md
+plugins/interserve/CLAUDE.md
 ```
 ```markdown
-# clodex
+# interserve
 
 Codex spark classifier — MCP server exposing `classify_sections` and `extract_sections` tools for lightweight document classification via Codex spark tier.
 
@@ -144,13 +144,13 @@ Codex spark classifier — MCP server exposing `classify_sections` and `extract_
 
 ```bash
 # Build binary
-cd plugins/clodex && go build -o bin/clodex-mcp ./cmd/clodex-mcp/
+cd plugins/interserve && go build -o bin/interserve-mcp ./cmd/interserve-mcp/
 
 # Run tests
-cd plugins/clodex && go test ./...
+cd plugins/interserve && go test ./...
 
 # Test locally
-claude --plugin-dir /root/projects/Interverse/plugins/clodex
+claude --plugin-dir /root/projects/Interverse/plugins/interserve
 ```
 
 ## Design Decisions (Do Not Re-Ask)
@@ -163,16 +163,16 @@ claude --plugin-dir /root/projects/Interverse/plugins/clodex
 
 **Step 6: Verify build**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go build -o bin/clodex-mcp ./cmd/clodex-mcp/`
-Expected: Binary created at `plugins/clodex/bin/clodex-mcp`
+Run: `cd /root/projects/Interverse/plugins/interserve && go build -o bin/interserve-mcp ./cmd/interserve-mcp/`
+Expected: Binary created at `plugins/interserve/bin/interserve-mcp`
 
 Note: This will fail until Task 2 creates the `internal/tools` package. That's expected — this task sets up the skeleton.
 
 **Step 7: Commit**
 
 ```bash
-git add plugins/clodex/
-git commit -m "feat(clodex): scaffold MCP server plugin
+git add plugins/interserve/
+git commit -m "feat(interserve): scaffold MCP server plugin
 
 Go module, main.go entry point, launch-mcp.sh auto-builder,
 plugin.json manifest. Tools package is a stub — next commit."
@@ -186,13 +186,13 @@ plugin.json manifest. Tools package is a stub — next commit."
 **Phase:** planned (as of 2026-02-16T16:15:22Z)
 
 **Files:**
-- Create: `plugins/clodex/internal/extract/extract.go`
-- Create: `plugins/clodex/internal/extract/extract_test.go`
+- Create: `plugins/interserve/internal/extract/extract.go`
+- Create: `plugins/interserve/internal/extract/extract_test.go`
 
 **Step 1: Write the failing test for basic section extraction**
 
 ```
-plugins/clodex/internal/extract/extract_test.go
+plugins/interserve/internal/extract/extract_test.go
 ```
 ```go
 package extract
@@ -335,13 +335,13 @@ Add missing import at top of file: `"fmt"` (needed for `fmt.Sprintf` in the last
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./internal/extract/ -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./internal/extract/ -v`
 Expected: FAIL — package/functions not defined
 
 **Step 3: Implement section extractor**
 
 ```
-plugins/clodex/internal/extract/extract.go
+plugins/interserve/internal/extract/extract.go
 ```
 ```go
 package extract
@@ -497,14 +497,14 @@ func itoa(n int) string {
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./internal/extract/ -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./internal/extract/ -v`
 Expected: All 7 tests PASS
 
 **Step 5: Commit**
 
 ```bash
-git add plugins/clodex/internal/extract/
-git commit -m "feat(clodex): markdown section extractor with fence-aware splitting
+git add plugins/interserve/internal/extract/
+git commit -m "feat(interserve): markdown section extractor with fence-aware splitting
 
 Handles: code blocks (``` and ~~~), YAML frontmatter, unclosed blocks,
 empty sections. Adaptive preview: 50 lines for small, 25+25 for large."
@@ -518,14 +518,14 @@ empty sections. Adaptive preview: 50 lines for small, 25+25 for large."
 **Phase:** planned (as of 2026-02-16T16:15:22Z)
 
 **Files:**
-- Create: `plugins/clodex/internal/classify/classify.go`
-- Create: `plugins/clodex/internal/classify/classify_test.go`
-- Create: `plugins/clodex/internal/classify/prompt.go`
+- Create: `plugins/interserve/internal/classify/classify.go`
+- Create: `plugins/interserve/internal/classify/classify_test.go`
+- Create: `plugins/interserve/internal/classify/prompt.go`
 
 **Step 1: Write the failing test for prompt building**
 
 ```
-plugins/clodex/internal/classify/classify_test.go
+plugins/interserve/internal/classify/classify_test.go
 ```
 ```go
 package classify
@@ -534,7 +534,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mistakeknot/clodex/internal/extract"
+	"github.com/mistakeknot/interserve/internal/extract"
 )
 
 func TestBuildPrompt_ContainsAgentDescriptions(t *testing.T) {
@@ -596,13 +596,13 @@ func itoa(n int) string {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./internal/classify/ -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./internal/classify/ -v`
 Expected: FAIL — package not defined
 
 **Step 3: Implement prompt builder**
 
 ```
-plugins/clodex/internal/classify/prompt.go
+plugins/interserve/internal/classify/prompt.go
 ```
 ```go
 package classify
@@ -611,7 +611,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mistakeknot/clodex/internal/extract"
+	"github.com/mistakeknot/interserve/internal/extract"
 )
 
 // AgentDomain describes a flux-drive review agent's focus area.
@@ -671,13 +671,13 @@ func BuildPrompt(sections []extract.Section, agents []AgentDomain) string {
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./internal/classify/ -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./internal/classify/ -v`
 Expected: PASS
 
 **Step 5: Implement classifier (dispatch.sh invocation)**
 
 ```
-plugins/clodex/internal/classify/classify.go
+plugins/interserve/internal/classify/classify.go
 ```
 ```go
 package classify
@@ -691,7 +691,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mistakeknot/clodex/internal/extract"
+	"github.com/mistakeknot/interserve/internal/extract"
 )
 
 // SectionAssignment is one agent's classification of a section.
@@ -734,7 +734,7 @@ func Classify(ctx context.Context, dispatchPath string, sections []extract.Secti
 	prompt := BuildPrompt(sections, agents)
 
 	// Write prompt to temp file (dispatch.sh reads via --prompt-file)
-	tmpFile, err := os.CreateTemp("", "clodex-prompt-*.txt")
+	tmpFile, err := os.CreateTemp("", "interserve-prompt-*.txt")
 	if err != nil {
 		return &ClassifyResult{Status: "no_classification", Error: fmt.Sprintf("failed to create temp file: %v", err)}, nil
 	}
@@ -746,7 +746,7 @@ func Classify(ctx context.Context, dispatchPath string, sections []extract.Secti
 	tmpFile.Close()
 
 	// Create output file
-	outFile, err := os.CreateTemp("", "clodex-output-*.txt")
+	outFile, err := os.CreateTemp("", "interserve-output-*.txt")
 	if err != nil {
 		return &ClassifyResult{Status: "no_classification", Error: fmt.Sprintf("failed to create output file: %v", err)}, nil
 	}
@@ -765,12 +765,12 @@ func Classify(ctx context.Context, dispatchPath string, sections []extract.Secti
 
 	if err := cmd.Run(); err != nil {
 		elapsed := time.Since(start)
-		fmt.Fprintf(os.Stderr, "clodex: dispatch.sh failed after %v: %v\n", elapsed, err)
+		fmt.Fprintf(os.Stderr, "interserve: dispatch.sh failed after %v: %v\n", elapsed, err)
 		return &ClassifyResult{Status: "no_classification", Error: fmt.Sprintf("dispatch.sh failed: %v", err)}, nil
 	}
 
 	elapsed := time.Since(start)
-	fmt.Fprintf(os.Stderr, "clodex: classification completed in %v\n", elapsed)
+	fmt.Fprintf(os.Stderr, "interserve: classification completed in %v\n", elapsed)
 
 	// Read output
 	output, err := os.ReadFile(outFile.Name())
@@ -939,14 +939,14 @@ func TestBuildResult_DomainMismatchGuard(t *testing.T) {
 
 **Step 7: Run all tests**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./internal/classify/ -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./internal/classify/ -v`
 Expected: All tests PASS
 
 **Step 8: Commit**
 
 ```bash
-git add plugins/clodex/internal/classify/
-git commit -m "feat(clodex): section classification via dispatch.sh
+git add plugins/interserve/internal/classify/
+git commit -m "feat(interserve): section classification via dispatch.sh
 
 Prompt builder, dispatch.sh invocation, JSON parsing, 80% threshold
 (integer arithmetic), domain mismatch guard (>10% check)."
@@ -960,13 +960,13 @@ Prompt builder, dispatch.sh invocation, JSON parsing, 80% threshold
 **Phase:** planned (as of 2026-02-16T16:15:22Z)
 
 **Files:**
-- Create: `plugins/clodex/internal/tools/tools.go`
-- Modify: `plugins/clodex/cmd/clodex-mcp/main.go`
+- Create: `plugins/interserve/internal/tools/tools.go`
+- Modify: `plugins/interserve/cmd/interserve-mcp/main.go`
 
 **Step 1: Implement MCP tool registration**
 
 ```
-plugins/clodex/internal/tools/tools.go
+plugins/interserve/internal/tools/tools.go
 ```
 ```go
 package tools
@@ -980,11 +980,11 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/mistakeknot/clodex/internal/classify"
-	"github.com/mistakeknot/clodex/internal/extract"
+	"github.com/mistakeknot/interserve/internal/classify"
+	"github.com/mistakeknot/interserve/internal/extract"
 )
 
-// RegisterAll registers all clodex MCP tools with the server.
+// RegisterAll registers all interserve MCP tools with the server.
 func RegisterAll(s *server.MCPServer, dispatchPath string) {
 	s.AddTools(
 		extractSections(),
@@ -1081,7 +1081,7 @@ func classifySections(dispatchPath string) server.ServerTool {
 			}
 
 			elapsed := time.Since(start)
-			fmt.Fprintf(os.Stderr, "clodex: classify_sections completed in %v\n", elapsed)
+			fmt.Fprintf(os.Stderr, "interserve: classify_sections completed in %v\n", elapsed)
 
 			b, _ := json.Marshal(classResult)
 			return mcp.NewToolResultText(string(b)), nil
@@ -1092,19 +1092,19 @@ func classifySections(dispatchPath string) server.ServerTool {
 
 **Step 2: Verify the project builds**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go build -o bin/clodex-mcp ./cmd/clodex-mcp/`
+Run: `cd /root/projects/Interverse/plugins/interserve && go build -o bin/interserve-mcp ./cmd/interserve-mcp/`
 Expected: Binary builds successfully
 
 **Step 3: Run all tests**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./... -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./... -v`
 Expected: All tests PASS
 
 **Step 4: Commit**
 
 ```bash
-git add plugins/clodex/internal/tools/ plugins/clodex/cmd/
-git commit -m "feat(clodex): register extract_sections + classify_sections MCP tools
+git add plugins/interserve/internal/tools/ plugins/interserve/cmd/
+git commit -m "feat(interserve): register extract_sections + classify_sections MCP tools
 
 Two tools: extract_sections (read-only section listing),
 classify_sections (full classification via dispatch.sh).
@@ -1119,13 +1119,13 @@ Both delegate to internal packages."
 **Phase:** planned (as of 2026-02-16T16:15:22Z)
 
 **Files:**
-- Create: `plugins/clodex/internal/tempfiles/tempfiles.go`
-- Create: `plugins/clodex/internal/tempfiles/tempfiles_test.go`
+- Create: `plugins/interserve/internal/tempfiles/tempfiles.go`
+- Create: `plugins/interserve/internal/tempfiles/tempfiles_test.go`
 
 **Step 1: Write the failing test**
 
 ```
-plugins/clodex/internal/tempfiles/tempfiles_test.go
+plugins/interserve/internal/tempfiles/tempfiles_test.go
 ```
 ```go
 package tempfiles
@@ -1135,8 +1135,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mistakeknot/clodex/internal/classify"
-	"github.com/mistakeknot/clodex/internal/extract"
+	"github.com/mistakeknot/interserve/internal/classify"
+	"github.com/mistakeknot/interserve/internal/extract"
 )
 
 func TestGenerateAgentFiles_PrioritySections(t *testing.T) {
@@ -1225,13 +1225,13 @@ func TestGenerateAgentFiles_SkipsZeroPriority(t *testing.T) {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./internal/tempfiles/ -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./internal/tempfiles/ -v`
 Expected: FAIL — package not defined
 
 **Step 3: Implement temp file generator**
 
 ```
-plugins/clodex/internal/tempfiles/tempfiles.go
+plugins/interserve/internal/tempfiles/tempfiles.go
 ```
 ```go
 package tempfiles
@@ -1243,8 +1243,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mistakeknot/clodex/internal/classify"
-	"github.com/mistakeknot/clodex/internal/extract"
+	"github.com/mistakeknot/interserve/internal/classify"
+	"github.com/mistakeknot/interserve/internal/extract"
 )
 
 // GenerateAgentFiles writes per-agent temp files based on classification results.
@@ -1320,19 +1320,19 @@ func GenerateAgentFiles(sections []extract.Section, result *classify.ClassifyRes
 
 **Step 4: Run tests to verify they pass**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./internal/tempfiles/ -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./internal/tempfiles/ -v`
 Expected: All tests PASS
 
 **Step 5: Run full test suite**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./... -v`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./... -v`
 Expected: All tests PASS across all packages
 
 **Step 6: Commit**
 
 ```bash
-git add plugins/clodex/internal/tempfiles/
-git commit -m "feat(clodex): per-agent temp file generation
+git add plugins/interserve/internal/tempfiles/
+git commit -m "feat(interserve): per-agent temp file generation
 
 Priority sections in full, context as 1-line summaries. Metadata header,
 request-full-section footer. Skips agents with zero priority sections.
@@ -1362,10 +1362,10 @@ Replace the "Section Classification" content (lines 187-211) in `slicing.md` wit
 
 #### Classification Methods
 
-**Method 1: Semantic (Codex Spark)** — preferred when clodex MCP is available.
+**Method 1: Semantic (Codex Spark)** — preferred when interserve MCP is available.
 
-1. **Extract sections** — Invoke clodex `extract_sections` tool on the document file. Returns structured JSON with section IDs, headings, and line counts.
-2. **Classify per agent** — Invoke clodex `classify_sections` tool. Codex spark assigns each section to each agent as `priority` or `context` with a confidence score (0.0-1.0).
+1. **Extract sections** — Invoke interserve `extract_sections` tool on the document file. Returns structured JSON with section IDs, headings, and line counts.
+2. **Classify per agent** — Invoke interserve `classify_sections` tool. Codex spark assigns each section to each agent as `priority` or `context` with a confidence score (0.0-1.0).
 3. **Cross-cutting agents** (fd-architecture, fd-quality) — always receive the full document. Skip classification for these agents.
 4. **Safety override** — Any section mentioning auth, credentials, secrets, tokens, or certificates is always `priority` for fd-safety (enforced in classification prompt).
 5. **80% threshold** — If `agent_priority_lines * 100 / total_lines >= 80` (integer arithmetic), skip slicing for that agent — send full document.
@@ -1399,7 +1399,7 @@ Read the updated file to confirm the new section integrates cleanly with surroun
 git add plugins/interflux/skills/flux-drive/phases/slicing.md
 git commit -m "docs(slicing.md): add semantic classification as Method 1
 
-Method 1 (Codex spark via clodex MCP) is preferred. Method 2 (keyword
+Method 1 (Codex spark via interserve MCP) is preferred. Method 2 (keyword
 matching) is fallback. Composition rule: try semantic first, fall back
 on no_classification or low confidence (<0.6)."
 ```
@@ -1418,14 +1418,14 @@ on no_classification or low confidence (<0.6)."
 
 Read `plugins/interflux/skills/flux-drive/phases/launch.md` lines 88-104
 
-**Step 2: Update Case 2 to invoke clodex MCP**
+**Step 2: Update Case 2 to invoke interserve MCP**
 
 Replace Case 2 content (lines 89-92) with:
 
 ```markdown
 #### Case 2: File/directory inputs — document slicing active (>= 200 lines)
 
-1. **Classify sections:** Invoke clodex MCP `classify_sections` tool with `file_path` set to the document path.
+1. **Classify sections:** Invoke interserve MCP `classify_sections` tool with `file_path` set to the document path.
 2. **Check result:** If `status` is `"no_classification"`, fall back to Case 1 (all agents get the original file via shared path).
 3. **Generate per-agent files:** For each agent in `slicing_map`:
    - If agent is cross-cutting (fd-architecture, fd-quality): use the shared `REVIEW_FILE` from Case 1.
@@ -1442,7 +1442,7 @@ See `phases/slicing.md` → Document Slicing for the complete classification alg
 git add plugins/interflux/skills/flux-drive/phases/launch.md
 git commit -m "feat(launch.md): wire classify_sections into Case 2
 
-Invokes clodex MCP classify_sections, falls back to Case 1 (shared file)
+Invokes interserve MCP classify_sections, falls back to Case 1 (shared file)
 on no_classification. Per-agent temp files follow slicing.md spec."
 ```
 
@@ -1498,29 +1498,29 @@ pass through verbatim (v1). Quality target: ≤5% request rate."
 **Phase:** planned (as of 2026-02-16T16:15:22Z)
 
 **Files:**
-- Create: `plugins/clodex/test/integration_test.sh`
+- Create: `plugins/interserve/test/integration_test.sh`
 
 **Step 1: Write integration test script**
 
 ```
-plugins/clodex/test/integration_test.sh
+plugins/interserve/test/integration_test.sh
 ```
 ```bash
 #!/usr/bin/env bash
-# Integration test for clodex MCP server — extract_sections tool only
+# Integration test for interserve MCP server — extract_sections tool only
 # (classify_sections requires live Codex CLI, tested separately)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
-BINARY="${PLUGIN_ROOT}/bin/clodex-mcp"
+BINARY="${PLUGIN_ROOT}/bin/interserve-mcp"
 
-echo "=== Building clodex-mcp ==="
+echo "=== Building interserve-mcp ==="
 cd "$PLUGIN_ROOT"
-go build -o "$BINARY" ./cmd/clodex-mcp/
+go build -o "$BINARY" ./cmd/interserve-mcp/
 
 echo "=== Creating test document ==="
-TEST_DOC=$(mktemp /tmp/clodex-test-XXXX.md)
+TEST_DOC=$(mktemp /tmp/interserve-test-XXXX.md)
 cat > "$TEST_DOC" << 'EOF'
 ---
 title: Test Document
@@ -1603,14 +1603,14 @@ rm "$TEST_DOC"
 
 **Step 2: Run integration test**
 
-Run: `bash plugins/clodex/test/integration_test.sh`
+Run: `bash plugins/interserve/test/integration_test.sh`
 Expected: "All integration tests passed"
 
 **Step 3: Commit**
 
 ```bash
-git add plugins/clodex/test/
-git commit -m "test(clodex): integration test for extract_sections
+git add plugins/interserve/test/
+git commit -m "test(interserve): integration test for extract_sections
 
 Verifies: section extraction, code block handling, YAML frontmatter
 skipping, JSON-RPC protocol. classify_sections requires live Codex."
@@ -1624,38 +1624,38 @@ skipping, JSON-RPC protocol. classify_sections requires live Codex."
 **Phase:** planned (as of 2026-02-16T16:15:22Z)
 
 **Files:**
-- Modify: `plugins/clodex/bin/.gitkeep` (ensure binary is gitignored)
-- Create: `plugins/clodex/.gitignore`
+- Modify: `plugins/interserve/bin/.gitkeep` (ensure binary is gitignored)
+- Create: `plugins/interserve/.gitignore`
 
 **Step 1: Create .gitignore**
 
 ```
-plugins/clodex/.gitignore
+plugins/interserve/.gitignore
 ```
 ```
-bin/clodex-mcp
+bin/interserve-mcp
 ```
 
 **Step 2: Run full test suite**
 
-Run: `cd /root/projects/Interverse/plugins/clodex && go test ./... -v -count=1`
+Run: `cd /root/projects/Interverse/plugins/interserve && go test ./... -v -count=1`
 Expected: All tests PASS
 
 **Step 3: Run integration test**
 
-Run: `bash plugins/clodex/test/integration_test.sh`
+Run: `bash plugins/interserve/test/integration_test.sh`
 Expected: "All integration tests passed"
 
 **Step 4: Verify plugin loads in Claude Code**
 
-Run: `claude --plugin-dir /root/projects/Interverse/plugins/clodex --print-tools 2>/dev/null | grep -i clodex || echo "check tool listing manually"`
+Run: `claude --plugin-dir /root/projects/Interverse/plugins/interserve --print-tools 2>/dev/null | grep -i interserve || echo "check tool listing manually"`
 Expected: `extract_sections` and `classify_sections` tools visible
 
 **Step 5: Final commit**
 
 ```bash
-git add plugins/clodex/.gitignore
-git commit -m "chore(clodex): add .gitignore for built binary"
+git add plugins/interserve/.gitignore
+git commit -m "chore(interserve): add .gitignore for built binary"
 ```
 
 ---

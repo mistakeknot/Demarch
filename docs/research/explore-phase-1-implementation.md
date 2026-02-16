@@ -190,7 +190,7 @@ If no active sprint or user chooses "Start fresh":
 
 #### Step 5: Write Plan (Phase: planned)
 - Invokes `/clavain:write-plan`
-- Clodex mode auto-executes (skips manual execution step)
+- Interserve mode auto-executes (skips manual execution step)
 - Records phase: `advance_phase "$SPRINT_ID" "planned" "Plan: <plan_path>"`
 
 **Fully implemented.**
@@ -206,7 +206,7 @@ If no active sprint or user chooses "Start fresh":
 - Pre-execution gate check: `enforce_gate "$SPRINT_ID" "executing" "<plan_path>"`
 - If gate fails: stop (don't proceed to execution)
 - Invokes `/clavain:work <plan_path>`
-- Parallel dispatch for independent modules (clodex auto-detects)
+- Parallel dispatch for independent modules (interserve auto-detects)
 - Records phase at START: `advance_phase "$SPRINT_ID" "executing" "Executing: <plan_path>"`
 
 **Fully implemented.**
@@ -229,7 +229,7 @@ If no active sprint or user chooses "Start fresh":
 #### Step 10: Resolve Issues
 - Invokes `/clavain:resolve`
 - Auto-detects source (TODOs, PR comments, code TODOs)
-- Auto-handles clodex mode
+- Auto-handles interserve mode
 - Optional compounding for recurring patterns
 
 **Fully implemented.**
@@ -467,8 +467,8 @@ Session-start hook also calls **`sprint_brief_scan()`** which outputs lightweigh
 | Item | Status | Note |
 |------|--------|------|
 | Strategy flux-drive validation | Partial | Spec mentions Phase 4 (Validate), need confirm in actual flow |
-| Clodex auto-execution | Fully shipped | write-plan skips manual execute step when clodex=on |
-| Parallel agent dispatch | Fully shipped | work command detects clodex and dispatches modules |
+| Interserve auto-execution | Fully shipped | write-plan skips manual execute step when interserve=on |
+| Parallel agent dispatch | Fully shipped | work command detects interserve and dispatches modules |
 | Parallel QA + resolve | Partial | Comment in sprint.md mentions overlap opportunity, but actual parallel impl in /quality-gates + /resolve |
 | Auto-compound on pattern discovery | Partial | Spec mentions compounding, impl in /resolve or separate? |
 | Landing-a-change skill | Shipped | Referenced in Step 11 (ship), skill exists |

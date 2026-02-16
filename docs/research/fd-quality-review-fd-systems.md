@@ -51,7 +51,7 @@ The fd-systems.md agent file is **structurally sound and stylistically consisten
 ### Dependency Discipline ✓
 
 - No external dependencies introduced
-- References to "Linsenkasten" knowledge base in comment (line 62-65) is documentation, not a runtime dependency
+- References to "Interlens" knowledge base in comment (line 62-65) is documentation, not a runtime dependency
 
 ---
 
@@ -189,7 +189,7 @@ The 12 lenses referenced in lines 67-81 are **well-defined systems thinking conc
 - Schelling Traps, Crumple Zones, Pace Layers → modern complexity science (Brand, Schelling)
 - Hormesis, Over-Adaptation → resilience engineering
 
-**Source attribution** (lines 62-65): References Linsenkasten's 288-lens corpus, noting that 12 were selected from Systems Dynamics, Emergence & Complexity, and Resilience frames. This is **appropriately scoped** — other cognitive domains (decisions, people, perception) are reserved for future agents (noted in line 99).
+**Source attribution** (lines 62-65): References Interlens's 288-lens corpus, noting that 12 were selected from Systems Dynamics, Emergence & Complexity, and Resilience frames. This is **appropriately scoped** — other cognitive domains (decisions, people, perception) are reserved for future agents (noted in line 99).
 
 ### Boundary Clarity ✓
 

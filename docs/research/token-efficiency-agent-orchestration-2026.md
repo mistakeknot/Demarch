@@ -167,7 +167,7 @@ Auto-scales agent count by problem complexity. 5% accuracy improvement on HumanE
 |-----------|---------------|---------|
 | File indirection | Prompt files in /tmp/, 200-char dispatch | 70% |
 | Model routing | Haiku research / Sonnet review / Opus orchestrate | 3-5x |
-| Hybrid Codex routing | Clodex toggle for implementation | 89% |
+| Hybrid Codex routing | Interserve toggle for implementation | 89% |
 | AST-based retrieval | tldr-swinton MCP server | 60-80% |
 | Background agents | run_in_background for parallel work | Context isolation |
 | Compact skill loading | SessionStart hook injects routing table | Startup efficiency |
@@ -225,6 +225,58 @@ Novel findings not caught by Claude-based reviewers: (1) Missing measurement spe
 
 ---
 
+## Orchestrator Deep Dives (2026-02-15 update)
+
+Parallel research into 5 orchestrators + Clavain's interserve, focusing on how each maximizes token efficiency when delegating to subagents.
+
+### Orchestrator Comparison Matrix
+
+| Feature | claude-flow | cco | myclaude | SystemPrompt | Clavain/interserve |
+|---------|------------|-----|----------|-------------|----------------|
+| **Multi-agent** | Mock swarm (v2), real spawn (v3) | Agent SDK sessions | CLI wrapper subprocess | Single process | Claude subagents + Codex CLI |
+| **Token efficiency** | Shared memory (SQLite), mostly aspirational | Session resume only | Cost arbitrage + skill caps + summary mode | None | Dispatch templates, compact skills |
+| **Backend diversity** | Claude only (Codex package stubbed) | Claude only | 4 backends (Codex, Claude, Gemini, OpenCode) | Claude only | Claude + Codex CLI |
+| **Coordination** | SQLite shared memory + MCP | Git worktrees + operation queue | Git worktrees | None | Interlock reservations + Intermute |
+| **DAG scheduling** | Dependency declarations (partial) | Flat/hierarchical mode | Topological sort with layers | N/A | Parallel dispatch via Task tool |
+
+### Key Findings Per Orchestrator
+
+**claude-flow** (14k stars, ruvnet/claude-flow): ~85% of 87 MCP tools are mock/stub (Issue #653). Genuine patterns: namespace-scoped SQLite shared memory with HNSW vector search, 3-tier complexity routing (WASM → Haiku → Opus), stream-JSON chaining between agents, 6-dimension weighted agent scoring (capability 30%, history 25%, load 20%, health 15%, availability 10%). Full report: `docs/research/research-claude-flow-orchestrator.md`.
+
+**cco** (~13 stars, mohsen1/claude-code-orchestrator): Built on Agent SDK (not CLI). Git worktree isolation per worker with bucketed operation queue. Session resume across task reassignments. Context compaction at 80k tokens. Tested at 24 workers / 29 sessions. 4-15x cost multiplier. No context sharing between agents. Full report: `docs/research/research-cco-orchestrator.md`.
+
+**myclaude** (2.3k stars, cexll/myclaude, AGPL): **Most token-relevant.** Go CLI wrapper (`codeagent-wrapper`) with 4 backends. Key patterns: (1) Cost arbitrage — Opus for reasoning, Codex for code gen, Gemini Flash for docs, Grok for exploration. (2) 16K char skill injection budget. (3) Conditional phase skipping (score >= 8/10 → skip clarification). (4) Summary-mode output extraction (structured fields vs verbose text). (5) DAG scheduler with topological sorting. (6) Recursion prevention via `--setting-sources ""`. Full report: `docs/research/research-myclaude-multi-backend.md`.
+
+**SystemPrompt** (139 stars): NOT a multi-agent system — spawns one Claude CLI process per task via Docker TCP bridge. No token efficiency, no task decomposition, no inter-agent coordination. One useful pattern: MCP resource subscriptions with `task://` URI scheme. Full report: `docs/research/research-systemprompt-orchestrator.md`.
+
+### The Unsolved Problem: Agent Context Sharing
+
+Every orchestrator re-reads the full codebase per agent. This is the single biggest token waste:
+
+| Orchestrator | Context sharing mechanism | Cost multiplier |
+|-------------|--------------------------|-----------------|
+| claude-flow | SQLite shared memory (partial) | Unknown (mostly mock) |
+| cco | Via git commits only | 4-15x |
+| myclaude | Manual (planner forwards output) | ~3-5x |
+| SystemPrompt | None | 1x (single agent) |
+| Clavain | Intermute broadcast | ~2-3x |
+
+**Flux-drive document slicing (iv-7o7n) directly attacks this** by giving each agent only relevant sections. No other orchestrator does per-agent content slicing.
+
+### Actionable Patterns for Clavain
+
+| Pattern | Source | Priority | Expected Impact |
+|---------|--------|----------|-----------------|
+| Summary-mode output extraction | myclaude | P1 | ~2-5k tokens/agent result |
+| Skill injection budget cap (16K chars) | myclaude | P1 | Prevents context bloat |
+| Conditional phase skipping | myclaude | P2 | Skip unnecessary work |
+| Backend cost arbitrage (Gemini/Grok for cheap tasks) | myclaude | P2 | 3-5x on routed tasks |
+| Session resume for Codex dispatches | cco | P2 | Avoid codebase re-reading |
+| Complexity-based model skip (no-LLM for trivial) | claude-flow | P3 | 100% for simple transforms |
+| Stream-JSON chaining (no intermediate files) | claude-flow | P3 | 40-60% latency reduction |
+
+---
+
 ## Sources
 
 ### Frameworks & Tools
@@ -252,3 +304,11 @@ Novel findings not caught by Claude-based reviewers: (1) Missing measurement spe
 - [Codex CLI AGENTS.md Guide](https://developers.openai.com/codex/guides/agents-md/)
 - [RestMCP Token Optimization](https://www.restmcp.io/blog/reducing-token-costs-agentic-workflows.html)
 - [Context Engineering for AI Agents](https://www.getmaxim.ai/articles/context-engineering-for-ai-agents-production-optimization-strategies/)
+
+### Orchestrator Deep Dives (added 2026-02-15)
+- [cco (claude-code-orchestrator)](https://github.com/mohsen1/claude-code-orchestrator) — Agent SDK multi-session orchestrator
+- [myclaude](https://github.com/cexll/myclaude) — Multi-backend workflow (Codex, Claude, Gemini, OpenCode)
+- [systemprompt-code-orchestrator](https://github.com/systempromptio/systemprompt-code-orchestrator) — MCP task runner
+- [codex-orchestrator](https://github.com/kingbootoshi/codex-orchestrator) — Claude-to-Codex delegation
+- [claude-octopus](https://github.com/nyldn/claude-octopus) — Multi-model orchestrator
+- Detailed per-orchestrator reports: `docs/research/research-{claude-flow,cco,myclaude,systemprompt}-orchestrator.md`
