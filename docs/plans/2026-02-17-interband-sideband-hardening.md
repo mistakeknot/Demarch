@@ -38,6 +38,11 @@ Complete the P0 hardening of interband after extraction into its own repo, while
 - [x] Update protocol docs for schema checks + loader behavior.
 - [x] Append bead notes with what was completed and what remains.
 
+### 5. Retention and stale cleanup
+- [x] Add interband channel retention helpers with sensible defaults.
+- [x] Apply automatic prune calls in active writers (`interphase`, `clavain`, `interlock`).
+- [x] Add explicit session-end cleanup for interband artifacts where lifecycle hooks exist.
+
 ## Acceptance for this slice
 - No regressions in legacy consumers.
 - Interband writes are schema-validated for known message contracts.

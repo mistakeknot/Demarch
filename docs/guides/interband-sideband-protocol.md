@@ -90,3 +90,22 @@ Consumers should resolve the library in this order:
 2. Monorepo path (`.../infra/interband/lib/interband.sh`)
 3. Sibling checkout path (`../interband/lib/interband.sh`)
 4. Local shared path (`~/.local/share/interband/lib/interband.sh`)
+
+## Retention Policy
+
+Writers should prune stale sideband files with `interband_prune_channel` after
+successful writes.
+
+Default retention:
+
+- `interphase/bead`: 24h, max 256 files
+- `clavain/dispatch`: 6h, max 128 files
+- `interlock/coordination`: 12h, max 256 files
+
+Override controls:
+
+- Global: `INTERBAND_RETENTION_SECS`, `INTERBAND_MAX_FILES`
+- Per channel:
+  - `INTERBAND_RETENTION_<NAMESPACE>_<CHANNEL>_SECS`
+  - `INTERBAND_MAX_FILES_<NAMESPACE>_<CHANNEL>`
+- Prune interval throttle: `INTERBAND_PRUNE_INTERVAL_SECS` (default 300)
