@@ -1,8 +1,10 @@
 # Intermem Brainstorm: Dedicated Memory Plugin for Interverse
+**Bead:** iv-3xm0
 
-**Date:** 2026-02-16
-**Status:** In progress — brainstorm phase, pre-design
-**Next step:** User to decide on phased Option 3 approach vs alternatives
+**Date:** 2026-02-16 (updated 2026-02-17)
+**Status:** Complete — brainstorm finalized
+**Decision:** Phased Option 3 (Smart Layer on Top), starting with Phase 0.5 (Memory Synthesis)
+**Next step:** Strategy → PRD → Plan
 
 ---
 
