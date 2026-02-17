@@ -13,6 +13,7 @@ plugins/              → companion plugins (all lowercase)
   interkasten/        → Notion sync + documentation
   interline/          → statusline renderer
   interlock/          → multi-agent file coordination (MCP)
+  intermux/           → agent activity visibility + tmux monitoring (MCP)
   interpath/          → product artifact generator
   interphase/         → phase tracking + gates
   interpub/           → plugin publishing
@@ -25,6 +26,7 @@ plugins/              → companion plugins (all lowercase)
   interject/          → ambient discovery + research engine (MCP)
   interserve/         → Codex spark classifier + context compression (MCP)
   interstat/          → token efficiency benchmarking
+  intersynth/         → multi-agent synthesis engine (verdict aggregation)
   internext/          → work prioritization + tradeoff analysis
   intersearch/        → shared embedding + Exa search library
   interlens/          → cognitive augmentation lenses (FLUX podcast)

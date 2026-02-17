@@ -19,5 +19,8 @@ infra/
 # ── Stale symlinks ──
 docs/docs
 
-# ── Clavain scratch (ephemeral session handoffs) ──
+# ── Clavain ephemeral data ──
 .clavain/scratch/
+.clavain/verdicts/
+.clavain/quality-gates/
+.clavain/reviews/
