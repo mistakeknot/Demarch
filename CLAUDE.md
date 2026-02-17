@@ -22,7 +22,9 @@ plugins/              → companion plugins (all lowercase)
   interslack/         → Slack integration
   interform/          → design patterns + visual quality
   intercraft/         → agent-native architecture patterns
-  interdev/           → MCP CLI developer tooling
+  interdev/           → developer tooling + skill/plugin authoring
+  interpeer/          → cross-AI peer review (Oracle/GPT escalation)
+  intertest/          → engineering quality disciplines (TDD, debugging, verification)
   intercheck/         → code quality guards + session health monitoring
   interject/          → ambient discovery + research engine (MCP)
   interserve/         → Codex spark classifier + context compression (MCP)

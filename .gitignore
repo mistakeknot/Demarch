@@ -24,3 +24,6 @@ docs/docs
 .clavain/verdicts/
 .clavain/quality-gates/
 .clavain/reviews/
+
+# bv (beads viewer) local config and caches
+.bv/
