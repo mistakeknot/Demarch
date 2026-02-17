@@ -43,6 +43,11 @@ Complete the P0 hardening of interband after extraction into its own repo, while
 - [x] Apply automatic prune calls in active writers (`interphase`, `clavain`, `interlock`).
 - [x] Add explicit session-end cleanup for interband artifacts where lifecycle hooks exist.
 
+### 6. Go helper parity
+- [x] Add Go module and package for interband pathing, envelope read/write, and validation.
+- [x] Add Go retention helpers for channel pruning with env-based overrides.
+- [x] Add Go unit tests for pathing, validation, read/write, and prune behavior.
+
 ## Acceptance for this slice
 - No regressions in legacy consumers.
 - Interband writes are schema-validated for known message contracts.

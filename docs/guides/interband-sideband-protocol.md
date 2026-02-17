@@ -91,6 +91,15 @@ Consumers should resolve the library in this order:
 3. Sibling checkout path (`../interband/lib/interband.sh`)
 4. Local shared path (`~/.local/share/interband/lib/interband.sh`)
 
+## Go Library
+
+Interband now also ships a Go module (`github.com/mistakeknot/interband`) with
+parity helpers for:
+
+- Path and root resolution (`Path`, `ChannelDir`, `SafeKey`)
+- Envelope/payload validation and IO (`Write`, `ReadEnvelope`, `ReadPayload`)
+- Retention cleanup (`PruneChannel`, env-aware TTL/max-file controls)
+
 ## Retention Policy
 
 Writers should prune stale sideband files with `interband_prune_channel` after
