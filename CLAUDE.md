@@ -13,6 +13,7 @@ plugins/              → companion plugins (all lowercase)
   interkasten/        → Notion sync + documentation
   interline/          → statusline renderer
   interlock/          → multi-agent file coordination (MCP)
+  intermap/           → project-level code mapping + architecture analysis (MCP)
   intermux/           → agent activity visibility + tmux monitoring (MCP)
   interpath/          → product artifact generator
   interphase/         → phase tracking + gates

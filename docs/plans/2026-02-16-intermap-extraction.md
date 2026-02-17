@@ -1,6 +1,6 @@
 # Plan: Intermap — Project-Level Code Mapping Extraction
 **Bead:** iv-aose
-**Phase:** plan-reviewed (as of 2026-02-17T00:15:13Z)
+**Phase:** executing (as of 2026-02-17T00:19:19Z)
 **PRD:** `docs/prds/2026-02-16-intermap-extraction.md`
 **Date:** 2026-02-16
 
@@ -215,11 +215,13 @@ Copy file. Replace imports:
 ### Task 2.8: Wire Python subprocess bridge in Go
 Update `cmd/intermap-mcp/main.go` to add Python analysis tools.
 
-**New function in `internal/tools/`:** `pythonCall(command string, project string, args map[string]any) (map[string]any, error)`:
+**New function in `internal/tools/`:** `pythonCall(ctx context.Context, command string, project string, args map[string]any) (map[string]any, error)`:
+- Uses `exec.CommandContext(ctx, ...)` so MCP request cancellation kills the Python subprocess (prevents leaked orphan processes)
 - Executes `python3 -m intermap.analyze --command=X --project=Y --args='{"key":"val"}'`
 - Parses JSON stdout as result
 - Parses JSON stderr as error (per error protocol in PRD)
 - Returns structured error if Python exits non-zero
+- On context cancellation: sends SIGTERM, waits 2s, then SIGKILL
 
 **Register 6 MCP tools:** `arch`, `calls`, `dead`, `impact`, `change_impact`, `diagnostics` — each calls `pythonCall` with appropriate command and wraps result with Go-side cache.
 
