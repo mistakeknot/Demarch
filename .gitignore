@@ -27,3 +27,6 @@ docs/docs
 
 # bv (beads viewer) local config and caches
 .bv/
+
+# ── Intermem state (per-project, not committed) ──
+.intermem/

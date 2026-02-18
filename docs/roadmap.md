@@ -1,6 +1,6 @@
 # Interverse Roadmap
 
-**Modules:** 31 | **Open beads (root tracker):** 356 | **Blocked (root tracker):** 31 | **Last updated:** 2026-02-18
+**Modules:** 33 | **Open beads (root tracker):** 356 | **Blocked (root tracker):** 31 | **Last updated:** 2026-02-17
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json)
 
@@ -10,37 +10,39 @@
 
 | Module | Location | Version | Status | Roadmap | Open Beads (context) |
 |--------|----------|---------|--------|---------|----------------------|
-| clavain | hub/clavain | 0.6.35 | active | yes | 0 (372 closed, local archive) |
-| intercheck | plugins/intercheck | 0.1.2 | active | yes | n/a (tracked in root .beads) |
-| intercore | infra/intercore | 0.1.0 | active | no | n/a (tracked in root .beads) |
-| intercraft | plugins/intercraft | 0.1.0 | active | yes | n/a (tracked in root .beads) |
-| interdev | plugins/interdev | 0.1.0 | active | yes | n/a (tracked in root .beads) |
-| interdoc | plugins/interdoc | 5.1.1 | active | yes | 0 (1 closed, local archive) |
-| interfluence | plugins/interfluence | 0.1.3 | active | yes | 0 (0 closed, local archive) |
-| interflux | plugins/interflux | 0.2.13 | active | yes | n/a (tracked in root .beads) |
-| interform | plugins/interform | 0.1.0 | active | yes | n/a (tracked in root .beads) |
-| interject | plugins/interject | 0.1.4 | active | yes | n/a (tracked in root .beads) |
-| interkasten | plugins/interkasten | 0.4.1 | active | yes | 0 (59 closed, local archive) |
-| interlens | plugins/interlens | 2.2.2 | active | yes | n/a (tracked in root .beads) |
-| interline | plugins/interline | 0.2.4 | active | yes | n/a (tracked in root .beads) |
-| interlock | plugins/interlock | 0.2.0 | active | yes | n/a (tracked in root .beads) |
-| intermap | plugins/intermap | 0.1.0 | early | no | n/a |
-| intermux | plugins/intermux | 0.1.0 | active | yes | n/a (tracked in root .beads) |
-| internext | plugins/internext | 0.1.2 | active | yes | n/a (tracked in root .beads) |
-| interpath | plugins/interpath | 0.2.0 | active | yes | n/a (tracked in root .beads) |
-| interphase | plugins/interphase | 0.3.2 | active | yes | n/a (tracked in root .beads) |
-| interpub | plugins/interpub | 0.1.2 | active | yes | n/a (tracked in root .beads) |
-| intersearch | plugins/intersearch | 0.1.1 | active | yes | n/a (tracked in root .beads) |
-| interserve | plugins/interserve | 0.1.0 | active | yes | n/a (tracked in root .beads) |
-| interslack | plugins/interslack | 0.1.0 | active | yes | n/a (tracked in root .beads) |
-| interstat | plugins/interstat | 0.1.0 | active | yes | n/a (tracked in root .beads) |
+| clavain | hub/clavain | 0.6.35 | active | yes | 13 |
+| intercheck | plugins/intercheck | 0.1.2 | active | yes | 4 |
+| intercraft | plugins/intercraft | 0.1.0 | active | yes | 4 |
+| interdev | plugins/interdev | 0.2.0 | active | yes | 4 |
+| interdoc | plugins/interdoc | 5.1.1 | active | yes | 4 |
+| interfluence | plugins/interfluence | 0.1.3 | active | yes | 4 |
+| interflux | plugins/interflux | 0.2.13 | active | yes | 19 |
+| interform | plugins/interform | 0.1.0 | active | yes | 4 |
+| interject | plugins/interject | 0.1.5 | active | yes | 4 |
+| interkasten | plugins/interkasten | 0.4.1 | active | yes | 12 |
+| interlens | plugins/interlens | 2.2.3 | active | yes | 4 |
+| interline | plugins/interline | 0.2.4 | active | yes | 4 |
+| interlock | plugins/interlock | 0.2.1 | active | yes | 10 |
+| intermap | plugins/intermap | 0.1.1 | early | no | n/a |
+| intermem | plugins/intermem | 0.1.0 | early | no | n/a |
+| intermute | services/intermute | — | active | yes | 29 |
+| intermux | plugins/intermux | 0.1.0 | active | yes | 4 |
+| internext | plugins/internext | 0.1.2 | active | yes | 4 |
+| interpath | plugins/interpath | 0.2.1 | active | yes | 4 |
+| interpeer | plugins/interpeer | 0.1.0 | early | no | n/a |
+| interphase | plugins/interphase | 0.3.2 | active | yes | 4 |
+| interpub | plugins/interpub | 0.1.2 | active | yes | 4 |
+| intersearch | plugins/intersearch | 0.1.1 | active | yes | 4 |
+| interserve | plugins/interserve | 0.1.0 | active | yes | 4 |
+| interslack | plugins/interslack | 0.1.0 | active | yes | 4 |
+| interstat | plugins/interstat | 0.1.0 | active | yes | 4 |
 | intersynth | plugins/intersynth | 0.1.0 | early | no | n/a |
-| interwatch | plugins/interwatch | 0.1.2 | active | yes | n/a (tracked in root .beads) |
-| tldr-swinton | plugins/tldr-swinton | 0.7.12 | active | yes | 7 open, 6 blocked (117 closed, local archive) |
-| tool-time | plugins/tool-time | 0.3.2 | active | yes | 0 (4 closed, local archive) |
-| tuivision | plugins/tuivision | 0.1.4 | active | yes | n/a (tracked in root .beads) |
-| intermute | services/intermute | — | active | yes | 0 (29 closed, local archive) |
-| interverse | root | — | active | yes | 356 open (31 blocked, root tracker) |
+| intertest | plugins/intertest | 0.1.0 | early | no | n/a |
+| interverse | root | — | active | yes | n/a |
+| interwatch | plugins/interwatch | 0.1.2 | active | yes | 4 |
+| tldr-swinton | plugins/tldr-swinton | 0.7.13 | active | yes | 15 |
+| tool-time | plugins/tool-time | 0.3.2 | active | yes | 12 |
+| tuivision | plugins/tuivision | 0.1.4 | active | yes | 4 |
 
 **Legend:** active = recent commits or active tracker items; early = manifest exists but roadmap maturity is limited. `n/a` means there is no module-local `.beads` database.
 
@@ -50,134 +52,211 @@
 
 ### Now (P0-P1)
 
-- [intercore] **iv-wo1t** Phase 1: Hook adapter — thin bridge from Claude Code hooks to intercore DB
-- [intercore] **iv-e5oa** Phase 1: Dispatch — spawn and track Claude Code + Codex agents (blocks iv-a20e)
-- [intercore] **iv-a20e** Phase 1: Phase state machine — own the brainstorm-to-ship lifecycle (blocked by iv-e5oa)
-- [interverse] **iv-0681** Crash recovery + error aggregation for multi-agent sessions
-- [interspect] **iv-vrc4** Overlay system (Type 1) (unblocks iv-ynbh)
-- [interspect] **iv-ukct** `/interspect:revert` command (its prerequisites iv-cylo and iv-jo3i are complete)
-- [interstat] **iv-dyyy** F0: plugin scaffold + SQLite schema
+- [intercore] **iv-wo1t** Phase 1: Hook adapter — thin bridge from Claude Code hooks to intercore DB (blocked by iv-ieh7)
+- [intercore] **iv-a20e** Phase 1: Phase state machine — own the brainstorm-to-ship lifecycle (blocked by iv-ieh7, iv-e5oa)
+- [intercore] **iv-e5oa** Phase 1: Dispatch — spawn and track Claude Code + Codex agents (blocked by iv-ieh7)
 - [intersynth] **iv-dnml** Codex dispatch via dispatch.sh with intermux visibility
+- [interverse] **iv-psf2.1.4** Interbus Wave 1d: interlock adapter (blocks iv-psf2.1)
+- [interverse] **iv-psf2.1.3** Interbus Wave 1c: interdoc adapter (blocks iv-psf2.1)
+- [interverse] **iv-psf2.1.2** Interbus Wave 1b: interflux adapter (blocks iv-psf2.1)
+- [interverse] **iv-psf2.1.1** Interbus Wave 1a: interphase adapter (blocks iv-psf2.1)
+- [interverse] **iv-psf2.1** Interbus Wave 1: Core workflow modules (blocks iv-psf2)
+- [interverse] **iv-dyyy** F0: interstat plugin scaffold + SQLite schema (blocked by iv-jq5b)
+- [interverse] **iv-0681** Crash recovery + error aggregation for multi-agent sessions
+- [interspect] **iv-ukct** /interspect:revert command (blocked by iv-jo3i, iv-cylo)
+- [interspect] **iv-vrc4** Overlay system (Type 1) (blocked by iv-nkak)
 
-**Recently completed (removed from active queue):** iv-ieh7 (intercore state database), iv-hoqj (interband), iv-7o7n, iv-j7uy, iv-8m38, iv-cylo, iv-d72t, iv-zrmk, iv-5m8j, iv-tifk, iv-ked1, iv-hyza, iv-kmyj, iv-1zh2, iv-1zh2.1 through iv-1zh2.7.
+**Recently completed:** iv-ieh7 (Phase 1: State database — replace temp files with SQLite), iv-qftf (Phase 0.5: Dogfood + publish — install plugin, run on real projects, validate baseline), iv-b3ht (Bug: dedup misses semantic duplicates across different content formats), iv-byh3 (Define platform kernel + lifecycle UX architecture), iv-hoqj (Interband: sideband protocol library for cross-plugin file contracts), iv-gn2r (Audit roadmap for inaccuracies, errors, and overstatements), iv-sr41 (Fix multi-subagent context flooding in flux-drive, flux-research, and review processes), iv-24qk (Fix subagent context flooding), iv-8m38 (Token budget controls + cost-aware agent dispatch), iv-m60l (Rename clodex → interserve across monorepo), iv-d72t (Phase 4a: Reservation Negotiation Protocol), iv-j7uy (F0: Clodex MCP server (always-on Codex spark classifier)), iv-7o7n (Document slicing for flux-drive agents (P0 token optimization)), iv-55lq (Linsenkasten Flux-Drive Lens Agents), iv-5xac (F0: Move Linsenkasten into Interverse monorepo), iv-jq5b (Token efficiency benchmarking framework (agent_metrics SQLite)), iv-ty1f (Sprint Workflow Resilience & Autonomy), iv-fbrx (Secret detection in evidence pipeline), iv-3pje (Design fix: add privilege separation design), iv-jo3i (Canary verdict engine)
 
 ### Next (P2)
 
-**Token Efficiency & Cost Optimization**
-- [interflux] **iv-qjwz** AgentDropout — dynamic redundancy elimination (blocked by iv-ynbh)
-- [interflux] **iv-905u** Intermediate result sharing between parallel agents
-- [interverse] **iv-xuec** Security threat model for token optimization techniques
-- [interverse] **iv-dthn** Research: inter-layer feedback loops and optimization thresholds
+<!-- LLM:NEXT_GROUPINGS
+Task: Group these P2 items under 5-10 thematic headings.
+Format: **Bold Heading** followed by bullet items.
+Heuristic: items sharing a [module] tag or dependency chain likely belong together.
 
-**Interstat Benchmarking Pipeline**
-- [interstat] **iv-qi8j** F1: PostToolUse:Task hook — real-time event capture (blocked by iv-dyyy)
-- [interstat] **iv-lgfi** F2: Conversation JSONL parser — token backfill (blocked by iv-dyyy)
-- [interstat] **iv-dkg8** F3: Report — analysis queries + decision gate (blocked by iv-dyyy, iv-lgfi)
-- [interstat] **iv-bazo** F4: Status — collection progress (blocked by iv-dyyy, iv-lgfi)
+Raw P2 items JSON:
+[{"id":"iv-x4dk","title":"F6: Mutex consolidation (intercore)","priority":2,"dependencies":[{"issue_id":"iv-x4dk","depends_on_id":"iv-ieh7","type":"blocks","created_at":"2026-02-17T16:07:35.901027871-08:00","created_by":"mk"}]},{"id":"iv-qt5m","title":"F4: Run tracking (intercore)","priority":2,"dependencies":[{"issue_id":"iv-qt5m","depends_on_id":"iv-ieh7","type":"blocks","created_at":"2026-02-17T16:07:35.671966208-08:00","created_by":"mk"},{"issue_id":"iv-qt5m","depends_on_id":"iv-fnfa","type":"blocks","created_at":"2026-02-17T16:07:38.431673515-08:00","created_by":"mk"}]},{"id":"iv-rkrm","title":"[intermem] Phase 2: Decay + progressive disclosure — TTLs, forgetting discipline","priority":2,"dependencies":[{"issue_id":"iv-rkrm","depends_on_id":"iv-n4p7","type":"blocks","created_at":"2026-02-17T15:57:09.566477093-08:00","created_by":"mk"}]},{"id":"iv-qfg8","title":"[intercore] Phase 2: Event bus, policy engine, interhub control room","priority":2,"dependencies":[{"issue_id":"iv-qfg8","depends_on_id":"iv-ieh7","type":"blocks","created_at":"2026-02-17T15:32:42.146985938-08:00","created_by":"mk"},{"issue_id":"iv-qfg8","depends_on_id":"iv-e5oa","type":"blocks","created_at":"2026-02-17T15:32:42.30210246-08:00","created_by":"mk"},{"issue_id":"iv-qfg8","depends_on_id":"iv-a20e","type":"blocks","created_at":"2026-02-17T15:32:42.427323353-08:00","created_by":"mk"},{"issue_id":"iv-qfg8","depends_on_id":"iv-wo1t","type":"blocks","created_at":"2026-02-17T15:32:42.554843183-08:00","created_by":"mk"}]},{"id":"iv-v81k","title":"[interstat] Repository-aware benchmark expansion for agent coding tasks","priority":2,"dependencies":[{"issue_id":"iv-v81k","depends_on_id":"iv-qznx","type":"blocks","created_at":"2026-02-16T22:40:50.614450493-08:00","created_by":"mk"}]},{"id":"iv-wz3j","title":"[interflux] Role-aware latent memory architecture experiments","priority":2,"dependencies":[{"issue_id":"iv-wz3j","depends_on_id":"iv-jc4j","type":"blocks","created_at":"2026-02-16T22:40:50.706725239-08:00","created_by":"mk"}]},{"id":"iv-jc4j","title":"[intermute] Heterogeneous agent routing experiments inspired by SC-MAS/Dr. MAS","priority":2,"dependencies":[{"issue_id":"iv-jc4j","depends_on_id":"iv-qznx","type":"blocks","created_at":"2026-02-16T22:40:50.650148113-08:00","created_by":"mk"}]},{"id":"iv-qznx","title":"[interflux] Multi-framework interoperability benchmark and scoring harness","priority":2,"dependencies":null},{"id":"iv-aose","title":"Intermap — Project-level code mapping extraction from tldr-swinton","priority":2,"dependencies":null},{"id":"iv-psf2.3.3","title":"Interbus Wave 3c: intersearch adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.3.3","depends_on_id":"iv-psf2.3","type":"parent-child","created_at":"2026-02-16T10:08:17.720805538-08:00","created_by":"mk"}]},{"id":"iv-psf2.3.2","title":"Interbus Wave 3b: tldr-swinton adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.3.2","depends_on_id":"iv-psf2.3","type":"parent-child","created_at":"2026-02-16T10:08:17.597742013-08:00","created_by":"mk"}]},{"id":"iv-psf2.3.1","title":"Interbus Wave 3a: tool-time adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.3.1","depends_on_id":"iv-psf2.3","type":"parent-child","created_at":"2026-02-16T10:08:17.482811263-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.8","title":"Interbus Wave 2h: interform adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.8","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:17.360535951-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.7","title":"Interbus Wave 2g: intercraft adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.7","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:17.23265178-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.6","title":"Interbus Wave 2f: internext adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.6","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:17.121981635-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.5","title":"Interbus Wave 2e: interslack adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.5","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:16.996352244-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.4","title":"Interbus Wave 2d: interpub adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.4","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:16.871338992-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.3","title":"Interbus Wave 2c: interwatch adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.3","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:16.742024291-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.2","title":"Interbus Wave 2b: interline adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.2","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:16.607934018-08:00","created_by":"mk"}]},{"id":"iv-psf2.2.1","title":"Interbus Wave 2a: intercheck adapter","priority":2,"dependencies":[{"issue_id":"iv-psf2.2.1","depends_on_id":"iv-psf2.2","type":"parent-child","created_at":"2026-02-16T10:08:16.495316339-08:00","created_by":"mk"}]},{"id":"iv-psf2.3","title":"Interbus Wave 3: Supporting utility modules","priority":2,"dependencies":[{"issue_id":"iv-psf2.3","depends_on_id":"iv-psf2","type":"parent-child","created_at":"2026-02-16T10:07:31.164306416-08:00","created_by":"mk"},{"issue_id":"iv-psf2.3","depends_on_id":"iv-psf2.2","type":"blocks","created_at":"2026-02-16T10:07:35.623699224-08:00","created_by":"mk"}]},{"id":"iv-psf2.2","title":"Interbus Wave 2: Visibility and safety modules","priority":2,"dependencies":[{"issue_id":"iv-psf2.2","depends_on_id":"iv-psf2","type":"parent-child","created_at":"2026-02-16T10:07:31.054823849-08:00","created_by":"mk"},{"issue_id":"iv-psf2.2","depends_on_id":"iv-psf2.1","type":"blocks","created_at":"2026-02-16T10:07:35.511473107-08:00","created_by":"mk"}]},{"id":"iv-psf2","title":"Interbus rollout: phase-based module integration","priority":2,"dependencies":null},{"id":"iv-ey90","title":"[interkasten] Webhook receiver + cloudflared tunnel","priority":2,"dependencies":null},{"id":"iv-zyym","title":"Evaluate Claude Hub for event-driven GitHub agent dispatch","priority":2,"dependencies":null},{"id":"iv-wrae","title":"Evaluate Container Use (Dagger) for sandboxed agent dispatch","priority":2,"dependencies":null},{"id":"iv-bazo","title":"F4: interstat status (collection progress)","priority":2,"dependencies":[{"issue_id":"iv-bazo","depends_on_id":"iv-jq5b","type":"blocks","created_at":"2026-02-15T19:39:15.196325153-08:00","created_by":"mk"},{"issue_id":"iv-bazo","depends_on_id":"iv-dyyy","type":"blocks","created_at":"2026-02-15T19:39:17.824863619-08:00","created_by":"mk"},{"issue_id":"iv-bazo","depends_on_id":"iv-lgfi","type":"blocks","created_at":"2026-02-15T19:39:20.282932792-08:00","created_by":"mk"}]},{"id":"iv-dkg8","title":"F3: interstat report (analysis queries + decision gate)","priority":2,"dependencies":[{"issue_id":"iv-dkg8","depends_on_id":"iv-jq5b","type":"blocks","created_at":"2026-02-15T19:39:14.773779761-08:00","created_by":"mk"},{"issue_id":"iv-dkg8","depends_on_id":"iv-dyyy","type":"blocks","created_at":"2026-02-15T19:39:17.435402212-08:00","created_by":"mk"},{"issue_id":"iv-dkg8","depends_on_id":"iv-lgfi","type":"blocks","created_at":"2026-02-15T19:39:19.767436631-08:00","created_by":"mk"}]},{"id":"iv-lgfi","title":"F2: Conversation JSONL parser (token backfill)","priority":2,"dependencies":[{"issue_id":"iv-lgfi","depends_on_id":"iv-jq5b","type":"blocks","created_at":"2026-02-15T19:39:14.367487176-08:00","created_by":"mk"},{"issue_id":"iv-lgfi","depends_on_id":"iv-dyyy","type":"blocks","created_at":"2026-02-15T19:39:16.970853651-08:00","created_by":"mk"}]},{"id":"iv-qi8j","title":"F1: PostToolUse:Task hook (real-time event capture)","priority":2,"dependencies":[{"issue_id":"iv-qi8j","depends_on_id":"iv-jq5b","type":"blocks","created_at":"2026-02-15T19:39:13.965223377-08:00","created_by":"mk"},{"issue_id":"iv-qi8j","depends_on_id":"iv-dyyy","type":"blocks","created_at":"2026-02-15T19:39:16.54486781-08:00","created_by":"mk"}]},{"id":"iv-xuec","title":"Security threat model for token optimization techniques","priority":2,"dependencies":null},{"id":"iv-dthn","title":"Research: inter-layer feedback loops and optimization thresholds","priority":2,"dependencies":null},{"id":"iv-qjwz","title":"AgentDropout: dynamic redundancy elimination for flux-drive reviews","priority":2,"dependencies":[{"issue_id":"iv-qjwz","depends_on_id":"iv-ynbh","type":"blocks","created_at":"2026-02-15T17:31:22.750671314-08:00","created_by":"mk"},{"issue_id":"iv-qjwz","depends_on_id":"iv-8m38","type":"blocks","created_at":"2026-02-15T17:42:31.207392784-08:00","created_by":"mk"}]},{"id":"iv-quk4","title":"Hierarchical dispatch: meta-agent for N-agent fan-out","priority":2,"dependencies":null},{"id":"iv-6liz","title":"[interspect] F5: manual routing override support","priority":2,"dependencies":[{"issue_id":"iv-6liz","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T12:47:16.525544459-08:00","created_by":"mk"},{"issue_id":"iv-6liz","depends_on_id":"iv-r6mf","type":"blocks","created_at":"2026-02-15T12:47:17.811690882-08:00","created_by":"mk"}]},{"id":"iv-2o6c","title":"[interspect] F4: status display + revert for routing overrides","priority":2,"dependencies":[{"issue_id":"iv-2o6c","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T12:47:16.463978896-08:00","created_by":"mk"},{"issue_id":"iv-2o6c","depends_on_id":"iv-gkj9","type":"blocks","created_at":"2026-02-15T12:47:17.740451063-08:00","created_by":"mk"}]},{"id":"iv-gkj9","title":"[interspect] F3: apply override + canary + git commit","priority":2,"dependencies":[{"issue_id":"iv-gkj9","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T12:47:16.405657788-08:00","created_by":"mk"},{"issue_id":"iv-gkj9","depends_on_id":"iv-8fgu","type":"blocks","created_at":"2026-02-15T12:47:17.672524298-08:00","created_by":"mk"}]},{"id":"iv-8fgu","title":"[interspect] F2: routing-eligible pattern detection + propose flow","priority":2,"dependencies":[{"issue_id":"iv-8fgu","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T12:47:16.331103751-08:00","created_by":"mk"},{"issue_id":"iv-8fgu","depends_on_id":"iv-r6mf","type":"blocks","created_at":"2026-02-15T12:47:17.607000944-08:00","created_by":"mk"}]},{"id":"iv-r6mf","title":"[interspect] F1: routing-overrides.json schema + flux-drive reader","priority":2,"dependencies":[{"issue_id":"iv-r6mf","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T12:47:16.272330902-08:00","created_by":"mk"}]},{"id":"iv-p4qq","title":"Smart semantic caching across sessions (intercache)","priority":2,"dependencies":null},{"id":"iv-friz","title":"CI/CD integration bridge: GitHub Actions templates for interflux + interwatch","priority":2,"dependencies":null},{"id":"iv-905u","title":"Intermediate result sharing between parallel flux-drive agents","priority":2,"dependencies":null},{"id":"iv-ev4o","title":"Agent capability discovery via intermute registration","priority":2,"dependencies":null},{"id":"iv-umvq","title":"Health aggregation service (interstatus) for 22-module ecosystem","priority":2,"dependencies":null},{"id":"iv-lwsf","title":"Shared HTTP client library (interhttp) for Go + bash","priority":2,"dependencies":null},{"id":"iv-tkc6","title":"Shared bash hook library (interlace) for clavain/interphase/interlock","priority":2,"dependencies":null},{"id":"iv-jmua","title":"Shared SQLite library (intersqlite) for 6 modules","priority":2,"dependencies":null},{"id":"iv-z1a0","title":"Cross-module integration opportunity program","priority":2,"dependencies":null},{"id":"iv-z1a1","title":"Inter-module event bus + event contracts","priority":2,"dependencies":[{"issue_id":"iv-z1a1","depends_on_id":"iv-z1a0","type":"parent-child","created_at":"2026-02-15T10:54:00-08:00","created_by":"mk"}]},{"id":"iv-z1a2","title":"Interline as unified operations HUD","priority":2,"dependencies":[{"issue_id":"iv-z1a2","depends_on_id":"iv-z1a0","type":"parent-child","created_at":"2026-02-15T10:54:00-08:00","created_by":"mk"}]},{"id":"iv-z1a4","title":"Interkasten context into discovery and sprint intake","priority":2,"dependencies":[{"issue_id":"iv-z1a4","depends_on_id":"iv-z1a0","type":"parent-child","created_at":"2026-02-15T10:54:00-08:00","created_by":"mk"}]},{"id":"iv-z1a5","title":"Cross-module quality feedback loop","priority":2,"dependencies":[{"issue_id":"iv-z1a5","depends_on_id":"iv-z1a0","type":"parent-child","created_at":"2026-02-15T10:54:00-08:00","created_by":"mk"}]},{"id":"iv-2jtj","title":"F5: Escalation Timeout for Unresponsive Agents","priority":2,"dependencies":[{"issue_id":"iv-2jtj","depends_on_id":"iv-d72t","type":"blocks","created_at":"2026-02-15T09:11:40.035790764-08:00","created_by":"mk"},{"issue_id":"iv-2jtj","depends_on_id":"iv-5ijt","type":"blocks","created_at":"2026-02-15T09:11:41.150275167-08:00","created_by":"mk"}]},{"id":"iv-6u3s","title":"F4: Sprint Scan Release Visibility","priority":2,"dependencies":[{"issue_id":"iv-6u3s","depends_on_id":"iv-d72t","type":"blocks","created_at":"2026-02-15T09:11:39.965602878-08:00","created_by":"mk"},{"issue_id":"iv-6u3s","depends_on_id":"iv-1aug","type":"blocks","created_at":"2026-02-15T09:11:41.082328262-08:00","created_by":"mk"}]},{"id":"iv-5ijt","title":"F3: Structured negotiate_release MCP Tool","priority":2,"dependencies":[{"issue_id":"iv-5ijt","depends_on_id":"iv-d72t","type":"blocks","created_at":"2026-02-15T09:11:39.905217445-08:00","created_by":"mk"},{"issue_id":"iv-5ijt","depends_on_id":"iv-1aug","type":"blocks","created_at":"2026-02-15T09:11:41.004823463-08:00","created_by":"mk"}]},{"id":"iv-gg8v","title":"F2: Auto-Release on Clean Files","priority":2,"dependencies":[{"issue_id":"iv-gg8v","depends_on_id":"iv-d72t","type":"blocks","created_at":"2026-02-15T09:11:39.848050964-08:00","created_by":"mk"},{"issue_id":"iv-gg8v","depends_on_id":"iv-1aug","type":"blocks","created_at":"2026-02-15T09:11:40.931955029-08:00","created_by":"mk"}]},{"id":"iv-1aug","title":"F1: Release Response Protocol (release_ack / release_defer)","priority":2,"dependencies":[{"issue_id":"iv-1aug","depends_on_id":"iv-d72t","type":"blocks","created_at":"2026-02-15T09:11:39.78903761-08:00","created_by":"mk"}]},{"id":"iv-f9c2","title":"[tldrs] Slice with source code option","priority":2,"dependencies":null},{"id":"iv-3w4t","title":"[tldrs] Ultracompact --depth=body variant","priority":2,"dependencies":null},{"id":"iv-2izz","title":"[tldrs] LongCodeZip block-level compression","priority":2,"dependencies":null},{"id":"iv-drgo","title":"[interspect] Privilege separation (proposer/applier)","priority":2,"dependencies":[{"issue_id":"iv-drgo","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T07:31:16.619273028-08:00","created_by":"mk"}]},{"id":"iv-435u","title":"[interspect] Counterfactual shadow evaluation","priority":2,"dependencies":[{"issue_id":"iv-435u","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T07:31:16.556756037-08:00","created_by":"mk"}]},{"id":"iv-003t","title":"[interspect] Global modification rate limiter","priority":2,"dependencies":[{"issue_id":"iv-003t","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T01:35:00.697518213-08:00","created_by":"mk"}]},{"id":"iv-sisi","title":"[interspect] Interline statusline integration","priority":2,"dependencies":[{"issue_id":"iv-sisi","depends_on_id":"iv-cylo","type":"blocks","created_at":"2026-02-15T01:35:00.87453214-08:00","created_by":"mk"}]},{"id":"iv-88yg","title":"[interspect] Structured commit message format","priority":2,"dependencies":[{"issue_id":"iv-88yg","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T01:35:00.642706311-08:00","created_by":"mk"}]},{"id":"iv-c2b4","title":"[interspect] /interspect:disable command","priority":2,"dependencies":[{"issue_id":"iv-c2b4","depends_on_id":"iv-o4x7","type":"blocks","created_at":"2026-02-15T01:35:06.051462602-08:00","created_by":"mk"}]},{"id":"iv-g0to","title":"[interspect] /interspect:reset command","priority":2,"dependencies":[{"issue_id":"iv-g0to","depends_on_id":"iv-ukct","type":"blocks","created_at":"2026-02-15T01:35:05.976166181-08:00","created_by":"mk"}]},{"id":"iv-bj0w","title":"[interspect] Conflict detection","priority":2,"dependencies":[{"issue_id":"iv-bj0w","depends_on_id":"iv-rafa","type":"blocks","created_at":"2026-02-15T01:35:05.902998086-08:00","created_by":"mk"}]},{"id":"iv-0fi2","title":"[interspect] Circuit breaker","priority":2,"dependencies":[{"issue_id":"iv-0fi2","depends_on_id":"iv-ukct","type":"blocks","created_at":"2026-02-15T01:35:05.830365862-08:00","created_by":"mk"}]},{"id":"iv-rafa","title":"[interspect] Meta-learning loop","priority":2,"dependencies":[{"issue_id":"iv-rafa","depends_on_id":"iv-jo3i","type":"blocks","created_at":"2026-02-15T01:35:05.750805411-08:00","created_by":"mk"},{"issue_id":"iv-rafa","depends_on_id":"iv-cylo","type":"blocks","created_at":"2026-02-15T07:32:25.569536849-08:00","created_by":"mk"}]},{"id":"iv-t1m4","title":"[interspect] Prompt tuning (Type 3) overlay-based","priority":2,"dependencies":[{"issue_id":"iv-t1m4","depends_on_id":"iv-izth","type":"blocks","created_at":"2026-02-15T01:35:05.639373223-08:00","created_by":"mk"},{"issue_id":"iv-t1m4","depends_on_id":"iv-cylo","type":"blocks","created_at":"2026-02-15T01:35:05.693278638-08:00","created_by":"mk"}]},{"id":"iv-izth","title":"[interspect] Eval corpus construction","priority":2,"dependencies":[{"issue_id":"iv-izth","depends_on_id":"iv-nkak","type":"blocks","created_at":"2026-02-15T01:35:05.584579926-08:00","created_by":"mk"}]},{"id":"iv-5su3","title":"[interspect] Autonomous mode flag","priority":2,"dependencies":[{"issue_id":"iv-5su3","depends_on_id":"iv-jo3i","type":"blocks","created_at":"2026-02-15T01:35:05.429857878-08:00","created_by":"mk"},{"issue_id":"iv-5su3","depends_on_id":"iv-cylo","type":"blocks","created_at":"2026-02-15T07:32:25.493376922-08:00","created_by":"mk"}]},{"id":"iv-m6cd","title":"[interspect] Session-start summary injection","priority":2,"dependencies":[{"issue_id":"iv-m6cd","depends_on_id":"iv-o4x7","type":"blocks","created_at":"2026-02-15T01:34:57.08577254-08:00","created_by":"mk"}]},{"id":"iv-rrc2","title":"F3: Demo hooks for interwatch (reuse examples)","priority":2,"dependencies":[{"issue_id":"iv-rrc2","depends_on_id":"iv-pjfp","type":"blocks","created_at":"2026-02-14T14:24:57.556296497-08:00","created_by":"mk"}]},{"id":"iv-1626","title":"Version-bump → Interwatch signal","priority":2,"dependencies":null},{"id":"iv-444d","title":"Catalog-reminder → Interwatch escalation","priority":2,"dependencies":null},{"id":"iv-mqm4","title":"Session-start drift summary injection","priority":2,"dependencies":null},{"id":"iv-l5ap","title":"Research: transactional orchestration & error recovery patterns","priority":2,"dependencies":null},{"id":"iv-jk7q","title":"Research: cognitive load budgets & progressive disclosure review UX","priority":2,"dependencies":null},{"id":"iv-3kee","title":"Research: product-native agent orchestration (whitespace opportunity)","priority":2,"dependencies":null},{"id":"iv-exos","title":"Research: bias-aware product decision framework","priority":2,"dependencies":null},{"id":"iv-fzrn","title":"Research: multi-agent hallucination cascades & failure taxonomy","priority":2,"dependencies":null},{"id":"iv-spad","title":"Deep tldrs integration into Clavain workflows","priority":2,"dependencies":[{"issue_id":"iv-spad","depends_on_id":"iv-mb6u","type":"blocks","created_at":"2026-02-14T09:08:10.98422582-08:00","created_by":"mk"}]},{"id":"iv-sdqv","title":"Plan interscribe extraction (knowledge compounding)","priority":2,"dependencies":null},{"id":"iv-6ikc","title":"Plan intershift extraction (cross-AI dispatch engine)","priority":2,"dependencies":null},{"id":"iv-2ley","title":"Plan intercraft extraction (Claude Code meta-tooling)","priority":2,"dependencies":null},{"id":"iv-e8dg","title":"[flux-drive-spec] Phase 4: Migrate Clavain to consume the library","priority":2,"dependencies":[{"issue_id":"iv-e8dg","depends_on_id":"iv-0etu","type":"blocks","created_at":"2026-02-13T22:47:12.564498248-08:00","created_by":"mk"}]},{"id":"iv-0etu","title":"[flux-drive-spec] Phase 3: Extract scoring/synthesis Python library","priority":2,"dependencies":[{"issue_id":"iv-0etu","depends_on_id":"iv-ia66","type":"blocks","created_at":"2026-02-13T22:47:12.499013209-08:00","created_by":"mk"}]},{"id":"iv-ia66","title":"[flux-drive-spec] Phase 2: Extract domain detection library","priority":2,"dependencies":null},{"id":"iv-3w1x","title":"Split upstreams.json into config + state files","priority":2,"dependencies":null},{"id":"iv-4728","title":"Consolidate upstream-check.sh API calls (24 to 12)","priority":2,"dependencies":null},{"id":"iv-0lt","title":"Extract cache_hints metrics in score_tokens.py","priority":2,"dependencies":null},{"id":"iv-1gb","title":"Add cache-friendly format queries to regression_suite.json","priority":2,"dependencies":null},{"id":"iv-ca5","title":"tldrs: truncation should respect symbol boundaries","priority":2,"dependencies":null},{"id":"iv-dsk","title":"tldrs: ultracompact needs --depth=body variant","priority":2,"dependencies":null}]
 
-**Interspect Routing Overrides**
-- [interspect] **iv-r6mf** F1: `routing-overrides.json` schema + flux-drive reader
-- [interspect] **iv-8fgu** F2: Routing-eligible pattern detection + propose flow (blocked by iv-r6mf)
-- [interspect] **iv-gkj9** F3: Apply override + canary + git commit (blocked by iv-8fgu)
-- [interspect] **iv-2o6c** F4: Status display + revert for routing overrides (blocked by iv-gkj9)
-- [interspect] **iv-6liz** F5: Manual routing override support (blocked by iv-r6mf)
-
-**Interlock Negotiation**
-- [interlock] **iv-1aug** F1: Release Response Protocol — `release_ack` / `release_defer` (Phase 4a prerequisite is complete)
-- [interlock] **iv-5ijt** F3: Structured `negotiate_release` MCP tool (blocked by iv-1aug)
-- [interlock] **iv-6u3s** F4: Sprint Scan release visibility (blocked by iv-1aug)
-- [interlock] **iv-2jtj** F5: Escalation timeout for unresponsive agents (blocked by iv-5ijt)
-
-**Intercore Phase 2**
-- [intercore] **iv-qfg8** Phase 2: Event bus, policy engine, interhub control room (blocked by iv-e5oa, iv-a20e, iv-wo1t)
-- [intercore] **iv-qt5m** F4: Run tracking
-- [intercore] **iv-x4dk** F6: Mutex consolidation
-
-**Interbus Integration Rollout**
-- [interverse] **iv-psf2** Interbus rollout: phase-based module integration (parent tracker)
-- [interverse] **iv-psf2.1** Wave 1: Core workflow modules (blocked by iv-psf2)
-- [interverse] **iv-psf2.2** Wave 2: Visibility and safety modules (blocked by iv-psf2.1)
-- [interverse] **iv-psf2.3** Wave 3: Supporting utility modules (blocked by iv-psf2.2)
-
-**Cross-Module Integration**
-- [interverse] **iv-z1a0** Cross-module integration opportunity program (parent tracker)
-- [interverse] **iv-z1a1** Inter-module event bus + event contracts (blocked by iv-z1a0)
-- [interverse] **iv-z1a2** Interline as unified operations HUD (blocked by iv-z1a0)
-- [interverse] **iv-z1a4** Interkasten context into discovery and sprint intake (blocked by iv-z1a0)
-- [interverse] **iv-ev4o** Agent capability discovery via intermute registration
-- [interverse] **iv-umvq** Health aggregation service (interstatus) for ecosystem-wide health visibility
-
-**Shared Libraries**
-- [interverse] **iv-lwsf** Shared HTTP client library (interhttp) for Go + bash
-- [interverse] **iv-tkc6** Shared bash hook library (interlace) for clavain/interphase/interlock
-- [interverse] **iv-jmua** Shared SQLite library (intersqlite) for six modules
-
-**Orchestration & Dispatch**
-- [clavain] **iv-zyym** Evaluate Claude Hub for event-driven GitHub agent dispatch
-- [clavain] **iv-wrae** Evaluate Container Use (Dagger) for sandboxed agent dispatch
-- [clavain] **iv-quk4** Hierarchical dispatch — meta-agent for N-agent fan-out
-- [interverse] **iv-p4qq** Smart semantic caching across sessions (intercache)
-- [interverse] **iv-friz** CI/CD integration bridge — GitHub Actions templates
-
-**Research Experiments (P2 exploratory)**
-- [interflux] **iv-qznx** Multi-framework interoperability benchmark and scoring harness
-- [intermute] **iv-jc4j** Heterogeneous collaboration and routing experiments inspired by SC-MAS/Dr. MAS
-- [interflux] **iv-wz3j** Role-aware latent memory safety and lifecycle experiments (blocked by iv-jc4j)
-- [interstat] **iv-v81k** Repository-aware benchmark expansion for SWE coding tasks (blocked by iv-qznx)
+END LLM:NEXT_GROUPINGS -->
 
 ### Later (P3)
 
-- [interspect] **iv-ynbh** Agent trust and reputation scoring via interspect (blocked by iv-vrc4)
-- [interverse] **iv-6i37** Blueprint distillation: channel optimization for sprint intake
+- [intermem] **iv-y5tv** Phase 4: Consolidation — Compound/Interfluence write through intermem (blocked by iv-xswd)
+- [intermem] **iv-xswd** Phase 3: Cross-project search — global metadata + semantic embeddings (blocked by iv-rkrm)
 - [interwatch] **iv-wrtg** Framework and benchmark freshness automation pipeline
+- [interject] **iv-3bia** A Technical Guide to Multi-Agent Orchestration
+- [interject] **iv-yqub** Securing MCP Servers in 2026: How to Govern AI Agents
+- [interject] **iv-oe4n** MCP Market: Discover Top MCP Servers
+- [interverse] **iv-gvpq** Study session context snapshot/restore for handoff continuity
+- [interverse] **iv-nonb** Build config profile switching (interctx or extend interphase)
+- [interverse] **iv-5leh** Study hook-level agent comms for intra-session coordination
+- [interverse] **iv-l6ef** Port hot-path hooks to compiled Go binaries
+- [interject] **iv-xda4** Evaluating Static Analysis Alerts with LLMs
+- [interject] **iv-f3an** Agent Orchestration: When to Use LangChain, LangGraph, AutoGen
+- [interject] **iv-bcq1** New Relic AI Model Context Protocol (MCP)
+- [interject] **iv-86ee** Public preview: Power Apps MCP and enhanced agent feed for your business applica
+- [interject] **iv-pjxj** Top 10 Low‑Code AI Workflow Automation Tools (2026)
+- [interject] **iv-vvpj** Make | AI Workflow Automation Software & Tools | Make
+- [interject] **iv-eweo** Trigger.dev | Build and deploy fully-managed AI agents and ...
+- [interject] **iv-ki35** CORE: Resolving Code Quality Issues using LLMs - Microsoft
+- [interject] **iv-btx0** Here is my experience with LLM tools for programming: | Vedran B.
+- [interject] **iv-ak1v** Agent Orchestration: When to Use LangChain, LangGraph, AutoGen
 
 ---
 
 ## Module Highlights
 
 ### clavain (hub/clavain)
-v0.6.35. Hub orchestrator for brainstorm-to-ship workflows. Current focus: runtime resilience, analytics-driven routing controls, and dispatch quality.
+Clavain is a recursively self-improving multi-agent rig for Claude Code — 23 skills, 4 agents, 41 commands, 19 hooks, 1 MCP server. 19 companion plugins shipped. 364 beads closed, 0 open. Average lead time: 8.8 hours.
 
-### intercore (infra/intercore)
-v0.1.0. Go CLI (`ic`) backed by SQLite WAL for atomic state operations and throttle guards. Replaces ~15 scattered temp files. State database shipped (iv-ieh7); next: hook adapter, dispatch, phase state machine.
+### intercheck (plugins/intercheck)
+Intercheck is the quality and session-health layer for Claude Code and Codex operations, focused on preventing unsafe edits before damage occurs.
+
+### intercraft (plugins/intercraft)
+Intercraft captures architecture guidance and auditable agent-native design patterns for complex agent behavior.
+
+### interdev (plugins/interdev)
+Interdev provides MCP and CLI-oriented developer workflows for discoverability, command execution, and environment tooling.
+
+### interdoc (plugins/interdoc)
+Interdoc synchronizes AGENTS.md/CLAUDE.md governance and enables recursive documentation maintenance with review tooling.
+
+### interfluence (plugins/interfluence)
+Interfluence provides voice and style adaptation by profile, giving outputs that fit project conventions.
 
 ### interflux (plugins/interflux)
-v0.2.13. Multi-agent review and research engine. Current focus: token efficiency, stronger review contracts, and operational reliability.
+interflux is at stable feature-complete breadth (2 skills, 3 commands, 12 agents, 2 MCP servers) and now in a "quality and operations" phase: tightening edge-case behavior, improving observability, and codifying long-term scalability assumptions.
 
-### interkasten (plugins/interkasten)
-v0.4.1. Bidirectional Notion sync and documentation automation. Current focus: linked references, pull-sync reliability, and tracker sync refinement.
+### interform (plugins/interform)
+Interform raises visual and interaction quality for user-facing artifacts and interface workflows.
+
+### interject (plugins/interject)
+Interject provides ambient discovery and research execution services for agent workflows.
+
+### interlens (plugins/interlens)
+Interlens is the cognitive-lens platform for structured reasoning and belief synthesis.
+
+### interline (plugins/interline)
+Interline provides session state visibility with statusline signals for multi-agent and phase-aware workflows.
 
 ### interlock (plugins/interlock)
-v0.2.0. Multi-agent file coordination and reservation control. Phase 4a (`iv-d72t`) is complete; next work is release negotiation and escalation controls.
+Interlock has shipped Phase 1+2 of multi-session coordination: per-session git index isolation, commit serialization, blocking edit enforcement, and automatic file reservation. The system now provides a complete safety layer from first edit through commit.
+
+### intermux (plugins/intermux)
+Intermux surfaces active agent sessions and task progress to support coordination and observability.
+
+### internext (plugins/internext)
+Internext prioritizes work proposals and tradeoffs with explicit value-risk scoring.
+
+### interpath (plugins/interpath)
+Interpath generates artifacts across roadmap, PRD, vision, changelog, and status from repository intelligence.
+
+### interphase (plugins/interphase)
+Interphase manages phase tracking, gate enforcement, and work discovery within Clavain and bead-based workflows.
+
+### interpub (plugins/interpub)
+Interpub provides safe version bumping, publishing, and release workflows for plugins and companion modules.
+
+### intersearch (plugins/intersearch)
+Intersearch underpins semantic search and Exa-backed discovery shared across Interverse modules.
+
+### interserve (plugins/interserve)
+Interserve supports Codex-side classification and context compression for dispatch efficiency.
+
+### interslack (plugins/interslack)
+InterSlack connects workflow events to team communication channels with actionable context.
+
+### interstat (plugins/interstat)
+Interstat measures token consumption, workflow efficiency, and decision cost across agent sessions.
+
+### interwatch (plugins/interwatch)
+Interwatch monitors documentation freshness and confidence so stale artifacts are identified before they mislead decisions.
 
 ### tldr-swinton (plugins/tldr-swinton)
-v0.7.12. Token-efficient code context and semantic retrieval. Current focus is MCP hardening and eval integration.
+tldr-swinton is the token-efficiency context layer for AI code workflows. The product has:
 
-### tool-time (plugins/tool-time)
-v0.3.2. Tool usage analytics with public observability surface at `tool-time.org`.
+### tuivision (plugins/tuivision)
+Tuivision automates TUI and terminal UI testing through scriptable sessions and screenshot workflows.
 
-### intermute (services/intermute)
-Active MVP-to-RC maturity. Core APIs, WebSocket delivery, and reservation primitives are operational. Current focus: hardening and diagnostics.
+<!-- LLM:MODULE_HIGHLIGHTS
+Task: Write 2-3 sentence summaries for these modules.
+Format: ### module (location)
+vX.Y.Z. Summary text.
+
+Modules needing highlights:
+interkasten|plugins/interkasten
+
+END LLM:MODULE_HIGHLIGHTS -->
 
 ---
 
 ## Research Agenda
 
-- **Flux-Drive Document Slicing** — Core rollout complete (`iv-7o7n`, `iv-j7uy`, `iv-zrmk`, `iv-5m8j`, `iv-tifk` closed). Follow-on optimization work remains.
-- **Interstat Token Benchmarking** — Ongoing implementation of evidence capture and analysis pipeline (`iv-dyyy`, `iv-qi8j`, `iv-lgfi`, `iv-dkg8`, `iv-bazo`).
-- **Sprint Resilience Phase 2** — Autonomy layer for sprint workflow recovery after context exhaustion.
-- **Interspect Routing Overrides** — Detect patterns, propose overrides, canary-test, and revert safely.
-- **Interlock Reservation Negotiation** — Release negotiation protocol and escalation model after Phase 4a completion.
-- **Interlens Flux Agents** — Cognitive augmentation lenses as flux-drive review agents.
-- **Token-Efficient Skill Loading** — Foundational brainstorm series closed; follow-on work should be tracked with new implementation beads.
-- **Clavain Boundary Restructure** — Continuing extraction of capabilities into companion plugins.
-- **Cross-Module Integration Sweep** — Systematic identification of shared patterns across 22+ modules.
-- **Interject Integration Sweep** — Ambient discovery engine integration with current research workflows.
-- **Intercore Platform Kernel** — State database shipped (iv-ieh7). Next phases: hook adapter (iv-wo1t), dispatch (iv-e5oa), phase state machine (iv-a20e), then Phase 2 event bus (iv-qfg8).
-- **Intermem Validation Overlay** — Memory validation and semantic dedup for agent auto-memory. Brainstorm complete; pending strategize.
-- **Interbus Module Integration** — Phase-based rollout of event bus adapters across 20+ modules (iv-psf2 parent tracker).
-- **Intercheck Code Quality Guards** — Syntax validation, formatting safeguards, and session health monitoring.
-- **Open Source + Research Watch (2026-02-17)** — Working watchlist for framework/paper deltas. Verify versions at execution time before making roadmap commitments.
+<!-- LLM:RESEARCH_AGENDA
+Task: Synthesize into 10-15 thematic research bullets.
+Format: - **Topic** — 1-line summary
+
+Brainstorm files:
+2026-02-14-clavain-vs-modules-boundary-analysis
+2026-02-15-intercheck-code-quality-guards-brainstorm
+2026-02-15-interject-integration-sweep-brainstorm
+2026-02-15-interspect-routing-overrides-brainstorm
+2026-02-15-linsenkasten-flux-agents-brainstorm
+2026-02-15-multi-session-phase4-merge-agent-brainstorm
+2026-02-15-sprint-resilience-brainstorm
+2026-02-15-token-efficient-skill-loading
+2026-02-16-agent-rig-autonomous-sync-brainstorm
+2026-02-16-clavain-token-efficiency-synthesis-brainstorm
+2026-02-16-clavain-token-efficiency-trio-brainstorm
+2026-02-16-flux-drive-document-slicing-brainstorm
+2026-02-16-interbus-central-integration-mesh-brainstorm
+2026-02-16-intermap-extraction-brainstorm
+2026-02-16-interspect-canary-monitoring-brainstorm
+2026-02-16-interstat-token-benchmarking-brainstorm
+2026-02-16-linsenkasten-phase1-agents-brainstorm
+2026-02-16-sprint-resilience-phase2-brainstorm
+2026-02-16-subagent-context-flooding-brainstorm
+2026-02-16-token-budget-controls-brainstorm
+2026-02-17-intercore-state-database-brainstorm
+2026-02-18-intermem-phase1-validation-overlay
+
+Plan files:
+2026-02-14-clavain-boundary-restructure
+2026-02-15-cross-module-integration-opportunities
+2026-02-15-intercheck-code-quality-guards
+2026-02-15-interject-design
+2026-02-15-interject-integration-sweep
+2026-02-15-interject-plan-best-5-frameworks-to-build-multi-agent-ai-applications-getst
+2026-02-15-interject-plan-claude-codepluginsreadmemd-at-main
+2026-02-15-interject-plan-create-plugins-claude-code-docs
+2026-02-15-interlock-reservation-negotiation
+2026-02-15-interspect-routing-overrides
+2026-02-15-linsenkasten-flux-agents
+2026-02-15-multi-session-coordination-brainstorm
+2026-02-15-sprint-resilience-phase1
+2026-02-15-token-efficient-skill-loading
+2026-02-16-clavain-token-efficiency
+2026-02-16-clavain-token-efficiency-trio
+2026-02-16-flux-drive-document-slicing
+2026-02-16-intermap-extraction
+2026-02-16-interspect-canary-monitoring
+2026-02-16-interstat-token-benchmarking
+2026-02-16-intersynth-codex-dispatch
+2026-02-16-linsenkasten-phase1-remaining-agents
+2026-02-16-sprint-resilience-phase2
+2026-02-16-subagent-context-flooding
+2026-02-16-token-budget-controls
+2026-02-17-framework-benchmark-freshness-automation
+2026-02-17-heterogeneous-collaboration-routing
+2026-02-17-interband-sideband-hardening
+2026-02-17-intercore-state-database
+2026-02-17-multi-framework-interoperability-benchmark
+2026-02-17-repository-aware-benchmark-expansion
+2026-02-17-role-aware-latent-memory-experiments
+2026-02-18-intermem-phase1-validation-overlay
+
+END LLM:RESEARCH_AGENDA -->
 
 ---
 
@@ -185,19 +264,20 @@ Active MVP-to-RC maturity. Core APIs, WebSocket delivery, and reservation primit
 
 Major dependency chains spanning multiple modules:
 
-- **Document slicing chain** (completed): iv-7o7n → iv-j7uy → iv-zrmk → iv-5m8j → iv-tifk are closed.
-- **Interlock negotiation chain** (active): iv-1aug → iv-5ijt → iv-2jtj, with iv-6u3s in parallel once iv-1aug lands. Phase 4a prerequisite iv-d72t is closed.
-- **Interspect routing chain** (active): iv-r6mf → iv-8fgu → iv-gkj9 → iv-2o6c, plus iv-6liz after iv-r6mf.
-- **Trust/dropout chain** (active): iv-vrc4 → iv-ynbh → iv-qjwz.
-- **Intercore platform chain** (active): iv-wo1t + iv-e5oa → iv-a20e → iv-qfg8 (Phase 2). State database iv-ieh7 is complete.
-- **Integration program** (active): iv-z1a0 blocks iv-z1a1, iv-z1a2, and iv-z1a4.
+- **iv-jc4j** (intermute) blocked by **iv-qznx** (interflux)
+- **iv-v81k** (interstat) blocked by **iv-qznx** (interflux)
+- **iv-wz3j** (interflux) blocked by **iv-jc4j** (intermute)
+- **iv-ynbh** (interverse) blocked by **iv-vrc4** (interspect)
 
 ---
 
 ## Modules Without Roadmaps
 
 - `plugins/intermap`
+- `plugins/intermem`
+- `plugins/interpeer`
 - `plugins/intersynth`
+- `plugins/intertest`
 
 ---
 
