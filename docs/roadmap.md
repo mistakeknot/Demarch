@@ -1,6 +1,6 @@
 # Interverse Roadmap
 
-**Modules:** 30 | **Open beads (root tracker):** 348 | **Blocked (root tracker):** 27 | **Last updated:** 2026-02-17
+**Modules:** 31 | **Open beads (root tracker):** 356 | **Blocked (root tracker):** 31 | **Last updated:** 2026-02-18
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json)
 
@@ -10,8 +10,9 @@
 
 | Module | Location | Version | Status | Roadmap | Open Beads (context) |
 |--------|----------|---------|--------|---------|----------------------|
-| clavain | hub/clavain | 0.6.30 | active | yes | 0 (372 closed, local archive) |
+| clavain | hub/clavain | 0.6.35 | active | yes | 0 (372 closed, local archive) |
 | intercheck | plugins/intercheck | 0.1.2 | active | yes | n/a (tracked in root .beads) |
+| intercore | infra/intercore | 0.1.0 | active | no | n/a (tracked in root .beads) |
 | intercraft | plugins/intercraft | 0.1.0 | active | yes | n/a (tracked in root .beads) |
 | interdev | plugins/interdev | 0.1.0 | active | yes | n/a (tracked in root .beads) |
 | interdoc | plugins/interdoc | 5.1.1 | active | yes | 0 (1 closed, local archive) |
@@ -39,7 +40,7 @@
 | tool-time | plugins/tool-time | 0.3.2 | active | yes | 0 (4 closed, local archive) |
 | tuivision | plugins/tuivision | 0.1.4 | active | yes | n/a (tracked in root .beads) |
 | intermute | services/intermute | — | active | yes | 0 (29 closed, local archive) |
-| interverse | root | — | active | yes | 348 open (27 blocked, root tracker) |
+| interverse | root | — | active | yes | 356 open (31 blocked, root tracker) |
 
 **Legend:** active = recent commits or active tracker items; early = manifest exists but roadmap maturity is limited. `n/a` means there is no module-local `.beads` database.
 
@@ -49,13 +50,16 @@
 
 ### Now (P0-P1)
 
-- [interverse] **iv-hoqj** Interband — sideband protocol library for cross-plugin file contracts
+- [intercore] **iv-wo1t** Phase 1: Hook adapter — thin bridge from Claude Code hooks to intercore DB
+- [intercore] **iv-e5oa** Phase 1: Dispatch — spawn and track Claude Code + Codex agents (blocks iv-a20e)
+- [intercore] **iv-a20e** Phase 1: Phase state machine — own the brainstorm-to-ship lifecycle (blocked by iv-e5oa)
 - [interverse] **iv-0681** Crash recovery + error aggregation for multi-agent sessions
 - [interspect] **iv-vrc4** Overlay system (Type 1) (unblocks iv-ynbh)
 - [interspect] **iv-ukct** `/interspect:revert` command (its prerequisites iv-cylo and iv-jo3i are complete)
 - [interstat] **iv-dyyy** F0: plugin scaffold + SQLite schema
+- [intersynth] **iv-dnml** Codex dispatch via dispatch.sh with intermux visibility
 
-**Recently completed (removed from active queue):** iv-7o7n, iv-j7uy, iv-8m38, iv-cylo, iv-d72t, iv-zrmk, iv-5m8j, iv-tifk, iv-ked1, iv-hyza, iv-kmyj, iv-1zh2, iv-1zh2.1 through iv-1zh2.7.
+**Recently completed (removed from active queue):** iv-ieh7 (intercore state database), iv-hoqj (interband), iv-7o7n, iv-j7uy, iv-8m38, iv-cylo, iv-d72t, iv-zrmk, iv-5m8j, iv-tifk, iv-ked1, iv-hyza, iv-kmyj, iv-1zh2, iv-1zh2.1 through iv-1zh2.7.
 
 ### Next (P2)
 
@@ -83,6 +87,17 @@
 - [interlock] **iv-5ijt** F3: Structured `negotiate_release` MCP tool (blocked by iv-1aug)
 - [interlock] **iv-6u3s** F4: Sprint Scan release visibility (blocked by iv-1aug)
 - [interlock] **iv-2jtj** F5: Escalation timeout for unresponsive agents (blocked by iv-5ijt)
+
+**Intercore Phase 2**
+- [intercore] **iv-qfg8** Phase 2: Event bus, policy engine, interhub control room (blocked by iv-e5oa, iv-a20e, iv-wo1t)
+- [intercore] **iv-qt5m** F4: Run tracking
+- [intercore] **iv-x4dk** F6: Mutex consolidation
+
+**Interbus Integration Rollout**
+- [interverse] **iv-psf2** Interbus rollout: phase-based module integration (parent tracker)
+- [interverse] **iv-psf2.1** Wave 1: Core workflow modules (blocked by iv-psf2)
+- [interverse] **iv-psf2.2** Wave 2: Visibility and safety modules (blocked by iv-psf2.1)
+- [interverse] **iv-psf2.3** Wave 3: Supporting utility modules (blocked by iv-psf2.2)
 
 **Cross-Module Integration**
 - [interverse] **iv-z1a0** Cross-module integration opportunity program (parent tracker)
@@ -121,7 +136,10 @@
 ## Module Highlights
 
 ### clavain (hub/clavain)
-v0.6.30. Hub orchestrator for brainstorm-to-ship workflows. Current focus: runtime resilience, analytics-driven routing controls, and dispatch quality.
+v0.6.35. Hub orchestrator for brainstorm-to-ship workflows. Current focus: runtime resilience, analytics-driven routing controls, and dispatch quality.
+
+### intercore (infra/intercore)
+v0.1.0. Go CLI (`ic`) backed by SQLite WAL for atomic state operations and throttle guards. Replaces ~15 scattered temp files. State database shipped (iv-ieh7); next: hook adapter, dispatch, phase state machine.
 
 ### interflux (plugins/interflux)
 v0.2.13. Multi-agent review and research engine. Current focus: token efficiency, stronger review contracts, and operational reliability.
@@ -155,6 +173,9 @@ Active MVP-to-RC maturity. Core APIs, WebSocket delivery, and reservation primit
 - **Clavain Boundary Restructure** — Continuing extraction of capabilities into companion plugins.
 - **Cross-Module Integration Sweep** — Systematic identification of shared patterns across 22+ modules.
 - **Interject Integration Sweep** — Ambient discovery engine integration with current research workflows.
+- **Intercore Platform Kernel** — State database shipped (iv-ieh7). Next phases: hook adapter (iv-wo1t), dispatch (iv-e5oa), phase state machine (iv-a20e), then Phase 2 event bus (iv-qfg8).
+- **Intermem Validation Overlay** — Memory validation and semantic dedup for agent auto-memory. Brainstorm complete; pending strategize.
+- **Interbus Module Integration** — Phase-based rollout of event bus adapters across 20+ modules (iv-psf2 parent tracker).
 - **Intercheck Code Quality Guards** — Syntax validation, formatting safeguards, and session health monitoring.
 - **Open Source + Research Watch (2026-02-17)** — Working watchlist for framework/paper deltas. Verify versions at execution time before making roadmap commitments.
 
@@ -168,6 +189,7 @@ Major dependency chains spanning multiple modules:
 - **Interlock negotiation chain** (active): iv-1aug → iv-5ijt → iv-2jtj, with iv-6u3s in parallel once iv-1aug lands. Phase 4a prerequisite iv-d72t is closed.
 - **Interspect routing chain** (active): iv-r6mf → iv-8fgu → iv-gkj9 → iv-2o6c, plus iv-6liz after iv-r6mf.
 - **Trust/dropout chain** (active): iv-vrc4 → iv-ynbh → iv-qjwz.
+- **Intercore platform chain** (active): iv-wo1t + iv-e5oa → iv-a20e → iv-qfg8 (Phase 2). State database iv-ieh7 is complete.
 - **Integration program** (active): iv-z1a0 blocks iv-z1a1, iv-z1a2, and iv-z1a4.
 
 ---

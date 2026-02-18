@@ -1,15 +1,15 @@
 {
   "project": "Interverse",
   "kind": "interverse-monorepo-roadmap",
-  "generated_at": "2026-02-17T07:11:39+00:00",
-  "module_count": 30,
+  "generated_at": "2026-02-18T02:36:34+00:00",
+  "module_count": 33,
   "open_beads": 190,
   "blocked": 52,
   "modules": [
     {
       "module": "clavain",
       "location": "hub/clavain",
-      "version": "0.6.31",
+      "version": "0.6.35",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 13,
@@ -36,7 +36,7 @@
     {
       "module": "interdev",
       "location": "plugins/interdev",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -81,7 +81,7 @@
     {
       "module": "interject",
       "location": "plugins/interject",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -99,7 +99,7 @@
     {
       "module": "interlens",
       "location": "plugins/interlens",
-      "version": "2.2.2",
+      "version": "2.2.3",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -117,7 +117,7 @@
     {
       "module": "interlock",
       "location": "plugins/interlock",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 10,
@@ -126,6 +126,15 @@
     {
       "module": "intermap",
       "location": "plugins/intermap",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
+      "module": "intermem",
+      "location": "plugins/intermem",
       "version": "0.1.0",
       "has_roadmap": false,
       "roadmap_source": "none",
@@ -153,11 +162,20 @@
     {
       "module": "interpath",
       "location": "plugins/interpath",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "interpeer",
+      "location": "plugins/interpeer",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "interphase",
@@ -223,6 +241,15 @@
       "status": "early"
     },
     {
+      "module": "intertest",
+      "location": "plugins/intertest",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "interwatch",
       "location": "plugins/interwatch",
       "version": "0.1.2",
@@ -234,7 +261,7 @@
     {
       "module": "tldr-swinton",
       "location": "plugins/tldr-swinton",
-      "version": "0.7.12",
+      "version": "0.7.13",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 15,
@@ -281,7 +308,7 @@
     {
       "module": "clavain",
       "location": "hub/clavain",
-      "version": "0.6.31",
+      "version": "0.6.35",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 13,
@@ -308,7 +335,7 @@
     {
       "module": "interdev",
       "location": "plugins/interdev",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -353,7 +380,7 @@
     {
       "module": "interject",
       "location": "plugins/interject",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -371,7 +398,7 @@
     {
       "module": "interlens",
       "location": "plugins/interlens",
-      "version": "2.2.2",
+      "version": "2.2.3",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -389,7 +416,7 @@
     {
       "module": "interlock",
       "location": "plugins/interlock",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 10,
@@ -398,6 +425,15 @@
     {
       "module": "intermap",
       "location": "plugins/intermap",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
+      "module": "intermem",
+      "location": "plugins/intermem",
       "version": "0.1.0",
       "has_roadmap": false,
       "roadmap_source": "none",
@@ -425,11 +461,20 @@
     {
       "module": "interpath",
       "location": "plugins/interpath",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "interpeer",
+      "location": "plugins/interpeer",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "interphase",
@@ -495,6 +540,15 @@
       "status": "early"
     },
     {
+      "module": "intertest",
+      "location": "plugins/intertest",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "interwatch",
       "location": "plugins/interwatch",
       "version": "0.1.2",
@@ -506,7 +560,7 @@
     {
       "module": "tldr-swinton",
       "location": "plugins/tldr-swinton",
-      "version": "0.7.12",
+      "version": "0.7.13",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 15,
@@ -4872,6 +4926,30 @@
         "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
       },
       {
+        "module": "intermem",
+        "id": "PL-intermem-NO-RM",
+        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "plugins/intermem/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+      },
+      {
+        "module": "interpeer",
+        "id": "PL-interpeer-NO-RM",
+        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "plugins/interpeer/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+      },
+      {
         "module": "intersynth",
         "id": "PL-intersynth-NO-RM",
         "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
@@ -4880,6 +4958,18 @@
         "status": "planned",
         "source": "missing-module-roadmap",
         "source_file": "plugins/intersynth/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+      },
+      {
+        "module": "intertest",
+        "id": "PL-intertest-NO-RM",
+        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "plugins/intertest/docs/roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
       },
@@ -5399,12 +5489,30 @@
     {
       "module": "intermap",
       "location": "plugins/intermap",
+      "version": "0.1.1",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "intermem",
+      "location": "plugins/intermem",
+      "version": "0.1.0",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "interpeer",
+      "location": "plugins/interpeer",
       "version": "0.1.0",
       "notes": "No docs/roadmap.md"
     },
     {
       "module": "intersynth",
       "location": "plugins/intersynth",
+      "version": "0.1.0",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "intertest",
+      "location": "plugins/intertest",
       "version": "0.1.0",
       "notes": "No docs/roadmap.md"
     }
