@@ -1,534 +1,982 @@
-# Correctness Review: Interstat PRD (2026-02-16)
+# Correctness Review: intercore State Database PRD
 
-**Reviewer:** Julik (Flux-drive Correctness Reviewer)
-**Date:** 2026-02-15
-**Source:** `/root/projects/Interverse/docs/prds/2026-02-16-interstat-token-benchmarking.md`
+**Reviewer:** Julik (fd-correctness)
+**Document:** `/root/projects/Interverse/docs/prds/2026-02-17-intercore-state-database.md`
+**Bead:** iv-ieh7
+**Date:** 2026-02-17
 
-## Summary
+## Executive Summary
 
-**Critical Issues:** 2 race conditions, 1 correlation failure mode, 1 grouping heuristic weakness
-**Moderate Issues:** 1 idempotency gap, 1 SQL approximation error
-**Severity:** HIGH — data corruption and silent data loss are both possible under documented usage patterns
+The PRD proposes a SQLite-backed Go CLI (`ic`) to replace scattered temp files with atomic state operations. The sentinel atomic claim pattern, run tracking, and dual-write mode all have **critical correctness gaps** that will cause lost updates, phantom claims, stale reads, and silent corruption under concurrent load.
 
----
+**Priority distribution:**
+- **P0 (will corrupt data):** 3 issues
+- **P1 (will cause 3AM pages):** 4 issues
+- **P2 (undefined behavior):** 3 issues
+- **P3 (technical debt):** 2 issues
 
-## 1. Race Conditions: Concurrent SQLite Writers
-
-### Issue 1.1: PostToolUse Hook vs. JSONL Parser (CRITICAL)
-
-**Problem:** The PRD specifies two writers to the same SQLite database:
-- **F1 (PostToolUse hook):** Fires on every Task invocation, INSERTs row into `agent_runs`
-- **F2 (JSONL parser):** Backfills token data via UPDATE on same rows
-
-Additionally, F2 has two trigger modes:
-- SessionEnd hook (lightweight, current session only)
-- `interstat analyze` skill (full historical parse)
-
-**Race timeline:**
-```
-T0: User dispatches 4 parallel agents via /flux-drive
-T1: PostToolUse hooks fire concurrently (4 processes, 4 INSERTs)
-T2: First agent finishes, SessionEnd hook triggers JSONL parser
-T3: Parser runs UPDATE on agent_runs for session_id=X
-T4: Remaining 3 agents still running, may finish and trigger PostToolUse
-T5: If user runs `interstat analyze` while agents are active → concurrent UPDATE/INSERT
-```
-
-**SQLite WAL Implications:**
-- WAL mode allows concurrent readers with one writer
-- BUT: each process must acquire the write lock sequentially
-- BUSY timeout (default 0ms) → immediate `SQLITE_BUSY` if another writer holds lock
-- PRD says "graceful degradation: if SQLite is locked or missing, log warning and exit 0"
-- **This is data loss**: if PostToolUse fails silently, we never INSERT the row. JSONL parser can't backfill what doesn't exist.
-
-**Failure Narrative:**
-1. Flux-drive launches 4 agents in parallel
-2. All 4 PostToolUse hooks fire within ~50ms window
-3. First hook acquires write lock, begins INSERT
-4. Hooks 2-4 get SQLITE_BUSY, log warning, exit 0 (per "graceful degradation")
-5. Only 1 of 4 runs recorded in database
-6. SessionEnd parser finds JSONL entries for 4 agents, only 1 matching row
-7. 3 agents silently dropped from metrics
-8. Decision gate query runs on 25% of actual data → incorrect verdict
-
-**Why this matters:**
-The PRD explicitly targets parallel dispatch scenarios (flux-drive with 4 agents). Silent data loss on the happy path invalidates the entire measurement system.
-
-### Issue 1.2: Concurrent JSONL Parser Invocations (MODERATE)
-
-**Problem:** If user runs `interstat analyze` (full parse) while SessionEnd hook also triggers parser:
-- Both processes may scan same conversation JSONL
-- Both may attempt UPDATE on same `agent_runs` rows
-- Idempotency check (F2: "re-running on already-parsed sessions is a no-op") relies on checking `parsed_at IS NOT NULL`
-- Race: both processes read `parsed_at=NULL`, both decide to parse, both UPDATE
-
-**Consequence:**
-Not data corruption (final state is correct), but wasted work and potential lock contention that cascades back to Issue 1.1.
-
-### Recommended Fix:
-
-**For Issue 1.1 (CRITICAL):**
-- **Never fail silently on SQLITE_BUSY in PostToolUse hook.**
-- Set `PRAGMA busy_timeout = 5000;` (5s) at connection time.
-- If timeout expires, log error AND create a fallback record:
-  ```bash
-  # F1 hook fallback
-  echo "$HOOK_INPUT" >> ~/.claude/interstat/failed_inserts.jsonl
-  ```
-- JSONL parser (F2) MUST read `failed_inserts.jsonl` on every run and reconstruct missing rows.
-- This ensures no data loss even under extreme lock contention.
-
-**For Issue 1.2 (MODERATE):**
-- Use a PID-based lock file for JSONL parser:
-  ```bash
-  lock_file="$DB_DIR/parser.lock"
-  if ! mkdir "$lock_file" 2>/dev/null; then
-    echo "Parser already running ($(cat "$lock_file/pid" 2>/dev/null || echo "unknown")), skipping"
-    exit 0
-  fi
-  trap "rm -rf '$lock_file'" EXIT
-  echo $$ > "$lock_file/pid"
-  ```
-- This prevents concurrent parser runs (SessionEnd vs. manual analyze).
-- Combine with `parsed_at` check for idempotency within a single parser run.
+**Recommendation:** Do NOT implement F3 (sentinels) or F7 (dual-write) as written. Fix P0/P1 issues before any code is written.
 
 ---
 
-## 2. Data Correlation: Matching JSONL to agent_runs Rows
+## Issue 1: Sentinel Atomic Claim — TOCTOU Still Possible (P0)
 
-### Issue 2.1: Correlation Key Fragility (HIGH)
+**Severity:** P0 — Silent sentinel corruption under concurrent load
 
-**PRD states:**
-> "Correlates JSONL entries to `agent_runs` rows by session_id + agent_name + timestamp proximity"
+### The Claim
 
-**Problem:** "timestamp proximity" is not defined. How close is "proximate"?
+> From the PRD and brainstorm:
+>
+> ```
+> UPDATE sentinels SET last_fired = NOW() WHERE last_fired <= cutoff
+> ```
+> + check `changes()`. One winner, guaranteed. Eliminates the TOCTOU race in `find -mmin`.
 
-**JSONL vs. Hook Timing:**
-- PostToolUse hook records `wall_clock_ms` when Task completes (T_complete)
-- JSONL API response entries are timestamped when API call finishes (T_api_response)
-- For long-running agents, T_api_response can be minutes after T_complete
-- For streaming responses, multiple JSONL entries per agent run
+### The Problem
 
-**Failure Narrative:**
-```
-Session X, agent "correctness-reviewer":
-- T0 (10:00:00): Task dispatched
-- T1 (10:05:30): First API response (5.5min later) → JSONL entry 1
-- T2 (10:07:45): Second API response (streaming continuation) → JSONL entry 2
-- T3 (10:08:00): Tool use complete → PostToolUse hook fires
+**This pattern has a race condition when used across separate connections.** The PRD does not specify connection pooling strategy, and the described pattern only works if both the UPDATE and the changes() check happen **on the same connection in the same transaction.**
 
-Hook records: session_id=X, agent_name="correctness-reviewer", wall_clock_ms=480000
-JSONL entries: timestamps 10:05:30, 10:07:45
-Proximity matcher: looking for JSONL entries "near" 10:08:00
-Result: no match if proximity window <2min, or wrong match if another agent finishes nearby
-```
+#### Failure Narrative (2-session race)
 
-**Additional complication:** If flux-drive runs 4 agents, JSONL will interleave responses from all 4. Without `subagent_type` field in the JSONL (Open Question 1), correlation is impossible.
+1. Session A calls `ic sentinel check compound SID --interval=300`
+2. Session B calls `ic sentinel check compound SID --interval=300` 100ms later
+3. Both sessions open their own SQLite connection (Go's `database/sql` default behavior)
+4. Both sessions execute `SELECT last_fired FROM sentinels WHERE name='compound' AND scope_id='SID'` → both see `2026-02-17 10:00:00`
+5. Both sessions compute `cutoff = now() - 300s = 2026-02-17 10:05:00`
+6. Both sessions execute `UPDATE sentinels SET last_fired = '2026-02-17 10:10:00' WHERE name='compound' AND scope_id='SID' AND last_fired <= '2026-02-17 10:05:00'`
+   - Session A wins the write lock first → UPDATE affects 1 row → `changes() = 1` → returns "allowed"
+   - Session B waits for lock (blocked on WAL)
+   - Session A commits and releases lock
+   - Session B's UPDATE now runs against the **already-updated row** where `last_fired = '2026-02-17 10:10:00'` → `last_fired <= cutoff` is FALSE → **UPDATE affects 0 rows** → `changes() = 0` → returns "throttled"
 
-### Issue 2.2: Streaming Responses and Token Aggregation (MODERATE)
+**This works correctly!** But only because of WAL serialization.
 
-**Problem:** Long agent runs may have multiple API requests (continuation, tool use loops). Each generates a separate JSONL entry with `usage` metadata. How do we aggregate?
+#### The Real Race: changes() on Pooled Connections
 
-**Example:**
-```
-Agent "architecture-review" makes 3 API calls:
-- Call 1: 15K input, 8K output, 12K cache_hit
-- Call 2: 20K input, 10K output, 15K cache_hit
-- Call 3: 18K input, 6K output, 18K cache_hit
+The `changes()` function in SQLite **only** returns the number of rows affected by the **last statement on that connection.** If the CLI uses a connection pool (Go's default with `database/sql.DB`), the following can happen:
 
-Total: 53K input, 24K output, 45K cache_hit
+1. Session A: connection #1 executes `UPDATE ... WHERE last_fired <= cutoff` → affects 1 row
+2. Session A: releases connection #1 back to pool
+3. Session B: grabs connection #1 from pool, runs `SELECT` query for status check
+4. Session A: grabs connection #2 from pool, runs `SELECT changes()` → **returns 0** (connection #2 never ran the UPDATE)
 
-But if correlation only matches Call 3 (latest timestamp), we record 18K input instead of 53K.
-```
+**Result:** Session A thinks it was throttled when it actually won the claim. Session B might think it won when it didn't. **Phantom throttles and phantom allows.**
 
-**Decision gate impact:**
-If we systematically under-count multi-turn agents, p99 calculation is wrong. If p99 actual is 140K but we measure 90K due to missing early turns, we skip hierarchical dispatch incorrectly.
+### Existing Intermute Evidence
 
-### Recommended Fix:
+From `/root/projects/Interverse/services/intermute/AGENTS.md`:
 
-**For Issue 2.1:**
-- **Stop using timestamp proximity.** Instead:
-  1. PostToolUse hook generates a UUID (`invocation_id`) and stores it in `agent_runs`.
-  2. Hook also writes the UUID to a session-scoped temp file:
-     ```bash
-     echo "$invocation_id" >> ~/.claude/sessions/$session_id/interstat_pending.txt
-     ```
-  3. JSONL parser reads `interstat_pending.txt` for the session, knows which UUIDs need backfill.
-  4. Match by: session_id + agent_name + pending UUID + JSONL timestamp after hook timestamp.
-  5. Clear UUID from `pending.txt` after successful backfill.
+> PRAGMAs (WAL, busy_timeout) only apply to connection they're run on — useless with pooled connections
 
-**For Issue 2.2:**
-- **Sum all API calls for the same agent invocation.**
-- JSONL parser must:
-  1. Read all JSONL entries for session_id=X, agent_name=Y, timestamp >= T_hook
-  2. Stop at next Task dispatch or session end
-  3. SUM(input_tokens), SUM(output_tokens), SUM(cache_hit_tokens)
-  4. UPDATE single agent_runs row with totals
+The same applies to `changes()`. **Connection-local state does not survive round-trips through a pool.**
 
-- Add explicit test case: multi-turn agent with 3+ API calls, verify total_tokens matches sum.
+### Correct Implementation
 
----
+**Two options:**
 
-## 3. Invocation Grouping: Timestamp Clustering Heuristic
+**Option A: Single-statement CTE with RETURNING (SQLite 3.35+)**
 
-### Issue 3.1: 2-Second Window is Too Narrow (MODERATE)
-
-**PRD Open Question 2:**
-> "how to detect that 4 Task calls are part of the same `/flux-drive` invocation vs. independent calls? Timestamp clustering (within 2s) + same session is the likely heuristic."
-
-**Problem:** Task dispatch timestamp != hook fire timestamp.
-
-**Scenario:**
-```
-User runs `/flux-drive` with 4 agents at 10:00:00.
-- Agent 1 (quick): finishes at 10:00:30 → PostToolUse at T+30s
-- Agent 2 (medium): finishes at 10:02:15 → PostToolUse at T+135s
-- Agent 3 (slow): finishes at 10:05:00 → PostToolUse at T+300s
-- Agent 4 (slowest): finishes at 10:08:00 → PostToolUse at T+480s
-
-Clustering window = 2s:
-- Group 1: Agent 1 (solo)
-- Group 2: Agent 2 (solo)
-- Group 3: Agent 3 (solo)
-- Group 4: Agent 4 (solo)
-
-Result: 1 flux-drive invocation fragmented into 4 separate groups.
-```
-
-**Impact on F1 acceptance criteria:**
-> "Generates `workflow_id` from session + workflow context (sprint bead ID if available)"
-
-If workflow_id is derived from timestamp clustering, it will be wrong for parallel dispatches with variable runtime.
-
-### Issue 3.2: Parallel Agents Starting at Different Times (HIGH)
-
-**Problem:** The heuristic assumes all agents start within 2s. This is false.
-
-**Reality:** Claude Code's Task tool dispatches agents sequentially (observed in tool-time plugin). If each dispatch takes 200ms (subprocess spawn, JSON parsing, hook fire), 4 agents start across 800ms. If we cluster by start time, this works. But PRD says PostToolUse hook (fires on *completion*), so clustering by completion time is wrong (Issue 3.1).
-
-**Worse scenario:** User runs `/flux-drive`, then manually runs another agent 30s later. Both in same session. Timestamp clustering can't distinguish.
-
-### Recommended Fix:
-
-**Stop inferring workflow_id from timestamps.** Use explicit invocation context:
-
-1. **Skill-level UUID injection:**
-   - When `/flux-drive` skill fires, generate a workflow UUID.
-   - Pass UUID to each Task dispatch via environment variable or temp file.
-   - PostToolUse hook reads UUID, stores in `workflow_id` column.
-
-2. **Fallback for skills that don't inject UUID:**
-   - Use session_id + bead_id (if available from .beads context).
-   - If no bead context, workflow_id = session_id + task_invocation_uuid.
-
-3. **Schema change:**
-   ```sql
-   ALTER TABLE agent_runs ADD COLUMN workflow_id TEXT;
-   CREATE INDEX idx_workflow ON agent_runs(workflow_id);
-   ```
-
-4. **View for invocation grouping:**
-   ```sql
-   CREATE VIEW v_invocation_summary AS
-   SELECT workflow_id,
-          COUNT(*) as agent_count,
-          SUM(total_tokens) as total_tokens,
-          MAX(wall_clock_ms) as longest_runtime_ms
-   FROM agent_runs
-   WHERE workflow_id IS NOT NULL
-   GROUP BY workflow_id;
-   ```
-
-**If explicit UUID is too invasive for F0, at minimum:**
-- Document that grouping is unreliable for parallel agents with >2s runtime variance.
-- Add a configuration knob for clustering window (default 30s, not 2s).
-- Use *start time* (task dispatch) not *completion time* (PostToolUse) for clustering.
-
----
-
-## 4. SQL Correctness: Decision Gate Percentile Calculation
-
-### Issue 4.1: Approximate Percentile is Undefined (MODERATE)
-
-**F3 acceptance criteria:**
-> "Decision gate query: if p99 < 120K → SKIP hierarchical dispatch"
-
-**Problem:** PRD doesn't include the actual SQL. "Approximate percentile calculation" could mean:
-
-**Option A: SQLite NTILE (requires window functions, SQLite 3.25+):**
 ```sql
-WITH ranked AS (
-  SELECT total_tokens,
-         NTILE(100) OVER (ORDER BY total_tokens) as percentile
-  FROM agent_runs
-  WHERE total_tokens IS NOT NULL
+WITH claim AS (
+  UPDATE sentinels
+  SET last_fired = datetime('now')
+  WHERE name = ? AND scope_id = ?
+    AND (last_fired IS NULL OR unixepoch('now') - unixepoch(last_fired) >= ?)
+  RETURNING 1
 )
-SELECT AVG(total_tokens) as p99
-FROM ranked
-WHERE percentile = 99;
+SELECT COUNT(*) AS allowed FROM claim;
 ```
 
-**Bug:** NTILE(100) on <100 rows creates buckets smaller than 1%. With 50 rows, NTILE(100) creates 50 buckets of size 1, percentiles 51-100 are empty. Query returns NULL.
+Returns 1 if claim succeeded, 0 if throttled. **Atomic, single connection, no changes() needed.**
 
-**Option B: Offset-based percentile:**
+**Option B: Explicit Transaction with Same Connection**
+
+```go
+tx, err := db.Begin()
+defer tx.Rollback() // rollback if not committed
+
+result, err := tx.Exec(
+    "UPDATE sentinels SET last_fired = ? WHERE name = ? AND scope_id = ? AND last_fired <= ?",
+    now, name, scopeID, cutoff,
+)
+rowsAffected, _ := result.RowsAffected() // this is safe within a transaction
+tx.Commit()
+
+if rowsAffected == 1 {
+    return "allowed"
+} else {
+    return "throttled"
+}
+```
+
+**Recommendation:** Use Option A (CTE + RETURNING) for simplicity and portability. Document the SQLite version requirement (3.35+, released 2021, available everywhere).
+
+---
+
+## Issue 2: Run Tracking — No Uniqueness Constraint on Active Runs (P0)
+
+**Severity:** P0 — Two sessions can create conflicting runs for the same bead
+
+### The Problem
+
+The `runs` table schema has no uniqueness constraint to prevent two sessions from creating concurrent active runs for the same bead/project combination.
+
+#### Schema from PRD
+
 ```sql
-SELECT total_tokens as p99
-FROM agent_runs
-WHERE total_tokens IS NOT NULL
-ORDER BY total_tokens DESC
-LIMIT 1 OFFSET (
-  SELECT CAST(COUNT(*) * 0.01 AS INTEGER)
-  FROM agent_runs
-  WHERE total_tokens IS NOT NULL
+CREATE TABLE runs (
+    id          TEXT PRIMARY KEY,    -- UUID
+    project     TEXT NOT NULL,
+    goal        TEXT,
+    status      TEXT NOT NULL DEFAULT 'active',
+    phase       TEXT,
+    bead_id     TEXT,
+    session_id  TEXT,
+    created_at  TEXT NOT NULL,
+    updated_at  TEXT NOT NULL
 );
 ```
 
-**Bug:** `COUNT(*) * 0.01` rounds down. With 50 rows, offset = 0, returns max value (p100 not p99). With 99 rows, offset = 0, same bug. Need 100+ rows for correct p99.
+**No unique constraint on `(project, bead_id, status)`.**
 
-**Option C: Interpolated percentile (correct but complex):**
+#### Failure Narrative (2-session bead race)
+
+1. User runs `clavain:work iv-xyz` in session A
+2. Session A calls `ic run create --project=. --bead=iv-xyz --session=A` → creates run `run-001` with status=active
+3. Session A crashes (network disconnect, `kill -9`, laptop closed)
+4. User runs `/resume` and reruns `clavain:work iv-xyz` in session B
+5. Session B calls `ic run create --project=. --bead=iv-xyz --session=B` → creates run `run-002` with status=active
+6. **Now there are TWO active runs for bead iv-xyz**
+7. Both runs log artifacts, both update phase, both create agents
+8. Query `ic run current` returns the **most recent** run (run-002), orphaning all work from run-001
+
+**Silent data corruption:** Artifacts from run-001 are invisible. Phase history is split across two runs. No consolidated view.
+
+### Correct Implementation
+
+**Add a partial unique index:**
+
 ```sql
-WITH counts AS (
-  SELECT COUNT(*) as n FROM agent_runs WHERE total_tokens IS NOT NULL
-),
-position AS (
-  SELECT n, CAST((n - 1) * 0.99 AS REAL) as p99_pos FROM counts
-),
-bounds AS (
-  SELECT p99_pos,
-         CAST(p99_pos AS INTEGER) as lower_idx,
-         CAST(p99_pos AS INTEGER) + 1 as upper_idx,
-         p99_pos - CAST(p99_pos AS INTEGER) as frac
-  FROM position
-)
-SELECT (
-  (SELECT total_tokens FROM (
-    SELECT total_tokens, ROW_NUMBER() OVER (ORDER BY total_tokens) as rn
-    FROM agent_runs WHERE total_tokens IS NOT NULL
-  ) WHERE rn = (SELECT lower_idx FROM bounds) + 1) * (1 - (SELECT frac FROM bounds))
-  +
-  (SELECT total_tokens FROM (
-    SELECT total_tokens, ROW_NUMBER() OVER (ORDER BY total_tokens) as rn
-    FROM agent_runs WHERE total_tokens IS NOT NULL
-  ) WHERE rn = (SELECT upper_idx FROM bounds) + 1) * (SELECT frac FROM bounds)
-) as p99;
+CREATE UNIQUE INDEX idx_runs_active_bead
+ON runs(project, bead_id)
+WHERE status = 'active' AND bead_id IS NOT NULL;
 ```
 
-This is correct but unmaintainable.
+This enforces: **at most one active run per (project, bead_id) pair.**
 
-### Recommended Fix:
+**Migration path from orphaned sessions:**
 
-**For <100 samples, use simple percentile approximation and document the error:**
-
-```sql
--- Approximation: use 98th percentile for <100 samples
--- Error: reports p98 as p99, which is conservative (overestimates token usage)
-SELECT total_tokens as p99_approx
-FROM agent_runs
-WHERE total_tokens IS NOT NULL
-ORDER BY total_tokens DESC
-LIMIT 1 OFFSET MAX(0, (
-  SELECT CAST(COUNT(*) * 0.01 AS INTEGER)
-  FROM agent_runs
-  WHERE total_tokens IS NOT NULL
-) - 1);
+```bash
+ic run create --project=. --bead=iv-xyz --session=B
+# Returns error: UNIQUE constraint failed
+# User runs:
+ic run list --project=. --bead=iv-xyz --status=active
+# Shows run-001 from session A (claimed 60 minutes ago)
+# User decides:
+ic run abandon run-001  # marks status=abandoned
+# Now the create succeeds
 ```
 
-**For >=100 samples, use correct calculation:**
+**Alternative:** Automatic claim-with-timeout (like `sprint_claim()` in lib-sprint.sh). If existing active run is older than 60 minutes, auto-abandon it and create a new one.
+
+---
+
+## Issue 3: Debounce Mechanism — No Cross-Invocation State (P1)
+
+**Severity:** P1 — Debounce is useless for CLI invocations
+
+### The Claim
+
+> From F2 acceptance criteria:
+>
+> Write rate limiting: `ic state set` with `--debounce` skips write if payload unchanged and last write was < 250ms ago
+
+### The Problem
+
+**`ic` is a CLI, not a daemon.** Each invocation is a separate process. There is **no in-memory cache** to detect "payload unchanged and last write was < 250ms ago" without reading from the database.
+
+#### What Happens in Practice
+
+```bash
+# Hook dispatches 5 agents in a loop (statusline dispatch updates)
+for agent in agent1 agent2 agent3 agent4 agent5; do
+    ic state set dispatch $SID "{\"agents\": [...], \"phase\": \"executing\"}" --debounce
+    # Each invocation:
+    # 1. Opens DB connection
+    # 2. Reads current state row for (dispatch, session, SID)
+    # 3. Compares payload JSON (string equality? semantic equality? hash?)
+    # 4. Checks updated_at timestamp
+    # 5. If < 250ms ago AND payload identical → skip write
+    # 6. Else → UPDATE
+    # 7. Closes DB connection
+done
+```
+
+**Cost of debounce:** 5 DB reads + 5 JSON comparisons to avoid... 5 DB writes. **Net loss.** The debounce adds latency and complexity with no throughput win.
+
+#### Why This Happens
+
+The PRD conflates two different debounce strategies:
+
+1. **Daemon-side debounce** (interline polls dispatch status every 1s, batches writes) — this works because the poller has in-memory state
+2. **CLI-side debounce** (each `ic` invocation checks DB for "did I just write this?") — this adds a read to avoid a write, **negative value**
+
+### When Debounce Works
+
+Debounce is useful when:
+- The writer is a long-running process with in-memory cache (daemon, service, REPL)
+- Write frequency far exceeds read frequency (100 Hz updates polled at 1 Hz)
+- The debounce check is cheaper than the write (in-memory hash comparison vs. network RPC)
+
+**None of these apply to a CLI.**
+
+### Correct Implementation Options
+
+**Option A: Remove --debounce from CLI**
+
+Document that debounce should happen **in the caller** (the bash hook or interline poller), not in `ic`.
+
+```bash
+# Bash hook pseudocode
+_last_dispatch_json=""
+_last_dispatch_ts=0
+
+dispatch_update() {
+    local new_json="$1"
+    local now=$(date +%s%N)
+    local elapsed_ms=$(( (now - _last_dispatch_ts) / 1000000 ))
+
+    if [[ "$new_json" == "$_last_dispatch_json" && $elapsed_ms -lt 250 ]]; then
+        return 0  # skip
+    fi
+
+    ic state set dispatch "$SID" "$new_json"
+    _last_dispatch_json="$new_json"
+    _last_dispatch_ts="$now"
+}
+```
+
+**Option B: Debounce via DB-side TTL + upsert-only-if-changed**
+
+Store a hash of the payload in the state row:
 
 ```sql
-SELECT total_tokens as p99
-FROM agent_runs
-WHERE total_tokens IS NOT NULL
-ORDER BY total_tokens DESC
-LIMIT 1 OFFSET (
-  SELECT CAST(COUNT(*) * 0.01 AS INTEGER)
-  FROM agent_runs
-  WHERE total_tokens IS NOT NULL
+CREATE TABLE state (
+    key         TEXT NOT NULL,
+    scope_type  TEXT NOT NULL,
+    scope_id    TEXT NOT NULL,
+    payload     TEXT NOT NULL,
+    payload_hash TEXT NOT NULL,  -- SHA256 of payload
+    updated_at  TEXT NOT NULL,
+    ...
 );
+
+-- CLI logic:
+-- 1. Compute hash of new payload
+-- 2. Run:
+UPDATE state
+SET payload = ?, payload_hash = ?, updated_at = datetime('now')
+WHERE key = ? AND scope_type = ? AND scope_id = ?
+  AND (payload_hash != ? OR unixepoch('now') - unixepoch(updated_at) >= 0.25);
+
+-- If changes() == 0 → debounced (payload identical + recent write)
+-- If changes() == 1 → updated
 ```
 
-**Decision gate logic:**
-```
-if sample_count < 100:
-  warn "p99 approximation unreliable below 100 samples (currently using p98)"
-  if p99_approx < 120K: recommend SKIP
-else:
-  if p99 < 120K: recommend SKIP
-```
+This avoids the extra read, but still requires computing a hash on every call.
 
-**Alternative:** Use p95 until 100 samples collected. Document the threshold clearly.
+**Recommendation:** Option A. Let callers manage debounce. The CLI should be a thin, fast writer.
 
 ---
 
-## 5. Idempotency: JSONL Parser Edge Cases
+## Issue 4: Dual-Write Mode — Partial Failure Corruption (P0)
 
-### Issue 5.1: Partial Parse Failure Leaves Inconsistent State (HIGH)
+**Severity:** P0 — Lost writes and stale reads during migration
 
-**F2 acceptance criteria:**
-> "Idempotent: re-running on already-parsed sessions is a no-op"
+### The Claim
 
-**Idempotency check (inferred):**
-```sql
-UPDATE agent_runs
-SET input_tokens = ?, output_tokens = ?, parsed_at = CURRENT_TIMESTAMP
-WHERE session_id = ? AND agent_name = ? AND parsed_at IS NULL;
+> From F7:
+>
+> In dual-write mode, `ic state set dispatch` also writes `/tmp/clavain-dispatch-$$.json`
+
+### The Problem
+
+**Dual-write has no atomic commit across DB + filesystem.** If one write succeeds and the other fails, consumers see inconsistent state.
+
+#### Failure Scenarios
+
+**Scenario 1: DB write succeeds, file write fails**
+
+1. Hook calls `ic state set dispatch $SID '{"phase": "executing"}'`
+2. SQLite UPDATE succeeds → state row updated
+3. Attempt to write `/tmp/clavain-dispatch-$$.json` fails (disk full, permission denied, /tmp mounted noexec)
+4. `ic` exits with error
+5. **interline** (which still reads the legacy file) shows stale phase
+6. **New consumers** (reading from DB) show correct phase
+7. User sees "phase: planned" in statusline but logs say "phase: executing"
+
+**Scenario 2: File write succeeds, DB write fails**
+
+1. File write succeeds → `/tmp/clavain-dispatch-$$.json` updated
+2. SQLite write fails (SQLITE_BUSY after 5s timeout, disk error, constraint violation)
+3. `ic` exits with error
+4. **interline** shows new phase (reads file)
+5. **New consumers** show stale phase (DB not updated)
+6. Opposite inconsistency
+
+**Scenario 3: Interleaved writes from two sessions**
+
+1. Session A: writes DB first, then file (order 1)
+2. Session B: writes file first, then DB (order 2)
+3. Timeline:
+   - T0: Session A writes DB with payload `{"phase": "executing", "agents": [A1, A2]}`
+   - T1: Session B writes file with payload `{"phase": "shipping", "agents": [B1]}`
+   - T2: Session A writes file with payload `{"phase": "executing", "agents": [A1, A2]}`  ← **overwrites B's update**
+   - T3: Session B writes DB with payload `{"phase": "shipping", "agents": [B1]}`
+4. Final state: DB says "shipping", file says "executing" ← **permanent divergence**
+
+### Why This Can't Be Fixed with Ordering
+
+**There is no 2PC (two-phase commit) between SQLite and filesystem writes.** Any ordering (DB-first or file-first) can be interleaved by concurrent writers.
+
+### Existing Evidence from lib-sprint.sh
+
+The codebase already knows this is a problem. From `lib-sprint.sh:204`:
+
+```bash
+# CORRECTNESS: ALL updates to sprint_artifacts MUST go through this function.
+# Direct `bd set-state` calls bypass the lock and cause lost-update races.
 ```
 
-**Problem:** If parser crashes mid-session (e.g., malformed JSONL, OOM, disk full), partial results persist.
+Sprint functions use **filesystem locks** to serialize dual-field updates (read JSON, modify, write JSON). This prevents lost updates **within a single storage backend.**
 
-**Failure Narrative:**
-```
-Session X has 4 agents.
-Parser starts, processes agents 1-2 successfully (UPDATE sets parsed_at).
-Agent 3: JSONL has malformed JSON line → parser crashes.
-Result: agents 1-2 have token data, 3-4 are NULL.
-Re-run parser: "parsed_at IS NOT NULL" for agents 1-2, skips them.
-Parser tries agent 3 again, crashes again.
-Infinite loop: agents 3-4 never backfilled.
-```
+**Dual-write spans two backends with no coordination.** The lock would have to cover both the DB write AND the file write, but:
+- If the lock is a DB row → file writes aren't protected
+- If the lock is a file → DB writes aren't protected
+- If the lock is in `/tmp/intercore/locks/` → both DB and file contend on the same lock, but `ic` would need to **hold the lock across both writes**, which means:
+  - Lock acquisition before any writes
+  - Both writes in sequence (doubles latency)
+  - Lock release after both writes
+  - If `ic` crashes between writes → **stale lock, both systems blocked**
 
-**Root cause:** Idempotency marker (`parsed_at`) is set per-row, but parsing is per-session. If session parsing is not atomic, partial failure creates permanent gaps.
+### Correct Implementation
 
-### Issue 5.2: JSONL Append and Re-Parse (MODERATE)
+**Do NOT implement dual-write as described.** Instead:
 
-**Problem:** Claude Code appends to conversation JSONL files as the session progresses. If parser runs mid-session (via SessionEnd of a *different* session), it may parse incomplete data.
+**Migration Strategy: Graceful Cutover with Read Fallback**
 
-**Scenario:**
-```
-Session A (long-running): agent dispatched at 10:00, still running at 10:30.
-Session B (quick): finishes at 10:15, triggers SessionEnd hook.
-SessionEnd parser scans all sessions, finds Session A JSONL.
-Parses 15 minutes of JSONL, only 2 of 5 API calls complete.
-Updates agent_runs with partial token count, sets parsed_at.
-Session A finishes at 10:45, calls 3-5 complete, appended to JSONL.
-Re-run parser: parsed_at already set, skips Session A.
-Final data: missing 60% of token usage.
-```
+1. **Phase 1: ic writes to DB only, readers fall back to legacy**
+   - `ic state set` writes to DB
+   - `ic state get` reads from DB, returns data
+   - **interline/interband** try DB first (`ic state get`), fall back to legacy file if empty/missing
+   - Both systems work, legacy files decay naturally
 
-**Root cause:** Parser assumes JSONL files are immutable (session complete). But SessionEnd hook can trigger while other sessions are active.
+2. **Phase 2: Migrate legacy files to DB (one-time batch)**
+   - Script reads all `/tmp/clavain-*.json` and `~/.interband/` entries
+   - Imports into intercore with `ic state set`
+   - Validates import with `ic state get`
 
-### Recommended Fix:
+3. **Phase 3: Deprecate legacy files**
+   - Remove fallback logic from interline/interband
+   - Hooks stop writing legacy files
+   - Cleanup script deletes stale temp files
 
-**For Issue 5.1 (partial parse crash):**
-- Use transaction boundaries per session:
-  ```python
-  for session_id in pending_sessions:
-      try:
-          conn.execute("BEGIN TRANSACTION")
-          parse_session(session_id)  # all UPDATEs for this session
-          conn.execute("COMMIT")
-      except Exception as e:
-          conn.execute("ROLLBACK")
-          log_error(session_id, e)
-  ```
-- Add `last_parse_attempt` timestamp (separate from `parsed_at`).
-- Retry failed sessions with exponential backoff (don't block on permanently malformed JSONL).
-- Expose failed sessions in `interstat status` output.
+**Key insight:** Reads can be dual-mode (try DB, fall back to file). Writes should be single-mode (DB only). This avoids the dual-write consistency trap.
 
-**For Issue 5.2 (mid-session parse):**
-- **SessionEnd hook MUST only parse the ending session, not all sessions.**
-  ```python
-  # SessionEnd hook input
-  session_id = hook_input["session_id"]
-  parse_single_session(session_id)  # only this session
-  ```
-- **Full `interstat analyze` skill MUST skip active sessions.**
-  - Check for lock files: `~/.claude/sessions/$session_id/` directory existence.
-  - Or maintain an `active_sessions` table written by SessionStart, cleared by SessionEnd.
+**Alternative: Write-Ahead + Async Reconciliation**
 
-- **Alternative:** Only parse sessions older than 1 hour (time-based staleness check).
+- `ic` writes to DB immediately (source of truth)
+- Background goroutine (or cron job) syncs DB → legacy files every 1 second
+- Legacy consumers see up-to-1s stale data during migration
+- After migration complete, stop the sync goroutine
 
-**Idempotency guarantee:**
-"Re-parsing a completed session is a no-op. Re-parsing an active session is prohibited."
+This tolerates temporary inconsistency but avoids corruption.
 
 ---
 
-## 6. Additional Correctness Concerns
+## Issue 5: TTL-Based Expiry — Stale Read Window (P2)
 
-### Issue 6.1: Schema Migration and Plugin Updates (LOW)
+**Severity:** P2 — Callers can read expired rows between expiry time and prune
 
-**Problem:** PRD says "idempotent schema creation" but doesn't specify how schema changes are handled during plugin updates.
+### The Problem
 
-**Scenario:**
-- v1.0.0: `agent_runs` has 10 columns.
-- User collects 500 rows of data.
-- v1.1.0: adds `workflow_id` column.
-- `init-db.sh` runs on plugin update.
-- If init script is naive (`CREATE TABLE IF NOT EXISTS`), new column is missing.
-- All queries referencing `workflow_id` fail.
+The PRD specifies:
+- `expires_at` column for TTL
+- `ic state prune` deletes expired rows
 
-**Fix:**
-Use SQLite's `PRAGMA user_version` for schema versioning:
+**But prune is manual.** Rows with `expires_at < NOW()` remain in the table until someone runs `ic state prune`.
+
+#### Failure Narrative
+
+1. Hook writes dispatch state with `ic state set dispatch $SID '...' --ttl=5m`
+2. 5 minutes pass → row is logically expired but still in DB
+3. New session runs `ic state get dispatch $SID` → **returns expired data**
+4. Session makes decisions based on stale dispatch info (wrong phase, wrong agent list)
+
+### Why This Matters for intercore
+
+Dispatch state and discovery caches have **correctness implications**:
+- **Dispatch state:** Agent list, phase, bead binding → wrong agent gets invoked
+- **Discovery cache:** Stale sprint list → wrong sprint resumed
+- **Bead phase snapshots:** Stale phase → gate checks pass when they should block
+
+TTL isn't just "cleanup convenience" — it's a **correctness boundary**. Expired state should be invisible.
+
+### Correct Implementation
+
+**Enforce TTL in queries, not just in prune:**
+
 ```sql
-PRAGMA user_version;  -- returns 0 for new DB
+-- ic state get (current)
+SELECT payload FROM state
+WHERE key = ? AND scope_type = ? AND scope_id = ?;
 
--- Migration logic
-current_version=$(sqlite3 "$DB" "PRAGMA user_version")
-if [ "$current_version" -lt 2 ]; then
-  sqlite3 "$DB" "ALTER TABLE agent_runs ADD COLUMN workflow_id TEXT"
-  sqlite3 "$DB" "PRAGMA user_version = 2"
+-- ic state get (correct)
+SELECT payload FROM state
+WHERE key = ? AND scope_type = ? AND scope_id = ?
+  AND (expires_at IS NULL OR expires_at > datetime('now'));
+```
+
+**Prune becomes a background cleanup optimization**, not a correctness requirement.
+
+**Add to PRD:**
+- All `SELECT` queries MUST include `AND (expires_at IS NULL OR expires_at > datetime('now'))`
+- Document this as a **hard requirement** in the CLI implementation
+- Add a test: set TTL to 1 second, wait 2 seconds, verify `ic state get` returns empty
+
+---
+
+## Issue 6: Sentinel Interval=0 (Once-Per-Session) — No Idempotency (P1)
+
+**Severity:** P1 — Hook crashes can bypass once-per-session guards
+
+### The Claim
+
+> When `--interval=0`, sentinel fires exactly once per scope_id (once-per-session guard)
+
+### The Problem
+
+**"Fires exactly once" is not the same as "hook runs exactly once."** If the hook crashes after the sentinel fires but before the hook completes, the sentinel prevents retry.
+
+#### Failure Narrative (stop-hook guard)
+
+1. Hook runs `ic sentinel check stop $SID --interval=0` → returns "allowed"
+2. Sentinel row inserted: `{name: "stop", scope_id: SID, last_fired: NOW(), interval_s: 0}`
+3. Hook does expensive work (runs Oracle, generates artifacts)
+4. **Hook crashes** (OOM, timeout, user Ctrl-C)
+5. User reruns the command
+6. Hook runs `ic sentinel check stop $SID --interval=0` → sentinel already fired → returns "throttled"
+7. **Hook skips work that never completed**
+
+### When Once-Per-Session Matters
+
+From existing hooks:
+- **stop guard** (`/tmp/clavain-stop-${SID}`) — prevents duplicate stop actions
+- **handoff guard** (`/tmp/clavain-handoff-${SID}`) — prevents double session-end processing
+
+These are **lifecycle guards**, not **idempotency guards**. The current `touch` file implementation has the same problem (file created = guard active, even if hook crashes).
+
+### Correct Implementation Options
+
+**Option A: Document the limitation**
+
+```markdown
+## Sentinel interval=0 Semantics
+
+`--interval=0` means "fire at most once per scope_id per session lifetime."
+
+If the calling hook crashes after the sentinel fires but before the work completes,
+the sentinel will block retry. Use interval=0 only for idempotent or best-effort
+actions (e.g., "send Slack message at most once").
+
+For critical actions that must complete, use explicit state tracking:
+- `ic state set <key> <scope> '{"status": "done"}'`
+- Check status before running work
+```
+
+**Option B: Two-phase commit for critical guards**
+
+```bash
+# Critical hook pattern
+if ic sentinel check critical-work $SID --interval=0; then
+    ic state set critical-work-status $SID '{"status": "started"}'
+    do_critical_work
+    ic state set critical-work-status $SID '{"status": "done"}'
+else
+    # Sentinel blocked — check if work already completed
+    status=$(ic state get critical-work-status $SID | jq -r '.status')
+    if [[ "$status" == "done" ]]; then
+        echo "Work already completed"
+        exit 0
+    elif [[ "$status" == "started" ]]; then
+        echo "Work in progress or crashed — manual recovery needed"
+        exit 1
+    fi
 fi
 ```
 
-### Issue 6.2: SQLite Database Corruption (LOW)
-
-**Problem:** If process crashes mid-write or disk is full, SQLite database can corrupt.
-
-**Mitigation:**
-- Enable WAL mode: `PRAGMA journal_mode=WAL;` (already implied by concurrent writer discussion).
-- Enable auto-checkpoint: `PRAGMA wal_autocheckpoint=1000;`.
-- Add `interstat repair` skill that runs `PRAGMA integrity_check;` and provides recovery steps.
-
-### Issue 6.3: JSONL Format Dependency (MODERATE)
-
-**PRD Dependencies:**
-> "Claude Code conversation JSONL format — internal, undocumented, may change. Parser must be defensively coded."
-
-**Problem:** "Defensively coded" is not an acceptance criterion. What happens when format changes?
-
-**Failure modes:**
-- Field renamed: `usage` → `token_usage` → parser extracts null, data loss silent.
-- Nested structure change: `usage.input_tokens` → `usage.prompt.tokens` → parser crashes or returns wrong value.
-- New message types added: parser doesn't skip unknown types, crashes.
-
-**Fix:**
-- Add schema validation: check for expected fields before parsing.
-  ```python
-  required_fields = ["usage", "input_tokens", "output_tokens"]
-  if not all(field in entry for field in required_fields):
-      log_warning(f"Skipping entry, missing fields: {entry}")
-      continue
-  ```
-- Version detection: if JSONL has a version marker, log it. If version changes, warn user.
-- Graceful degradation: if >10% of JSONL entries fail to parse, abort and alert user (don't silently drop 90% of data).
+**Recommendation:** Option A (document). The existing `touch`-file guards have the same crash-recovery gap. This is a known trade-off.
 
 ---
 
-## Summary of Findings
+## Issue 7: WAL Mode Across Multiple Databases (P2)
 
-| Issue | Severity | Impact | Recommended Fix |
-|-------|----------|--------|----------------|
-| 1.1: Silent data loss on SQLITE_BUSY | CRITICAL | 75% data loss in parallel dispatch scenarios | Fallback to JSONL on lock failure, add busy_timeout |
-| 2.1: Timestamp proximity correlation is fragile | HIGH | Wrong token counts, wrong agent attribution | Use UUID-based correlation |
-| 2.2: Multi-turn agents under-counted | MODERATE | p99 under-estimated by 20-40% | Aggregate all API calls per invocation |
-| 3.1: 2s clustering window too narrow | MODERATE | Workflow grouping fails for slow agents | Use 30s window or explicit UUIDs |
-| 4.1: Percentile SQL undefined/wrong | MODERATE | Decision gate verdict incorrect for <100 samples | Use p98 approximation, document error |
-| 5.1: Partial parse leaves inconsistent state | HIGH | Permanent gaps in token data | Use per-session transactions |
-| 5.2: Mid-session parse corrupts data | MODERATE | 60% token data missing | Only parse completed sessions |
-| 6.3: JSONL format change breaks parser | MODERATE | Silent data loss on Claude Code updates | Add schema validation, version detection |
+**Severity:** P2 — WAL pragmas are connection-local, may not apply to all readers
 
-**Overall Assessment:**
-The PRD has a viable architecture but **5 of 8 failure modes result in silent data loss**, which is unacceptable for a measurement system. The decision gate query is invalid for small samples, and the parallel dispatch scenario (the primary use case) triggers the worst race condition.
+### The Claim
 
-**Minimum viable fixes for F0:**
-1. Add `busy_timeout` and fallback JSONL for PostToolUse hook (Issue 1.1).
-2. Replace timestamp proximity with UUID correlation (Issue 2.1).
-3. Add per-session transaction boundaries (Issue 5.1).
-4. Restrict SessionEnd parser to current session only (Issue 5.2).
+> WAL mode enabled by default with a configurable `busy_timeout` (default 5s)
 
-**Defer to F1+ (but document as known issues):**
-- Multi-turn aggregation (Issue 2.2) — accept under-counting for now, fix in F2.
-- Workflow grouping (Issue 3.1) — document unreliability, fix in F3.
-- Percentile calculation (Issue 4.1) — use p95 for <100 samples, document.
+### The Problem
 
-**Do not ship without fixing Issues 1.1, 2.1, 5.1, 5.2.** These are data integrity violations that invalidate the measurement framework.
+From intermute's AGENTS.md:
+
+> PRAGMAs (WAL, busy_timeout) only apply to connection they're run on — useless with pooled connections
+
+If `ic` uses `database/sql.DB` (Go's standard pooled DB handle), each connection in the pool needs pragmas applied **on first use**. The schema doesn't store "this DB is WAL mode" — it's a per-connection setting.
+
+#### How WAL Mode Actually Works
+
+**WAL mode is persistent** (stored in the DB file header after first `PRAGMA journal_mode=WAL`), **but busy_timeout is not.** Each new connection defaults to `busy_timeout=0` (fail immediately on lock).
+
+#### Failure Narrative
+
+1. First `ic` invocation runs `PRAGMA journal_mode=WAL` → DB is now in WAL mode (persistent)
+2. Second `ic` invocation opens a new connection, does NOT run `PRAGMA busy_timeout=5000`
+3. Concurrent write from session A holds the write lock
+4. Session B's `UPDATE` immediately fails with `SQLITE_BUSY` (timeout=0)
+5. Session B returns error, hook fails
+
+### Correct Implementation
+
+**Apply busy_timeout on every connection open:**
+
+```go
+func openDB(path string) (*sql.DB, error) {
+    db, err := sql.Open("sqlite", path)
+    if err != nil {
+        return nil, err
+    }
+
+    // Set connection limits (important for WAL mode)
+    db.SetMaxOpenConns(10)
+    db.SetMaxIdleConns(5)
+
+    // Apply WAL mode (idempotent, persistent after first call)
+    if _, err := db.Exec("PRAGMA journal_mode=WAL"); err != nil {
+        return nil, fmt.Errorf("enable WAL: %w", err)
+    }
+
+    // CRITICAL: busy_timeout must be set on EVERY connection
+    // Use a connection hook or set it in the DSN
+    // Option 1: DSN parameter (modernc.org/sqlite supports this)
+    // db, err := sql.Open("sqlite", path+"?_busy_timeout=5000")
+
+    // Option 2: Explicit SetConnMaxLifetime + init query
+    db.SetConnMaxLifetime(0) // connections live forever
+    // First query on each connection should be:
+    // PRAGMA busy_timeout=5000
+
+    return db, nil
+}
+```
+
+**Best practice:** Use DSN parameters for pragma settings that need to apply to every connection:
+
+```go
+dsn := fmt.Sprintf("%s?_journal_mode=WAL&_busy_timeout=5000", dbPath)
+db, err := sql.Open("sqlite", dsn)
+```
+
+**Add to PRD acceptance criteria:**
+
+```
+- [ ] busy_timeout applies to all connections (verify with concurrent write test)
+- [ ] Test: 5 concurrent `ic state set` calls → all succeed (no SQLITE_BUSY)
+```
+
+---
+
+## Issue 8: Run Tracking — `ic run current` with Multiple Projects (P1)
+
+**Severity:** P1 — Undefined behavior when working across projects
+
+### The Claim
+
+> `ic run current` returns the active run for the current session/project (most recent active run)
+
+### The Problem
+
+**What is "current project"?** The PRD specifies:
+
+```sql
+CREATE TABLE runs (
+    project     TEXT NOT NULL,  -- project path
+    session_id  TEXT,
+    ...
+);
+```
+
+**But `ic run current` doesn't take `--project` as a required argument.** How does it determine which project's run to return?
+
+#### Ambiguity Cases
+
+1. **Multi-project session:** User runs `clavain:work` in `/root/projects/A`, then `cd /root/projects/B && clavain:work`. What does `ic run current` return?
+   - Most recent run across all projects? (B's run)
+   - Run for `$PWD`? (depends on where CLI is invoked)
+   - Most recent run for `$CLAUDE_SESSION_ID`? (could be either A or B)
+
+2. **Shared session across projects:** Two tmux panes, same session ID, different `$PWD`. Both run `ic run current` — do they see the same run or different runs?
+
+3. **DB location:** If intercore.db is **global** (`~/.intercore/intercore.db`), it has runs from all projects. If it's **project-local** (`.clavain/intercore.db`), each project has its own DB. The PRD lists this as an open question.
+
+### Correct Implementation
+
+**Require `--project` for all run commands:**
+
+```bash
+ic run create --project=/root/projects/A --goal="..." --session=$CLAUDE_SESSION_ID
+ic run current --project=/root/projects/A --session=$CLAUDE_SESSION_ID
+```
+
+**Or infer from environment:**
+
+```bash
+# ic infers project from $PWD (absolute path)
+cd /root/projects/A
+ic run create --goal="..."  # implicitly sets project=/root/projects/A
+ic run current              # returns run for project=/root/projects/A, session=$CLAUDE_SESSION_ID
+```
+
+**Tiebreaker query:**
+
+```sql
+SELECT id FROM runs
+WHERE project = ? AND session_id = ? AND status = 'active'
+ORDER BY created_at DESC
+LIMIT 1;
+```
+
+If multiple active runs exist (shouldn't happen with the unique constraint from Issue 2), return the most recent.
+
+**Add to PRD:**
+
+```markdown
+### Project Scope Resolution
+
+All `ic run` commands infer `project` from:
+1. `--project=<path>` flag (explicit)
+2. `$PWD` (implicit, absolute path)
+3. Error if both are missing
+
+Run queries filter by `project` unless `--all-projects` is specified.
+```
+
+---
+
+## Issue 9: State Table Primary Key — No Index on session_id (P2)
+
+**Severity:** P2 — Slow queries for "all state for this session"
+
+### The Schema
+
+```sql
+CREATE TABLE state (
+    key         TEXT NOT NULL,
+    scope_type  TEXT NOT NULL,
+    scope_id    TEXT NOT NULL,
+    payload     TEXT NOT NULL,
+    updated_at  TEXT NOT NULL,
+    expires_at  TEXT,
+    PRIMARY KEY (key, scope_type, scope_id)
+);
+```
+
+### The Problem
+
+**Common query pattern:** "Get all dispatch state for session `SID`"
+
+```bash
+ic state list dispatch --scope=session:$SID
+```
+
+**SQLite query plan:**
+
+```sql
+SELECT key, scope_id, payload FROM state
+WHERE key = 'dispatch' AND scope_type = 'session';
+-- Index used: PRIMARY KEY (key, scope_type, scope_id)
+-- Rows scanned: ALL rows where key='dispatch' AND scope_type='session'
+-- Filter: scope_id MUST match (full table scan of matching prefix)
+```
+
+If there are 1000 active sessions, this scans 1000 rows to find 1.
+
+### Why This Matters
+
+Interline statusline polls dispatch state every 1 second. With 10 active sessions, that's 10 queries/sec. With 100 sessions (multi-agent rig), that's 100 queries/sec.
+
+**Without an index on `(scope_type, scope_id)`, every query is O(N) in the number of sessions.**
+
+### Correct Implementation
+
+**Add a secondary index:**
+
+```sql
+CREATE INDEX idx_state_scope ON state(scope_type, scope_id, key);
+```
+
+Now the query becomes:
+
+```sql
+SELECT key, scope_id, payload FROM state
+WHERE scope_type = 'session' AND scope_id = ?;
+-- Index used: idx_state_scope
+-- Rows scanned: 1 (direct lookup)
+```
+
+**Benefit:** O(log N) instead of O(N) for session-scoped queries.
+
+---
+
+## Issue 10: Sentinel Prune — No Automatic Cleanup (P3)
+
+**Severity:** P3 — Sentinel table grows unbounded
+
+### The Problem
+
+The PRD specifies:
+
+```
+ic sentinel prune --older-than=<duration>  # cleans up stale sentinels
+```
+
+**But prune is manual.** Who runs it? When?
+
+Without automatic cleanup:
+- Sentinels accumulate (one row per `check` that fired)
+- Table size grows linearly with session count
+- Query performance degrades (primary key scans)
+
+### Example Growth
+
+- 10 sessions/day × 5 sentinels/session × 365 days = **18,250 rows/year**
+- Each row ~100 bytes → 1.8 MB (negligible)
+- But index size grows, cache pressure increases, vacuum takes longer
+
+### Correct Implementation
+
+**Option A: Automatic prune on every sentinel check**
+
+```go
+func SentinelCheck(name, scopeID string, interval int) (bool, error) {
+    // 1. Try to claim sentinel (UPDATE + check changes())
+    allowed := ...
+
+    // 2. Prune stale sentinels (async, don't block response)
+    go func() {
+        // Delete sentinels older than 7 days where scope_type = "session"
+        db.Exec("DELETE FROM sentinels WHERE scope_type = 'session' AND unixepoch('now') - unixepoch(last_fired) > 604800")
+    }()
+
+    return allowed, nil
+}
+```
+
+**Option B: Cron job or systemd timer**
+
+```bash
+# /etc/cron.daily/intercore-prune
+#!/bin/bash
+ic sentinel prune --older-than=7d
+ic state prune --expired
+```
+
+**Option C: TTL index (SQLite 3.45+)**
+
+SQLite 3.45 (unreleased as of Jan 2025) will support automatic row expiration. Until then, Option A or B.
+
+**Recommendation:** Option A (auto-prune after each check). Cost is negligible (DELETE with indexed WHERE), runs in background, no external dependencies.
+
+---
+
+## Issue 11: Schema Migration — No Rollback Strategy (P3)
+
+**Severity:** P3 — Forward-only migrations can't be undone
+
+### The PRD Claim
+
+> Schema migrations run automatically on first use and on version bumps
+
+### The Problem
+
+**What happens when a migration breaks production?**
+
+Example scenario:
+1. `ic` v0.2.0 adds a new column to `state` table
+2. Migration runs automatically on first `ic state set` call
+3. Migration has a bug (wrong column type, missing index)
+4. All `ic state get` calls now fail
+5. **Hooks can't read dispatch state → Clavain is broken**
+6. User wants to rollback to v0.1.0
+
+**But the DB schema is now v0.2.0.** Old `ic` binary can't read the new schema.
+
+### Correct Implementation
+
+**Schema version table + compatibility matrix:**
+
+```sql
+CREATE TABLE schema_version (
+    version INTEGER PRIMARY KEY,
+    applied_at TEXT NOT NULL
+);
+```
+
+**Migration files:**
+
+```
+migrations/
+  001_initial.sql
+  002_add_runs_table.sql
+  003_add_sentinels_index.sql
+  ...
+```
+
+**Version compatibility:**
+
+```
+ic v0.1.0 → requires schema version 1
+ic v0.2.0 → requires schema version 1-3 (can read v1, v2, v3; writes as v3)
+ic v0.3.0 → requires schema version 3-5
+```
+
+**Rollback strategy:**
+
+1. **Forward-compatible schema changes** (add column with DEFAULT, add index) — safe, no rollback needed
+2. **Breaking schema changes** (drop column, change type) — require explicit downgrade migration
+3. **Emergency rollback:** Keep old `ic` binary, add `ic migrate rollback --to-version=2` command
+
+**Add to PRD:**
+
+```markdown
+## Schema Migration Strategy
+
+- Migrations are forward-only by default (add columns, add indexes, add tables)
+- Breaking changes require a major version bump and explicit migration plan
+- Schema version is stored in `schema_version` table
+- `ic` binary checks compatibility on startup: if DB schema version > max supported version, exit with error
+```
+
+---
+
+## Summary of Recommendations
+
+| Issue | Severity | Fix Complexity | Must Fix Before |
+|-------|----------|----------------|-----------------|
+| 1. Sentinel atomic claim (TOCTOU) | P0 | Medium | F3 implementation |
+| 2. Run tracking uniqueness | P0 | Low | F4 implementation |
+| 4. Dual-write partial failure | P0 | High | F7 implementation (or skip F7 entirely) |
+| 5. TTL stale read window | P2 | Low | F2 implementation |
+| 6. Sentinel interval=0 idempotency | P1 | Low (doc only) | F3 implementation |
+| 7. WAL mode connection pooling | P2 | Low | F1 implementation |
+| 8. Run current project scope | P1 | Medium | F4 implementation |
+| 9. State table index on scope | P2 | Low | F2 implementation |
+| 3. Debounce in CLI | P1 | Low (remove feature) | F2 implementation |
+| 10. Sentinel prune automation | P3 | Low | Post-launch |
+| 11. Schema migration rollback | P3 | Medium | Post-launch |
+
+**Critical path blockers (P0):**
+1. Fix sentinel pattern (use CTE + RETURNING)
+2. Add unique constraint on active runs
+3. Remove dual-write or implement read-fallback strategy
+
+**High-priority fixes (P1):**
+1. Document sentinel interval=0 crash-recovery gap
+2. Clarify `ic run current` project scoping
+3. Remove `--debounce` flag (or move to caller)
+
+**Medium-priority hardening (P2):**
+1. Enforce TTL in all SELECT queries
+2. Apply busy_timeout to all connections
+3. Add index on `(scope_type, scope_id)`
+
+**Post-launch improvements (P3):**
+1. Auto-prune sentinels
+2. Schema migration rollback plan
+
+---
+
+## Testing Requirements
+
+To validate the fixes, the plan MUST include:
+
+### Concurrency Tests
+
+```bash
+# Test 1: Concurrent sentinel claims (5 sessions, same sentinel)
+for i in {1..5}; do
+    ic sentinel check test-guard session-X --interval=60 &
+done
+wait
+# Expected: exactly 1 "allowed", 4 "throttled"
+
+# Test 2: Concurrent run creation (2 sessions, same bead)
+ic run create --project=. --bead=test-bead --session=A &
+ic run create --project=. --bead=test-bead --session=B &
+wait
+# Expected: 1 succeeds, 1 fails with UNIQUE constraint error
+
+# Test 3: Concurrent state updates (10 sessions, same key)
+for i in {1..10}; do
+    ic state set test-key session-X "{\"count\": $i}" &
+done
+wait
+# Expected: all 10 succeed, final state has count=<one of 1-10> (last writer wins)
+```
+
+### TTL Enforcement Tests
+
+```bash
+# Test: Expired state is invisible
+ic state set ephemeral session-X '{"data": "test"}' --ttl=1s
+sleep 2
+result=$(ic state get ephemeral session-X)
+[[ -z "$result" ]] || echo "FAIL: got expired data"
+```
+
+### Crash Recovery Tests
+
+```bash
+# Test: Sentinel fires, hook crashes, retry is blocked
+ic sentinel check crash-test session-X --interval=0  # returns "allowed"
+# Simulate crash (no state cleanup)
+ic sentinel check crash-test session-X --interval=0  # returns "throttled"
+# Expected: documented behavior, user must manually clear sentinel or use state tracking
+```
+
+---
+
+## Conclusion
+
+The intercore PRD has a **solid high-level design** (SQLite + WAL + Go CLI), but the **concurrency and consistency details are underspecified.** The sentinel atomic claim pattern has a critical flaw (changes() on pooled connections), run tracking has no uniqueness constraint, and dual-write mode will cause data corruption.
+
+**Do not implement F3, F4, or F7 as currently specified.** Fix the P0 issues first, document the P1 limitations, and add the P2 indexes/pragmas. The resulting system will be correct, fast, and maintainable.
+
+The existing codebase (`lib-sprint.sh`, `intermute`) already demonstrates the right patterns:
+- Filesystem locks for cross-process coordination
+- Read-then-verify for atomic state transitions
+- WAL mode + busy_timeout for SQLite concurrency
+- Explicit state tracking for idempotency
+
+Apply these patterns to intercore, and the temp file sprawl will collapse into a clean, correct state database.
+
+---
+
+**Next Steps:**
+
+1. Review this analysis with the team
+2. Update PRD to fix P0/P1 issues
+3. Write a revised plan with correctness tests
+4. Implement F1 (schema + CLI scaffold) with fixed patterns
+5. Validate with concurrency tests before shipping F2-F4
