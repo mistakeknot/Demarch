@@ -26,6 +26,7 @@ plugins/              → companion plugins (all lowercase)
   interpeer/          → cross-AI peer review (Oracle/GPT escalation)
   intertest/          → engineering quality disciplines (TDD, debugging, verification)
   intercheck/         → code quality guards + session health monitoring
+  interleave/         → deterministic skeleton + LLM islands pattern (spec + library)
   interject/          → ambient discovery + research engine (MCP)
   interserve/         → Codex spark classifier + context compression (MCP)
   interstat/          → token efficiency benchmarking
