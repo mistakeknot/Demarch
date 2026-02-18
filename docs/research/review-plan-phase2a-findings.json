@@ -1,0 +1,197 @@
+{
+  "reviewed": "2026-02-18",
+  "agents_launched": ["fd-correctness", "fd-architecture", "fd-quality"],
+  "agents_completed": ["fd-correctness", "fd-architecture", "fd-quality"],
+  "findings": [
+    {
+      "id": "P0-1",
+      "severity": "P0",
+      "agent": "fd-correctness, fd-quality",
+      "section": "Task 2 sweep, Task 3 demotion",
+      "title": "Journal/DB divergence on crash between sweep and demote",
+      "convergence": 2,
+      "description": "Crash after sweep commits but before demote finishes leaves journal with 'demoted' but DB with 'stale'. Entry removed from docs but DB doesn't know."
+    },
+    {
+      "id": "P0-2",
+      "severity": "P0",
+      "agent": "fd-correctness",
+      "section": "Task 2 _revalidate_citations",
+      "title": "Citation.raw_match reconstruction broken",
+      "convergence": 1,
+      "description": "Helper needs Citation objects but raw_match not in DB. Sweep crashes with TypeError on first revalidation."
+    },
+    {
+      "id": "P0-3",
+      "severity": "P0",
+      "agent": "fd-quality",
+      "section": "Task 2 apply_decay_penalty",
+      "title": "Timezone mixing in decay calculation",
+      "convergence": 1,
+      "description": "last_seen stored as naive timestamp but current_time is tz-aware. Subtraction raises TypeError."
+    },
+    {
+      "id": "P0-4",
+      "severity": "P0",
+      "agent": "fd-architecture, fd-quality",
+      "section": "Task 6 re-promotion",
+      "title": "Raw SQL in validator.py violates boundaries",
+      "convergence": 2,
+      "description": "Task 6 uses raw conn.execute() in validator.py. All existing code calls metadata.py methods. Boundary violation."
+    },
+    {
+      "id": "P0-5",
+      "severity": "P0",
+      "agent": "fd-quality",
+      "section": "Task 1 search_entries",
+      "title": "SQL injection in search_entries()",
+      "convergence": 1,
+      "description": "Plan doesn't show implementation. If using string interpolation for LIKE patterns, vulnerable to SQL injection."
+    },
+    {
+      "id": "P0-6",
+      "severity": "P0",
+      "agent": "fd-quality",
+      "section": "Task 2 sweep_all_entries",
+      "title": "NULL last_seen handling missing",
+      "convergence": 1,
+      "description": "Plan calls apply_decay_penalty without checking if last_seen is NULL. Will crash with TypeError."
+    },
+    {
+      "id": "P1-1",
+      "severity": "P1",
+      "agent": "fd-correctness, fd-quality",
+      "section": "Task 2 apply_decay_penalty",
+      "title": "Decay formula off-by-one at day 28",
+      "convergence": 2,
+      "description": "Day 28 gets penalty 0.2 instead of 0.1. Discontinuity in decay curve, premature demotion possible."
+    },
+    {
+      "id": "P1-2",
+      "severity": "P1",
+      "agent": "fd-correctness",
+      "section": "Task 6, normal validation",
+      "title": "stale_streak not reset in normal validation path",
+      "convergence": 1,
+      "description": "Entry transitions stale→active during normal validation but stale_streak not reset. Inconsistent state → premature demotion."
+    },
+    {
+      "id": "P1-3",
+      "severity": "P1",
+      "agent": "fd-architecture, fd-quality",
+      "section": "Task 3 demote_entries",
+      "title": "Demotion matching fragile (content_preview truncated)",
+      "convergence": 2,
+      "description": "Matches by truncated 80-char content_preview. Fails for long entries or duplicate prefixes. No hash in marker."
+    },
+    {
+      "id": "P1-4",
+      "severity": "P1",
+      "agent": "fd-architecture, fd-quality",
+      "section": "Task 4 CLI handlers",
+      "title": "CLI backward compatibility broken",
+      "convergence": 2,
+      "description": "Moving args to subparser breaks `intermem --project-dir .` (no subcommand). Existing /intermem:synthesize skill breaks."
+    },
+    {
+      "id": "P1-5",
+      "severity": "P1",
+      "agent": "fd-correctness",
+      "section": "Task 6 validate_and_filter_entries",
+      "title": "Re-promotion logic is dead code",
+      "convergence": 1,
+      "description": "Re-promotion check runs AFTER update_confidence() overwrites status. Check never matches. Logic bug."
+    },
+    {
+      "id": "P1-6",
+      "severity": "P1",
+      "agent": "fd-quality",
+      "section": "Task 2 sweep_all_entries",
+      "title": "Orphaned entries not handled in sweep",
+      "convergence": 1,
+      "description": "Sweep query includes orphaned entries. Plan doesn't specify if they should be re-validated, skipped, or demoted."
+    },
+    {
+      "id": "P1-7",
+      "severity": "P1",
+      "agent": "fd-quality",
+      "section": "Task 1 migrate_to_v2",
+      "title": "SQLite version constraint not enforced",
+      "convergence": 1,
+      "description": "Migration uses ALTER TABLE ... NOT NULL DEFAULT (requires SQLite 3.37.0+). Plan doesn't enforce/document."
+    }
+  ],
+  "improvements": [
+    {
+      "id": "M1",
+      "severity": "P2",
+      "agent": "fd-correctness",
+      "title": "Float equality for decay accounting",
+      "description": "Uses float equality to count decayed entries. Rounding error can make count off by 1-2. Cosmetic issue."
+    },
+    {
+      "id": "M2",
+      "severity": "MEDIUM",
+      "agent": "fd-architecture",
+      "title": "Task 5 redundant",
+      "description": "Task 5 only adds wiring code (3 lines SQL + 1 field). Collapse into Task 2 to simplify."
+    },
+    {
+      "id": "M3",
+      "severity": "P3",
+      "agent": "fd-correctness, fd-architecture",
+      "title": "Schema CHECK constraint split-brain",
+      "description": "Existing DBs don't have 'demoted' in CHECK constraint, new DBs do. Accept and document."
+    },
+    {
+      "id": "M4",
+      "severity": "LOW",
+      "agent": "fd-architecture, fd-quality",
+      "title": "Unused get_promoted_entries() method",
+      "description": "Task 1 adds method never called. YAGNI violation. Remove from plan."
+    },
+    {
+      "id": "M5",
+      "severity": "MEDIUM",
+      "agent": "fd-quality",
+      "title": "Demotion matching edge cases",
+      "description": "Covered by P1-3 fix (hash-in-marker)."
+    },
+    {
+      "id": "M6",
+      "severity": "LOW",
+      "agent": "fd-quality",
+      "title": "CLI query exit codes unclear",
+      "description": "Plan says 0/1/2 but doesn't specify what counts as 'no results' vs 'error'."
+    },
+    {
+      "id": "M7",
+      "severity": "LOW",
+      "agent": "fd-quality",
+      "title": "Hysteresis threshold hard-coded",
+      "description": "stale_streak >= 2 is hard-coded. Add DEMOTION_STREAK_THRESHOLD constant."
+    },
+    {
+      "id": "M8",
+      "severity": "LOW",
+      "agent": "fd-quality",
+      "title": "get_topics() implementation underspecified",
+      "description": "Plan doesn't specify which statuses to include. Should be active/stale, exclude demoted/orphaned."
+    },
+    {
+      "id": "M9",
+      "severity": "LOW",
+      "agent": "fd-quality",
+      "title": "Empty DB edge case",
+      "description": "CLI sweep handler doesn't show how to handle 0 entries. Add check."
+    },
+    {
+      "id": "M10",
+      "severity": "LOW",
+      "agent": "fd-quality",
+      "title": "_revalidate_citations() duplicates logic",
+      "description": "Helper duplicates citation validation from validate_and_filter_entries. DRY violation."
+    }
+  ],
+  "verdict": "needs-changes"
+}

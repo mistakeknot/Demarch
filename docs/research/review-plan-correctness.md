@@ -1,633 +1,425 @@
-# Correctness Review: Intercore Hook Adapter Migration
-**Bead:** iv-wo1t
-**Reviewer:** Julik (Flux-drive Correctness Reviewer)
-**Date:** 2026-02-17
-**Plan:** docs/plans/2026-02-18-intercore-hook-adapter.md
+# Correctness Review: intermem Phase 2A Implementation Plan
 
-## Executive Summary
-
-The migration from bash temp-file sentinels to intercore SQLite DB calls is fundamentally sound. The Go sentinel implementation provides correct atomic claim semantics via `INSERT OR IGNORE` + conditional `UPDATE ... RETURNING` in a transaction. However, **three P0 correctness issues** and **six P1-P3 concerns** exist in the plan, primarily around stderr suppression, fallback divergence, and race-after-reset windows.
-
-**Key findings:**
-1. **P0**: Suppressing stderr in the wrapper hides DB errors that indicate the sentinel didn't write — this breaks the fail-safe claim
-2. **P0**: The fallback legacy touch happens AFTER checking for existence, creating a TOCTOU race identical to the old code — expected, but undocumented as a deliberate regression acceptance
-3. **P1**: `intercore_sentinel_reset_all` has a list-then-reset TOCTOU — new sentinels added between list and reset are missed
+**Date:** 2026-02-18
+**Reviewer:** Julik
+**Document:** `docs/plans/2026-02-18-intermem-phase2a-decay-demotion.md`
+**Status:** 7 findings (2 P0, 2 P1, 2 P2, 1 P3)
 
 ---
 
-## P0 Findings (Data Corruption / Silent Failure Risk)
+## Summary
 
-### P0-1: Stderr Suppression Hides Sentinel Write Failures
+The plan has two critical correctness issues (P0) that will cause data integrity failures, two high-severity issues (P1) affecting recovery and consistency, and several moderate issues (P2-P3) affecting reliability and maintainability.
 
-**Location:** Plan Task 1, Step 1, `intercore_sentinel_check_or_legacy` function line 59
+The primary risks:
+1. **Journal/DB divergence on crash** - journal records demotions incrementally, DB transaction rolls back all updates
+2. **Citation reconstruction from DB is broken** - revalidation helper can't build Citation objects from DB rows
+3. **Re-promotion bypasses update_confidence()** - direct SQL UPDATE creates status field that disagrees with derived status
+4. **stale_streak divergence** - normal validation path can reset status to 'active' while stale_streak stays > 0
 
-**Code:**
-```bash
-"$INTERCORE_BIN" sentinel check "$name" "$scope_id" --interval="$interval" >/dev/null 2>&1
-return $?
+---
+
+## P0: Critical Data Integrity Issues
+
+### P0-1: Journal/DB Divergence on Crash Between Sweep and Demotion
+
+**Location:** Task 2 `sweep_all_entries()`, Task 3 `demote_entries()`, lines 113-160, 220-232
+
+**Issue:** If the process crashes after sweep completes but before `demote_entries()` finishes:
+
+```
+Time T0: sweep_all_entries() completes, commits transaction
+         Entry 247 has stale_streak = 2, status = 'stale'
+Time T1: CLI handler starts calling demote_entries([entry_247, ...])
+Time T2: demote_entries() removes entry 247 from AGENTS.md (filesystem write)
+Time T3: journal.record_demoted(entry_247) writes to journal (JSONL append)
+Time T4: Process crashes before metadata_store.mark_demoted(entry_247) runs
+Time T5: DB still has entry 247 with status = 'stale', stale_streak = 2
+         Journal has status = "demoted" for entry 247
+         AGENTS.md no longer contains entry 247
 ```
 
-**Problem:** The `2>&1` redirection suppresses all stderr output, including error messages from `ic sentinel check` when the DB operation fails (e.g., `SQLITE_BUSY`, `SQLITE_CORRUPT`, disk full, permission denied). The wrapper then returns the exit code (2 = error) as if it were a throttle decision.
+**Consequence:** Entry 247 is gone from AGENTS.md but DB doesn't know it's demoted. The sweep will keep decaying it every run. If the entry reappears in auto-memory, the normal validation path checks `if status == "demoted"` to re-promote, but status is 'stale', so the entry gets treated as a duplicate and rejected by dedup.
+
+**The plan's recovery description (line 236)** says "next sweep detects this" but provides no code for detection. The journal tracks promotions and now demotions, but the sweep doesn't check the journal for inconsistencies.
+
+**Fix required:**
+
+Add recovery check at the start of `sweep_all_entries()`:
+
+```python
+def sweep_all_entries(metadata_store, project_root, journal):
+    # Crash recovery: reconcile journal with DB
+    for journal_entry in journal.get_incomplete():
+        if journal_entry.status == "demoted":
+            row = metadata_store.get_entry(journal_entry.entry_hash)
+            if row and row["status"] != "demoted":
+                # Divergence: file was removed but DB not updated
+                metadata_store.mark_demoted(journal_entry.entry_hash)
+
+    # Begin main sweep transaction
+    metadata_store.begin_transaction()
+    try:
+        ...
+```
+
+But the journal is `PromotionJournal` and tracks "pending", "committed", "pruned" status (journal.py lines 18, 86-114). Task 3 adds "demoted" as a new status value. The `get_incomplete()` method returns entries where `status != "pruned"`, so "demoted" entries will appear as incomplete forever.
+
+**Better fix:** Journal entries for demotions should transition to a terminal state. Change `record_demoted()` to mark entries as "demoted-committed" or use the existing "pruned" status (since removal from target doc is analogous to pruning from source).
+
+**Severity:** P0 because partial demotion leaves DB in inconsistent state and breaks re-promotion logic.
+
+---
+
+### P0-2: Citation Reconstruction from DB is Broken
+
+**Location:** Task 2 `_revalidate_citations()`, line 162
+
+**Issue:** The helper needs to construct `Citation` objects from DB rows to pass to `validate_citation()`. But `Citation.__init__` requires `raw_match` (citations.py line 23), and the DB stores only `citation_type` and `citation_value` (metadata.py lines 103-120).
 
 **Failure narrative:**
-1. Hook A calls `intercore_sentinel_check_or_legacy "stop" "$SID" 0 "/tmp/clavain-stop-$SID"`
-2. `ic sentinel check stop $SID --interval=0` hits `SQLITE_BUSY` because another process holds a write lock
-3. `ic` writes "ic: sentinel check: database is locked" to stderr and exits with code 2
-4. Wrapper suppresses stderr, sees exit 2, returns 2 (nonzero = throttled in bash `||` chain)
-5. Hook A exits early thinking the sentinel was already claimed
-6. Hook B runs immediately after, same BUSY error, same suppression
-7. Hook C runs, DB lock clears, sentinel claim succeeds
-8. **Result:** Both Hook A and Hook B were suppressed silently due to transient DB contention, only Hook C ran
 
-**Correct behavior:** Hook A and Hook B should have fallen back to temp-file sentinel when DB became unavailable, preserving the atomic claim race. Instead, they exited without writing ANY sentinel (DB or temp-file), breaking the mutual exclusion guarantee.
+```python
+def _revalidate_citations(entry_hash, metadata_store, project_root):
+    rows = metadata_store.conn.execute(
+        "SELECT citation_type, citation_value FROM citations WHERE entry_hash = ?",
+        (entry_hash,)
+    ).fetchall()
 
-**Impact:** When DB is under contention (multiple hooks racing at Stop event), all but one hook may silently skip sentinel writes, allowing duplicate execution (e.g., `auto-compound` and `session-handoff` both fire, producing two "block" decisions, confusing Claude).
-
-**Exit code contract violation:** The plan claims exit 0 = allowed, 1 = throttled, but does not specify what exit 2 means. The existing `lib-intercore.sh` at line 42 suppresses stdout only:
-```bash
-"$INTERCORE_BIN" sentinel check "$name" "$scope_id" --interval="$interval" >/dev/null
+    checks = []
+    for row in rows:
+        citation = Citation(
+            type=row["citation_type"],
+            value=row["citation_value"],
+            raw_match=???  # NOT IN DATABASE → TypeError
+        )
+        result = validate_citation(citation, project_root)
+        checks.append(result)
+    return checks
 ```
-This DOES allow stderr to propagate, which is correct. The plan's new wrapper adds `2>&1`, which is a regression.
+
+**Why raw_match isn't in the DB:** It's not needed for validation. `validate_citation()` only uses `citation.type` and `citation.value` (citations.py lines 135-167). The `raw_match` field exists for audit/debugging (to show what text was originally matched in the entry content).
 
 **Fix:**
-```bash
-intercore_sentinel_check_or_legacy() {
-    local name="$1" scope_id="$2" interval="$3" legacy_file="$4"
-    if intercore_available; then
-        # Suppress stdout (allowed/throttled message), preserve stderr (errors)
-        # Exit 0 = allowed, 1 = throttled, 2 = error → fall back
-        if "$INTERCORE_BIN" sentinel check "$name" "$scope_id" --interval="$interval" >/dev/null; then
-            return 0  # allowed
-        elif [[ $? -eq 1 ]]; then
-            return 1  # throttled
-        fi
-        # Exit code 2 or 3 = error → fall through to legacy path
-        # (error already written to stderr by ic, no suppression)
-    fi
-    # Fallback: temp file check
-    # ... rest of legacy logic
-}
+
+Use `raw_match = citation_value` as an approximation:
+
+```python
+def _revalidate_citations(entry_hash, metadata_store, project_root):
+    rows = metadata_store.conn.execute(
+        "SELECT citation_type, citation_value FROM citations WHERE entry_hash = ?",
+        (entry_hash,)
+    ).fetchall()
+
+    checks = []
+    for row in rows:
+        citation = Citation(
+            type=row["citation_type"],
+            value=row["citation_value"],
+            raw_match=row["citation_value"],  # Approximation, sufficient for validation
+        )
+        result = validate_citation(citation, project_root)
+        checks.append(result)
+    return checks
 ```
 
-**Severity:** P0 — DB errors are transient and common (especially on Stop hooks which race), silent suppression creates non-deterministic sentinel skipping that can duplicate hook execution or skip critical work.
+This is correct because `raw_match` is never used by `validate_citation()` or `compute_confidence()`.
+
+**Severity:** P0 because sweep will crash with TypeError on first entry with citations.
 
 ---
 
-### P0-2: Fallback Temp-File TOCTOU Is Undocumented Regression Acceptance
+## P1: High-Severity Consistency Issues
 
-**Location:** Plan Task 1, Step 1, `intercore_sentinel_check_or_legacy` function lines 63-75
+### P1-1: Decay Formula Off-By-One at Day 28
 
-**Code:**
-```bash
-# Fallback: temp file check
-if [[ -f "$legacy_file" ]]; then
-    if [[ "$interval" -eq 0 ]]; then
-        return 1  # once-per-session: file exists = throttled
-    fi
-    # ... stat/mtime check ...
-fi
-touch "$legacy_file"
-return 0
+**Location:** Task 2 `apply_decay_penalty()`, lines 90-102
+
+**Issue:** The guard `if days_since <= 14: return confidence` means day 14 has no penalty. But at day 28, `28 // 14 = 2` → penalty = 0.2, not 0.1.
+
+**Timeline check:**
+
+- Day 14: 14 // 14 = 1, but guard catches it → penalty = 0
+- Day 15: 15 // 14 = 1 → penalty = 0.1 ✓
+- Day 28: 28 // 14 = 2 → penalty = 0.2 ✗ (should be 0.1)
+- Day 29: 29 // 14 = 2 → penalty = 0.2 ✓
+
+**The PRD says** "per 14-day period beyond the first 14 days". If the first 14 days (0-14) are the grace period, then:
+- Days 15-28 should be the first penalty period → penalty 0.1
+- Days 29-42 should be the second penalty period → penalty 0.2
+
+But the formula `periods = days_since // 14` treats day 28 as the end of period 2, not period 1.
+
+**The PRD's acceptance criteria** say "−0.1 * floor(days_since_last_seen / 14) for ages >14 days", which is the formula in the plan. So the PRD's mathematical formula doesn't match its English description.
+
+**This is a specification ambiguity.** Either:
+1. Day 28 getting penalty 0.2 is correct (per the mathematical formula), or
+2. Day 28 should get penalty 0.1 (per the English description), and the formula needs adjustment:
+
+```python
+if days_since <= 14:
+    return confidence
+days_beyond_grace = days_since - 14
+periods = (days_beyond_grace + 13) // 14  # Round to next period
+penalty = 0.1 * periods
 ```
 
-**Problem:** This is the exact TOCTOU pattern the old code used (`[ -f file ] && exit 0; touch file`), which is NOT atomic. Two hooks can both check `[[ -f file ]]`, see false, then both `touch` the file and return 0 (allowed). The intercore DB path fixes this via `INSERT OR IGNORE` + conditional `UPDATE ... RETURNING`, but the fallback reintroduces the race.
+This gives: day 15 → penalty 0.1, day 28 → penalty 0.1, day 29 → penalty 0.2.
 
-**Failure narrative (interval=0, once-per-session sentinel):**
-1. Hook A (auto-compound) and Hook B (session-handoff) both fire at Stop event
-2. `ic` is not installed, so both use fallback
-3. Hook A: `[[ -f /tmp/clavain-stop-$SID ]]` → false
-4. Hook B: `[[ -f /tmp/clavain-stop-$SID ]]` → false (not yet touched)
-5. Hook A: `touch /tmp/clavain-stop-$SID`, returns 0 (allowed)
-6. Hook B: `touch /tmp/clavain-stop-$SID`, returns 0 (allowed)
-7. **Result:** Both hooks execute, both return "block" decision with different prompts
-
-**Is this a bug?** No — it's the KNOWN legacy behavior. The plan even says "This is TOCTOU-safe" for the DB path and "known TOCTOU, accepted for legacy" for the fallback. However, the plan does NOT document the consequence: **systems without `ic` installed have weaker mutual exclusion than systems with `ic`**.
-
-**Impact:** On systems without `ic` (new Clavain users who haven't run `ic init` yet), the Stop hooks have the same race they've always had. This is acceptable IF:
-- The race is rare (hooks run sequentially in most cases)
-- The consequences are low (duplicate "block" prompts are noisy but not corrupting)
-
-**Missing documentation:** The plan should state in the "Notes for the Implementer" section:
-> **Degraded mutual exclusion without intercore:** On systems without `ic` installed, the temp-file fallback retains the original TOCTOU race where two hooks can both claim the same sentinel. This is acceptable because (1) Claude Code runs hooks sequentially by default, making races rare, and (2) the worst outcome is duplicate "block" prompts, not data corruption.
-
-**Fix:** Add the above note to the plan. No code change needed — this is working as designed.
-
-**Severity:** P0 — Not because the fallback is broken (it's intentionally legacy-compatible), but because the plan does NOT clearly state that the fallback provides weaker guarantees than the DB path. This could confuse implementers who assume "fail-safe" means "same semantics, just uses temp files." It doesn't — it means "degrades to old TOCTOU behavior."
+**Severity:** P1 because it creates a discontinuity in the decay curve at day 28, potentially causing premature demotion for entries exactly 28 days old. But it doesn't corrupt data, and the behavior is consistent (just possibly wrong vs. intent).
 
 ---
 
-### P0-3: Return Code Propagation in Wrapper Inverts Sentinel Logic
+### P1-2: stale_streak Not Reset in Normal Validation Path
 
-**Location:** Plan Task 2-7, all hook modifications
+**Location:** Task 6 re-promotion logic, normal validation in validator.py
 
-**Pattern in plan:**
-```bash
-if type intercore_sentinel_check_or_legacy &>/dev/null; then
-    intercore_sentinel_check_or_legacy "stop" "$SESSION_ID" 0 "/tmp/clavain-stop-${SESSION_ID}" || exit 0
-else
-    # legacy fallback
-fi
-```
-
-**Problem:** The `|| exit 0` assumes that the function returns 0 = allowed (proceed), nonzero = throttled (exit). But if the function returns exit code 2 (error), the hook also exits with 0 (success), which is correct for the hook (fail-open), but the `|| exit 0` pattern is misleading.
-
-**Wait, is this actually a problem?** Let me trace through the exit codes:
-- `ic sentinel check` exits 0 = allowed, 1 = throttled, 2 = error
-- Wrapper returns 0 = allowed (proceed), 1 = throttled (skip), 2 = error (fall back)
-- But the plan's wrapper does `return $?` after `ic sentinel check`, so it DOES return 2 on error
-- Hook does `intercore_sentinel_check_or_legacy ... || exit 0`, so exit 2 → exit 0 (hook succeeds without blocking)
-
-**Wait, that's wrong.** If the wrapper returns 2 (error), the hook should EITHER:
-1. Fall back to legacy temp-file logic (what the wrapper should do internally), OR
-2. Exit 0 (fail-open)
-
-The current plan does #2 (exit 0 on error), but the wrapper ALSO has fallback logic. So there are two fallback layers:
-- First layer: wrapper internal fallback (if `intercore_available` returns false OR `ic` exits nonzero)
-- Second layer: hook-level fallback (if wrapper doesn't exist, use inline legacy logic)
-
-**But the wrapper's first layer ONLY falls back if `intercore_available` returns false (binary not found or health check failed).** It does NOT fall back on `ic sentinel check` errors (exit 2). So if `ic sentinel check` returns 2, the wrapper returns 2, the hook sees nonzero, runs `exit 0`, and the sentinel is never written to temp file OR DB.
-
-**Correct fix:** See P0-1 fix — the wrapper should catch exit code 2 and fall through to the temp-file path.
-
-**Severity:** P0 — Same as P0-1, this is a silent failure mode where DB errors cause sentinels to not fire at all.
-
----
-
-## P1 Findings (Race Conditions / Consistency Issues)
-
-### P1-1: `intercore_sentinel_reset_all` List-Then-Reset TOCTOU
-
-**Location:** Plan Task 1, Step 2 (revised), `intercore_sentinel_reset_all` function lines 606-619
-
-**Code:**
-```bash
-intercore_sentinel_reset_all() {
-    local name="$1" legacy_glob="$2"
-    if intercore_available; then
-        # List all scopes for this sentinel and reset each
-        local scope
-        while IFS=$'\t' read -r _name scope _fired; do
-            [[ "$_name" == "$name" ]] || continue
-            "$INTERCORE_BIN" sentinel reset "$name" "$scope" >/dev/null 2>&1 || true
-        done < <("$INTERCORE_BIN" sentinel list 2>/dev/null || true)
-        return 0
-    fi
-    # ...
-}
-```
-
-**Problem:** The function lists all sentinels (`ic sentinel list`), then iterates and resets each one. Between the `list` and the `reset`, a new sentinel with the same name but different scope_id could be added by a concurrent hook. That new sentinel will not appear in the list, so it won't be reset.
+**Issue:** When an entry's status transitions from 'stale' to 'active' during normal validation (not during sweep), `stale_streak` is not reset. This creates inconsistent state.
 
 **Failure narrative:**
-1. Session A's `sprint_invalidate_caches` calls `intercore_sentinel_reset_all "discovery_brief" "..."`
-2. Function runs `ic sentinel list`, gets scopes: `[session-a, session-b]`
-3. Session C (concurrent, different session) calls `ic sentinel check discovery_brief session-c --interval=0`
-4. Session C's sentinel is inserted: `discovery_brief / session-c / last_fired=<now>`
-5. Session A's reset loop runs: resets `discovery_brief/session-a`, resets `discovery_brief/session-b`
-6. Session A's reset completes, returns 0
-7. **Result:** `discovery_brief/session-c` is still active (last_fired set), was NOT reset
 
-**Impact:** Cache invalidation is incomplete. When `sprint_invalidate_caches` is called (e.g., after closing a bead), it's supposed to clear ALL discovery caches so the next session sees fresh data. But if a concurrent session added a discovery_brief sentinel during the reset, that session's cache is still marked "valid" even though the underlying data changed.
-
-**How likely is this?** Very low. The `discovery_brief` sentinel is only used in the discovery cache pattern (not implemented in the current plan). The plan mentions it as a placeholder for future work. So this is a latent bug that will only manifest if the discovery cache pattern is actually implemented AND two sessions are running concurrently in the same repo.
-
-**Correct fix:** Use a wildcard DELETE in SQL:
-```bash
-intercore_sentinel_reset_all() {
-    local name="$1" legacy_glob="$2"
-    if intercore_available; then
-        # Single DELETE with wildcard: DELETE FROM sentinels WHERE name = ?
-        # No list-then-reset race.
-        "$INTERCORE_BIN" sentinel reset "$name" "*" 2>&1 | grep -v 'not found' || true
-        return 0
-    fi
-    # ...
-}
+```
+Time T0: Entry has confidence 0.3 (active), stale_streak = 0
+Time T1: Sweep runs, entry decays to confidence 0.25 (stale)
+         sweep increments stale_streak to 1
+         Entry: status = 'stale', stale_streak = 1
+Time T2: User fixes a broken citation
+Time T3: Normal synthesis run calls validate_and_filter_entries()
+         Entry has 1 valid citation now, confidence = 0.8
+         update_confidence() sets status = 'active'
+         BUT stale_streak is not reset
+         Entry: status = 'active', stale_streak = 1  ← inconsistent
+Time T4: Next sweep runs, entry decays slightly to confidence 0.28 (stale)
+         sweep increments stale_streak to 2
+         Entry marked for demotion (streak >= 2)
 ```
 
-But wait — the plan notes that `ic sentinel reset <name> <scope_id>` does `DELETE WHERE name = ? AND scope_id = ?`, so passing `*` as scope_id would only match a literal `*`. The plan RECOGNIZES this and chooses the list-then-reset approach.
+The sweep WILL eventually reset stale_streak when the entry is healthy (line 148 of plan), but between T3 and T4, the entry has inconsistent state. If the entry decays again before the sweep resets the streak, it gets prematurely demoted.
 
-**Better fix:** Add a new `ic sentinel reset-all <name>` subcommand that does `DELETE FROM sentinels WHERE name = ?` atomically. Then:
-```bash
-intercore_sentinel_reset_all() {
-    local name="$1" legacy_glob="$2"
-    if intercore_available; then
-        "$INTERCORE_BIN" sentinel reset-all "$name" >/dev/null 2>&1 || true
-        return 0
-    fi
-    rm -f $legacy_glob 2>/dev/null || true
-}
+**Fix:**
+
+Make `update_confidence()` auto-reset stale_streak on stale→active transition:
+
+```python
+def update_confidence(self, entry_hash: str, confidence: float) -> None:
+    old_row = self.get_entry(entry_hash)
+    old_status = old_row["status"] if old_row else None
+
+    status = "active" if confidence >= STALE_THRESHOLD else "stale"
+    now = datetime.now(timezone.utc).isoformat()
+    self.conn.execute(
+        "UPDATE memory_entries SET confidence = ?, confidence_updated_at = ?, status = ? WHERE entry_hash = ?",
+        (confidence, now, status, entry_hash),
+    )
+
+    # Reset streak on stale→active transition
+    if old_status == "stale" and status == "active":
+        self.reset_stale_streak(entry_hash)
 ```
 
-This avoids the TOCTOU and matches the temp-file fallback semantics (which uses `rm -f /tmp/clavain-discovery-brief-*.cache`, a single atomic syscall that removes all matching files).
-
-**Severity:** P1 — The race is real but low-likelihood (requires concurrent sessions in the same repo during cache invalidation). The fix is trivial (add `reset-all` subcommand to `ic`). Mark as "fix before discovery_brief pattern is actually used."
+**Severity:** P1 because inconsistent state can cause premature demotion if decay happens before the next sweep resets the streak.
 
 ---
 
-### P1-2: Auto-Compound Two-Stage Guard Has Misleading Comment
+## P2: Moderate Issues
 
-**Location:** Plan Task 4, auto-compound.sh migration
+### P2-1: Float Equality for Decay Accounting
 
-**Code in plan:**
-```bash
-# Step 2: Replace the stop sentinel (lines 48-53)
-if type intercore_sentinel_check_or_legacy &>/dev/null; then
-    intercore_sentinel_check_or_legacy "stop" "$SESSION_ID" 0 "/tmp/clavain-stop-${SESSION_ID}" || exit 0
-else
-    # legacy fallback
-fi
+**Location:** Task 2 `sweep_all_entries()`, line 138
 
-# Step 3: Replace the compound throttle (lines 56-63)
-if type intercore_sentinel_check_or_legacy &>/dev/null; then
-    intercore_sentinel_check_or_legacy "compound_throttle" "$SESSION_ID" 300 "/tmp/clavain-compound-last-${SESSION_ID}" || exit 0
-else
-    # legacy fallback
-fi
-```
+**Issue:** `if decayed_confidence != base_confidence: entries_decayed += 1`
 
-**Problem:** The plan's description says "The stop sentinel (shared) plus a time-based throttle (5 minutes = 300 seconds)." This is correct, but the plan does NOT explain the critical ordering invariant: **the stop sentinel MUST be checked first, before the throttle.**
+This uses float equality to count how many entries were decayed. Floating point arithmetic can produce values that differ by epsilon.
 
-**Why does order matter?** Because the stop sentinel (interval=0, once-per-session) is used by ALL Stop hooks (`auto-compound`, `session-handoff`, `auto-drift-check`) to ensure only ONE hook fires per session. The compound_throttle sentinel (interval=300) is specific to auto-compound, preventing it from firing more than once per 5 minutes.
+**Example:**
 
-**Correct flow:**
-1. Check stop sentinel (interval=0): if already claimed by another hook, exit
-2. Claim stop sentinel (write it so no other hook can proceed)
-3. Check throttle sentinel (interval=300): if fired <5min ago, exit
-4. Claim throttle sentinel (write it)
-5. Do the work
+If confidence is 0.333... (from `compute_confidence` with multiple citation checks), then `0.333... - 0.1` may have rounding error, causing the equality check to incorrectly register or miss a decay.
 
-**The plan DOES preserve this order** (stop sentinel check is Step 2, throttle check is Step 3), but it doesn't EXPLAIN why. An implementer might reverse the order ("check the throttle first to fail fast before touching the stop sentinel"), which would break the mutual exclusion guarantee.
+**Consequence:** `entries_decayed` count could be off by a few entries. This is a cosmetic reporting issue, not a correctness issue.
 
-**Failure narrative if order reversed:**
-1. Hook A (auto-compound) checks compound_throttle (interval=300), sees last_fired was 10min ago, proceeds
-2. Hook B (session-handoff) checks its own throttle (not applicable, no throttle), proceeds
-3. Hook A checks stop sentinel, claims it
-4. Hook B checks stop sentinel, sees it's claimed, exits
-5. **Result:** Hook A fires (correct)
+**Fix:**
 
-Wait, that's correct. Let me try again:
+Use a tolerance: `if abs(decayed_confidence - base_confidence) > 1e-9: entries_decayed += 1`
 
-1. Hook A (auto-compound) checks compound_throttle, sees last_fired was 2min ago (within throttle), exits
-2. Hook A never checks stop sentinel, never claims it
-3. Hook B (session-handoff) checks stop sentinel, claims it, fires
-4. **Result:** Hook B fires, Hook A doesn't
-
-Is that wrong? No — Hook A is throttled, so it SHOULD exit. The stop sentinel exists to prevent CASCADING (Hook A fires → returns block → Hook B fires → returns another block). If Hook A is throttled, it doesn't fire, so there's no cascade.
-
-**So what's the actual invariant?** The stop sentinel prevents multiple hooks from ALL firing in the same Stop event cycle. The throttle prevents a SINGLE hook from firing too frequently. Checking throttle first is CORRECT (fail fast), checking stop first is ALSO correct (claim mutual exclusion first).
-
-**Is there a real bug here?** No. The plan's order (stop first, throttle second) is safe but not required. Checking throttle first is also safe. The only requirement is that the throttle sentinel is NOT shared across hooks (each hook has its own throttle key: `compound_throttle`, `drift_throttle`).
-
-**BUT:** The plan has `touch "$STOP_SENTINEL"` on line 53 (after the stop check), then throttle check on lines 56-63, then `touch "$THROTTLE_SENTINEL"` on line 100 (at the end). This order means the stop sentinel is claimed BEFORE the throttle check, so if the throttle check fails, the stop sentinel is ALREADY claimed, preventing other hooks from running even though this hook didn't do any work.
-
-**Is THAT a bug?** Yes. Here's the correct failure:
-
-**Failure narrative (with plan's proposed order):**
-1. Hook A (auto-compound) checks stop sentinel (interval=0), claims it (writes `/tmp/clavain-stop-$SID`)
-2. Hook A checks compound_throttle (interval=300), sees last_fired was 2min ago, exits
-3. Hook B (session-handoff) checks stop sentinel, sees it's claimed, exits
-4. Hook C (auto-drift-check) checks stop sentinel, sees it's claimed, exits
-5. **Result:** No hook fires, even though Hook B and Hook C were eligible
-
-**Correct order:**
-1. Check stop sentinel (don't claim yet, just return early if already claimed)
-2. Check throttle (if throttled, exit WITHOUT claiming stop)
-3. Claim stop sentinel (write it)
-4. Do the work
-5. Claim throttle sentinel (write it)
-
-**How to implement check-without-claim?** The current `[ -f file ]` pattern does check-without-claim naturally. The `intercore_sentinel_check` wrapper does claim (writes last_fired). So we need TWO wrappers:
-- `intercore_sentinel_is_claimed` — read-only check, returns 0 if NOT claimed, 1 if claimed
-- `intercore_sentinel_claim` — write-only claim, writes last_fired
-
-But that's a significant redesign. Let me re-read the plan's code...
-
-**Re-reading auto-compound.sh lines 48-53 in the plan:**
-```bash
-STOP_SENTINEL="/tmp/clavain-stop-${SESSION_ID}"
-if [[ -f "$STOP_SENTINEL" ]]; then
-    exit 0
-fi
-touch "$STOP_SENTINEL"
-```
-
-This is check-then-claim. The plan's replacement:
-```bash
-if type intercore_sentinel_check_or_legacy &>/dev/null; then
-    intercore_sentinel_check_or_legacy "stop" "$SESSION_ID" 0 "/tmp/clavain-stop-${SESSION_ID}" || exit 0
-else
-    STOP_SENTINEL="/tmp/clavain-stop-${SESSION_ID}"
-    [[ -f "$STOP_SENTINEL" ]] && exit 0
-    touch "$STOP_SENTINEL"
-fi
-```
-
-The wrapper does `UPDATE ... WHERE last_fired = 0 RETURNING 1` (atomic check-and-claim). If it returns 1 (throttled), the hook exits. If it returns 0 (allowed), the sentinel is ALREADY claimed (last_fired was updated). So there's no way to "check without claiming."
-
-**Is this a problem?** Let me re-read the original `auto-compound.sh` to see the actual order...
-
-From the earlier read:
-```bash
-# Guard: if another Stop hook already fired this cycle, don't cascade
-STOP_SENTINEL="/tmp/clavain-stop-${SESSION_ID}"
-if [[ -f "$STOP_SENTINEL" ]]; then
-    exit 0
-fi
-# Write sentinel NOW — before transcript analysis — to minimize TOCTOU window
-touch "$STOP_SENTINEL"
-
-# Guard: throttle — at most once per 5 minutes
-THROTTLE_SENTINEL="/tmp/clavain-compound-last-${SESSION_ID}"
-if [[ -f "$THROTTLE_SENTINEL" ]]; then
-    THROTTLE_MTIME=$(...)
-    if [[ $((THROTTLE_NOW - THROTTLE_MTIME)) -lt 300 ]]; then
-        exit 0
-    fi
-fi
-```
-
-**Aha!** The original code writes the stop sentinel BEFORE checking the throttle. The comment even says "Write sentinel NOW — before transcript analysis — to minimize TOCTOU window." So the plan's order is CORRECT — it matches the original.
-
-**Why is this correct?** Because the stop sentinel's purpose is to prevent cascading hooks from ANALYZING the transcript multiple times. Even if the throttle check fails, the stop sentinel should still be claimed so no other hook does the expensive transcript analysis.
-
-**So there's no bug here.** The order is intentional. The "cost" is that if Hook A claims the stop sentinel then exits due to throttle, Hook B can't run even if it wasn't throttled. But that's DESIRED behavior — only one hook should do the transcript analysis per Stop event.
-
-**Severity:** Not a bug, but the plan should add a comment explaining the order:
-```bash
-# Claim stop sentinel FIRST (before throttle check) to prevent other hooks
-# from analyzing the transcript, even if this hook exits due to throttle.
-intercore_sentinel_check_or_legacy "stop" "$SESSION_ID" 0 "..." || exit 0
-
-# THEN check throttle (5-min cooldown specific to this hook)
-intercore_sentinel_check_or_legacy "compound_throttle" "$SESSION_ID" 300 "..." || exit 0
-```
-
-**Reclassify:** P2 — Documentation gap, not a correctness bug.
+**Severity:** P2 because it only affects reporting, not data integrity.
 
 ---
 
-### P1-3: Sentinel Auto-Prune Timing Is Inconsistent Across Hooks
+### P2-2: Re-promotion Logic is Dead Code
 
-**Location:** Plan Task 1, sentinel.go lines 72-75 (auto-prune in transaction), vs Task 3 Step 4, session-handoff.sh line 140 (find -mmin +60)
+**Location:** Task 6, lines 349-357
 
-**Code:**
-```go
-// sentinel.go line 72-75
-// Synchronous auto-prune: delete stale sentinels in same tx
-if _, err := tx.ExecContext(ctx,
-    "DELETE FROM sentinels WHERE unixepoch() - last_fired > 604800"); err != nil {
-    fmt.Fprintf(os.Stderr, "ic: auto-prune: %v\n", err)
-}
+**Issue:** The plan adds re-promotion logic to `validate_and_filter_entries()`:
+
+```python
+row = metadata_store.get_entry(entry_hash)
+if row and row["status"] == "demoted" and confidence >= STALE_THRESHOLD:
+    metadata_store.conn.execute(
+        "UPDATE memory_entries SET status = 'active', stale_streak = 0, demoted_at = NULL WHERE entry_hash = ?",
+        (entry_hash,)
+    )
 ```
 
-**Hooks cleanup:**
-```bash
-# session-handoff.sh line 140
-find /tmp -maxdepth 1 -name 'clavain-stop-*' -mmin +60 -delete 2>/dev/null || true
+But this check runs AFTER `update_confidence()` (line 103), which unconditionally overwrites status:
 
-# auto-compound.sh line 117
-find /tmp -maxdepth 1 \( -name 'clavain-stop-*' -o -name 'clavain-drift-last-*' -o -name 'clavain-compound-last-*' \) -mmin +60 -delete 2>/dev/null || true
+```python
+# metadata.py update_confidence(), line 150:
+status = "active" if confidence >= STALE_THRESHOLD else "stale"
 ```
 
-**Problem:** The Go auto-prune uses 604800 seconds (7 days), but the bash cleanup uses 60 minutes (1 hour). This is a **10080× difference** in retention.
+So if an entry has status = 'demoted' and confidence = 0.8, `update_confidence()` changes status to 'active' BEFORE the re-promotion check runs. The check `if row["status"] == "demoted"` will never match.
 
-**Impact:** The intercore DB will accumulate sentinels for 7 days before pruning, but the temp files are deleted after 1 hour. This means:
-- Systems WITH `ic`: Old sessions' sentinels live for 7 days (not a problem, they're marked as fired so they don't block)
-- Systems WITHOUT `ic`: Old sessions' temp files are deleted after 1 hour (matches current behavior)
+**The observable behavior is still correct** - demoted entries with good citations DO become active, just via `update_confidence()` overwriting status, not via the explicit re-promotion logic.
 
-**Is this a problem?** No, different retention is fine. The 7-day retention in the DB allows `ic sentinel list` to show history for debugging ("why did this hook not fire?"). The 1-hour retention for temp files is aggressive cleanup to avoid `/tmp` clutter.
+**But this is a logic bug in the plan** because the re-promotion code is dead.
 
-**But:** The plan does NOT explain this difference. An implementer might assume "1 hour" is the correct threshold and change the Go code to match:
-```go
-// WRONG: Don't do this
-"DELETE FROM sentinels WHERE unixepoch() - last_fired > 3600"
+**Fix option 1:** Check demoted status BEFORE update_confidence():
+
+```python
+old_row = metadata_store.get_entry(entry_hash)
+was_demoted = old_row and old_row["status"] == "demoted"
+
+confidence = compute_confidence(0.5, checks, snapshot_count)
+
+if was_demoted and confidence >= STALE_THRESHOLD:
+    # Re-promote: clear demotion state
+    metadata_store.conn.execute(
+        "UPDATE memory_entries SET status = 'active', confidence = ?, confidence_updated_at = ?, stale_streak = 0, demoted_at = NULL WHERE entry_hash = ?",
+        (confidence, datetime.now(timezone.utc).isoformat(), entry_hash),
+    )
+else:
+    metadata_store.update_confidence(entry_hash, confidence)
 ```
 
-**Correct documentation:** Add to plan Task 1 notes:
-> **Retention policy difference:** The DB auto-prune uses 7 days (604800 sec) to preserve history for debugging, while temp-file cleanup uses 1 hour (60 min) for aggressive cleanup. This is intentional — the DB can afford longer retention, and keeping fired sentinels aids post-mortem analysis.
+**Fix option 2:** Make `update_confidence()` preserve 'demoted' status:
 
-**Severity:** P2 — Documentation gap, not a bug. The current thresholds are reasonable.
+```python
+def update_confidence(self, entry_hash: str, confidence: float) -> None:
+    old_row = self.get_entry(entry_hash)
+    if old_row and old_row["status"] == "demoted":
+        # Don't auto-promote demoted entries; let explicit re-promotion handle it
+        self.conn.execute(
+            "UPDATE memory_entries SET confidence = ?, confidence_updated_at = ? WHERE entry_hash = ?",
+            (confidence, datetime.now(timezone.utc).isoformat(), entry_hash),
+        )
+        return
+
+    status = "active" if confidence >= STALE_THRESHOLD else "stale"
+    self.conn.execute(
+        "UPDATE memory_entries SET confidence = ?, confidence_updated_at = ?, status = ? WHERE entry_hash = ?",
+        (confidence, datetime.now(timezone.utc).isoformat(), status, entry_hash),
+    )
+```
+
+**Severity:** P2 because the re-promotion check is dead code, but observable behavior is correct.
 
 ---
 
-## P2 Findings (Edge Cases / Future Concerns)
+## P3: Minor Issues
 
-### P2-1: `intercore_cleanup_stale` Calls Prune Without Arguments
+### P3-1: Schema Migration Doesn't Update CHECK Constraint
 
-**Location:** Plan Task 3 Step 4, replacement for find -mmin
+**Location:** Task 1 `migrate_to_v2()`, lines 32-49
 
-**Code:**
-```bash
-if type intercore_cleanup_stale &>/dev/null; then
-    intercore_cleanup_stale
-else
-    find /tmp -maxdepth 1 -name 'clavain-stop-*' -mmin +60 -delete 2>/dev/null || true
-fi
+**Issue:** The plan says "SQLite can't ALTER CHECK constraints. For existing DBs, we accept 'demoted' as a valid status without CHECK enforcement."
+
+This creates a split-brain situation:
+- New DBs created after migration: CHECK includes 'demoted'
+- Existing DBs created before migration: CHECK rejects 'demoted'
+
+If someone manually sets status = 'demoted' in an existing DB via sqlite3 CLI, the CHECK constraint rejects it. But the application code will work fine because it doesn't rely on CHECK enforcement.
+
+**Why this matters:** If a test creates a fresh DB during Phase 2A, the CHECK constraint includes 'demoted'. If production uses a Phase 1 DB, the constraint behavior differs. This can cause confusion during debugging.
+
+**Fix:**
+
+Either document this explicitly as a known limitation, or force a table rebuild (expensive but ensures consistency):
+
+```python
+def migrate_to_v2(self) -> None:
+    # Add columns first (idempotent)
+    if not self._column_exists("memory_entries", "stale_streak"):
+        self.conn.execute(
+            "ALTER TABLE memory_entries ADD COLUMN stale_streak INTEGER NOT NULL DEFAULT 0"
+        )
+    if not self._column_exists("memory_entries", "demoted_at"):
+        self.conn.execute(
+            "ALTER TABLE memory_entries ADD COLUMN demoted_at TEXT"
+        )
+
+    # Check if CHECK constraint update is needed
+    row = self.conn.execute("SELECT migration_version FROM schema_version").fetchone()
+    if row and row[0] >= 2:
+        return  # Already migrated
+
+    # Rebuild table with updated CHECK constraint (expensive but correct)
+    self.conn.executescript("""
+        CREATE TABLE memory_entries_new (
+            entry_hash TEXT PRIMARY KEY,
+            content_preview TEXT NOT NULL,
+            section TEXT NOT NULL,
+            source_file TEXT NOT NULL,
+            first_seen TEXT NOT NULL DEFAULT (datetime('now')),
+            last_seen TEXT NOT NULL DEFAULT (datetime('now')),
+            snapshot_count INTEGER NOT NULL DEFAULT 1,
+            confidence REAL NOT NULL DEFAULT 0.5,
+            confidence_updated_at TEXT,
+            status TEXT NOT NULL DEFAULT 'active'
+                CHECK(status IN ('active', 'stale', 'orphaned', 'demoted')),
+            stale_streak INTEGER NOT NULL DEFAULT 0,
+            demoted_at TEXT
+        );
+        INSERT INTO memory_entries_new SELECT *, 0, NULL FROM memory_entries;
+        DROP TABLE memory_entries;
+        ALTER TABLE memory_entries_new RENAME TO memory_entries;
+    """)
+
+    self.conn.execute("UPDATE schema_version SET migration_version = 2")
+    self.conn.commit()
 ```
 
-**Wrapper from plan Task 1:**
-```bash
-intercore_cleanup_stale() {
-    if intercore_available; then
-        "$INTERCORE_BIN" sentinel prune --older-than=1h >/dev/null 2>&1 || true
-        return 0
-    fi
-    # Fallback: clean legacy temp files
-    find /tmp -maxdepth 1 \( -name 'clavain-stop-*' -o -name 'clavain-drift-last-*' -o -name 'clavain-compound-last-*' \) -mmin +60 -delete 2>/dev/null || true
-}
-```
+But this is complex and risky. The simpler fix: document that CHECK constraints are advisory in existing DBs, and rely on application-level validation.
 
-**Issue:** The wrapper calls `ic sentinel prune --older-than=1h`, but the Go auto-prune in `sentinel.Check` uses 604800 sec (7 days). This means:
-- Auto-prune (runs on every `ic sentinel check`): deletes sentinels >7 days old
-- Manual prune (runs via `intercore_cleanup_stale`): deletes sentinels >1 hour old
-
-**Wait, that's inconsistent.** If the manual prune uses 1 hour, it will delete sentinels that the auto-prune would keep. Is that a problem?
-
-**No — it's correct.** The auto-prune runs in the SAME transaction as the sentinel check, so it can't delete the sentinel being checked (it just got updated). The manual prune runs SEPARATELY, typically at the end of a hook after all sentinel checks are done. Using 1-hour threshold for manual prune matches the temp-file cleanup behavior and is safe (sentinels older than 1 hour are from previous sessions, safe to delete).
-
-**But:** The 7-day auto-prune is ALSO running on every `ic sentinel check`, so sentinels older than 1 hour but younger than 7 days will be kept by the auto-prune, then deleted by the manual prune. This is redundant but harmless.
-
-**Recommendation:** Make the auto-prune threshold configurable or remove it entirely (rely on manual prune). But for v1, the current behavior is safe.
-
-**Severity:** P3 — Minor inconsistency, no correctness impact.
-
----
-
-### P2-2: Plan's Step 3 Touch Removal Is Incomplete
-
-**Location:** Plan Task 4 Step 3, auto-compound.sh migration
-
-**Plan text:**
-> "And the `touch "$THROTTLE_SENTINEL"` on line 100. Replace both with: ..."
-
-**Then:**
-> "Move the throttle sentinel touch into the else branch (before the `exit 0` at end), and remove the standalone `touch "$THROTTLE_SENTINEL"` later in the file since `intercore_sentinel_check_or_legacy` handles writing the sentinel atomically."
-
-**Problem:** The plan says "remove the standalone touch" but ALSO says "move it into the else branch." These are contradictory. The correct behavior:
-- **Intercore path:** No explicit touch needed, `ic sentinel check` writes last_fired atomically
-- **Legacy path:** Explicit `touch "$THROTTLE_SENTINEL"` needed after all guards pass
-
-**Plan should say:**
-> "Remove the standalone `touch "$THROTTLE_SENTINEL"` on line 100. For the legacy path, add `touch "$THROTTLE_SENTINEL"` inside the else branch AFTER all checks pass."
-
-**Severity:** P2 — Ambiguous instruction, implementer might misinterpret.
-
----
-
-### P2-3: Copy lib-intercore.sh Bloats Clavain Plugin on Every Intercore Update
-
-**Location:** Plan Task 2 Step 1 (revised)
-
-**Plan text:**
-> "Actually, this is over-engineered. ... Simplest approach: **copy `lib-intercore.sh` into Clavain's hooks directory** so it's always available alongside the hooks."
-
-**Problem:** Every time `intercore` is updated (new wrappers, bug fixes), the Clavain plugin needs to re-copy `lib-intercore.sh` and release a new version. This creates a version skew risk where Clavain is using an old `lib-intercore.sh` that doesn't match the installed `ic` binary.
-
-**Better approach:** Install `lib-intercore.sh` alongside `ic` binary (e.g., `/usr/local/bin/ic` → `/usr/local/lib/intercore/lib-intercore.sh`), then source it with a fallback:
-```bash
-# Try installed lib first, fall back to bundled copy
-if [[ -f /usr/local/lib/intercore/lib-intercore.sh ]]; then
-    source /usr/local/lib/intercore/lib-intercore.sh
-elif [[ -f "${BASH_SOURCE[0]%/*}/lib-intercore.sh" ]]; then
-    source "${BASH_SOURCE[0]%/*}/lib-intercore.sh"
-fi
-```
-
-**Severity:** P2 — Maintenance burden, not a correctness issue. The copy approach works, just creates coupling.
-
----
-
-## P3 Findings (Style / Minor Issues)
-
-### P3-1: Wrapper Function Name Uses `_or_legacy` Suffix Inconsistently
-
-**Functions:**
-- `intercore_sentinel_check_or_legacy` ✅
-- `intercore_sentinel_reset_or_legacy` ✅
-- `intercore_sentinel_reset_all` ❌ (no `_or_legacy` suffix)
-- `intercore_cleanup_stale` ❌ (no `_or_legacy` suffix)
-
-**Issue:** The `_or_legacy` suffix clearly indicates "tries intercore, falls back to temp files." But `intercore_cleanup_stale` also has fallback logic. Should be `intercore_cleanup_stale_or_legacy` for consistency.
-
-**Severity:** P3 — Style inconsistency, not a bug.
-
----
-
-### P3-2: Plan Uses `type ... &>/dev/null` Instead of `command -v`
-
-**Code:**
-```bash
-if type intercore_sentinel_check_or_legacy &>/dev/null; then
-```
-
-**Better:**
-```bash
-if declare -f intercore_sentinel_check_or_legacy >/dev/null 2>&1; then
-```
-
-**Why:** `type` is a bash builtin that outputs text ("intercore_sentinel_check_or_legacy is a function"), while `declare -f` is the idiomatic way to check if a function exists. Also, `&>` is a bash-ism; `>/dev/null 2>&1` is POSIX-portable (though these are bash scripts, so `&>` is fine).
-
-**Severity:** P3 — Style preference, both work.
-
----
-
-### P3-3: Sentinel Prune in `sentinel.go` Logs to Stderr on Failure But Continues
-
-**Location:** sentinel.go lines 72-75
-
-**Code:**
-```go
-if _, err := tx.ExecContext(ctx,
-    "DELETE FROM sentinels WHERE unixepoch() - last_fired > 604800"); err != nil {
-    fmt.Fprintf(os.Stderr, "ic: auto-prune: %v\n", err)
-}
-```
-
-**Issue:** If the prune DELETE fails (e.g., DB corruption, disk error), the error is logged to stderr but the transaction still commits. This means the sentinel check succeeded (last_fired was updated) even though the cleanup failed.
-
-**Is this a problem?** No — the prune is a best-effort cleanup. If it fails, the DB will accumulate stale rows, but that doesn't affect correctness (stale rows have last_fired >7 days, so they won't match any checks).
-
-**But:** The error goes to stderr, which (per P0-1) should NOT be suppressed by the wrapper. So if auto-prune fails, the hook will see the error on stderr. Should the wrapper treat this as a fatal error? No — the sentinel check SUCCEEDED, only the cleanup failed.
-
-**Recommendation:** Change the auto-prune log prefix to make it clear it's non-fatal:
-```go
-fmt.Fprintf(os.Stderr, "ic: sentinel check: warning: auto-prune failed: %v\n", err)
-```
-
-**Severity:** P3 — Minor UX issue, not a correctness bug.
+**Severity:** P3 because CHECK constraints are not critical for correctness (the application validates status values), but divergence can cause confusion.
 
 ---
 
 ## Summary Table
 
-| ID | Severity | Issue | Impact | Fix Complexity |
-|----|----------|-------|--------|----------------|
-| P0-1 | P0 | Stderr suppression hides DB errors | Sentinels not written on transient DB errors | Trivial (remove `2>&1`) |
-| P0-2 | P0 | Fallback TOCTOU not documented as regression | Confusing semantics (DB=atomic, fallback=racy) | Trivial (add note) |
-| P0-3 | P0 | Exit code 2 causes sentinel skip | Same as P0-1 | Trivial (catch exit 2) |
-| P1-1 | P1 | `reset_all` list-then-reset TOCTOU | Incomplete cache invalidation | Medium (add `reset-all` subcommand) |
-| P1-2 | P2 | Stop/throttle order not explained | Implementer confusion (but plan is correct) | Trivial (add comment) |
-| P1-3 | P2 | Auto-prune 7d vs cleanup 1h not documented | Retention policy confusion | Trivial (add note) |
-| P2-1 | P3 | Auto-prune vs manual prune threshold | Redundant cleanup, no impact | Low (unify thresholds) |
-| P2-2 | P2 | Ambiguous "remove touch" instruction | Implementer might misinterpret | Trivial (clarify wording) |
-| P2-3 | P2 | Copy lib-intercore.sh creates version skew | Maintenance burden | Medium (install alongside `ic`) |
-| P3-1 | P3 | Inconsistent `_or_legacy` suffix | Style inconsistency | Trivial (rename) |
-| P3-2 | P3 | `type` instead of `declare -f` | Style preference | Trivial (change command) |
-| P3-3 | P3 | Auto-prune error log is terse | UX issue | Trivial (reword message) |
+| ID | Severity | Location | Issue | Impact |
+|----|----------|----------|-------|--------|
+| P0-1 | Critical | Task 2 sweep, Task 3 demotion | Journal/DB divergence on crash between sweep and demote | Entries removed from docs but DB doesn't know → breaks re-promotion |
+| P0-2 | Critical | Task 2 _revalidate_citations | Citation.raw_match not in DB, can't reconstruct | Sweep crashes with TypeError on first revalidation |
+| P1-1 | High | Task 2 decay formula | Day 28 gets penalty 0.2 instead of 0.1 | Discontinuity in decay curve, premature demotion |
+| P1-2 | High | Task 6 re-promotion, normal validation | stale_streak not reset in normal validation path | Inconsistent state (active status, non-zero streak) → premature demotion |
+| P2-1 | Moderate | Task 2 sweep accounting | Float equality for decay count | Cosmetic: entries_decayed count may be off by 1-2 |
+| P2-2 | Moderate | Task 6 re-promotion | Re-promotion logic is dead code | Logic never triggers, but observable behavior correct |
+| P3-1 | Minor | Task 1 migration | CHECK constraint not updated in existing DBs | Divergence between old/new DBs, advisory only |
 
 ---
 
-## Recommended Fixes
+## Recommendations
 
-### Must Fix Before Merge (P0)
+1. **Fix P0-1 first:** Add journal reconciliation check at sweep start. Change demote journal entries to use terminal status (not "demoted" which gets stuck as incomplete).
 
-1. **Remove stderr suppression in wrapper:**
-   ```bash
-   # Line 59 in plan's intercore_sentinel_check_or_legacy
-   # OLD:
-   "$INTERCORE_BIN" sentinel check "$name" "$scope_id" --interval="$interval" >/dev/null 2>&1
-   # NEW:
-   if "$INTERCORE_BIN" sentinel check "$name" "$scope_id" --interval="$interval" >/dev/null; then
-       return 0  # allowed
-   elif [[ $? -eq 1 ]]; then
-       return 1  # throttled
-   fi
-   # Fall through to legacy on error (exit 2/3)
-   ```
+2. **Fix P0-2:** Use `raw_match = citation_value` when reconstructing Citation from DB in `_revalidate_citations()`.
 
-2. **Document fallback TOCTOU as intentional:**
-   Add to plan's "Notes for the Implementer" section:
-   > **Fallback sentinel behavior:** Systems without `ic` installed use temp-file sentinels which have a known TOCTOU race (two hooks can both claim the same sentinel). This is acceptable because (1) hooks run sequentially in most cases, and (2) the worst outcome is duplicate prompts, not data corruption. The intercore DB path provides strict atomic mutual exclusion.
+3. **Clarify P1-1 with user:** Ask if day 28 should get penalty 0.1 or 0.2. Update formula or PRD accordingly.
 
-3. **Add routing-eligible check before reset_all:**
-   Document that `intercore_sentinel_reset_all` should only be used for patterns where the TOCTOU is acceptable (cache invalidation), NOT for mutual-exclusion sentinels (stop, handoff).
+4. **Fix P1-2:** Make `update_confidence()` auto-reset stale_streak on stale→active transition.
 
-### Should Fix Before v1 (P1)
+5. **Fix P2-2:** Either check demoted status before `update_confidence()` runs, or make `update_confidence()` preserve demoted status and add explicit re-promotion call after.
 
-4. **Add `ic sentinel reset-all <name>` subcommand:**
-   ```go
-   func (s *Store) ResetAll(ctx context.Context, name string) (int64, error) {
-       result, err := s.db.ExecContext(ctx,
-           "DELETE FROM sentinels WHERE name = ?", name)
-       if err != nil {
-           return 0, fmt.Errorf("reset-all: %w", err)
-       }
-       return result.RowsAffected()
-   }
-   ```
-
-### Nice to Have (P2-P3)
-
-5. Clarify stop/throttle ordering with comment
-6. Document auto-prune retention difference
-7. Consider installing lib-intercore.sh alongside `ic` binary
-8. Rename `intercore_cleanup_stale` → `intercore_cleanup_stale_or_legacy`
+6. **Accept P2-1 and P3-1:** Document as known limitations. P2-1 is cosmetic, P3-1 is advisory only.
 
 ---
 
-## Final Verdict
+## Testing Recommendations
 
-**Plan is APPROVED with P0 fixes required.**
+For each fix, add tests:
 
-The migration design is sound. The Go sentinel implementation is correct (atomic claim via conditional UPDATE in transaction). The bash wrappers provide proper fail-safe fallback. The three P0 issues are all fixable with trivial changes (remove `2>&1`, add documentation, handle exit code 2). The P1 reset_all race is low-priority (only affects future cache pattern). Implement P0 fixes before merge, defer P1-P3 to follow-up issues.
+- **P0-1:** `test_sweep_crash_recovery_from_journal` — simulate crash between sweep and demote, verify next sweep reconciles
+- **P0-2:** `test_sweep_revalidates_citations_from_db` — entry with DB citations (no content), sweep reconstructs and validates
+- **P1-1:** `test_decay_penalty_at_day_28` — explicit test for boundary case
+- **P1-2:** `test_stale_to_active_resets_streak` — entry goes stale, citation fixed, verify streak reset
+- **P2-2:** `test_demoted_entry_repromotion` — demoted entry reappears with good citations, verify status and streak reset
