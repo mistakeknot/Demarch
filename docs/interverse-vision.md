@@ -66,7 +66,7 @@ The survival properties are the point. Each layer can be replaced, rewritten, or
 
 **The profiler (Interspect)** provides learning: it reads the kernel's event stream, correlates dispatch outcomes with human corrections, and proposes changes to OS configuration. Override rate, false positive rate, finding density — signals that compound over time. Interspect never modifies the kernel. It modifies the OS layer through safe, reversible overlays.
 
-**The drivers (companion plugins)** provide capabilities: multi-agent review (interflux), file coordination (interlock), ambient research (interject), token-efficient code context (tldr-swinton), agent visibility (intermux), and two dozen more. Each wraps one capability and extends the system through kernel primitives. Drivers are Claude Code plugins today, but the capabilities they wrap are not Claude Code-specific.
+**The drivers (companion plugins)** provide capabilities: multi-agent review (interflux), file coordination (interlock), ambient research (interject), token-efficient code context (tldr-swinton), agent visibility (intermux), and two dozen more. Each wraps one capability and extends the system through kernel primitives. Drivers are Claude Code plugins today, but the capabilities they wrap are not Claude Code-specific. Critically, every driver is independently installable — usable in vanilla Claude Code without Clavain, Intercore, or any other Interverse module. The stack provides enhanced integration when present, but each driver is valuable on its own.
 
 **The apps (Autarch)** provide surfaces: Bigend (monitoring), Gurgeh (PRD generation), Coldwine (task orchestration), Pollard (research intelligence). Each renders kernel state into interactive TUI experiences. The apps are a convenience layer — everything they do can be done via CLI.
 
@@ -90,23 +90,31 @@ Small, focused tools composed through explicit interfaces beat large integrated 
 
 The naming convention reflects this: each companion occupies the space *between* two things. interphase (between phases), interflux (between flows), interlock (between locks), interpath (between paths). They are bridges and boundary layers, not monoliths.
 
-### 4. Human attention is the bottleneck
+### 4. Independently valuable
+
+Every driver works standalone. A user can install interflux for multi-agent review, tldr-swinton for code context, or interphase for phase tracking — without Clavain, without Intercore, without the rest of the stack. The full Interverse stack adds durable state (kernel), adaptive improvement (profiler), and opinionated workflow (OS), but these are enhancements, not prerequisites.
+
+This is a stronger version of the layer survival property: not just "layers survive if adjacent layers disappear," but "drivers survive if *all* other layers disappear." When Intercore is present, drivers call `ic` for durable state. When it's not, they fall back to local state management. The capability is the same; the durability differs.
+
+This constraint also prevents consolidation creep. The temptation to fold a driver into its nearest layer (interphase into Intercore, intersynth into interflux) is always wrong if it would break standalone installation. Code location follows the standalone-usability boundary, not the dependency graph.
+
+### 5. Human attention is the bottleneck
 
 Agents are cheap. Human focus is scarce. The system optimizes for the human's time, not the agent's. Token efficiency is not the same as attention efficiency — multi-agent output must be presented so humans can review quickly and confidently, not just cheaply.
 
 This means the human drives strategy (what to build, which tradeoffs to accept, when to ship) while the agency drives execution (which model, which agents, what sequence, when to advance, what to review). The human is above the loop, not in it.
 
-### 5. Discipline before speed
+### 6. Discipline before speed
 
 Quality gates matter more than velocity. Agents without discipline ship slop. The system resolves all open questions before execution — ambiguity costs more during building than during planning. The review phases are not overhead; they are the product.
 
 Gates are kernel-enforced invariants, not prompt suggestions. An agent cannot bypass a gate regardless of what the LLM requests. This is the difference between "please check for a plan artifact" and "the system will not advance without a plan artifact."
 
-### 6. Self-building as proof
+### 7. Self-building as proof
 
 Every capability must survive contact with its own development process. Clavain builds Clavain. The agency runs its own sprints — research, brainstorm, plan, execute, review, compound. This is the credibility engine: a system that autonomously builds itself is a more convincing proof than any benchmark.
 
-### 7. Right model, right task
+### 8. Right model, right task
 
 No one model is best at everything. The agency's intelligence includes knowing *which* intelligence to apply. Gemini for long-context exploration. Opus for reasoning and design. Codex for parallel implementation. Haiku for quick checks. Oracle (GPT-5.2 Pro) for cross-validation. Model routing is a first-class architectural decision, not an afterthought.
 
