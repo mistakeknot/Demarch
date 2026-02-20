@@ -1,6 +1,6 @@
 # Interverse Roadmap
 
-**Modules:** 35 | **Open beads (root tracker):** 366 | **Blocked (root tracker):** 35 | **Last updated:** 2026-02-20
+**Modules:** 35 | **Open beads (root tracker):** 338 | **Blocked (root tracker):** 52 | **Last updated:** 2026-02-20
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json)
 
@@ -10,39 +10,39 @@
 
 | Module | Location | Version | Status | Roadmap | Open Beads (context) |
 |--------|----------|---------|--------|---------|----------------------|
-| autarch | hub/autarch | — | active | yes | 37 |
+| autarch | hub/autarch | 0.1.0 | early | no | n/a |
 | clavain | hub/clavain | 0.6.42 | active | yes | 13 |
-| intercheck | plugins/intercheck | 0.1.2 | active | yes | 4 |
-| intercore | infra/intercore | — | active | yes | 5 |
+| intercheck | plugins/intercheck | 0.1.4 | active | yes | 4 |
 | intercraft | plugins/intercraft | 0.1.0 | active | yes | 4 |
 | interdev | plugins/interdev | 0.2.0 | active | yes | 4 |
 | interdoc | plugins/interdoc | 5.1.1 | active | yes | 4 |
-| interfluence | plugins/interfluence | 0.1.3 | active | yes | 4 |
-| interflux | plugins/interflux | 0.2.13 | active | yes | 19 |
+| interfluence | plugins/interfluence | 0.2.3 | active | yes | 4 |
+| interflux | plugins/interflux | 0.2.16 | active | yes | 19 |
 | interform | plugins/interform | 0.1.0 | active | yes | 4 |
-| interject | plugins/interject | 0.1.5 | active | yes | 4 |
-| interkasten | plugins/interkasten | 0.4.1 | active | yes | 12 |
-| interlens | plugins/interlens | 2.2.3 | active | yes | 4 |
+| interject | plugins/interject | 0.1.6 | active | yes | 4 |
+| interkasten | plugins/interkasten | 0.4.2 | active | yes | 12 |
+| interleave | plugins/interleave | 0.1.1 | early | no | n/a |
+| interlens | plugins/interlens | 2.2.4 | active | yes | 4 |
 | interline | plugins/interline | 0.2.4 | active | yes | 4 |
 | interlock | plugins/interlock | 0.2.1 | active | yes | 10 |
-| intermap | plugins/intermap | 0.1.1 | early | no | n/a |
-| intermem | plugins/intermem | 0.1.0 | active | no | 4 |
+| intermap | plugins/intermap | 0.1.3 | early | no | n/a |
+| intermem | plugins/intermem | 0.2.1 | early | no | n/a |
 | intermute | services/intermute | — | active | yes | 29 |
-| intermux | plugins/intermux | 0.1.0 | active | yes | 4 |
+| intermux | plugins/intermux | 0.1.1 | active | yes | 4 |
 | internext | plugins/internext | 0.1.2 | active | yes | 4 |
-| interpath | plugins/interpath | 0.2.1 | active | yes | 4 |
+| interpath | plugins/interpath | 0.2.2 | active | yes | 4 |
 | interpeer | plugins/interpeer | 0.1.0 | early | no | n/a |
 | interphase | plugins/interphase | 0.3.2 | active | yes | 4 |
 | interpub | plugins/interpub | 0.1.2 | active | yes | 4 |
 | intersearch | plugins/intersearch | 0.1.1 | active | yes | 4 |
-| interserve | plugins/interserve | 0.1.0 | active | yes | 4 |
+| interserve | plugins/interserve | 0.1.1 | active | yes | 4 |
 | interslack | plugins/interslack | 0.1.0 | active | yes | 4 |
-| interstat | plugins/interstat | 0.1.0 | active | yes | 4 |
-| intersynth | plugins/intersynth | 0.1.0 | early | no | n/a |
-| intertest | plugins/intertest | 0.1.0 | early | no | n/a |
+| interstat | plugins/interstat | 0.2.2 | active | yes | 4 |
+| intersynth | plugins/intersynth | 0.1.2 | early | no | n/a |
+| intertest | plugins/intertest | 0.1.1 | early | no | n/a |
 | interverse | root | — | active | yes | n/a |
 | interwatch | plugins/interwatch | 0.1.2 | active | yes | 4 |
-| tldr-swinton | plugins/tldr-swinton | 0.7.13 | active | yes | 15 |
+| tldr-swinton | plugins/tldr-swinton | 0.7.14 | active | yes | 15 |
 | tool-time | plugins/tool-time | 0.3.2 | active | yes | 12 |
 | tuivision | plugins/tuivision | 0.1.4 | active | yes | 4 |
 
@@ -54,165 +54,139 @@
 
 ### Now (P0-P1)
 
-- [intersynth] **iv-dnml** Codex dispatch via dispatch.sh with intermux visibility
-- [interverse] **iv-0681** Crash recovery + error aggregation for multi-agent sessions
-- [autarch] **iv-2yef** Ship minimal status tool as kernel validation wedge (blocks iv-knwr)
-- [clavain] **iv-3krg** Wire /reflect step into sprint.md orchestration
+- [intercore] **iv-0k8s** E6: Rollback and recovery — three-layer revert (blocked by iv-9ofb, iv-9plh, iv-c6az)
+- [intercore] **iv-ishl** E7: Autarch Phase 1 — Bigend migration + ic tui (blocked by iv-9plh, iv-c6az)
+- [clavain] **iv-kj6w** A2: Sprint handover — sprint skill becomes kernel-driven (blocked by iv-ngvy)
 
-**Recently completed:** iv-8jpf (Reflect phase: 5th macro-stage, 10-phase chain, --phases fix, /reflect command), iv-i66k (verify reflect transitions), iv-fos3 (reflect artifact registration), iv-mxap (doc alignment for 5 macro-stages), iv-v7n4 (sprint-to-kernel phase mapping), iv-ngvy (E3: Hook cutover — big-bang Clavain migration to ic), iv-9plh (E2: Level 2 React — SpawnHandler wiring + event reactor docs/tests), iv-som2 (E1: Kernel primitives — phase chains, tokens, skip, hash), iv-bkjb (F1: Phase chains), iv-afjh (F2: Skip command), iv-432r (F3: Artifact hashing), iv-jzfh (F4: Token tracking), iv-s4wh (F5: Token aggregation), iv-ht3h (F6: Budget events), iv-wo1t (Hook adapter — thin bridge from Claude Code hooks to intercore DB), iv-a20e (Phase state machine — own the brainstorm-to-ship lifecycle), iv-e5oa (Dispatch — spawn and track Claude Code + Codex agents), iv-dyyy (interstat plugin scaffold + SQLite schema), iv-n4p7 (intermem Phase 1: Validation overlay), iv-rkrm (intermem Phase 2: Decay + progressive disclosure), iv-zl98 (intermem Dogfood Phase 1+2A), iv-byh3 (Define platform kernel + lifecycle UX architecture), iv-hoqj (Interband: sideband protocol library), iv-8m38 (Token budget controls + cost-aware agent dispatch), iv-d72t (Phase 4a: Reservation Negotiation Protocol), iv-jq5b (Token efficiency benchmarking framework), iv-jo3i (Canary verdict engine)
+**Recently completed:** iv-bld6 (F2: Workflow state rollback (ic run rollback --to-phase)), iv-2yef (Autarch: ship minimal status tool as kernel validation wedge), iv-pbmc (Cost-aware agent scheduling with token budgets), iv-8jpf (Add reflect/compound phase to default sprint chain), iv-3sns (E4.1: Kernel interspect_events table + ic interspect record CLI), iv-shra (E4.2: Durable cursor registration for long-lived consumers), iv-ooon (Harmonize Clavain docs with revised vision — 6 drift fixes), iv-yeka (Update roadmap.md for new vision + parallel tracks), iv-lhdb (P0: Event emission authority — only kernel should emit state events), iv-s6zo (F1: lib-sprint.sh rewrite — ic run CRUD), iv-l49k (Apply Oracle review synthesis — 10 themes across 3 vision docs), iv-l49k.3 (T3: Move policy out of kernel doc — scoring, decay, presets, revert), iv-l49k.4 (T4: Resolve ic state contradiction — promote to public primitive), iv-l49k.2 (T2: Add write-path contracts — define who can mutate kernel state), iv-l49k.6 (T6: Create shared glossary — resolve term overloading across docs), iv-l49k.1 (T1: Normalize stack to 3 layers — remove 'Layer 3: Drivers' language), iv-ckkr (Apply vision doc review findings — 17 content moves + doc fixes), iv-unsw (Rewrite vision.md — autonomous software agency identity), iv-byh3 (Define platform kernel + lifecycle UX architecture), iv-7o7n (Document slicing for flux-drive agents (P0 token optimization))
 
 ### Next (P2)
 
-**Intercore Autonomy Ladder**
-- **iv-thp7** E4: Level 3 Adapt — Interspect kernel event integration (blocks E5)
-- **iv-0k8s** E6: Rollback and recovery — three-layer revert
-- **iv-fra3** E5: Discovery pipeline — kernel primitives for research intake (blocked by E4)
+**Autarch TUI & Dashboard**
+- [autarch] **iv-1d9u** Bigend: dashboard metrics from kernel aggregates
+- [autarch] **iv-26pj** Streaming buffer / history split per agent panel
+- [autarch] **iv-4c16** Bigend: bootstrap-then-stream event viewport
+- [autarch] **iv-4zle** Bigend: two-pane lazy* layout (list + detail)
+- [autarch] **iv-9au2** Bigend: swap agent monitoring to ic dispatch list
+- [autarch] **iv-gv7i** Bigend: swap run progress to ic events tail
+- [autarch] **iv-ht1l** Pollard: progressive result reveal per hunter
+- [autarch] **iv-jaxw** Typed KernelEvent enum for all observable state changes
+- [autarch] **iv-knwr** pkg/tui: validate components with kernel data
+- [autarch] **iv-lemf** Bigend: swap project discovery to ic run list
+- [autarch] **iv-xlpg** Pollard: optional-death hunter resilience
+- [autarch] **iv-xu31** Adopt 4-state status model with consistent icons
 
-**Autarch Application Layer**
-- **iv-ishl** E7: Autarch Phase 1 — Bigend migration + `ic tui` (blocks E9)
-- **iv-xu31** Adopt 4-state status model with consistent icons (cross-cutting)
-- **iv-jaxw** Typed KernelEvent enum for all observable state changes (cross-cutting)
-- **iv-26pj** Streaming buffer / history split per agent panel (cross-cutting)
-- **iv-4zle** Bigend: two-pane lazy* layout (list + detail)
-- **iv-4c16** Bigend: bootstrap-then-stream event viewport
-- **iv-lemf** Bigend: swap project discovery to `ic run list`
-- **iv-9au2** Bigend: swap agent monitoring to `ic dispatch list`
-- **iv-gv7i** Bigend: swap run progress to `ic events tail`
-- **iv-1d9u** Bigend: dashboard metrics from kernel aggregates
-- **iv-ht1l** Pollard: progressive result reveal per hunter
-- **iv-xlpg** Pollard: optional-death hunter resilience
-- **iv-knwr** `pkg/tui`: validate components with kernel data (blocked by iv-2yef)
-- **iv-6abk** Signal broker: connect to Intercore event bus (blocked by iv-ishl)
+**Interspect: Routing, Overrides & Safety**
+- [interspect] **iv-003t** Global modification rate limiter
+- [interspect] **iv-0fi2** Circuit breaker
+- [interspect] **iv-2o6c** F4: status display + revert for routing overrides
+- [interspect] **iv-5su3** Autonomous mode flag
+- [interspect] **iv-6liz** F5: manual routing override support
+- [interspect] **iv-8fgu** F2: routing-eligible pattern detection + propose flow
+- [interspect] **iv-bj0w** Conflict detection
+- [interspect] **iv-drgo** Privilege separation (proposer/applier)
+- [interspect] **iv-gkj9** F3: apply override + canary + git commit
+- [interspect] **iv-r6mf** F1: routing-overrides.json schema + flux-drive reader
 
-**Interbus Module Integration**
-- **iv-psf2** Interbus rollout: phase-based module integration
-- **iv-psf2.2** Wave 2: Visibility and safety modules (blocked by Wave 1)
-- **iv-psf2.2.1–2.8** Individual adapter beads (intercheck, interline, interwatch, interpub, interslack, internext, intercraft, interform)
-- **iv-psf2.3** Wave 3: Supporting utility modules (blocked by Wave 2)
-- **iv-psf2.3.1–3.3** Individual adapter beads (tool-time, tldr-swinton, intersearch)
+**Interspect: Evaluation, Learning & Commands**
+- [interspect] **iv-435u** Counterfactual shadow evaluation
+- [interspect] **iv-88yg** Structured commit message format
+- [interspect] **iv-c2b4** /interspect:disable command
+- [interspect] **iv-g0to** /interspect:reset command
+- [interspect] **iv-izth** Eval corpus construction
+- [interspect] **iv-m6cd** Session-start summary injection
+- [interspect] **iv-rafa** Meta-learning loop
+- [interspect] **iv-t1m4** Prompt tuning (Type 3) overlay-based
 
-**Multi-Agent Coordination (interlock)**
-- **iv-1aug** F1: Release Response Protocol (blocks F2–F5)
-- **iv-gg8v** F2: Auto-Release on Clean Files (blocked by F1)
-- **iv-5ijt** F3: Structured negotiate_release MCP Tool (blocked by F1)
-- **iv-6u3s** F4: Sprint Scan Release Visibility (blocked by F1)
-- **iv-2jtj** F5: Escalation Timeout for Unresponsive Agents (blocked by F3)
+**Interlock: Multi-Agent File Coordination**
+- [interlock] **iv-1aug** F1: Release Response Protocol (release_ack / release_defer)
+- [interlock] **iv-2jtj** F5: Escalation Timeout for Unresponsive Agents
+- [interlock] **iv-5ijt** F3: Structured negotiate_release MCP Tool
+- [interlock] **iv-6u3s** F4: Sprint Scan Release Visibility
+- [interlock] **iv-gg8v** F2: Auto-Release on Clean Files
 
-**Token Efficiency & Benchmarking (interstat)**
-- **iv-qi8j** F1: PostToolUse:Task hook (real-time event capture)
-- **iv-lgfi** F2: Conversation JSONL parser (blocks F3, F4)
-- **iv-dkg8** F3: interstat report (blocked by F2)
-- **iv-bazo** F4: interstat status (blocked by F2)
-- **iv-v81k** Repository-aware benchmark expansion (blocked by iv-qznx)
+**Clavain: Routing, Configuration & Sprint Infrastructure**
+- [clavain] **iv-3w1x** Split upstreams.json into config + state files
+- [clavain] **iv-4728** Consolidate upstream-check.sh API calls (24 to 12)
+- [clavain] **iv-asfy** C1: Agency specs — declarative per-stage agent/model/tool config
+- [clavain] **iv-dd9q** B1: Static routing table — phase-to-model mapping in config
+- [clavain] **iv-k8xn** B2: Complexity-aware routing — task complexity drives model selection
+- [clavain] **iv-lx00** C2: Agent fleet registry — capability + cost profiles per agent×model
+- [clavain] **iv-o1qz** F4: Sprint skill cleanup — remove lib-gates.sh and redundant calls
+- [clavain] **iv-pfe5** F5: Update bats-core tests for ic-only sprint path
+- [clavain] **iv-r9j2** A3: Event-driven advancement — phase transitions trigger auto-dispatch
+- [clavain] **iv-s80p** F1: ic guard and run ID cache for sprint functions
+- [clavain] **iv-sl2z** F3: Remove shell transition table, read chain from ic
+- [clavain] **iv-smqm** F2: Remove beads fallback from lib-sprint.sh
 
-**Interspect Self-Improvement**
-- **iv-r6mf** F1: routing-overrides.json schema + flux-drive reader (blocks F2, F5)
-- **iv-8fgu** F2: routing-eligible pattern detection + propose flow (blocked by F1)
-- **iv-gkj9** F3: apply override + canary + git commit (blocked by F2)
-- **iv-2o6c** F4: status display + revert (blocked by F3)
-- **iv-6liz** F5: manual routing override support (blocked by F1)
-- **iv-435u** Counterfactual shadow evaluation
-- **iv-drgo** Privilege separation (proposer/applier)
-- **iv-003t** Global modification rate limiter
-- **iv-88yg** Structured commit message format
-- **iv-sisi** Interline statusline integration
-- **iv-rafa** Meta-learning loop (blocks iv-bj0w) — unblocked, consumes reflect artifacts
+**Interstat: Token Metrics & Benchmarking**
+- [interstat] **iv-0lt** Extract cache_hints metrics in score_tokens.py
+- [interstat] **iv-1gb** Add cache-friendly format queries to regression_suite.json
+- [interstat] **iv-bazo** F4: interstat status (collection progress)
+- [interstat] **iv-dkg8** F3: interstat report (analysis queries + decision gate)
+- [interstat] **iv-lgfi** F2: Conversation JSONL parser (token backfill)
+- [interstat] **iv-qi8j** F1: PostToolUse:Task hook (real-time event capture)
+- [interstat] **iv-v81k** Repository-aware benchmark expansion for agent coding tasks
 
-**Multi-Agent Intelligence**
-- **iv-qznx** Multi-framework interoperability benchmark (blocks iv-jc4j, iv-v81k)
-- **iv-jc4j** Heterogeneous agent routing (blocked by iv-qznx, blocks iv-wz3j)
-- **iv-wz3j** Role-aware latent memory architecture (blocked by iv-jc4j)
-- **iv-quk4** Hierarchical dispatch: meta-agent for N-agent fan-out
-- **iv-ev4o** Agent capability discovery via intermute registration
-- **iv-905u** Intermediate result sharing between parallel flux-drive agents
-- **iv-qjwz** AgentDropout: dynamic redundancy elimination (blocked by iv-ynbh)
+**Flux-Drive & Interflux: Review Engine Evolution**
+- [flux-drive-spec] **iv-0etu** Phase 3: Extract scoring/synthesis Python library
+- [flux-drive-spec] **iv-e8dg** Phase 4: Migrate Clavain to consume the library
+- [flux-drive-spec] **iv-ia66** Phase 2: Extract domain detection library
+- [interflux] **iv-905u** Intermediate result sharing between parallel flux-drive agents
+- [interflux] **iv-qjwz** AgentDropout: dynamic redundancy elimination for flux-drive reviews
+- [interflux] **iv-wz3j** Role-aware latent memory architecture experiments
 
-**Memory & Knowledge (intermem)**
-- **iv-f7po** F3: Multi-file tiered promotion (blocks F4)
-- **iv-bn4j** F4: One-shot tiered migration (blocked by F3)
+**Intermem, Intercore & Storage**
+- [intermem] **iv-bn4j** F4: One-shot tiered migration — --migrate-to-tiered
+- [intermem] **iv-f7po** F3: Multi-file tiered promotion — AGENTS.md index + docs/intermem/ detail
+- [intercore] **iv-fra3** E5: Discovery pipeline — kernel primitives for research intake
+- [intermute] **iv-jc4j** Heterogeneous agent routing experiments inspired by SC-MAS/Dr. MAS
+- [interwatch] **iv-mqm4** Session-start drift summary injection
 
-**Code Context & Compression (tldr-swinton)**
-- **iv-2izz** LongCodeZip block-level compression
-- **iv-aose** Intermap — project-level code mapping extraction
-
-**Platform & Infrastructure**
-- **iv-p4qq** Smart semantic caching across sessions (intercache)
-- **iv-friz** CI/CD integration bridge: GitHub Actions templates
-- **iv-ey90** Interkasten webhook receiver + cloudflared tunnel
-- **iv-zyym** Evaluate Claude Hub for event-driven GitHub agent dispatch
-- **iv-xuec** Security threat model for token optimization techniques
-- **iv-dthn** Research: inter-layer feedback loops and optimization thresholds
-- **iv-va58** Bug: Stale subagent notifications flood after context compaction
+**Interverse Research: Architecture & Strategy**
+- [interverse] **iv-3kee** Research: product-native agent orchestration (whitespace opportunity)
+- [interverse] **iv-6ikc** Plan intershift extraction (cross-AI dispatch engine)
+- [interverse] **iv-dthn** Research: inter-layer feedback loops and optimization thresholds
+- [interverse] **iv-ev4o** Agent capability discovery via intermute registration
+- [interverse] **iv-exos** Research: bias-aware product decision framework
+- [interverse] **iv-fzrn** Research: multi-agent hallucination cascades & failure taxonomy
+- [interverse] **iv-jk7q** Research: cognitive load budgets & progressive disclosure review UX
+- [interverse] **iv-l5ap** Research: transactional orchestration & error recovery patterns
+- [interverse] **iv-p4qq** Smart semantic caching across sessions (intercache)
+- [interverse] **iv-quk4** Hierarchical dispatch: meta-agent for N-agent fan-out
+- [interverse] **iv-sdqv** Plan interscribe extraction (knowledge compounding)
+- [interverse] **iv-xuec** Security threat model for token optimization techniques
+- [interverse] **iv-zyym** Evaluate Claude Hub for event-driven GitHub agent dispatch
 
 ### Later (P3)
 
-**Reflect Phase Hardening**
-- **iv-mkfy** Graduate reflect gate from soft to hard (complexity-scaled thresholds)
-- **iv-64j3** Multi-agent sprint reflection (N artifacts for N dispatches) [P4]
-
-**Autarch TUI Patterns (inspired by pi-mono, schmux, dmux, agent-deck)**
-- **iv-wgyx** Tool output auto-collapse (>20 lines → 5 lines preview)
-- **iv-9a0n** Differential rendering — dirty-range-only repaints
-- **iv-1yck** Bigend: htop-style cost + tool columns per agent
-- **iv-pgte** Bigend: multi-project grouping with flat index nav
-- **iv-nlq2** Gurgeh: `huh` group-as-phase for sprint wizard
-- **iv-v3wx** Gurgeh: crash-resume via persistent session state
-- **iv-sydv** Gurgeh: subagent call tracing inline
-- **iv-bri5** Coldwine: steering vs follow-up message queues
-- **iv-4f1r** Coldwine: risk-gated autopilot for agent decisions
-- **iv-qu7m** Coldwine: ActionResult chaining for multi-step flows
-- **iv-frwf** Pollard: confidence tier display (High/Medium/Low + score)
-- **iv-16sw** Pollard: parallel model race for confidence scoring
-
-**Autarch Phase 2 — Pollard + Gurgeh Migration**
-- **iv-6376** E9: Autarch Phase 2 — Pollard + Gurgeh migration (blocked by E5, E7; blocks E10)
-- **iv-fsxc** Pollard: hunter results as `ic discovery` events (blocked by iv-fra3)
-- **iv-skyk** Pollard: insight scoring via kernel confidence (blocked by iv-fra3)
-- **iv-8y3w** Gurgeh: spec sprint as `ic run` lifecycle (blocked by iv-ishl)
-- **iv-t4v6** Gurgeh: spec evolution via run versioning (blocked by iv-ishl)
-- **iv-ts3b** Arbiter extraction Phase 1: Gurgeh confidence scoring to OS (blocked by iv-8y3w)
-- **iv-u2pd** Arbiter extraction Phase 2: spec sprint sequencing to Clavain skill (blocked by iv-ts3b)
-
-- [intermem] **iv-y5tv** Phase 4: Consolidation — Compound/Interfluence write through intermem (blocked by iv-xswd)
-- [intermem] **iv-xswd** Phase 3: Cross-project search — global metadata + semantic embeddings
-- [interwatch] **iv-wrtg** Framework and benchmark freshness automation pipeline
-- [interject] **iv-3bia** A Technical Guide to Multi-Agent Orchestration
-- [interject] **iv-yqub** Securing MCP Servers in 2026: How to Govern AI Agents
-- [interject] **iv-oe4n** MCP Market: Discover Top MCP Servers
-- [interverse] **iv-gvpq** Study session context snapshot/restore for handoff continuity
-- [interverse] **iv-nonb** Build config profile switching (interctx or extend interphase)
-- [interverse] **iv-5leh** Study hook-level agent comms for intra-session coordination
-- [interverse] **iv-l6ef** Port hot-path hooks to compiled Go binaries
-- [interject] **iv-xda4** Evaluating Static Analysis Alerts with LLMs
-- [interject] **iv-f3an** Agent Orchestration: When to Use LangChain, LangGraph, AutoGen
-- [interject] **iv-bcq1** New Relic AI Model Context Protocol (MCP)
-- [interject] **iv-86ee** Public preview: Power Apps MCP and enhanced agent feed for your business applica
-- [interject] **iv-pjxj** Top 10 Low-Code AI Workflow Automation Tools (2026)
-- [interject] **iv-vvpj** Make | AI Workflow Automation Software & Tools | Make
-- [interject] **iv-eweo** Trigger.dev | Build and deploy fully-managed AI agents and ...
-- [interject] **iv-ki35** CORE: Resolving Code Quality Issues using LLMs - Microsoft
-- [interject] **iv-btx0** Here is my experience with LLM tools for programming: | Vedran B.
-- [interject] **iv-ak1v** Agent Orchestration: When to Use LangChain, LangGraph, AutoGen
-
-**Autarch Phase 3 — Coldwine Migration (P4)**
-- **iv-qr0f** E10: Sandboxing + Autarch Phase 3 — Coldwine (blocked by E9)
-- **iv-wc74** Coldwine: task hierarchy to beads (blocked by iv-6376)
-- **iv-rtwl** Coldwine: agent coordination via `ic dispatch` (blocked by iv-6376)
-- **iv-k1q4** Coldwine: intent submission to Clavain OS (blocked by iv-6376)
-- **iv-bkzf** Arbiter extraction Phase 3: Coldwine task orchestration to Clavain skills (blocked by iv-u2pd, iv-wc74)
+- [interject] **iv-045** Show HN: Off Grid – Run AI text, image gen, vision offline on your phone
+- [interverse] **iv-0681** Crash recovery + error aggregation for multi-agent sessions
+- [interverse] **iv-0d3a** flux-gen UX: onboarding, integration, docs mentions
+- [interject] **iv-0fl7** Exa MCP Integration with Codex | Composio
+- [interverse] **iv-0plv** Backend cost arbitrage — multi-model routing in clodex
+- [interject] **iv-0r8** Building Interactive Programs inside Claude Code - DEV Community
+- [interject] **iv-13q** viktorxhzj/feishu-webhook-skill: A Claude Code skill for sending messages to Fei
+- [interverse] **iv-1626** Version-bump → Interwatch signal
+- [autarch] **iv-16sw** Pollard: parallel model race for confidence scoring
+- [interverse] **iv-173y** Research: guardian agent patterns (formalize quality-gates)
+- [interverse] **iv-19m** tldrs: slice command should optionally include source code
+- [interverse] **iv-19oc** Research: prompt compression techniques (LLMLingua, gist tokens) for agent context
+- [interject] **iv-1cn** Show HN: Skill that lets Claude Code/Codex spin up VMs and GPUs
+- [interverse] **iv-1n6z** Monorepo build orchestrator (interbuild) with change detection
+- [clavain] **iv-1vny** C4: Cross-phase handoff protocol — structured output-to-input contracts (blocked by iv-asfy)
+- [interject] **iv-1x2n** Redacta: Elevating Video Content with GitHub Copilot CLI - DEV Community
+- [autarch] **iv-1yck** Bigend: htop-style cost + tool columns per agent
+- [interject] **iv-22w** Discover and install prebuilt plugins through marketplaces - Claude Code Docs
+- [clavain] **iv-240m** C3: Composer — match agency specs to fleet registry within budget (blocked by iv-asfy, iv-lx00)
+- [tldrs] **iv-2izz** LongCodeZip block-level compression
 
 ---
 
 ## Module Highlights
 
-### autarch (hub/autarch)
-Autarch is the application layer of the Interverse stack — interactive TUI surfaces through which Clavain's agency is experienced. Four tools: Bigend (multi-project mission control), Gurgeh (PRD generation), Coldwine (task orchestration), and Pollard (research intelligence). Shared `pkg/tui` component library (Bubble Tea + lipgloss, Tokyo Night theme). Currently migrating from standalone backends to Intercore kernel as shared state layer. Migration follows coupling depth: Bigend (read-only, first) → Pollard → Gurgeh → Coldwine (deepest coupling, last). Arbiter extraction will move agency logic from apps to OS layer.
-
-### intercore (infra/intercore)
-Intercore is the platform kernel for multi-agent orchestration — a Go CLI (`ic`) backed by SQLite that provides phase state machines, dispatch tracking, token budgets, gate enforcement, and an event bus with consumer cursors. **E1–E3 complete.** The default phase chain is now 10 phases across 5 macro-stages (Discover, Design, Build, Ship, Reflect). The reflect→done gate requires a learning artifact, closing the recursive self-improvement loop. Four epics remain: E4–E7.
-
 ### clavain (hub/clavain)
-Clavain is an autonomous software agency — 15 skills, 4 agents, 53 commands (including /reflect for gate-enforced sprint learning), 22 hooks, 1 MCP server. 31 companion plugins shipped.
+Clavain is a recursively self-improving multi-agent rig for Claude Code — 23 skills, 4 agents, 41 commands, 19 hooks, 1 MCP server. 19 companion plugins shipped. 364 beads closed, 0 open. Average lead time: 8.8 hours.
 
 ### intercheck (plugins/intercheck)
 Intercheck is the quality and session-health layer for Claude Code and Codex operations, focused on preventing unsafe edits before damage occurs.
@@ -278,99 +252,33 @@ Interstat measures token consumption, workflow efficiency, and decision cost acr
 Interwatch monitors documentation freshness and confidence so stale artifacts are identified before they mislead decisions.
 
 ### tldr-swinton (plugins/tldr-swinton)
-tldr-swinton is the token-efficiency context layer for AI code workflows.
+tldr-swinton is the token-efficiency context layer for AI code workflows. The product has:
 
 ### tuivision (plugins/tuivision)
 Tuivision automates TUI and terminal UI testing through scriptable sessions and screenshot workflows.
 
 ### interkasten (plugins/interkasten)
-Interkasten syncs Notion databases to local markdown via MCP, providing offline-first documentation access with WAL-based write safety. Supports bidirectional sync with conflict detection and cloudflared tunnel integration.
-
-### intermem (plugins/intermem)
-Intermem graduates stable auto-memory facts into curated reference docs (AGENTS.md/CLAUDE.md). Features citation validation, time-based confidence decay, hash-based promotion/demotion markers, and CLI query tools. Phase 1 (validation overlay) and Phase 2A (decay + demotion) are complete with 184 passing tests.
+v0.4.2. Bidirectional Notion sync plugin with a WAL-based protocol (pending → target_written → committed → delete) and three-way merge for conflict resolution. With 12 open beads, active focus spans triage signal refinement, beads-to-Notion issue sync, and the 21-tool MCP surface; webhook receiver and interphase integration are queued for v0.5.x.
 
 ---
 
 ## Research Agenda
 
-<!-- LLM:RESEARCH_AGENDA
-Task: Synthesize into 10-15 thematic research bullets.
-Format: - **Topic** — 1-line summary
-
-Brainstorm files:
-2026-02-14-clavain-vs-modules-boundary-analysis
-2026-02-15-intercheck-code-quality-guards-brainstorm
-2026-02-15-interject-integration-sweep-brainstorm
-2026-02-15-interspect-routing-overrides-brainstorm
-2026-02-15-linsenkasten-flux-agents-brainstorm
-2026-02-15-multi-session-phase4-merge-agent-brainstorm
-2026-02-15-sprint-resilience-brainstorm
-2026-02-15-token-efficient-skill-loading
-2026-02-16-agent-rig-autonomous-sync-brainstorm
-2026-02-16-clavain-token-efficiency-synthesis-brainstorm
-2026-02-16-clavain-token-efficiency-trio-brainstorm
-2026-02-16-flux-drive-document-slicing-brainstorm
-2026-02-16-interbus-central-integration-mesh-brainstorm
-2026-02-16-intermap-extraction-brainstorm
-2026-02-16-interspect-canary-monitoring-brainstorm
-2026-02-16-interstat-token-benchmarking-brainstorm
-2026-02-16-linsenkasten-phase1-agents-brainstorm
-2026-02-16-sprint-resilience-phase2-brainstorm
-2026-02-16-subagent-context-flooding-brainstorm
-2026-02-16-token-budget-controls-brainstorm
-2026-02-17-intercore-state-database-brainstorm
-2026-02-18-intermem-phase1-validation-overlay
-2026-02-18-intercore-hook-adapter-brainstorm
-2026-02-18-interfluence-code-switching-brainstorm
-2026-02-19-intercore-e1-kernel-primitives-brainstorm
-2026-02-19-intercore-e2-event-reactor-brainstorm
-
-Plan files:
-2026-02-14-clavain-boundary-restructure
-2026-02-15-cross-module-integration-opportunities
-2026-02-15-intercheck-code-quality-guards
-2026-02-15-interject-design
-2026-02-15-interject-integration-sweep
-2026-02-15-interject-plan-best-5-frameworks-to-build-multi-agent-ai-applications-getst
-2026-02-15-interject-plan-claude-codepluginsreadmemd-at-main
-2026-02-15-interject-plan-create-plugins-claude-code-docs
-2026-02-15-interlock-reservation-negotiation
-2026-02-15-interspect-routing-overrides
-2026-02-15-linsenkasten-flux-agents
-2026-02-15-multi-session-coordination-brainstorm
-2026-02-15-sprint-resilience-phase1
-2026-02-15-token-efficient-skill-loading
-2026-02-16-clavain-token-efficiency
-2026-02-16-clavain-token-efficiency-trio
-2026-02-16-flux-drive-document-slicing
-2026-02-16-intermap-extraction
-2026-02-16-interspect-canary-monitoring
-2026-02-16-interstat-token-benchmarking
-2026-02-16-intersynth-codex-dispatch
-2026-02-16-linsenkasten-phase1-remaining-agents
-2026-02-16-sprint-resilience-phase2
-2026-02-16-subagent-context-flooding
-2026-02-16-token-budget-controls
-2026-02-17-framework-benchmark-freshness-automation
-2026-02-17-heterogeneous-collaboration-routing
-2026-02-17-interband-sideband-hardening
-2026-02-17-intercore-state-database
-2026-02-17-multi-framework-interoperability-benchmark
-2026-02-17-repository-aware-benchmark-expansion
-2026-02-17-role-aware-latent-memory-experiments
-2026-02-18-intermem-phase1-validation-overlay
-2026-02-18-intercore-hook-adapter
-2026-02-18-interfluence-f1-f2-voice-storage-config
-2026-02-18-intermem-phase2a-decay-demotion
-2026-02-18-intercore-run-tracking
-2026-02-18-interstat-report-pipeline
-2026-02-18-interfluence-f3-f6-analyzer-apply-hook-skills
-2026-02-18-intercore-event-bus
-2026-02-19-intercore-e1-kernel-primitives
-2026-02-19-intercore-e2-event-reactor
-2026-02-19-intercore-spawn-handler-wiring
-
-END LLM:RESEARCH_AGENDA -->
+- **Sprint Lifecycle Resilience** — Unified redesign of sprint continuity (bead-first state, auto-advance autonomy, and three-layer rollback) to eliminate fragile env-var state and forward-only phase transitions
+- **Intercore Kernel Migration** — Big-bang cutover of sprint state from beads to intercore ic run (E3), followed by fallback code deletion and single-identity model (A2) to reduce the sprint codebase by ~600 lines
+- **Token Efficiency: Skill Loading and Document Routing** — Reduce per-invocation ceremony tokens 60-70% via SKILL-compact.md files, pre-computation scripts, and per-agent document slicing using Interserve spark classification
+- **Token Efficiency: Context Compression** — Cut tldrs context costs via within-function block compression (LongCodeZip), import-graph deduplication, precomputed workspace bundles, and symbol popularity-guided pruning
+- **Subagent Context Flooding** — Wire existing lib-verdict.sh verdict protocol into flux-drive, quality-gates, and review to replace inline TaskOutput flooding with 5-token verdict summaries and selective drill-down
+- **Cost-Aware Agent Scheduling** — Connect sprint budget parameters to flux-drive triage and intercore budget algebra via phase-granularity token writeback, enabling soft budget enforcement without real-time JSONL parsing
+- **Reflect Phase and Learning Loop** — Add a mandatory reflect phase to the sprint lifecycle (after polish, before done) gated on at least one learning artifact, closing the recursive self-improvement loop
+- **Lens-Based Cognitive Review Agents** — Create 5 fd-lens-* flux-drive agents (systems, decisions, people, resilience, perception) that review strategy documents for thinking quality, backed by Interlens MCP tools
+- **Agent Rig Autonomous Sync** — Generate setup.md and doctor.md plugin lists from agent-rig.json as single source of truth, with a self-heal runtime fallback and marketplace drift detection
+- **Interbus Event Mesh** — Introduce a lightweight intent-envelope integration layer standardizing cross-module communication (discover_work, phase_transition, review_pass), enabling observability
+- **Autarch Status Tool** — Build a minimal TUI reading intercore kernel state via ic CLI to validate the kernel API surface and provide real-time "what's running?" visibility before the full Bigend migration
+- **Multi-Agent File Coordination** — Complete interlock Phase 4 with a reservation negotiation protocol (request_release/release_ack/release_defer) to enable clean file handoff without merge-agent overhead
+- **Framework Benchmarking Ecosystem** — Build a runnable multi-framework benchmark harness (ADK, LangGraph, AutoGen, etc.) with freshness automation and repository-aware corpus expansion
+- **Role-Aware Memory and Bias Gates** — Prototype role-scoped memory namespaces (planner/executor/reviewer) with leakage prevention, and design a bias-aware decision framework for high-risk LLM product judgments
+- **Sprint Intake Quality and Knowledge Extraction** — Compress brainstorm inputs into structured blueprint artifacts before planning, and extract Clavain's compounding assets into a standalone interscribe plugin
 
 ---
 
@@ -378,19 +286,26 @@ END LLM:RESEARCH_AGENDA -->
 
 Major dependency chains spanning multiple modules:
 
-- **Intercore autonomy ladder:** E3 (hook cutover) → E4 (adapt) → E5 (discovery) → E6/E7 (recovery, TUI)
-- **Autarch migration chain:** E7 (Bigend) → E9 (Pollard + Gurgeh) → E10 (Coldwine); arbiter extraction: iv-ts3b → iv-u2pd → iv-bkzf
-- **Autarch ↔ Intercore:** E5 (discovery) blocks Pollard migration (iv-fsxc, iv-skyk); E7 blocks Gurgeh migration (iv-8y3w, iv-t4v6)
-- **iv-jc4j** (intermute) blocked by **iv-qznx** (interflux)
-- **iv-v81k** (interstat) blocked by **iv-qznx** (interflux)
+- **iv-pfe5** (interverse) blocked by **iv-kj6w** (clavain)
+- **iv-sl2z** (interverse) blocked by **iv-kj6w** (clavain)
+- **iv-o1qz** (interverse) blocked by **iv-kj6w** (clavain)
+- **iv-smqm** (interverse) blocked by **iv-kj6w** (clavain)
+- **iv-s80p** (interverse) blocked by **iv-kj6w** (clavain)
 - **iv-wz3j** (interflux) blocked by **iv-jc4j** (intermute)
-- **iv-ynbh** (interverse) blocked by **iv-vrc4** (interspect) — now closed, may unblock iv-qjwz
-- **Learning loop chain:** ~~iv-8jpf~~ (done) → iv-rafa (meta-learning, interspect, unblocked) → iv-bj0w (conflict detection); hardening: iv-mkfy (hard gate) → iv-64j3 (multi-agent reflection)
+- **iv-6abk** (autarch) blocked by **iv-ishl** (intercore)
+- **iv-t4v6** (autarch) blocked by **iv-ishl** (intercore)
+- **iv-8y3w** (autarch) blocked by **iv-ishl** (intercore)
+- **iv-skyk** (autarch) blocked by **iv-fra3** (intercore)
+- **iv-fsxc** (autarch) blocked by **iv-fra3** (intercore)
+- **iv-3r6q** (interflux) blocked by **iv-r6mf** (interspect)
+- **iv-5pvo** (intercore) blocked by **iv-ev4o** (interverse)
 
 ---
 
 ## Modules Without Roadmaps
 
+- `hub/autarch`
+- `plugins/interleave`
 - `plugins/intermap`
 - `plugins/intermem`
 - `plugins/interpeer`
