@@ -1,15 +1,24 @@
 {
   "project": "Interverse",
   "kind": "interverse-monorepo-roadmap",
-  "generated_at": "2026-02-18T02:36:34+00:00",
-  "module_count": 33,
+  "generated_at": "2026-02-19T18:51:26+00:00",
+  "module_count": 35,
   "open_beads": 190,
   "blocked": 52,
   "modules": [
     {
+      "module": "autarch",
+      "location": "hub/autarch",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "clavain",
       "location": "hub/clavain",
-      "version": "0.6.35",
+      "version": "0.6.42",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 13,
@@ -18,7 +27,7 @@
     {
       "module": "intercheck",
       "location": "plugins/intercheck",
-      "version": "0.1.2",
+      "version": "0.1.4",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -54,7 +63,7 @@
     {
       "module": "interfluence",
       "location": "plugins/interfluence",
-      "version": "0.1.3",
+      "version": "0.2.3",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -63,7 +72,7 @@
     {
       "module": "interflux",
       "location": "plugins/interflux",
-      "version": "0.2.13",
+      "version": "0.2.16",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 19,
@@ -81,7 +90,7 @@
     {
       "module": "interject",
       "location": "plugins/interject",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -90,16 +99,25 @@
     {
       "module": "interkasten",
       "location": "plugins/interkasten",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 12,
       "status": "active"
     },
     {
+      "module": "interleave",
+      "location": "plugins/interleave",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "interlens",
       "location": "plugins/interlens",
-      "version": "2.2.3",
+      "version": "2.2.4",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -126,7 +144,7 @@
     {
       "module": "intermap",
       "location": "plugins/intermap",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -135,7 +153,7 @@
     {
       "module": "intermem",
       "location": "plugins/intermem",
-      "version": "0.1.0",
+      "version": "0.2.1",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -144,7 +162,7 @@
     {
       "module": "intermux",
       "location": "plugins/intermux",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -162,7 +180,7 @@
     {
       "module": "interpath",
       "location": "plugins/interpath",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -207,7 +225,7 @@
     {
       "module": "interserve",
       "location": "plugins/interserve",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -225,7 +243,7 @@
     {
       "module": "interstat",
       "location": "plugins/interstat",
-      "version": "0.1.0",
+      "version": "0.2.2",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -234,7 +252,7 @@
     {
       "module": "intersynth",
       "location": "plugins/intersynth",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -243,7 +261,7 @@
     {
       "module": "intertest",
       "location": "plugins/intertest",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -261,7 +279,7 @@
     {
       "module": "tldr-swinton",
       "location": "plugins/tldr-swinton",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 15,
@@ -306,9 +324,18 @@
   ],
   "snapshot": [
     {
+      "module": "autarch",
+      "location": "hub/autarch",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "clavain",
       "location": "hub/clavain",
-      "version": "0.6.35",
+      "version": "0.6.42",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 13,
@@ -317,7 +344,7 @@
     {
       "module": "intercheck",
       "location": "plugins/intercheck",
-      "version": "0.1.2",
+      "version": "0.1.4",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -353,7 +380,7 @@
     {
       "module": "interfluence",
       "location": "plugins/interfluence",
-      "version": "0.1.3",
+      "version": "0.2.3",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -362,7 +389,7 @@
     {
       "module": "interflux",
       "location": "plugins/interflux",
-      "version": "0.2.13",
+      "version": "0.2.16",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 19,
@@ -380,7 +407,7 @@
     {
       "module": "interject",
       "location": "plugins/interject",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -389,16 +416,25 @@
     {
       "module": "interkasten",
       "location": "plugins/interkasten",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 12,
       "status": "active"
     },
     {
+      "module": "interleave",
+      "location": "plugins/interleave",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "interlens",
       "location": "plugins/interlens",
-      "version": "2.2.3",
+      "version": "2.2.4",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -425,7 +461,7 @@
     {
       "module": "intermap",
       "location": "plugins/intermap",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -434,7 +470,7 @@
     {
       "module": "intermem",
       "location": "plugins/intermem",
-      "version": "0.1.0",
+      "version": "0.2.1",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -443,7 +479,7 @@
     {
       "module": "intermux",
       "location": "plugins/intermux",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -461,7 +497,7 @@
     {
       "module": "interpath",
       "location": "plugins/interpath",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -506,7 +542,7 @@
     {
       "module": "interserve",
       "location": "plugins/interserve",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -524,7 +560,7 @@
     {
       "module": "interstat",
       "location": "plugins/interstat",
-      "version": "0.1.0",
+      "version": "0.2.2",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -533,7 +569,7 @@
     {
       "module": "intersynth",
       "location": "plugins/intersynth",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -542,7 +578,7 @@
     {
       "module": "intertest",
       "location": "plugins/intertest",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -560,7 +596,7 @@
     {
       "module": "tldr-swinton",
       "location": "plugins/tldr-swinton",
-      "version": "0.7.13",
+      "version": "0.7.14",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 15,
@@ -4883,6 +4919,18 @@
     ],
     "later": [
       {
+        "module": "autarch",
+        "id": "PL-autarch-NO-RM",
+        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "hub/autarch/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+      },
+      {
         "module": "clavain",
         "id": "CV-L3",
         "title": "Cross-project knowledge compounding — pilot interscribe-style pattern sharing behind evaluation gates.",
@@ -4912,6 +4960,18 @@
           "tool-level"
         ],
         "notes": "MCP-native coordination plane — reduce file-based sideband contracts with explicit tool-level contracts."
+      },
+      {
+        "module": "interleave",
+        "id": "PL-interleave-NO-RM",
+        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "plugins/interleave/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
       },
       {
         "module": "intermap",
@@ -5487,15 +5547,27 @@
   "cross_module_dependencies": [],
   "modules_without_roadmaps": [
     {
+      "module": "autarch",
+      "location": "hub/autarch",
+      "version": "0.1.0",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "interleave",
+      "location": "plugins/interleave",
+      "version": "0.1.1",
+      "notes": "No docs/roadmap.md"
+    },
+    {
       "module": "intermap",
       "location": "plugins/intermap",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "notes": "No docs/roadmap.md"
     },
     {
       "module": "intermem",
       "location": "plugins/intermem",
-      "version": "0.1.0",
+      "version": "0.2.1",
       "notes": "No docs/roadmap.md"
     },
     {
@@ -5507,13 +5579,13 @@
     {
       "module": "intersynth",
       "location": "plugins/intersynth",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "notes": "No docs/roadmap.md"
     },
     {
       "module": "intertest",
       "location": "plugins/intertest",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "notes": "No docs/roadmap.md"
     }
   ],
