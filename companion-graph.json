@@ -1,0 +1,102 @@
+{
+  "$comment": "Machine-readable companion dependency graph for Interverse plugins. Edges describe 'from benefits when to is installed'. Consumed by /clavain:doctor.",
+  "version": "1.0.0",
+  "edges": [
+    {
+      "from": "interline",
+      "to": "intercheck",
+      "relationship": "enhances",
+      "benefit": "Shows context pressure indicator in statusline"
+    },
+    {
+      "from": "interline",
+      "to": "interstat",
+      "relationship": "enhances",
+      "benefit": "Shows budget alert indicator in statusline"
+    },
+    {
+      "from": "interline",
+      "to": "interphase",
+      "relationship": "enhances",
+      "benefit": "Shows active bead context in statusline"
+    },
+    {
+      "from": "interline",
+      "to": "interlock",
+      "relationship": "enhances",
+      "benefit": "Shows multi-agent coordination state in statusline"
+    },
+    {
+      "from": "interflux",
+      "to": "intersynth",
+      "relationship": "requires-for-feature",
+      "benefit": "Verdict synthesis and deduplication after multi-agent review"
+    },
+    {
+      "from": "interflux",
+      "to": "interwatch",
+      "relationship": "enhances",
+      "benefit": "Auto-triggers review when document drift detected"
+    },
+    {
+      "from": "interflux",
+      "to": "interstat",
+      "relationship": "enhances",
+      "benefit": "Budget-aware agent triage (fewer agents at high token spend)"
+    },
+    {
+      "from": "intermem",
+      "to": "interwatch",
+      "relationship": "enhances",
+      "benefit": "Citation freshness checking for promoted memory entries"
+    },
+    {
+      "from": "intermem",
+      "to": "intercheck",
+      "relationship": "enhances",
+      "benefit": "Smart checkpoint synthesis at context pressure thresholds"
+    },
+    {
+      "from": "internext",
+      "to": "interstat",
+      "relationship": "enhances",
+      "benefit": "Historical token data calibrates effort estimates"
+    },
+    {
+      "from": "internext",
+      "to": "interject",
+      "relationship": "enhances",
+      "benefit": "Discovery confidence boosts priority scoring"
+    },
+    {
+      "from": "intersynth",
+      "to": "interflux",
+      "relationship": "enhances",
+      "benefit": "Enables multi-agent review verdict consumption"
+    },
+    {
+      "from": "interflux",
+      "to": "interphase",
+      "relationship": "enhances",
+      "benefit": "Phase tracking on review completion"
+    },
+    {
+      "from": "intersynth",
+      "to": "interphase",
+      "relationship": "enhances",
+      "benefit": "Sprint-aware verdict linking"
+    },
+    {
+      "from": "intertest",
+      "to": "intercheck",
+      "relationship": "enhances",
+      "benefit": "Syntax error stream feeds debugging discipline"
+    },
+    {
+      "from": "tool-time",
+      "to": "interstat",
+      "relationship": "enhances",
+      "benefit": "Cross-reference usage patterns with token metrics"
+    }
+  ]
+}
