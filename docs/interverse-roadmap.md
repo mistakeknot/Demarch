@@ -1,6 +1,6 @@
 # Interverse Roadmap
 
-**Modules:** 36 | **Open beads (root tracker):** 336 | **Blocked (root tracker):** 52 | **Last updated:** 2026-02-20
+**Modules:** 36 | **Open beads (root tracker):** 330 | **Blocked (root tracker):** 41 | **Last updated:** 2026-02-21
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json)
 
@@ -55,9 +55,9 @@
 
 ### Now (P0-P1)
 
-- [autarch] **iv-0v7j** Wire signal broker into Bigend/TUI runtime path (blocks iv-6abk)
+No P0-P1 beads currently open.
 
-**Recently completed:** iv-1vz6 (Update vision doc: rollback is already shipped in v1 CLI), iv-erb1 (Deduplicate CLAUDE_SESSION_ID env writes), iv-mew5 (Register or remove interserve pre-read-intercept.sh), iv-mctg (Add matcher to intercheck context-monitor.sh), iv-juzy (Fix interflux hooks.json schema), iv-iu31 (Remove tool-time PreToolUse binding, extract Task redirect to clavain), iv-145j (Implement event-reactor auto-advance loop for phase transitions), iv-t93l (Close Interspect routing loop with automatic adaptation), iv-2lfb (F1: Build infra/interbase/ — centralized interbase.sh SDK), iv-h7e2 (F2: Define integration.json schema + interbase-stub.sh template), iv-gcu2 (Dual-mode plugin architecture — interbase SDK + integration manifest), iv-kj6w (A2: Sprint handover — sprint skill becomes kernel-driven), iv-bld6 (F2: Workflow state rollback (ic run rollback --to-phase)), iv-2yef (Autarch: ship minimal status tool as kernel validation wedge), iv-8jpf (Add reflect/compound phase to default sprint chain), iv-3sns (E4.1: Kernel interspect_events table + ic interspect record CLI), iv-shra (E4.2: Durable cursor registration for long-lived consumers), iv-ooon (Harmonize Clavain docs with revised vision — 6 drift fixes), iv-byh3 (Define platform kernel + lifecycle UX architecture), iv-7o7n (Document slicing for flux-drive agents (P0 token optimization))
+**Recently completed:** iv-0v7j (Wire signal broker into Bigend/TUI runtime path), iv-rzt0 (Interband signal publishers), iv-sk8t (Interline statusline enrichment), iv-sprh (Cost-aware review depth), iv-yo9i (Config reader library), iv-re4l (Dispatch integration --phase flag), iv-pg8t (Subagent integration /model-routing), iv-1sc0 (Companion plugin dependency graph), iv-gye6 (Interbase batch SDK adoption), iv-l5ap (Research: transactional orchestration & error recovery), iv-fhz1 (Sprint close sweep for child beads), iv-1vz6 (Update vision doc: rollback is already shipped in v1 CLI), iv-erb1 (Deduplicate CLAUDE_SESSION_ID env writes), iv-mew5 (Register or remove interserve pre-read-intercept.sh), iv-mctg (Add matcher to intercheck context-monitor.sh), iv-juzy (Fix interflux hooks.json schema), iv-iu31 (Remove tool-time PreToolUse binding, extract Task redirect to clavain), iv-145j (Implement event-reactor auto-advance loop for phase transitions), iv-t93l (Close Interspect routing loop with automatic adaptation), iv-2lfb (F1: Build infra/interbase/ — centralized interbase.sh SDK), iv-h7e2 (F2: Define integration.json schema + interbase-stub.sh template), iv-gcu2 (Dual-mode plugin architecture — interbase SDK + integration manifest), iv-kj6w (A2: Sprint handover — sprint skill becomes kernel-driven), iv-bld6 (F2: Workflow state rollback (ic run rollback --to-phase)), iv-2yef (Autarch: ship minimal status tool as kernel validation wedge), iv-8jpf (Add reflect/compound phase to default sprint chain), iv-3sns (E4.1: Kernel interspect_events table + ic interspect record CLI), iv-shra (E4.2: Durable cursor registration for long-lived consumers), iv-ooon (Harmonize Clavain docs with revised vision — 6 drift fixes), iv-byh3 (Define platform kernel + lifecycle UX architecture), iv-7o7n (Document slicing for flux-drive agents (P0 token optimization))
 
 ### Next (P2)
 
@@ -86,15 +86,9 @@
 **Model Routing Pipeline**
 - **iv-i64p** F1: Routing config schema (config/routing.yaml)
 - **iv-jayq** F2: Resolution library (hooks/lib-routing.sh)
-- **iv-yo9i** F2: Config reader library (lib-routing.sh)
 - **iv-6nwo** F3: Dispatch migration (dispatch.sh reads routing.yaml)
-- **iv-re4l** F3: Dispatch integration (--phase flag)
-- **iv-pg8t** F4: Subagent integration (/model-routing reads routing.yaml)
 - **iv-sz5b** F4: Update model-routing command to use routing.yaml
 - [clavain] **iv-k8xn** B2: Complexity-aware routing — task complexity drives model selection
-- **iv-rzt0** F1: Interband signal publishers (intercheck, interstat, interlock)
-- **iv-sk8t** F2: Interline statusline enrichment (pressure, coordination, budget)
-- **iv-sprh** F6: Cost-aware review depth (always-on budget signal)
 
 **Multi-Agent Coordination & Interlock Negotiation**
 - **iv-1aug** F1: Release Response Protocol (release_ack / release_defer)
@@ -114,8 +108,6 @@
 - [clavain] **iv-r9j2** A3: Event-driven advancement — phase transitions trigger auto-dispatch
 - [clavain/interphase] **iv-zsio** Integrate full discovery pipeline into sprint workflow
 - **iv-frqh** F5: clavain:setup modpack — auto-install ecosystem-only plugins
-- **iv-1sc0** F7: Companion plugin dependency graph
-- **iv-gye6** F3: Interbase batch SDK adoption (6 plugins)
 - **iv-zyym** Evaluate Claude Hub for event-driven GitHub agent dispatch
 
 **Flux-Drive Spec: Library Extraction**
@@ -146,7 +138,6 @@
 **Research: Architecture & Product Strategy**
 - **iv-3kee** Research: product-native agent orchestration (whitespace opportunity)
 - **iv-dthn** Research: inter-layer feedback loops and optimization thresholds
-- **iv-l5ap** Research: transactional orchestration & error recovery patterns
 - **iv-fzrn** Research: multi-agent hallucination cascades & failure taxonomy
 - **iv-exos** Research: bias-aware product decision framework
 - **iv-jk7q** Research: cognitive load budgets & progressive disclosure review UX
@@ -260,7 +251,7 @@ Interkasten synchronizes project documentation between local filesystems and Not
 - **Sprint Lifecycle Kernel Migration** — Migrate Clavain sprint state from beads-backed temp files to intercore kernel, unified phase chain, and kernel-driven dispatch via SpawnHandler events
 - **Token-Efficient Context Delivery** — Compress symbol imports, enable block-level compression, precompute workspace bundles, track symbol popularity, and add structured output serialization to reduce context-pack footprint by 40-60%
 - **Cost-Aware Agent Dispatch** — Wire token budgets across sprint setup, flux-drive triage, and dispatch execution with real-time budget visibility via interstat and automated cost-quality tradeoffs
-- **Plugin Synergy via Interband** — Connect plugins through atomic interband signals for context pressure, budget alerts, tool performance hints, and cross-plugin nudges; establish dual-mode architecture patterns
+- ~~**Plugin Synergy via Interband**~~ — *Completed:* interband signal publishers, interline statusline enrichment, interbase SDK adoption, and dual-mode architecture patterns all shipped
 - **Bigend Dashboard Kernel Sourcing** — Migrate agent status monitoring from filesystem/tmux scraping to kernel-native `ic` CLI, displaying runs, phases, dispatches, events, and token metrics
 - **Cognitive Review Agents (Interlens)** — Build lens-based review agents (fd-decisions, fd-people, fd-resilience, fd-perception) from FLUX thematic frames with severity tiers and cognitive deduplication
 - **Subagent Context Flooding Prevention** — Implement write-behind protocol for multi-agent dispatch so agent results persist to disk while only summaries enter orchestrator context
