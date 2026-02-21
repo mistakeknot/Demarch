@@ -187,6 +187,8 @@ body {
 }
 .domain-hull:hover { fill-opacity: 0.14; stroke-opacity: 0.5; }
 .domain-hull.hidden { fill-opacity: 0; stroke-opacity: 0; }
+.hulls-dimmed .domain-hull { fill-opacity: 0.03; stroke-opacity: 0.12; }
+.hulls-dimmed .domain-label { fill-opacity: 0.15; }
 
 .domain-label {
   font-size: 9px;
@@ -253,14 +255,14 @@ body {
 #detail-panel .meta-item { font-size: 12px; color: #8b949e; margin-bottom: 4px; }
 #detail-panel .meta-item span { color: #c9d1d9; }
 
-/* Tab bar */
-#tab-bar {
+/* Toggle bar */
+#toggle-bar {
   display: flex;
   gap: 4px;
   margin-left: 8px;
 }
 
-.tab-btn {
+.toggle-btn {
   background: transparent;
   border: 1px solid #30363d;
   color: #8b949e;
@@ -271,39 +273,45 @@ body {
   transition: all 0.15s;
   white-space: nowrap;
 }
-.tab-btn:hover { border-color: #58a6ff; color: #c9d1d9; }
-.tab-btn.active {
+.toggle-btn:hover { border-color: #58a6ff; color: #c9d1d9; }
+.toggle-btn.active {
   background: rgba(88, 166, 255, 0.15);
   border-color: #58a6ff;
   color: #58a6ff;
 }
 
-/* Tab content */
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-/* Sprint container */
-#sprint-container {
-  width: 100vw;
-  height: calc(100vh - 44px);
-  margin-top: 44px;
-  background: #0d1117;
-  overflow: hidden;
-}
-#sprint-container svg { width: 100%; height: 100%; }
-
-.sprint-node rect {
+/* Sprint phase nodes in force graph */
+.sprint-phase-node rect {
   cursor: pointer;
   transition: filter 0.15s;
 }
-.sprint-node rect:hover { filter: brightness(1.3); }
-.sprint-node text { pointer-events: none; user-select: none; }
-
-.sprint-node.selected rect {
+.sprint-phase-node rect:hover { filter: brightness(1.3); }
+.sprint-phase-node text { pointer-events: none; user-select: none; }
+.sprint-phase-node.highlighted rect {
   filter: brightness(1.4) drop-shadow(0 0 8px rgba(88, 166, 255, 0.6));
 }
+.sprint-phase-node.dimmed rect { opacity: 0.1; }
+.sprint-phase-node.dimmed text { opacity: 0.1; }
 
+/* Participates-in edges */
+.link.participates-in {
+  stroke: #45B7D1;
+  stroke-dasharray: 4 3;
+  stroke-opacity: 0.35;
+  stroke-width: 1.5;
+}
+.link.participates-in.highlighted { stroke-opacity: 0.8; stroke-width: 2; }
+.link.participates-in.dimmed { stroke-opacity: 0.03; }
+
+/* Sprint flow arrows (decorative layer) */
+.sprint-flow-arrow { pointer-events: none; }
 .gate-diamond { pointer-events: none; }
+
+/* Spotlight layer — on-demand bezier curves for tier-2 skill/agent connections */
+.spotlight-layer path {
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px rgba(69, 183, 209, 0.5));
+}
 
 </style>
 </head>
@@ -311,37 +319,39 @@ body {
 
 <div id="toolbar">
   <span class="title">Interverse</span>
-  <div id="tab-bar">
-    <button class="tab-btn active" data-tab="ecosystem" onclick="switchTab('ecosystem')">Ecosystem</button>
-    <button class="tab-btn" data-tab="sprint" onclick="switchTab('sprint')">Sprint Workflow</button>
+  <div id="toggle-bar">
+    <button class="toggle-btn active" id="toggle-ecosystem" onclick="toggleLayer('ecosystem')">Ecosystem</button>
+    <button class="toggle-btn" id="toggle-sprint" onclick="toggleLayer('sprint')">Sprint</button>
   </div>
   <span class="stats" id="stats"></span>
   <input type="text" id="search-box" placeholder="Search nodes..." oninput="onSearch(this.value)">
 </div>
 
-<div id="tab-ecosystem" class="tab-content active">
-  <button id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle filters">&#9776;</button>
-  <div id="filter-sidebar" class="collapsed">
-    <div class="sidebar-title">Filters</div>
-    <div class="meta-row">
-      <button class="filter-btn meta" onclick="showAll()">All</button>
-      <button class="filter-btn meta" onclick="hideAll()">None</button>
-    </div>
-    <div id="filter-list"></div>
-    <div class="sidebar-title" style="margin-top: 12px">Domains</div>
-    <div class="meta-row">
-      <button class="filter-btn meta" onclick="showAllDomains()">All</button>
-      <button class="filter-btn meta" onclick="hideAllDomains()">None</button>
-    </div>
-    <div id="domain-list"></div>
+<button id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle filters">&#9776;</button>
+<div id="filter-sidebar" class="collapsed">
+  <div class="sidebar-title">Filters</div>
+  <div class="meta-row">
+    <button class="filter-btn meta" onclick="showAll()">All</button>
+    <button class="filter-btn meta" onclick="hideAll()">None</button>
   </div>
-
-  <div id="graph"></div>
+  <div id="filter-list"></div>
+  <div class="sidebar-title" style="margin-top: 12px">Domains</div>
+  <div class="meta-row">
+    <button class="filter-btn meta" onclick="showAllDomains()">All</button>
+    <button class="filter-btn meta" onclick="hideAllDomains()">None</button>
+  </div>
+  <div id="domain-list"></div>
+  <div id="phase-filter-section" style="display:none">
+    <div class="sidebar-title" style="margin-top: 12px">Sprint Phases</div>
+    <div class="meta-row">
+      <button class="filter-btn meta" onclick="showAllPhases()">All</button>
+      <button class="filter-btn meta" onclick="hideAllPhases()">None</button>
+    </div>
+    <div id="phase-list"></div>
+  </div>
 </div>
 
-<div id="tab-sprint" class="tab-content">
-  <div id="sprint-container"></div>
-</div>
+<div id="graph"></div>
 
 <div id="detail-panel">
   <button class="close-btn" onclick="closePanel()">&times;</button>
@@ -352,15 +362,15 @@ body {
 <script>
 // DATA_PLACEHOLDER is replaced by the generator with scanned JSON
 const data = {
-  "generated": "2026-02-21T05:48:34.136Z",
+  "generated": "2026-02-21T09:16:08.227Z",
   "stats": {
-    "nodes": 121,
-    "edges": 181,
-    "overlaps": 35,
+    "nodes": 124,
+    "edges": 186,
+    "overlaps": 36,
     "byType": {
       "monorepo": 1,
-      "plugin": 31,
-      "skill": 46,
+      "plugin": 32,
+      "skill": 48,
       "hook-event": 5,
       "agent": 21,
       "mcp-server": 12,
@@ -387,7 +397,7 @@ const data = {
       "label": "intercheck",
       "description": "Code quality guards and session health monitoring",
       "meta": {
-        "version": "0.1.8",
+        "version": "0.2.0",
         "path": "plugins/intercheck",
         "repoUrl": "https://github.com/mistakeknot/intercheck"
       }
@@ -958,6 +968,37 @@ const data = {
       }
     },
     {
+      "id": "interlearn",
+      "type": "plugin",
+      "label": "interlearn",
+      "description": "Cross-repo institutional knowledge index — indexes solution docs across the Interverse monorepo, enables unified search, and audits reflect coverage.",
+      "meta": {
+        "version": "0.1.0",
+        "path": "plugins/interlearn",
+        "repoUrl": "https://github.com/mistakeknot/interlearn"
+      }
+    },
+    {
+      "id": "interlearn:interlearn",
+      "type": "skill",
+      "label": "interlearn",
+      "description": "Cross-repo institutional knowledge — index solution docs, search across all modules, and audit reflect coverage for closed beads.",
+      "meta": {
+        "plugin": "interlearn",
+        "path": "plugins/interlearn/skills/interlearn",
+        "repoUrl": "https://github.com/mistakeknot/interlearn"
+      }
+    },
+    {
+      "id": "hook:SessionEnd",
+      "type": "hook-event",
+      "label": "SessionEnd",
+      "description": "Hook event: SessionEnd",
+      "meta": {
+        "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
+      }
+    },
+    {
       "id": "interleave",
       "type": "plugin",
       "label": "interleave",
@@ -1230,7 +1271,7 @@ const data = {
       "label": "interserve",
       "description": "Interserve — Codex spark classifier and context compression via MCP",
       "meta": {
-        "version": "0.1.3",
+        "version": "0.1.4",
         "path": "plugins/interserve",
         "repoUrl": "https://github.com/mistakeknot/interserve"
       }
@@ -1289,15 +1330,6 @@ const data = {
         "plugin": "interstat",
         "path": "plugins/interstat/skills",
         "repoUrl": "https://github.com/mistakeknot/interstat"
-      }
-    },
-    {
-      "id": "hook:SessionEnd",
-      "type": "hook-event",
-      "label": "SessionEnd",
-      "description": "Hook event: SessionEnd",
-      "meta": {
-        "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
       }
     },
     {
@@ -1484,7 +1516,7 @@ const data = {
       "label": "clavain",
       "description": "Self-improving agent rig — codifies product and engineering discipline into composable workflows from brainstorm to ship. Compounds knowledge, generates domain agents, and monitors its own docs. Orchestrates Claude, Codex, and GPT-5.2 Pro through 15 skills, 4 agents, 52 commands, 12 hooks. Companions: interphase, interline, interflux, interpath, interwatch, interslack, interform, intercraft, interdev, interpeer, intertest.",
       "meta": {
-        "version": "0.6.57",
+        "version": "0.6.59",
         "path": "hub/clavain",
         "repoUrl": "https://github.com/mistakeknot/Clavain"
       }
@@ -1585,6 +1617,17 @@ const data = {
       "meta": {
         "plugin": "clavain",
         "path": "hub/clavain/skills/landing-a-change",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:lane",
+      "type": "skill",
+      "label": "lane",
+      "description": "Manage thematic work lanes — discover, create, tag beads, show velocity and starvation scores",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/lane",
         "repoUrl": "https://github.com/mistakeknot/Clavain"
       }
     },
@@ -1943,6 +1986,16 @@ const data = {
       "type": "fires-hook"
     },
     {
+      "source": "interlearn",
+      "target": "interlearn:interlearn",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interlearn",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
       "source": "interleave",
       "target": "interleave:interleave",
       "type": "provides-skill"
@@ -2194,6 +2247,11 @@ const data = {
     },
     {
       "source": "clavain",
+      "target": "clavain:lane",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
       "target": "clavain:refactor-safely",
       "type": "provides-skill"
     },
@@ -2324,6 +2382,11 @@ const data = {
     },
     {
       "source": "interkasten",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interlearn",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2609,6 +2672,18 @@ const data = {
         "domains": [
           "quality-review",
           "design-product"
+        ]
+      }
+    },
+    {
+      "source": "interject",
+      "target": "interlearn",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.2,
+        "domains": [
+          "docs-artifacts",
+          "discovery-research"
         ]
       }
     },
@@ -2948,6 +3023,17 @@ const data = {
       "domains": [
         "analytics-observability",
         "analytics-quality-stack"
+      ]
+    },
+    {
+      "source": "interject",
+      "sourceLabel": "interject",
+      "target": "interlearn",
+      "targetLabel": "interlearn",
+      "score": 2.2,
+      "domains": [
+        "docs-artifacts",
+        "discovery-research"
       ]
     },
     {
@@ -3346,8 +3432,9 @@ domainNames.forEach(function(domain) {
 });
 
 // Force simulation
-const simulation = d3.forceSimulation(graphNodes)
+var simulation = d3.forceSimulation(graphNodes)
   .force('link', d3.forceLink(graphLinks).id(function(d) { return d.id; }).distance(function(d) {
+    if (d.type === 'participates-in') return 280;
     if (d.type === 'part-of') return 100;
     if (d.type === 'companion-of') return 120;
     if (d.type === 'overlaps-with') return 90;
@@ -3355,20 +3442,26 @@ const simulation = d3.forceSimulation(graphNodes)
     return 80;
   }))
   .force('charge', d3.forceManyBody().strength(function(d) {
+    if (d.type === 'sprint-phase') return -800;
     if (d.type === 'monorepo' || d.type === 'hub') return -400;
     if (d.type === 'plugin' || d.type === 'kernel') return -200;
     return -60;
   }))
-  .force('center', d3.forceCenter(width / 2, height / 2))
-  .force('collision', d3.forceCollide().radius(function(d) { return (TYPE_SIZES[d.type] || 8) + 4; }));
+  .force('center', d3.forceCenter(width / 2, height / 2).strength(0.05))
+  .force('collision', d3.forceCollide().radius(function(d) {
+    if (d.type === 'sprint-phase') return 120;
+    return (TYPE_SIZES[d.type] || 8) + 4;
+  }));
 
 // Draw links
-const link = g.append('g').selectAll('line').data(graphLinks).join('line')
+var linkGroup = g.append('g').attr('class', 'links');
+var link = linkGroup.selectAll('line').data(graphLinks).join('line')
   .attr('class', function(d) { return 'link ' + d.type; })
   .attr('stroke-width', function(d) { return d.type === 'companion-of' ? 2 : 1; });
 
 // Draw nodes
-const node = g.append('g').selectAll('g').data(graphNodes).join('g')
+var nodeGroup_eco = g.append('g').attr('class', 'nodes');
+var node = nodeGroup_eco.selectAll('g').data(graphNodes).join('g')
   .attr('class', 'node')
   .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
 
@@ -3465,7 +3558,21 @@ simulation.on('tick', function() {
     .attr('x2', function(d) { return d.target.x; })
     .attr('y2', function(d) { return d.target.y; });
   node.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+  // Update sprint phase node positions (they live in a separate group)
+  var sprintNodeW = 160, sprintNodeH = 56;
+  sprintNodeGroup.selectAll('.sprint-phase-node').each(function() {
+    var el = d3.select(this);
+    var nodeId = el.attr('data-id');
+    var sn = nodeById[nodeId];
+    if (sn) el.attr('transform', 'translate(' + (sn.x - sprintNodeW / 2) + ',' + (sn.y - sprintNodeH / 2) + ')');
+  });
+  // Redraw flow arrows to follow sprint node positions
+  if (sprintActive) {
+    sprintFlowGroup.selectAll('*').remove();
+    drawSprintFlowArrows();
+  }
   updateHulls();
+  updateSpotlightPaths();
 });
 
 // --- Interaction ---
@@ -3485,6 +3592,13 @@ function selectNode(d) {
   link.classed('highlighted', function(l) { return getNodeId(l.source) === d.id || getNodeId(l.target) === d.id; });
   link.classed('dimmed', function(l) { return getNodeId(l.source) !== d.id && getNodeId(l.target) !== d.id; });
 
+  // Also highlight/dim sprint phase nodes if sprint is active
+  if (sprintActive) {
+    sprintNodeGroup.selectAll('.sprint-phase-node')
+      .classed('highlighted', function() { return connectedIds.has(d3.select(this).attr('data-id')); })
+      .classed('dimmed', function() { return !connectedIds.has(d3.select(this).attr('data-id')); });
+  }
+
   showDetailPanel(d);
 }
 
@@ -3492,6 +3606,11 @@ function deselectAll() {
   selectedNode = null;
   node.classed('highlighted', false).classed('dimmed', false);
   link.classed('highlighted', false).classed('dimmed', false);
+  spotlightGroup.selectAll('*').remove();
+  if (sprintActive) {
+    sprintNodeGroup.selectAll('.sprint-phase-node')
+      .classed('highlighted', false).classed('dimmed', false);
+  }
 }
 
 function showDetailPanel(d) {
@@ -3666,6 +3785,43 @@ function showDetailPanel(d) {
     content.appendChild(pUl);
   }
 
+  // Sprint phases this node participates in (if sprint is active)
+  if (sprintActive && nodeToPhases[d.id]) {
+    var nodePhases = [];
+    nodeToPhases[d.id].forEach(function(phaseId) {
+      var phase = SPRINT_PHASES.find(function(p) { return p.id === phaseId; });
+      if (phase) nodePhases.push(phase);
+    });
+    if (nodePhases.length > 0) {
+      var spTitle = document.createElement('div');
+      spTitle.className = 'section-title';
+      spTitle.textContent = 'Sprint Phases';
+      content.appendChild(spTitle);
+
+      var spUl = document.createElement('ul');
+      spUl.className = 'child-list';
+      nodePhases.forEach(function(phase) {
+        var phaseColor = PHASE_COLORS[phase.phase] || '#8b949e';
+        var li = document.createElement('li');
+        li.style.borderLeft = '2px solid ' + phaseColor;
+        li.textContent = phase.step + '. ' + phase.label + ' ';
+        var ts = document.createElement('span');
+        ts.className = 'child-type';
+        ts.textContent = phase.phase;
+        li.appendChild(ts);
+        li.style.cursor = 'pointer';
+        li.onclick = (function(sprintNodeId) {
+          return function() {
+            var sn = nodeById[sprintNodeId];
+            if (sn) selectSprintNode(sn);
+          };
+        })('sprint-' + phase.id);
+        spUl.appendChild(li);
+      });
+      content.appendChild(spUl);
+    }
+  }
+
   panel.classList.add('open');
 }
 
@@ -3728,16 +3884,37 @@ function toggleSidebar() {
 
 function applyFilters() {
   node.style('display', function(d) {
+    if (!ecosystemActive) return 'none';
     if (!activeFilters.has(d.type)) return 'none';
     if (searchQuery && !d.label.toLowerCase().includes(searchQuery) && !d.id.toLowerCase().includes(searchQuery)) return 'none';
     return null;
   });
   link.style('display', function(l) {
-    var sn = graphNodes.find(function(n) { return n.id === getNodeId(l.source); });
-    var tn = graphNodes.find(function(n) { return n.id === getNodeId(l.target); });
-    if (!sn || !tn || !activeFilters.has(sn.type) || !activeFilters.has(tn.type)) return 'none';
+    var sId = getNodeId(l.source);
+    var tId = getNodeId(l.target);
+    var sn = nodeById[sId];
+    var tn = nodeById[tId];
+    if (!sn || !tn) return 'none';
+    // participates-in edges: visible when both endpoints are visible
+    if (l.type === 'participates-in') {
+      var phaseVisible = sn._sprint ? activePhases.has(sn._phase.id) : (tn._sprint ? activePhases.has(tn._phase.id) : true);
+      var ecoNode = sn._sprint ? tn : sn;
+      var ecoVisible = ecosystemActive && activeFilters.has(ecoNode.type);
+      return (phaseVisible && ecoVisible && sprintActive) ? null : 'none';
+    }
+    // Regular ecosystem edges
+    if (!ecosystemActive) return 'none';
+    if (!activeFilters.has(sn.type) || !activeFilters.has(tn.type)) return 'none';
     return null;
   });
+  // Sprint phase node visibility
+  if (sprintActive) {
+    sprintNodeGroup.selectAll('.sprint-phase-node').style('display', function() {
+      var nodeId = d3.select(this).attr('data-id');
+      var phaseId = nodeId.replace('sprint-', '');
+      return activePhases.has(phaseId) ? null : 'none';
+    });
+  }
   updateHulls();
 }
 
@@ -3778,64 +3955,7 @@ setTimeout(function() {
 }, 2000);
 
 // ═══════════════════════════════════════════════════════
-// TAB SWITCHING
-// ═══════════════════════════════════════════════════════
-
-var sprintInitialized = false;
-
-function switchTab(tabName) {
-  // Update tab buttons
-  var buttons = document.querySelectorAll('.tab-btn');
-  for (var i = 0; i < buttons.length; i++) {
-    if (buttons[i].dataset.tab === tabName) {
-      buttons[i].classList.add('active');
-    } else {
-      buttons[i].classList.remove('active');
-    }
-  }
-
-  // Update tab content
-  var contents = document.querySelectorAll('.tab-content');
-  for (var i = 0; i < contents.length; i++) {
-    if (contents[i].id === 'tab-' + tabName) {
-      contents[i].classList.add('active');
-    } else {
-      contents[i].classList.remove('active');
-    }
-  }
-
-  // Ecosystem-specific toolbar elements
-  var sidebarToggle = document.getElementById('sidebar-toggle');
-  var searchBox = document.getElementById('search-box');
-  var statsEl = document.getElementById('stats');
-
-  if (tabName === 'ecosystem') {
-    sidebarToggle.style.display = '';
-    searchBox.style.display = '';
-    statsEl.style.display = '';
-    // Resume D3 simulation
-    simulation.alphaTarget(0.01).restart();
-    setTimeout(function() { simulation.alphaTarget(0); }, 500);
-  } else {
-    sidebarToggle.style.display = 'none';
-    searchBox.style.display = 'none';
-    statsEl.style.display = 'none';
-    // Collapse sidebar and close panel
-    document.getElementById('filter-sidebar').classList.add('collapsed');
-    closePanel();
-    // Pause D3 simulation
-    simulation.stop();
-  }
-
-  // Lazy init sprint diagram
-  if (tabName === 'sprint' && !sprintInitialized) {
-    sprintInitialized = true;
-    initSprintDiagram();
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// SPRINT WORKFLOW DIAGRAM
+// SPRINT PHASE DATA + TOGGLE LAYER SYSTEM
 // ═══════════════════════════════════════════════════════
 
 var SPRINT_PHASES = [
@@ -3930,177 +4050,338 @@ var PHASE_COLORS = {
   'shipping': '#1ABC9C'
 };
 
-var selectedSprintNode = null;
+// Curated mapping: which ecosystem nodes participate in each sprint phase
+var PHASE_PLUGINS = {
+  'brainstorm':     ['clavain'],
+  'strategize':     ['clavain', 'interpath'],
+  'write-plan':     ['clavain', 'interpath'],
+  'review-plan':    ['clavain', 'interflux', 'interpeer'],
+  'execute':        ['clavain', 'intertest', 'interlock', 'interdev'],
+  'test':           ['clavain', 'intertest'],
+  'quality-gates':  ['clavain', 'interflux', 'intercheck', 'interpeer'],
+  'resolve':        ['clavain', 'interflux'],
+  'reflect':        ['clavain', 'interdoc', 'interfluence'],
+  'ship':           ['clavain', 'interlock']
+};
 
-function initSprintDiagram() {
-  var container = document.getElementById('sprint-container');
-  var cw = container.clientWidth || window.innerWidth;
-  var ch = container.clientHeight || (window.innerHeight - 44);
+// Fine-grained: which specific skills/agents/MCP servers each phase uses (tier 2 — on-demand spotlight, NOT force links)
+var PHASE_SKILLS = {
+  'brainstorm':    { skills: ['clavain:brainstorming'], agents: [], mcp: [] },
+  'strategize':    { skills: ['clavain:writing-plans'], agents: [], mcp: [] },
+  'write-plan':    { skills: ['clavain:writing-plans'], agents: [], mcp: [] },
+  'review-plan':   { skills: ['interflux:flux-drive', 'interpeer:interpeer'],
+                     agents: ['interflux:agent:fd-architecture', 'interflux:agent:fd-safety',
+                              'interflux:agent:fd-correctness', 'interflux:agent:fd-user-product',
+                              'interflux:agent:fd-quality', 'intersynth:agent:synthesize-review'],
+                     mcp: [] },
+  'execute':       { skills: ['clavain:executing-plans', 'interdev:working-with-claude-code',
+                              'intertest:test-driven-development'], agents: [], mcp: [] },
+  'test':          { skills: ['intertest:test-driven-development', 'intertest:verification-before-completion',
+                              'intertest:systematic-debugging'], agents: [], mcp: [] },
+  'quality-gates': { skills: ['interflux:flux-drive', 'intercheck:status', 'interpeer:interpeer'],
+                     agents: ['interflux:agent:fd-architecture', 'interflux:agent:fd-safety',
+                              'interflux:agent:fd-correctness', 'interflux:agent:fd-user-product',
+                              'interflux:agent:fd-quality', 'intersynth:agent:synthesize-review',
+                              'intercraft:agent:agent-native-reviewer'],
+                     mcp: [] },
+  'resolve':       { skills: ['interflux:flux-drive', 'clavain:code-review-discipline'], agents: [], mcp: [] },
+  'reflect':       { skills: ['interdoc:interdoc', 'clavain:engineering-docs'],
+                     agents: ['interfluence:agent:voice-analyzer'], mcp: [] },
+  'ship':          { skills: ['clavain:landing-a-change'], agents: [], mcp: [] }
+};
 
-  var sprintSvg = d3.select('#sprint-container').append('svg')
-    .attr('width', cw).attr('height', ch);
+// Reverse lookup: nodeId -> [phaseId, ...] (from both PHASE_PLUGINS and PHASE_SKILLS)
+var nodeToPhases = {};
+function addNodePhase(nodeId, phaseId) {
+  if (!nodeToPhases[nodeId]) nodeToPhases[nodeId] = [];
+  if (nodeToPhases[nodeId].indexOf(phaseId) === -1) nodeToPhases[nodeId].push(phaseId);
+}
+Object.keys(PHASE_PLUGINS).forEach(function(phaseId) {
+  PHASE_PLUGINS[phaseId].forEach(function(pid) { addNodePhase(pid, phaseId); });
+});
+Object.keys(PHASE_SKILLS).forEach(function(phaseId) {
+  var entry = PHASE_SKILLS[phaseId];
+  entry.skills.forEach(function(sid) { addNodePhase(sid, phaseId); });
+  entry.agents.forEach(function(aid) { addNodePhase(aid, phaseId); });
+  entry.mcp.forEach(function(mid) { addNodePhase(mid, phaseId); });
+});
 
-  var sprintG = sprintSvg.append('g');
+// Toggle state
+var ecosystemActive = true;
+var sprintActive = false;
+var activePhases = new Set(SPRINT_PHASES.map(function(p) { return p.id; }));
 
-  // Zoom/pan
-  var sprintZoom = d3.zoom()
-    .scaleExtent([0.3, 3])
-    .on('zoom', function(event) { sprintG.attr('transform', event.transform); });
-  sprintSvg.call(sprintZoom);
+// Sprint phase nodes and edges that get injected into the simulation
+var sprintNodes = [];
+var sprintLinks = [];
 
-  // Click background to deselect
-  sprintSvg.on('click', function() {
-    selectedSprintNode = null;
-    sprintG.selectAll('.sprint-node').classed('selected', false);
-    closePanel();
-  });
+// SVG layers for sprint-specific rendering
+var sprintFlowGroup = g.append('g').attr('class', 'sprint-flow-layer');
+var sprintNodeGroup = g.append('g').attr('class', 'sprint-node-layer');
+var spotlightGroup = g.append('g').attr('class', 'spotlight-layer');
 
-  // Layout: U-shape — top row L→R (steps 1-5), bottom row R→L (steps 6-10)
-  var nodeW = 160, nodeH = 72;
-  var hGap = 50, vGap = 120;
-  var startX = 100, startY = 100;
-
+// Compute pinned positions for sprint phases — elliptical ring around ecosystem
+function computePhasePositions() {
   var positions = [];
-  // Top row: steps 1-5
-  for (var i = 0; i < 5; i++) {
-    positions.push({ x: startX + i * (nodeW + hGap), y: startY });
+  var cx = width * 0.5;
+  var cy = height * 0.5;
+  var rx = width * 0.40;
+  var ry = height * 0.40;
+  // 10 phases clockwise from top (12 o'clock): Brainstorm at top
+  var n = SPRINT_PHASES.length;
+  for (var i = 0; i < n; i++) {
+    var angle = -Math.PI / 2 + (i / n) * 2 * Math.PI; // start at -π/2 (top), go clockwise
+    positions.push({ x: cx + rx * Math.cos(angle), y: cy + ry * Math.sin(angle) });
   }
-  // Bottom row: steps 6-10 (reversed)
-  for (var i = 0; i < 5; i++) {
-    positions.push({ x: startX + (4 - i) * (nodeW + hGap), y: startY + nodeH + vGap });
+  return positions;
+}
+
+var phasePositions = computePhasePositions();
+
+// Build sprint phase filter buttons in sidebar
+var phaseList = document.getElementById('phase-list');
+SPRINT_PHASES.forEach(function(phase) {
+  var color = PHASE_COLORS[phase.phase] || '#8b949e';
+  var btn = document.createElement('button');
+  btn.className = 'filter-btn active';
+  btn.style.setProperty('--type-color', color);
+  var dot = document.createElement('span');
+  dot.className = 'dot';
+  dot.style.background = color;
+  btn.appendChild(dot);
+  btn.appendChild(document.createTextNode(phase.step + '. ' + phase.label));
+  btn.dataset.phase = phase.id;
+  btn.onclick = function() { togglePhase(phase.id, btn); };
+  phaseList.appendChild(btn);
+});
+
+function togglePhase(phaseId, btn) {
+  if (activePhases.has(phaseId)) { activePhases.delete(phaseId); btn.classList.remove('active'); }
+  else { activePhases.add(phaseId); btn.classList.add('active'); }
+  if (sprintActive) rebuildSprintLayer();
+}
+
+function showAllPhases() {
+  SPRINT_PHASES.forEach(function(p) { activePhases.add(p.id); });
+  document.querySelectorAll('.filter-btn[data-phase]').forEach(function(b) { b.classList.add('active'); });
+  if (sprintActive) rebuildSprintLayer();
+}
+
+function hideAllPhases() {
+  activePhases.clear();
+  document.querySelectorAll('.filter-btn[data-phase]').forEach(function(b) { b.classList.remove('active'); });
+  if (sprintActive) rebuildSprintLayer();
+}
+
+// Arrow markers for sprint flow (append to main SVG defs)
+var defs = svg.append('defs');
+defs.append('marker')
+  .attr('id', 'sprint-arrow')
+  .attr('viewBox', '0 0 10 6')
+  .attr('refX', 10).attr('refY', 3)
+  .attr('markerWidth', 10).attr('markerHeight', 6)
+  .attr('orient', 'auto')
+  .append('path')
+  .attr('d', 'M0,0 L10,3 L0,6 Z')
+  .attr('fill', '#58a6ff');
+
+defs.append('marker')
+  .attr('id', 'sprint-skip-arrow')
+  .attr('viewBox', '0 0 10 6')
+  .attr('refX', 10).attr('refY', 3)
+  .attr('markerWidth', 10).attr('markerHeight', 6)
+  .attr('orient', 'auto')
+  .append('path')
+  .attr('d', 'M0,0 L10,3 L0,6 Z')
+  .attr('fill', '#F39C12');
+
+// ── Toggle layer function ──
+
+function toggleLayer(layerName) {
+  var btn = document.getElementById('toggle-' + layerName);
+
+  if (layerName === 'ecosystem') {
+    ecosystemActive = !ecosystemActive;
+    btn.classList.toggle('active', ecosystemActive);
+  } else if (layerName === 'sprint') {
+    sprintActive = !sprintActive;
+    btn.classList.toggle('active', sprintActive);
   }
 
-  // Arrow marker
-  sprintSvg.append('defs').append('marker')
-    .attr('id', 'sprint-arrow')
-    .attr('viewBox', '0 0 10 6')
-    .attr('refX', 10).attr('refY', 3)
-    .attr('markerWidth', 10).attr('markerHeight', 6)
-    .attr('orient', 'auto')
-    .append('path')
-    .attr('d', 'M0,0 L10,3 L0,6 Z')
-    .attr('fill', '#58a6ff');
+  // Show/hide ecosystem-specific UI
+  var sidebarToggle = document.getElementById('sidebar-toggle');
+  var searchBox = document.getElementById('search-box');
+  var statsEl = document.getElementById('stats');
+  sidebarToggle.style.display = ecosystemActive ? '' : 'none';
+  searchBox.style.display = ecosystemActive ? '' : 'none';
+  statsEl.style.display = ecosystemActive ? '' : 'none';
 
-  // Skip-path arrow marker (orange)
-  sprintSvg.select('defs').append('marker')
-    .attr('id', 'sprint-skip-arrow')
-    .attr('viewBox', '0 0 10 6')
-    .attr('refX', 10).attr('refY', 3)
-    .attr('markerWidth', 10).attr('markerHeight', 6)
-    .attr('orient', 'auto')
-    .append('path')
-    .attr('d', 'M0,0 L10,3 L0,6 Z')
-    .attr('fill', '#F39C12');
+  // Show/hide sprint phase filter section in sidebar
+  document.getElementById('phase-filter-section').style.display = sprintActive ? '' : 'none';
 
-  // Draw connecting arrows between consecutive steps
-  var arrowGroup = sprintG.append('g').attr('class', 'sprint-arrows');
+  // If nothing is active, do nothing special — just empty graph
+  rebuildGraph();
+}
 
-  for (var i = 0; i < 9; i++) {
-    var from = positions[i];
-    var to = positions[i + 1];
+function rebuildGraph() {
+  // Clear sprint-specific rendering + spotlight
+  sprintNodeGroup.selectAll('*').remove();
+  sprintFlowGroup.selectAll('*').remove();
+  spotlightGroup.selectAll('*').remove();
 
-    if (i < 4) {
-      // Top row: left to right
-      arrowGroup.append('line')
-        .attr('x1', from.x + nodeW).attr('y1', from.y + nodeH / 2)
-        .attr('x2', to.x - 4).attr('y2', to.y + nodeH / 2)
-        .attr('stroke', '#58a6ff').attr('stroke-width', 2)
-        .attr('marker-end', 'url(#sprint-arrow)');
-    } else if (i === 4) {
-      // Turn: step 5 down to step 6
-      var turnX = from.x + nodeW / 2;
-      arrowGroup.append('path')
-        .attr('d', 'M' + (from.x + nodeW / 2) + ',' + (from.y + nodeH) +
-          ' L' + (from.x + nodeW / 2) + ',' + (to.y + nodeH / 2) +
-          ' L' + (to.x + nodeW + 4) + ',' + (to.y + nodeH / 2))
-        .attr('fill', 'none').attr('stroke', '#58a6ff').attr('stroke-width', 2)
-        .attr('marker-end', 'url(#sprint-arrow)');
-    } else {
-      // Bottom row: right to left
-      arrowGroup.append('line')
-        .attr('x1', from.x).attr('y1', from.y + nodeH / 2)
-        .attr('x2', to.x + nodeW + 4).attr('y2', to.y + nodeH / 2)
-        .attr('stroke', '#58a6ff').attr('stroke-width', 2)
-        .attr('marker-end', 'url(#sprint-arrow)');
-    }
+  // Dim domain hulls when sprint is active to reduce visual noise
+  hullGroup.classed('hulls-dimmed', sprintActive);
+  hullLabelGroup.classed('hulls-dimmed', sprintActive);
+
+  // Remove old sprint nodes and links from arrays
+  for (var i = graphNodes.length - 1; i >= 0; i--) {
+    if (graphNodes[i]._sprint) graphNodes.splice(i, 1);
+  }
+  for (var i = graphLinks.length - 1; i >= 0; i--) {
+    if (graphLinks[i]._sprint) graphLinks.splice(i, 1);
   }
 
-  // Skip path: Brainstorm → Write Plan (dashed orange curve)
-  var skipFrom = positions[0]; // Brainstorm
-  var skipTo = positions[2];   // Write Plan
-  var skipMidY = skipFrom.y - 50;
-  arrowGroup.append('path')
-    .attr('d', 'M' + (skipFrom.x + nodeW / 2) + ',' + skipFrom.y +
-      ' C' + (skipFrom.x + nodeW / 2) + ',' + skipMidY +
-      ' ' + (skipTo.x + nodeW / 2) + ',' + skipMidY +
-      ' ' + (skipTo.x + nodeW / 2) + ',' + skipTo.y)
-    .attr('fill', 'none').attr('stroke', '#F39C12').attr('stroke-width', 2)
-    .attr('stroke-dasharray', '6 3')
-    .attr('marker-end', 'url(#sprint-skip-arrow)');
-
-  // Skip path label
-  arrowGroup.append('text')
-    .attr('x', (skipFrom.x + skipTo.x + nodeW) / 2)
-    .attr('y', skipMidY - 6)
-    .attr('text-anchor', 'middle')
-    .attr('fill', '#F39C12').attr('font-size', '10px')
-    .text('skip (trivial tasks)');
-
-  // Draw gate indicators
-  var gateGroup = sprintG.append('g').attr('class', 'sprint-gates');
-
-  SPRINT_PHASES.forEach(function(phase, idx) {
-    if (!phase.gate) return;
-    var pos = positions[idx];
-    var gateColor = phase.gate.type === 'hard' ? '#E74C3C' : '#F39C12';
-
-    // Find the incoming arrow midpoint
-    var gx, gy;
-    if (idx < 5) {
-      // Top row — gate before node (from left)
-      gx = pos.x - hGap / 2;
-      gy = pos.y + nodeH / 2;
-    } else {
-      // Bottom row — gate before node (from right)
-      gx = pos.x + nodeW + hGap / 2;
-      gy = pos.y + nodeH / 2;
-    }
-
-    var ds = 8; // diamond half-size
-    gateGroup.append('path')
-      .attr('class', 'gate-diamond')
-      .attr('d', 'M' + gx + ',' + (gy - ds) +
-        ' L' + (gx + ds) + ',' + gy +
-        ' L' + gx + ',' + (gy + ds) +
-        ' L' + (gx - ds) + ',' + gy + ' Z')
-      .attr('fill', gateColor).attr('stroke', gateColor).attr('stroke-width', 1)
-      .attr('opacity', 0.9);
-
-    gateGroup.append('text')
-      .attr('x', gx).attr('y', gy - ds - 5)
-      .attr('text-anchor', 'middle')
-      .attr('fill', gateColor).attr('font-size', '9px')
-      .text(phase.gate.label);
+  // Clean up nodeById for removed sprint nodes
+  SPRINT_PHASES.forEach(function(p) {
+    delete nodeById['sprint-' + p.id];
   });
 
-  // Draw nodes
-  var nodeGroup = sprintG.append('g').attr('class', 'sprint-nodes');
+  sprintNodes = [];
+  sprintLinks = [];
 
+  // Inject sprint nodes if sprint is active
+  if (sprintActive) {
+    buildSprintNodes();
+  }
+
+  // Rebuild D3 selections
+  rebuildSimulation();
+
+  // Draw sprint flow arrows (static decorative layer)
+  if (sprintActive) {
+    drawSprintFlowArrows();
+    renderSprintNodes();
+  }
+
+  // Apply visibility
+  applyFilters();
+}
+
+function buildSprintNodes() {
   SPRINT_PHASES.forEach(function(phase, idx) {
-    var pos = positions[idx];
+    if (!activePhases.has(phase.id)) return;
+
+    var pos = phasePositions[idx];
+    var nodeId = 'sprint-' + phase.id;
+    var sprintNode = {
+      id: nodeId,
+      label: phase.label,
+      type: 'sprint-phase',
+      description: phase.description,
+      _sprint: true,
+      _phase: phase,
+      fx: pos.x,
+      fy: pos.y,
+      x: pos.x,
+      y: pos.y
+    };
+    sprintNodes.push(sprintNode);
+    graphNodes.push(sprintNode);
+    nodeById[nodeId] = sprintNode;
+
+    // Create participates-in edges to ecosystem nodes (only if ecosystem is active)
+    if (ecosystemActive && PHASE_PLUGINS[phase.id]) {
+      PHASE_PLUGINS[phase.id].forEach(function(pluginId) {
+        if (nodeById[pluginId]) {
+          var link = {
+            source: nodeId,
+            target: pluginId,
+            type: 'participates-in',
+            _sprint: true
+          };
+          sprintLinks.push(link);
+          graphLinks.push(link);
+        }
+      });
+    }
+  });
+}
+
+function rebuildSimulation() {
+  // Rebuild link selection
+  link = linkGroup.selectAll('line').data(graphLinks, function(d) {
+    return (typeof d.source === 'object' ? d.source.id : d.source) + '-' +
+           (typeof d.target === 'object' ? d.target.id : d.target) + '-' + d.type;
+  });
+  link.exit().remove();
+  link = link.enter().append('line')
+    .attr('class', function(d) { return 'link ' + d.type; })
+    .attr('stroke-width', function(d) { return d.type === 'companion-of' ? 2 : 1; })
+    .merge(link);
+
+  // Rebuild node selection (ecosystem nodes only — sprint phase nodes rendered separately)
+  node = nodeGroup_eco.selectAll('g.node').data(
+    graphNodes.filter(function(n) { return !n._sprint; }),
+    function(d) { return d.id; }
+  );
+  node.exit().remove();
+  var nodeEnter = node.enter().append('g')
+    .attr('class', 'node')
+    .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
+  nodeEnter.append('circle')
+    .attr('r', function(d) { return TYPE_SIZES[d.type] || 8; })
+    .attr('fill', function(d) { return TYPE_COLORS[d.type] || '#8b949e'; })
+    .style('--glow', function(d) { return TYPE_COLORS[d.type] || '#8b949e'; })
+    .on('click', function(event, d) { event.stopPropagation(); selectNode(d); });
+  nodeEnter.append('text')
+    .attr('dx', function(d) { return (TYPE_SIZES[d.type] || 8) + 4; })
+    .attr('dy', 3)
+    .text(function(d) { return d.label; })
+    .style('font-size', function(d) {
+      if (d.type === 'monorepo' || d.type === 'hub') return '13px';
+      if (d.type === 'plugin' || d.type === 'kernel' || d.type === 'service') return '11px';
+      return '9px';
+    });
+  node = nodeEnter.merge(node);
+
+  // Update simulation
+  simulation.nodes(graphNodes);
+  simulation.force('link').links(graphLinks);
+  simulation.alpha(0.3).restart();
+}
+
+function renderSprintNodes() {
+  var nodeW = 160, nodeH = 56;
+
+  sprintNodes.forEach(function(sn) {
+    var phase = sn._phase;
     var color = PHASE_COLORS[phase.phase] || '#8b949e';
 
-    var gNode = nodeGroup.append('g')
-      .attr('class', 'sprint-node')
-      .attr('transform', 'translate(' + pos.x + ',' + pos.y + ')')
-      .style('cursor', 'pointer')
+    var gNode = sprintNodeGroup.append('g')
+      .attr('class', 'sprint-phase-node')
+      .attr('data-id', sn.id)
+      .attr('transform', 'translate(' + (sn.x - nodeW / 2) + ',' + (sn.y - nodeH / 2) + ')')
+      .style('cursor', 'grab')
       .on('click', function(event) {
         event.stopPropagation();
-        selectedSprintNode = phase;
-        sprintG.selectAll('.sprint-node').classed('selected', false);
-        d3.select(this).classed('selected', true);
-        showSprintDetail(phase);
-      });
+        selectSprintNode(sn);
+      })
+      .call(d3.drag()
+        .on('start', function(event) {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          sn.fx = sn.x; sn.fy = sn.y;
+          d3.select(this).style('cursor', 'grabbing');
+        })
+        .on('drag', function(event) {
+          sn.fx = event.x; sn.fy = event.y;
+          sn.x = event.x; sn.y = event.y;
+        })
+        .on('end', function(event) {
+          if (!event.active) simulation.alphaTarget(0);
+          // Keep pinned where user dropped it (don't clear fx/fy)
+          d3.select(this).style('cursor', 'grab');
+        })
+      );
 
     // Background rect
     gNode.append('rect')
@@ -4125,36 +4406,211 @@ function initSprintDiagram() {
       .attr('fill', '#f0f6fc').attr('font-size', '13px').attr('font-weight', '600')
       .text(phase.label);
 
-    // Phase name
+    // Phase name + artifact
     gNode.append('text')
-      .attr('x', 12).attr('y', 52)
-      .attr('fill', color).attr('font-size', '10px').attr('opacity', 0.7)
+      .attr('x', 12).attr('y', 46)
+      .attr('fill', color).attr('font-size', '9px').attr('opacity', 0.7)
       .text(phase.phase);
 
-    // Artifact hint
     gNode.append('text')
-      .attr('x', nodeW - 8).attr('y', 52)
+      .attr('x', nodeW - 8).attr('y', 46)
       .attr('text-anchor', 'end')
-      .attr('fill', '#8b949e').attr('font-size', '9px')
+      .attr('fill', '#8b949e').attr('font-size', '8px')
       .text(phase.artifact);
   });
+}
 
-  // Zoom to fit
-  setTimeout(function() {
-    var bounds = sprintG.node().getBBox();
-    var pad = 60;
-    var scaleX = cw / (bounds.width + pad * 2);
-    var scaleY = ch / (bounds.height + pad * 2);
-    var fitScale = Math.min(scaleX, scaleY, 1.5);
-    var midX = bounds.x + bounds.width / 2;
-    var midY = bounds.y + bounds.height / 2;
-    sprintSvg.transition().duration(500).call(
-      sprintZoom.transform,
-      d3.zoomIdentity
-        .translate(cw / 2 - fitScale * midX, ch / 2 - fitScale * midY)
-        .scale(fitScale)
-    );
-  }, 100);
+function drawSprintFlowArrows() {
+  var nodeW = 160, nodeH = 56;
+
+  // Get active sprint node positions
+  var activeSprintNodes = sprintNodes.filter(function(sn) {
+    return activePhases.has(sn._phase.id);
+  });
+
+  // Build position lookup
+  var posById = {};
+  activeSprintNodes.forEach(function(sn) {
+    posById[sn._phase.id] = { x: sn.x, y: sn.y };
+  });
+
+  // Draw flow arrows between consecutive active phases
+  for (var i = 0; i < SPRINT_PHASES.length - 1; i++) {
+    var fromPhase = SPRINT_PHASES[i];
+    var toPhase = SPRINT_PHASES[i + 1];
+    var from = posById[fromPhase.id];
+    var to = posById[toPhase.id];
+    if (!from || !to) continue;
+
+    // Calculate direction
+    var dx = to.x - from.x;
+    var dy = to.y - from.y;
+    var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    var nx = dx / dist;
+    var ny = dy / dist;
+
+    // Start from edge of source, end at edge of target
+    var sx = from.x + nx * (nodeW / 2 + 4);
+    var sy = from.y + ny * (nodeH / 2 + 4);
+    var ex = to.x - nx * (nodeW / 2 + 4);
+    var ey = to.y - ny * (nodeH / 2 + 4);
+
+    sprintFlowGroup.append('line')
+      .attr('class', 'sprint-flow-arrow')
+      .attr('x1', sx).attr('y1', sy)
+      .attr('x2', ex).attr('y2', ey)
+      .attr('stroke', '#58a6ff').attr('stroke-width', 2)
+      .attr('marker-end', 'url(#sprint-arrow)');
+
+    // Draw gate diamond if the target has a gate
+    if (toPhase.gate) {
+      var gateColor = toPhase.gate.type === 'hard' ? '#E74C3C' : '#F39C12';
+      var gx = (sx + ex) / 2;
+      var gy = (sy + ey) / 2;
+      var ds = 8;
+      sprintFlowGroup.append('path')
+        .attr('class', 'gate-diamond')
+        .attr('d', 'M' + gx + ',' + (gy - ds) +
+          ' L' + (gx + ds) + ',' + gy +
+          ' L' + gx + ',' + (gy + ds) +
+          ' L' + (gx - ds) + ',' + gy + ' Z')
+        .attr('fill', gateColor).attr('stroke', gateColor).attr('stroke-width', 1)
+        .attr('opacity', 0.9);
+
+      sprintFlowGroup.append('text')
+        .attr('x', gx).attr('y', gy - ds - 5)
+        .attr('text-anchor', 'middle')
+        .attr('fill', gateColor).attr('font-size', '9px')
+        .text(toPhase.gate.label);
+    }
+  }
+
+  // Skip path: Brainstorm → Write Plan (curves inward toward center)
+  var skipFrom = posById['brainstorm'];
+  var skipTo = posById['write-plan'];
+  if (skipFrom && skipTo) {
+    var skipMidX = (skipFrom.x + skipTo.x) / 2 + (width * 0.5 - (skipFrom.x + skipTo.x) / 2) * 0.5;
+    var skipMidY = (skipFrom.y + skipTo.y) / 2 + (height * 0.5 - (skipFrom.y + skipTo.y) / 2) * 0.5;
+    sprintFlowGroup.append('path')
+      .attr('class', 'sprint-flow-arrow')
+      .attr('d', 'M' + skipFrom.x + ',' + skipFrom.y +
+        ' Q' + skipMidX + ',' + skipMidY +
+        ' ' + skipTo.x + ',' + skipTo.y)
+      .attr('fill', 'none').attr('stroke', '#F39C12').attr('stroke-width', 2)
+      .attr('stroke-dasharray', '6 3')
+      .attr('marker-end', 'url(#sprint-skip-arrow)');
+
+    sprintFlowGroup.append('text')
+      .attr('x', skipMidX).attr('y', skipMidY - 10)
+      .attr('text-anchor', 'middle')
+      .attr('fill', '#F39C12').attr('font-size', '10px')
+      .text('skip (trivial tasks)');
+  }
+}
+
+function rebuildSprintLayer() {
+  rebuildGraph();
+}
+
+// ── Spotlight layer — on-demand bezier curves for tier-2 connections ──
+
+function drawSpotlightConnections(sourceNode, targetIds) {
+  spotlightGroup.selectAll('*').remove();
+  targetIds.forEach(function(tid) {
+    var targetNode = nodeById[tid];
+    if (!targetNode) return;
+    var sx = sourceNode.x, sy = sourceNode.y;
+    var tx = targetNode.x, ty = targetNode.y;
+    var mx = (sx + tx) / 2;
+    var my = (sy + ty) / 2 - 40; // curve upward
+    spotlightGroup.append('path')
+      .attr('d', 'M' + sx + ',' + sy + ' Q' + mx + ',' + my + ' ' + tx + ',' + ty)
+      .attr('fill', 'none')
+      .attr('stroke', '#45B7D1')
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', '6 3')
+      .attr('stroke-opacity', 0)
+      .attr('data-source', sourceNode.id)
+      .attr('data-target', tid)
+      .transition().duration(300)
+      .attr('stroke-opacity', 0.7);
+  });
+}
+
+function updateSpotlightPaths() {
+  var paths = spotlightGroup.selectAll('path');
+  if (paths.empty()) return;
+  paths.each(function() {
+    var el = d3.select(this);
+    var sid = el.attr('data-source');
+    var tid = el.attr('data-target');
+    var sn = nodeById[sid];
+    var tn = nodeById[tid];
+    if (!sn || !tn) return;
+    var mx = (sn.x + tn.x) / 2;
+    var my = (sn.y + tn.y) / 2 - 40;
+    el.attr('d', 'M' + sn.x + ',' + sn.y + ' Q' + mx + ',' + my + ' ' + tn.x + ',' + tn.y);
+  });
+}
+
+// ── Sprint node interactions ──
+
+function selectSprintNode(sn) {
+  var phase = sn._phase;
+  var connectedIds = new Set([sn.id]);
+  var spotlightTargets = [];
+
+  // Find participating ecosystem nodes (tier 1 — force links)
+  if (ecosystemActive && PHASE_PLUGINS[phase.id]) {
+    PHASE_PLUGINS[phase.id].forEach(function(pid) {
+      if (nodeById[pid]) connectedIds.add(pid);
+    });
+  }
+
+  // Find tier-2 skill/agent/MCP nodes (spotlight, not force links)
+  if (ecosystemActive && PHASE_SKILLS[phase.id]) {
+    var entry = PHASE_SKILLS[phase.id];
+    entry.skills.concat(entry.agents).concat(entry.mcp).forEach(function(id) {
+      if (nodeById[id]) {
+        connectedIds.add(id);
+        spotlightTargets.push(id);
+      }
+    });
+  }
+
+  // Also connect to adjacent sprint phases
+  var idx = SPRINT_PHASES.indexOf(phase);
+  if (idx > 0) connectedIds.add('sprint-' + SPRINT_PHASES[idx - 1].id);
+  if (idx < SPRINT_PHASES.length - 1) connectedIds.add('sprint-' + SPRINT_PHASES[idx + 1].id);
+
+  // Highlight/dim ecosystem nodes
+  node.classed('highlighted', function(n) { return connectedIds.has(n.id); });
+  node.classed('dimmed', function(n) { return !connectedIds.has(n.id); });
+
+  // Highlight edges: light up participates-in edges AND provides-skill/provides-agent edges
+  // between highlighted plugins and their highlighted children
+  link.classed('highlighted', function(l) {
+    var sid = getNodeId(l.source), tid = getNodeId(l.target);
+    return connectedIds.has(sid) && connectedIds.has(tid);
+  });
+  link.classed('dimmed', function(l) {
+    var sid = getNodeId(l.source), tid = getNodeId(l.target);
+    return !(connectedIds.has(sid) && connectedIds.has(tid));
+  });
+
+  // Highlight/dim sprint phase nodes
+  sprintNodeGroup.selectAll('.sprint-phase-node')
+    .classed('highlighted', function() { return connectedIds.has(d3.select(this).attr('data-id')); })
+    .classed('dimmed', function() { return !connectedIds.has(d3.select(this).attr('data-id')); });
+
+  // Draw spotlight bezier curves to tier-2 nodes
+  if (spotlightTargets.length > 0) {
+    drawSpotlightConnections(sn, spotlightTargets);
+  } else {
+    spotlightGroup.selectAll('*').remove();
+  }
+
+  showSprintDetail(phase);
 }
 
 function showSprintDetail(phase) {
@@ -4217,7 +4673,7 @@ function showSprintDetail(phase) {
     var gateBadge = document.createElement('div');
     gateBadge.className = 'type-badge';
     gateBadge.style.cssText = 'background:' + gateColor + '22;color:' + gateColor + ';border:1px solid ' + gateColor;
-    gateBadge.textContent = phase.gate.type.toUpperCase() + ' — ' + phase.gate.label;
+    gateBadge.textContent = phase.gate.type.toUpperCase() + ' \u2014 ' + phase.gate.label;
     content.appendChild(gateBadge);
 
     var gateDesc = document.createElement('div');
@@ -4226,6 +4682,69 @@ function showSprintDetail(phase) {
       ? 'This gate blocks progress. The condition must be met before proceeding.'
       : 'This gate is advisory. It can be bypassed but doing so is flagged.';
     content.appendChild(gateDesc);
+  }
+
+  // Orchestrating plugins (tier 1 — force-linked)
+  if (PHASE_PLUGINS[phase.id] && PHASE_PLUGINS[phase.id].length > 0) {
+    var plugTitle = document.createElement('div');
+    plugTitle.className = 'section-title';
+    plugTitle.textContent = 'Orchestrating Plugins';
+    content.appendChild(plugTitle);
+
+    var plugUl = document.createElement('ul');
+    plugUl.className = 'child-list';
+    PHASE_PLUGINS[phase.id].forEach(function(pid) {
+      var pNode = nodeById[pid];
+      if (!pNode) return;
+      var li = document.createElement('li');
+      li.style.borderLeft = '2px solid ' + (TYPE_COLORS[pNode.type] || '#8b949e');
+      li.textContent = pNode.label + ' ';
+      var ts = document.createElement('span');
+      ts.className = 'child-type';
+      ts.textContent = TYPE_LABELS[pNode.type] || pNode.type;
+      li.appendChild(ts);
+      li.onclick = function() { navigateTo(pid); };
+      plugUl.appendChild(li);
+    });
+    content.appendChild(plugUl);
+  }
+
+  // Tier-2 fine-grained connections (skills, agents, MCP servers)
+  if (PHASE_SKILLS[phase.id]) {
+    var entry = PHASE_SKILLS[phase.id];
+    var sections = [
+      { label: 'Skills', ids: entry.skills, color: TYPE_COLORS['skill'] },
+      { label: 'Agents', ids: entry.agents, color: TYPE_COLORS['agent'] },
+      { label: 'MCP Servers', ids: entry.mcp, color: TYPE_COLORS['mcp-server'] }
+    ];
+    sections.forEach(function(sec) {
+      if (sec.ids.length === 0) return;
+      var secTitle = document.createElement('div');
+      secTitle.className = 'section-title';
+      secTitle.textContent = sec.label;
+      content.appendChild(secTitle);
+
+      var secUl = document.createElement('ul');
+      secUl.className = 'child-list';
+      sec.ids.forEach(function(nid) {
+        var sNode = nodeById[nid];
+        var li = document.createElement('li');
+        li.style.borderLeft = '2px solid ' + sec.color;
+        if (sNode) {
+          li.textContent = sNode.label + ' ';
+          var ts = document.createElement('span');
+          ts.className = 'child-type';
+          ts.textContent = TYPE_LABELS[sNode.type] || sNode.type;
+          li.appendChild(ts);
+          li.onclick = function() { navigateTo(nid); };
+        } else {
+          li.textContent = nid;
+          li.style.opacity = '0.5';
+        }
+        secUl.appendChild(li);
+      });
+      content.appendChild(secUl);
+    });
   }
 
   panel.classList.add('open');

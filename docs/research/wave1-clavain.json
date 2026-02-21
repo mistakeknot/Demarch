@@ -1,0 +1,173 @@
+[
+  {
+    "path": "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
+    "title": "Extract SKILL.md Inline Logic into Testable Library Functions",
+    "action": "memory",
+    "target": "hub/clavain MEMORY.md or Interverse MEMORY.md",
+    "recommendation": "Add a one-liner to MEMORY.md: 'SKILL.md inline logic extraction: when a SKILL.md contains function definitions, raw SQL, or asymmetric apply/revert pairs, extract to lib-*.sh and have the SKILL.md call library functions.' This is a reusable detection pattern for clavain development.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
+    "title": "Agent Consolidation with Complete Reference Sweep",
+    "action": "agents_md",
+    "target": "hub/clavain/AGENTS.md",
+    "recommendation": "Add a 'Renaming/Deleting Agents' subsection under Component Conventions with the grep sweep checklist (10 locations to update) and the 'do NOT update historical records' rule. This is operational knowledge needed every time agents change.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+    "title": "Provenance Tracking Breaks Compounding Feedback Loops",
+    "action": "memory",
+    "target": "Interverse MEMORY.md (cross-cutting section)",
+    "recommendation": "Add to MEMORY.md cross-cutting lessons: 'LLM compounding feedback loop: when injecting prior findings into agent context, track provenance (independent vs primed). Only independent re-confirmations update freshness. Primed confirmations are echoes, not evidence.' This generalizes beyond flux-drive to any RAG or memory system.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
+    "title": "Smoke Test Agent Prompts Must Override the Task Tool Write-First Wrapper",
+    "action": "none",
+    "target": "n/a",
+    "recommendation": "Doc is a useful reference for smoke test behavior but the lesson (Task tool MANDATORY FIRST STEP conflicts with no-tools prompts, grade on output quality not tool compliance) is specific enough to stay as a solution doc. No propagation needed.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
+    "title": "Template System Has Multiple Independent Consumers",
+    "action": "none",
+    "target": "n/a",
+    "recommendation": "Doc records a one-time refactoring decision (clodex simplified, flux-drive kept templates). The general lesson ('grep all consumers before simplifying shared infrastructure') is standard engineering practice. Fine as a historical reference.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
+    "title": "Unify Content-Assembly Abstractions Before Adding Variants",
+    "action": "none",
+    "target": "n/a",
+    "recommendation": "Doc records an architectural recommendation (ContentSlice abstraction) from a flux-drive review. It's a design proposal, not a lesson learned from a bug. Stays as a solution/design doc for when pyramid mode is implemented.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
+    "title": "Codex CLI Deprecated Flags Cause Agent Dispatch Failures",
+    "action": "none",
+    "target": "n/a",
+    "recommendation": "The three-layer defense (SKILL.md guard, cli-reference.md, troubleshooting.md) is already implemented in the codebase. The solution doc is a good historical reference for why those guards exist. No further propagation needed.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
+    "title": "Glob Pattern Misses Subproject Files in Monorepo",
+    "action": "memory",
+    "target": "Interverse MEMORY.md (cross-cutting section)",
+    "recommendation": "Add to MEMORY.md: 'Monorepo glob patterns: always prefix with ** to search at any depth. Never assume fixed depth between project root and target files. Applies to Python glob, shell find, and tool Glob patterns alike.' This recurs across galiana, intermap, and any new analysis tool.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+    "title": "MCP Plugin Cache Missing node_modules",
+    "action": "memory",
+    "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
+    "recommendation": "Add to MEMORY.md plugin schema section: 'MCP bootstrap wrapper: Claude Code plugin cache does NOT run npm install. Node.js MCP servers need a start.sh wrapper that checks for node_modules, installs if missing (with system deps), then exec's into node. Output to stderr only (stdout is JSON-RPC).' Already partially covered by the plugin-troubleshooting guide.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+    "title": "New Agent Files Not Available as subagent_type Until Session Restart",
+    "action": "memory",
+    "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
+    "recommendation": "Add to MEMORY.md plugin schema section: 'Agent registry is loaded at session start — new agent .md files created mid-session are NOT available as subagent_type. Workaround: use subagent_type general-purpose with full prompt. Proper fix: commit, publish, restart session.' This is a recurring gotcha.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
+    "title": "Oracle Browser Mode Output Lost in Flux-Drive Reviews",
+    "action": "claude_md",
+    "target": "root ~/.claude/CLAUDE.md (Oracle section)",
+    "recommendation": "The root CLAUDE.md Oracle section already says to use --wait but does NOT mention --write-output or warn against stdout redirect. Add: 'Always use --write-output <path> for Oracle browser mode — never redirect stdout (> file). Never wrap Oracle with external timeout — use --timeout <seconds> instead.' These are the two critical rules from the doc.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+    "title": "Stop Hooks Break After Mid-Session Plugin Publish",
+    "action": "memory",
+    "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
+    "recommendation": "Add to MEMORY.md plugin schema section: 'Mid-session publish breaks Stop hooks: Claude Code bakes hook paths at session start. When marketplace push triggers cache update, old version dir is deleted by platform. bump-version.sh creates old→new symlink as mitigation. session-start.sh bridges multi-hop gaps.' This explains the symlink design.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+    "title": "Hierarchical Config Resolution with Sentinel Values",
+    "action": "prune",
+    "target": "n/a",
+    "recommendation": "This doc's key lessons are ALREADY fully covered in MEMORY.md under 'Model Routing (B1 Sprint Learnings)' — resolution order, inherit sentinel, phase names, and the git-diff-after-compaction rule are all present verbatim. The solution doc is redundant with MEMORY.md. Could be pruned or kept as historical reference only.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
+    "title": "Cannot Import Functions from conftest.py in Pytest",
+    "action": "none",
+    "target": "n/a",
+    "recommendation": "Standard pytest gotcha (conftest is a plugin, not an importable module). The fix is already in the codebase (helpers.py exists). No propagation needed — any Python developer encountering this can find the solution doc.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
+    "title": "Beads Pre-Commit Hook Blocks Git Commits Due to JSONL Permission Mask",
+    "action": "none",
+    "target": "n/a",
+    "recommendation": "Specific to claude-user ACL interactions with beads DB files. The lesson (POSIX ACL mask overrides named user entries, use m::rw) is niche and the fix is documented. Already referenced in the claude-user-reference.md context. No propagation needed.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+    "title": "disable-model-invocation Blocks All Command Chaining in /lfg Pipeline",
+    "action": "memory",
+    "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
+    "recommendation": "Add to MEMORY.md plugin schema section: 'disable-model-invocation: true blocks Skill tool chaining — if command A calls command B via Skill tool, B must have disable-model-invocation: false. Only use true for destructive operations (deploy, delete). Development workflow commands should default to false.' Supersedes doc #17.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-skill-tool-clavain-20260211.md",
+    "title": "Plugin Command disable-model-invocation Blocks Programmatic Skill Tool Invocation",
+    "action": "prune",
+    "target": "n/a",
+    "recommendation": "Superseded by doc #16 (disable-model-invocation-blocks-lfg-pipeline). Doc #16 explicitly says 'This broader fix supersedes the per-command approach' referring to this doc. Both describe the same root cause; #16 is the comprehensive fix. This doc can be marked superseded or removed.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+    "title": "Duplicate MCP Server Registration Wastes Context Budget",
+    "action": "memory",
+    "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
+    "recommendation": "Add to MEMORY.md plugin schema section: 'Duplicate MCP registration: an MCP server in both plugin.json AND ~/.claude/settings.json creates two tool namespaces with doubled context cost (~12K tokens wasted). Always check for duplicates with grep across settings.json and plugin cache. Run claude doctor periodically.'",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+    "title": "Settings Permission Bloat from Heredoc Bash Commands",
+    "action": "prune",
+    "target": "n/a",
+    "recommendation": "This doc's prevention rules are ALREADY fully covered in the root ~/.claude/CLAUDE.md under 'Settings Hygiene' — the never-heredoc, never-multiline-loop, never-inline-prompts, and keep-commands-short rules are all present verbatim. The solution doc is the source material that was already propagated. Can be kept as historical origin but needs no further action.",
+    "already_covered": true,
+    "cross_cutting": false
+  }
+]

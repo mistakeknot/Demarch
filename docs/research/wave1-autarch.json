@@ -1,0 +1,128 @@
+[
+  {
+    "path": "hub/autarch/docs/solutions/architecture-decisions/spec-phase-reordering-strategy.md",
+    "title": "Spec Phase Reordering Strategy",
+    "action": "agents_md",
+    "target": "hub/autarch/AGENTS.md",
+    "recommendation": "Add a note under Gurgeh/Arbiter section documenting the canonical phase ordering (Vision > Problem > Users > Features > CUJs > Requirements > Scope > Acceptance) and the principle that ordering must reflect information dependencies.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/autarch/docs/solutions/architecture-decisions/spec-propagation-consistency-pattern.md",
+    "title": "Spec Propagation Consistency Pattern",
+    "action": "none",
+    "target": "",
+    "recommendation": "This is a well-contained architecture pattern doc specific to Arbiter's PropagateChanges() function. The pattern (single LLM call for multi-section consistency) is adequately documented in the solution doc itself and doesn't need propagation elsewhere.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/autarch/docs/solutions/logic-errors/prd-requirements-blank-on-generation.md",
+    "title": "PRD Requirements Blank on Generation",
+    "action": "none",
+    "target": "",
+    "recommendation": "Bug is fixed and the solution doc serves as a good reference. The prevention advice (ensure every phase has an explicit content source) is specific to Arbiter internals. No broader propagation needed.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/autarch/docs/solutions/patterns/arbiter-spec-sprint-architecture.md",
+    "title": "Arbiter Spec Sprint Architecture Patterns",
+    "action": "memory",
+    "target": "hub/autarch CLAUDE.md or AGENTS.md",
+    "recommendation": "Add Go import-cycle adapter pattern to AGENTS.md architecture section: 'When sub-packages need parent types but parent calls sub-packages, use local adapter sub-packages with mirrored types.' Also note: always verify actual API signatures before implementing against a plan.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/patterns/chat-first-tui-design-20260204.md",
+    "title": "Chat-First TUI Design: Keybindings, Slash Commands, and Layout",
+    "action": "agents_md",
+    "target": "hub/autarch/AGENTS.md",
+    "recommendation": "Add a 'TUI Design Principles' section to AGENTS.md summarizing the 5 chat-first principles (chat primary, typing safety, discoverability via slash commands, Ctrl+ only shortcuts, minimal modes). This is the canonical design philosophy doc and should be referenced from AGENTS.md.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/autarch/docs/solutions/patterns/oracle-review-issues-3-6-20260201.md",
+    "title": "Oracle Architecture Review: Issues 3-6 Resolution",
+    "action": "agents_md",
+    "target": "hub/autarch/AGENTS.md",
+    "recommendation": "Extract the three reusable patterns into AGENTS.md: (1) use phase constants not integer literals for array indices, (2) focus-aware keyboard routing pattern (switch on shell.Focus()), (3) error observability standard (non-fatal errors log to stderr with 'warning:' prefix, never silently swallow).",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/patterns/preserve-original-intent-after-simplification.md",
+    "title": "Preserve Original Intent After Plan Simplification",
+    "action": "prune",
+    "target": "",
+    "recommendation": "This doc describes a global Claude Code skill at ~/.claude/skills/preserve-original-intent/SKILL.md and a workflow pattern already noted in ~/.claude/workflow-patterns.md ('After plan simplification, preserve cut research in an Original Intent section'). The solution doc adds no information beyond what the skill itself provides. Can be pruned or marked as superseded by the skill.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/runtime-errors/arbiter-state-pointer-escape-20260201.md",
+    "title": "Fix Arbiter State() Pointer Escape and Concurrency Races",
+    "action": "claude_md",
+    "target": "hub/autarch/CLAUDE.md",
+    "recommendation": "Add to CLAUDE.md: 'Never return pointers to internal mutable state from synchronized methods. State() returns deep-copied snapshots via Clone(). All types crossing goroutine boundaries need Clone() methods. Run tests with -race flag.' This is a foundational concurrency rule for the entire codebase.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/ui-bugs/ansi-aware-string-splicing-for-overlays.md",
+    "title": "ANSI-Aware String Splicing for TUI Overlays",
+    "action": "claude_md",
+    "target": "hub/autarch/CLAUDE.md",
+    "recommendation": "Add to CLAUDE.md TUI rules: 'Never use []rune slicing on ANSI-styled strings for visual-column operations. Use ansi.Truncate/TruncateLeft from charmbracelet/x/ansi. Grep for []rune + lipgloss.Width — that combination is always a bug.'",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/ui-bugs/swallowed-generation-error-msg-20260131.md",
+    "title": "Fix Swallowed GenerationErrorMsg in UnifiedApp",
+    "action": "claude_md",
+    "target": "hub/autarch/CLAUDE.md",
+    "recommendation": "Add Bubble Tea message routing rule to CLAUDE.md: 'In parent Update() methods, never swallow messages that child views need. Default to fall-through. Only return early for messages exclusively owned by the parent. Error messages must always reach the view layer.'",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/ui-bugs/tui-breadcrumb-hidden-by-oversized-child-view-20260127.md",
+    "title": "TUI Breadcrumb Header Hidden by Oversized Child View",
+    "action": "claude_md",
+    "target": "hub/autarch/CLAUDE.md",
+    "recommendation": "Add layout rule to CLAUDE.md: 'Always subtract chrome dimensions (header, footer, sidebar) from WindowSizeMsg before passing to child views. Children must only know about their allocated space, not full terminal size.'",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/ui-bugs/tui-dimension-mismatch-splitlayout-20260126.md",
+    "title": "TUI Dimension Mismatch: Parent Padding vs Child Sizing",
+    "action": "claude_md",
+    "target": "hub/autarch/CLAUDE.md",
+    "recommendation": "Merge with breadcrumb hidden doc into a single CLAUDE.md rule: 'Pass exact available space (after all parent chrome/padding) to child components. Available Width = Terminal Width - Parent Horizontal Padding. Use ansi.StringWidth for styled text width calculations.'",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "hub/autarch/docs/solutions/ui-bugs/tui-scrolling-keyboard-and-mouse.md",
+    "title": "TUI Scrolling - Keyboard and Mouse Focus Issues",
+    "action": "agents_md",
+    "target": "hub/autarch/AGENTS.md",
+    "recommendation": "Add to TUI patterns section: 'Shell layout owns focus state — use shell.Focus() not component.Focused() for routing decisions. Use msg.String() for key matching instead of key.Matches() when dealing with raw key events. Avoid Ctrl+J (= LF/Enter in terminals).'",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "hub/autarch/docs/solutions/workflow-issues/over-planning-before-reproduction-20260203.md",
+    "title": "Over-Planning Before Bug Reproduction",
+    "action": "claude_md",
+    "target": "hub/autarch/CLAUDE.md",
+    "recommendation": "Add workflow rule to CLAUDE.md: 'Reproduce bugs before planning fixes. Phase 0 (reproduction + failing test) is mandatory before any multi-phase fix plan. If bug cannot be reproduced, document as could-not-reproduce and close.'",
+    "already_covered": false,
+    "cross_cutting": true
+  }
+]

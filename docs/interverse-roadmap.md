@@ -1,6 +1,6 @@
 # Interverse Roadmap
 
-**Modules:** 36 | **Open beads (root tracker):** 330 | **Blocked (root tracker):** 41 | **Last updated:** 2026-02-21
+**Modules:** 37 | **Open beads (root tracker):** 325 | **Blocked (root tracker):** 37 | **Last updated:** 2026-02-21
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json)
 
@@ -11,9 +11,9 @@
 | Module | Location | Version | Status | Roadmap | Open Beads (context) |
 |--------|----------|---------|--------|---------|----------------------|
 | autarch | hub/autarch | 0.1.0 | active | yes | n/a |
-| clavain | hub/clavain | 0.6.57 | active | yes | n/a |
+| clavain | hub/clavain | 0.6.60 | active | yes | n/a |
 | interchart | plugins/interchart | 0.1.0 | early | no | n/a |
-| intercheck | plugins/intercheck | 0.1.8 | active | yes | 4 |
+| intercheck | plugins/intercheck | 0.2.0 | active | yes | 4 |
 | intercraft | plugins/intercraft | 0.1.0 | active | yes | 4 |
 | interdev | plugins/interdev | 0.2.0 | active | yes | 4 |
 | interdoc | plugins/interdoc | 5.1.1 | active | yes | 4 |
@@ -22,6 +22,7 @@
 | interform | plugins/interform | 0.1.0 | active | yes | 4 |
 | interject | plugins/interject | 0.1.6 | active | yes | 4 |
 | interkasten | plugins/interkasten | 0.4.3 | active | yes | 12 |
+| interlearn | plugins/interlearn | 0.1.0 | early | no | n/a |
 | interleave | plugins/interleave | 0.1.1 | active | yes | n/a |
 | interlens | plugins/interlens | 2.2.4 | active | yes | 4 |
 | interline | plugins/interline | 0.2.6 | active | yes | 4 |
@@ -33,10 +34,10 @@
 | internext | plugins/internext | 0.1.2 | active | yes | 4 |
 | interpath | plugins/interpath | 0.2.2 | active | yes | 4 |
 | interpeer | plugins/interpeer | 0.1.0 | active | yes | n/a |
-| interphase | plugins/interphase | 0.3.2 | active | yes | 4 |
-| interpub | plugins/interpub | 0.1.2 | active | yes | 4 |
+| interphase | plugins/interphase | 0.3.3 | active | yes | 4 |
+| interpub | plugins/interpub | 0.1.3 | active | yes | 4 |
 | intersearch | plugins/intersearch | 0.1.1 | active | yes | 4 |
-| interserve | plugins/interserve | 0.1.3 | active | yes | 4 |
+| interserve | plugins/interserve | 0.1.4 | active | yes | 4 |
 | interslack | plugins/interslack | 0.1.0 | active | yes | 4 |
 | interstat | plugins/interstat | 0.2.5 | active | yes | 4 |
 | intersynth | plugins/intersynth | 0.1.3 | active | yes | n/a |
@@ -55,92 +56,90 @@
 
 ### Now (P0-P1)
 
-No P0-P1 beads currently open.
+No P0-P1 items.
 
-**Recently completed:** iv-0v7j (Wire signal broker into Bigend/TUI runtime path), iv-rzt0 (Interband signal publishers), iv-sk8t (Interline statusline enrichment), iv-sprh (Cost-aware review depth), iv-yo9i (Config reader library), iv-re4l (Dispatch integration --phase flag), iv-pg8t (Subagent integration /model-routing), iv-1sc0 (Companion plugin dependency graph), iv-gye6 (Interbase batch SDK adoption), iv-l5ap (Research: transactional orchestration & error recovery), iv-fhz1 (Sprint close sweep for child beads), iv-1vz6 (Update vision doc: rollback is already shipped in v1 CLI), iv-erb1 (Deduplicate CLAUDE_SESSION_ID env writes), iv-mew5 (Register or remove interserve pre-read-intercept.sh), iv-mctg (Add matcher to intercheck context-monitor.sh), iv-juzy (Fix interflux hooks.json schema), iv-iu31 (Remove tool-time PreToolUse binding, extract Task redirect to clavain), iv-145j (Implement event-reactor auto-advance loop for phase transitions), iv-t93l (Close Interspect routing loop with automatic adaptation), iv-2lfb (F1: Build infra/interbase/ — centralized interbase.sh SDK), iv-h7e2 (F2: Define integration.json schema + interbase-stub.sh template), iv-gcu2 (Dual-mode plugin architecture — interbase SDK + integration manifest), iv-kj6w (A2: Sprint handover — sprint skill becomes kernel-driven), iv-bld6 (F2: Workflow state rollback (ic run rollback --to-phase)), iv-2yef (Autarch: ship minimal status tool as kernel validation wedge), iv-8jpf (Add reflect/compound phase to default sprint chain), iv-3sns (E4.1: Kernel interspect_events table + ic interspect record CLI), iv-shra (E4.2: Durable cursor registration for long-lived consumers), iv-ooon (Harmonize Clavain docs with revised vision — 6 drift fixes), iv-byh3 (Define platform kernel + lifecycle UX architecture), iv-7o7n (Document slicing for flux-drive agents (P0 token optimization))
+**Recently completed:** iv-yiq9 (Trim CLAUDE.md cc/claude-user documentation), iv-4eau (Default subagents to Haiku/Sonnet (economy model routing)), iv-udyq (Consolidate wildcard hooks (tool-time + hookify)), iv-bdbg (Cache interserve codex_query results), iv-puiu (Audit and uninstall unused plugins), iv-eqql (Disable Serena file I/O and think_about_* tools), iv-1mq4 (Narrow intercheck PostToolUse matcher), iv-6an0 (Fix TOCTOU bugs: non-atomic gate check + missing CAS guard), iv-ibdc (Fix non-atomic gate check in phase/machine.go (wrap evaluateGate+UpdatePhase in BeginTx)), iv-mokx (Fix missing CAS guard on dispatch UpdateStatus (add AND status=? to WHERE)), iv-erb1 (Deduplicate CLAUDE_SESSION_ID env writes), iv-mew5 (Register or remove interserve pre-read-intercept.sh), iv-iu31 (Remove tool-time PreToolUse binding, extract Task redirect to clavain), iv-juzy (Fix interflux hooks.json schema), iv-mctg (Add matcher to intercheck context-monitor.sh), iv-h7e2 (F2: Define integration.json schema + interbase-stub.sh template), iv-2lfb (F1: Build infra/interbase/ — centralized interbase.sh SDK), iv-gcu2 (Dual-mode plugin architecture — interbase SDK + integration manifest), iv-byh3 (Define platform kernel + lifecycle UX architecture), iv-7o7n (Document slicing for flux-drive agents (P0 token optimization))
 
 ### Next (P2)
 
-**Interspect: Routing Control & Overrides**
+**Interspect Routing Overrides**
 - [interspect] **iv-r6mf** F1: routing-overrides.json schema + flux-drive reader
 - [interspect] **iv-8fgu** F2: routing-eligible pattern detection + propose flow
 - [interspect] **iv-gkj9** F3: apply override + canary + git commit
 - [interspect] **iv-2o6c** F4: status display + revert for routing overrides
 - [interspect] **iv-6liz** F5: manual routing override support
+- [interspect] **iv-5su3** Autonomous mode flag
+- [interspect] **iv-c2b4** /interspect:disable command
+- [interspect] **iv-g0to** /interspect:reset command
+
+**Interspect Safety & Evaluation**
 - [interspect] **iv-88yg** Structured commit message format
 - [interspect] **iv-003t** Global modification rate limiter
 - [interspect] **iv-0fi2** Circuit breaker
 - [interspect] **iv-drgo** Privilege separation (proposer/applier)
 - [interspect] **iv-bj0w** Conflict detection
-- [interspect] **iv-5su3** Autonomous mode flag
-- [interspect] **iv-c2b4** /interspect:disable command
-- [interspect] **iv-g0to** /interspect:reset command
-
-**Interspect: Evaluation & Meta-Learning**
 - [interspect] **iv-435u** Counterfactual shadow evaluation
 - [interspect] **iv-izth** Eval corpus construction
 - [interspect] **iv-rafa** Meta-learning loop
 - [interspect] **iv-t1m4** Prompt tuning (Type 3) overlay-based
 - [interspect] **iv-m6cd** Session-start summary injection
 
-**Model Routing Pipeline**
-- **iv-i64p** F1: Routing config schema (config/routing.yaml)
-- **iv-jayq** F2: Resolution library (hooks/lib-routing.sh)
-- **iv-6nwo** F3: Dispatch migration (dispatch.sh reads routing.yaml)
-- **iv-sz5b** F4: Update model-routing command to use routing.yaml
-- [clavain] **iv-k8xn** B2: Complexity-aware routing — task complexity drives model selection
-
-**Multi-Agent Coordination & Interlock Negotiation**
-- **iv-1aug** F1: Release Response Protocol (release_ack / release_defer)
-- **iv-gg8v** F2: Auto-Release on Clean Files
-- **iv-5ijt** F3: Structured negotiate_release MCP Tool
-- **iv-6u3s** F4: Sprint Scan Release Visibility
-- **iv-2jtj** F5: Escalation Timeout for Unresponsive Agents
-- **iv-ev4o** Agent capability discovery via intermute registration
-- [intermute] **iv-jc4j** Heterogeneous agent routing experiments (SC-MAS/Dr. MAS)
-- **iv-quk4** Hierarchical dispatch: meta-agent for N-agent fan-out
-- **iv-qjwz** AgentDropout: dynamic redundancy elimination for flux-drive reviews
-- **iv-905u** Intermediate result sharing between parallel flux-drive agents
-
-**Clavain: Agency Specs & Orchestration**
-- [clavain] **iv-asfy** C1: Agency specs — declarative per-stage agent/model/tool config
-- [clavain] **iv-lx00** C2: Agent fleet registry — capability + cost profiles per agent x model
+**Intercore Event-Driven Advancement**
+- [intercore] **iv-otvb** F1: Schema + Store — phase_actions table (v14 migration)
+- [intercore] **iv-qjm3** F2: CLI — ic run action subcommands (add/list/update/delete)
+- [intercore] **iv-z5pc** F3: Resolution — template variables in ic run advance output
+- [intercore] **iv-pipe** F4: Bash integration — sprint skill consumes kernel actions
+- [intercore] **iv-14g9** TOCTOU prevention: phased dispatch coordination
 - [clavain] **iv-r9j2** A3: Event-driven advancement — phase transitions trigger auto-dispatch
-- [clavain/interphase] **iv-zsio** Integrate full discovery pipeline into sprint workflow
-- **iv-frqh** F5: clavain:setup modpack — auto-install ecosystem-only plugins
-- **iv-zyym** Evaluate Claude Hub for event-driven GitHub agent dispatch
 
-**Flux-Drive Spec: Library Extraction**
+**Clavain Orchestration & Fleet**
+- [clavain] **iv-asfy** C1: Agency specs — declarative per-stage agent/model/tool config
+- [clavain] **iv-lx00** C2: Agent fleet registry — capability + cost profiles per agent×model
+- [clavain/interphase] **iv-zsio** Integrate full discovery pipeline into sprint workflow
+- [clavain] **iv-frqh** F5: clavain:setup modpack — auto-install ecosystem-only plugins
+- [clavain] **iv-zyym** Evaluate Claude Hub for event-driven GitHub agent dispatch
+
+**Multi-Agent Coordination & Interlock**
+- [interlock] **iv-gg8v** F2: Auto-Release on Clean Files
+- [interlock] **iv-5ijt** F3: Structured negotiate_release MCP Tool
+- [interlock] **iv-6u3s** F4: Sprint Scan Release Visibility
+- [interlock] **iv-2jtj** F5: Escalation Timeout for Unresponsive Agents
+- [intermute] **iv-ev4o** Agent capability discovery via intermute registration
+- [intermute] **iv-jc4j** Heterogeneous agent routing experiments (SC-MAS/Dr. MAS)
+- [intermute] **iv-quk4** Hierarchical dispatch: meta-agent for N-agent fan-out
+
+**Flux-Drive Evolution & Review Intelligence**
 - [flux-drive-spec] **iv-ia66** Phase 2: Extract domain detection library
 - [flux-drive-spec] **iv-0etu** Phase 3: Extract scoring/synthesis Python library
 - [flux-drive-spec] **iv-e8dg** Phase 4: Migrate Clavain to consume the library
 - [interflux] **iv-wz3j** Role-aware latent memory architecture experiments
-- **iv-6ikc** Plan intershift extraction (cross-AI dispatch engine)
-- **iv-sdqv** Plan interscribe extraction (knowledge compounding)
-- **iv-p4qq** Smart semantic caching across sessions (intercache)
+- [interflux] **iv-qjwz** AgentDropout: dynamic redundancy elimination for flux-drive reviews
+- [interflux] **iv-905u** Intermediate result sharing between parallel flux-drive agents
+- [interflux] **iv-6ikc** Plan intershift extraction (cross-AI dispatch engine)
+- [interflux] **iv-sdqv** Plan interscribe extraction (knowledge compounding)
 
 **Token Efficiency & Benchmarks**
-- **iv-0lt** Extract cache_hints metrics in score_tokens.py
-- **iv-1gb** Add cache-friendly format queries to regression_suite.json
-- **iv-4728** Consolidate upstream-check.sh API calls (24 to 12)
-- **iv-3w1x** Split upstreams.json into config + state files
+- [interstat] **iv-0lt** Extract cache_hints metrics in score_tokens.py
+- [interstat] **iv-1gb** Add cache-friendly format queries to regression_suite.json
+- [interstat] **iv-4728** Consolidate upstream-check.sh API calls (24 to 12)
+- [interstat] **iv-3w1x** Split upstreams.json into config + state files
 - [interstat] **iv-v81k** Repository-aware benchmark expansion for agent coding tasks
-- **iv-xuec** Security threat model for token optimization techniques
+- [intercache] **iv-p4qq** Smart semantic caching across sessions
+- [intercache] **iv-xuec** Security threat model for token optimization techniques
 
-**Autarch TUI & Memory**
+**Autarch TUI & Memory Promotion**
 - [autarch] **iv-26pj** Streaming buffer / history split per agent panel
 - [autarch] **iv-ht1l** Pollard: progressive result reveal per hunter
 - [autarch] **iv-xlpg** Pollard: optional-death hunter resilience
-- [autarch] **iv-knwr** pkg/tui: validate components with kernel data
 - [intermem] **iv-f7po** F3: Multi-file tiered promotion — AGENTS.md index + docs/intermem/ detail
 - [intermem] **iv-bn4j** F4: One-shot tiered migration — --migrate-to-tiered
 
-**Research: Architecture & Product Strategy**
-- **iv-3kee** Research: product-native agent orchestration (whitespace opportunity)
-- **iv-dthn** Research: inter-layer feedback loops and optimization thresholds
-- **iv-fzrn** Research: multi-agent hallucination cascades & failure taxonomy
-- **iv-exos** Research: bias-aware product decision framework
-- **iv-jk7q** Research: cognitive load budgets & progressive disclosure review UX
+**Research & Futures**
+- [research] **iv-3kee** Research: product-native agent orchestration (whitespace opportunity)
+- [research] **iv-dthn** Research: inter-layer feedback loops and optimization thresholds
+- [research] **iv-fzrn** Research: multi-agent hallucination cascades & failure taxonomy
+- [research] **iv-exos** Research: bias-aware product decision framework
+- [research] **iv-jk7q** Research: cognitive load budgets & progressive disclosure review UX
 
 ### Later (P3)
 
@@ -242,26 +241,26 @@ tldr-swinton is the token-efficiency context layer for AI code workflows. The pr
 Tuivision automates TUI and terminal UI testing through scriptable sessions and screenshot workflows.
 
 ### interkasten (plugins/interkasten)
-Interkasten synchronizes project documentation between local filesystems and Notion databases with bidirectional sync, three-way merge conflict resolution, and crash-safe WAL protocols. It exposes 21 MCP tools for hierarchy discovery, filesystem signal gathering, and sync control — delegating classification and tagging decisions to agent logic rather than hardcoding behavior.
+v0.4.3. Bidirectional sync between local filesystems and Notion with three-way merge conflict resolution and crash-safe WAL recovery. Exposes 21 MCP tools for hierarchy discovery, raw signal gathering, and sync control — delegating classification and tagging to agent skills rather than hardcoding behavior.
 
 ---
 
 ## Research Agenda
 
-- **Sprint Lifecycle Kernel Migration** — Migrate Clavain sprint state from beads-backed temp files to intercore kernel, unified phase chain, and kernel-driven dispatch via SpawnHandler events
-- **Token-Efficient Context Delivery** — Compress symbol imports, enable block-level compression, precompute workspace bundles, track symbol popularity, and add structured output serialization to reduce context-pack footprint by 40-60%
-- **Cost-Aware Agent Dispatch** — Wire token budgets across sprint setup, flux-drive triage, and dispatch execution with real-time budget visibility via interstat and automated cost-quality tradeoffs
-- ~~**Plugin Synergy via Interband**~~ — *Completed:* interband signal publishers, interline statusline enrichment, interbase SDK adoption, and dual-mode architecture patterns all shipped
-- **Bigend Dashboard Kernel Sourcing** — Migrate agent status monitoring from filesystem/tmux scraping to kernel-native `ic` CLI, displaying runs, phases, dispatches, events, and token metrics
-- **Cognitive Review Agents (Interlens)** — Build lens-based review agents (fd-decisions, fd-people, fd-resilience, fd-perception) from FLUX thematic frames with severity tiers and cognitive deduplication
-- **Subagent Context Flooding Prevention** — Implement write-behind protocol for multi-agent dispatch so agent results persist to disk while only summaries enter orchestrator context
-- **Sprint Resilience & Autonomous Advance** — Redesign `/sprint` with parent-child bead hierarchy, auto-resume, tiered autonomy (auto-advance non-decision phases, pause on gates/ambiguity), and single source of truth
-- **Heterogeneous Model Routing** — Route multi-agent dispatch by model capability (economy vs. quality), implement role-aware memory persistence, bias-aware decision frameworks, and hierarchical orchestration
-- **Intercore Discovery Pipeline** — Build kernel-aware project discovery, cross-project run queries, portfolio-level aggregate metrics, and reactive discovery hooks
-- **Portfolio Orchestration & Dependency Scheduling** — Manage multi-run portfolios with dependency graphs, cost amortization, work prioritization via internext, and distributed task execution
-- **Intercore Rollback & Recovery** — Implement phase rollback with audit trail, automatic state reconciliation on crashes, state divergence detection, and rollback gates
-- **Agent Rig Autonomous Sync** — Add bidirectional sync between Clavain bead metadata and kernel run state, upstream artifact propagation, and automatic context refresh for resumed sprints
-- **Ecosystem Architecture Formalization** — Diagram plugin dependency layers, interband signal topology, beads integration surface, and MCP capability matrix; establish design gates for new modules
+- **Lens-driven agent review (linsenkasten)** — FLUX podcast cognitive augmentation lenses for agent evaluation, MCP integration, severity classification, and phase-specific agent selection
+- **Sprint resilience and kernel handoff** — Resume tracking, fault tolerance, multi-layer rollback recovery, and bidirectional bead-kernel sync to migrate sprint state to intercore kernel
+- **Token efficiency and cost-aware dispatch** — Lazy skill loading, token budget controls per sprint, dispatch cost tracking, and write-behind for subagent context results
+- **Document slicing and context compression** — Per-agent section filtering via interserve, import-graph compression, block compression, precomputed context bundles, and symbol-popularity indexing
+- **Intercore kernel evolution (E3-E8)** — Hook cutover for sprint state, spawn handler wiring, discovery pipeline for kernel-native research intake, and portfolio orchestration across projects
+- **Multi-session agent coordination** — Merge review for multi-agent sessions, hierarchical dispatch meta-agent, session-start drift summary injection, and autonomous sync mechanics
+- **Plugin ecosystem and synergy** — Dual-mode architecture (standalone + integrated), cross-plugin interoperability catalog, plugin-synergy discovery, and unified interbus central integration mesh
+- **Portfolio and dependency scheduling** — Cross-project portfolio runs with parent-child linking, dependency-aware phase scheduling, TOCTOU guards, and portfolio relay patterns
+- **Dashboard and visualization** — Bigend TUI kernel state migration, autarch status tool validation, interchart D3 force graph ecosystem diagram, and tui-kernel validation patterns
+- **Event-driven phase advancement** — Automatic phase transition dispatch, event-driven run progression, terminal status exhaustiveness, and gate check flow
+- **Thematic sprint organization** — Label-based work lanes for sequencing, shift-work boundary formalization, blueprint distillation sprint intake, and role-aware memory experiments
+- **Framework and context optimization** — Multi-framework interoperability benchmarking, repository-aware benchmark expansion, context freshness automation via interwatch, and reminder escalation patterns
+- **Advanced state management** — Hierarchical config resolution for model routing, static routing tables, drift detection summaries, and bias-aware product decision frameworks
+- **Code extraction and tools** — Interscribe symbol extraction, structured output serialization, longcodezip block compression, and advanced TUI automation with tuivision patterns
 
 ---
 
@@ -278,6 +277,7 @@ Major dependency chains spanning multiple modules:
 ## Modules Without Roadmaps
 
 - `plugins/interchart`
+- `plugins/interlearn`
 
 ---
 

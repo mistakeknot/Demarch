@@ -112,7 +112,15 @@ Quality gates matter more than velocity. Agents without discipline ship slop. Th
 
 Gates are kernel-enforced invariants, not prompt suggestions. An agent cannot bypass a gate regardless of what the LLM requests. This is the difference between "please check for a plan artifact" and "the system will not advance without a plan artifact."
 
-### 7. Self-building as proof
+### 7. Context Hygiene and Anti-Flooding
+
+LLM context windows collapse under the weight of raw sub-agent outputs. Interverse prevents this via a strict write-behind protocol: when agents finish work, their raw results persist to durable storage (the Kernel), but *only synthesized summaries* enter the orchestrator's context window. This prevents "context flooding" and allows sprints to run indefinitely without the orchestrator losing the plot.
+
+### 8. Safe Concurrency (TOCTOU Prevention)
+
+Autonomous agents will inherently clobber each other's work if unleashed in parallel. Interverse prevents Time-Of-Check to Time-Of-Use (TOCTOU) race conditions via strict concurrency controls: per-session git index isolation, commit serialization, and explicit file reservations. The kernel's atomic SQLite backend is justified by the need to safely coordinate phased agent dispatches across a shared filesystem.
+
+### 9. Self-building as proof
 
 Every capability must survive contact with its own development process. Clavain builds Clavain. The agency runs its own sprints — research, brainstorm, plan, execute, review, compound. This is the credibility engine: a system that autonomously builds itself is a more convincing proof than any benchmark.
 

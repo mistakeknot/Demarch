@@ -1,0 +1,227 @@
+[
+  {
+    "path": "infra/agent-rig/docs/solutions/best-practices/reversible-cli-install-with-mcp-config-agent-rig-20260211.md",
+    "title": "Best Practice: Reversible CLI Installation with MCP Server Configuration",
+    "action": "none",
+    "target": "infra/agent-rig/CLAUDE.md",
+    "recommendation": "Key patterns (MCP via claude CLI, state tracking, uninstall) are already documented in agent-rig's CLAUDE.md under Key Patterns. The solution doc serves as detailed reference for these patterns.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "infra/agent-rig/docs/solutions/best-practices/state-diff-incremental-update-agent-rig-20260211.md",
+    "title": "Best Practice: State-Diff Incremental Updates with Dependency Ordering",
+    "action": "none",
+    "target": "infra/agent-rig/CLAUDE.md",
+    "recommendation": "Idempotent install, dependency ordering, and state-diff patterns are already listed in agent-rig's CLAUDE.md Key Patterns. The doc provides implementation detail that does not need propagation.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "infra/agent-rig/docs/solutions/best-practices/tagged-block-env-and-hash-based-merge-agent-rig-20260211.md",
+    "title": "Best Practice: Tagged-Block Shell Profiles and Hash-Based File Modification Detection",
+    "action": "none",
+    "target": "infra/agent-rig/CLAUDE.md",
+    "recommendation": "Tagged blocks and behavioral merge with SHA-256 hashes are already in agent-rig's CLAUDE.md Key Patterns. No propagation needed.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "infra/intercore/docs/solutions/e8-portfolio-orchestration-learnings.md",
+    "title": "E8 Portfolio Orchestration — Sprint Learnings",
+    "action": "prune",
+    "target": "Interverse MEMORY.md",
+    "recommendation": "Key lessons (cross-DB cursor atomicity, time.After in loops, advisory vs enforced limits, sentinel values) are already in MEMORY.md under 'Intercore CLI Gotchas' and 'Portfolio' entries. The doc is fully superseded by memory entries.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "infra/intercore/docs/solutions/e9-portfolio-dependency-scheduling-learnings.md",
+    "title": "E9 Portfolio Dependency Scheduling Learnings",
+    "action": "prune",
+    "target": "Interverse MEMORY.md",
+    "recommendation": "All key lessons (TOCTOU in check-then-insert, terminal status exhaustiveness, queryCtx interface, Advance() 9-param signature) are already in MEMORY.md. The doc is fully superseded.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/interfluence/docs/solutions/marketplace-cached-clone-stale.md",
+    "title": "Marketplace Plugin Not Visible After Publishing",
+    "action": "memory",
+    "target": "Interverse MEMORY.md",
+    "recommendation": "Add one-liner: 'After pushing marketplace changes, pull the cached clone at ~/.claude/plugins/marketplaces/interagency-marketplace/ — Claude Code reads from cache, not working copy.' This is part of the plugin publishing trilogy but not yet in memory.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/interkasten/docs/solutions/integration-issues/new-marketplace-plugin-not-installed-20260215.md",
+    "title": "Troubleshooting: New Marketplace Plugin Not Auto-Installed",
+    "action": "memory",
+    "target": "Interverse MEMORY.md",
+    "recommendation": "Add to Claude Code Plugin Schema section: 'Adding a plugin to marketplace.json does NOT auto-install on machines that already have the marketplace. Must explicitly install via claude plugins install or manual clone+register in installed_plugins.json.'",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/interlearn/docs/solutions/patterns/awk-sub-pattern-fallthrough-20260221.md",
+    "title": "Awk sub() Mutates $0 Causing Pattern Fall-Through on Same Line",
+    "action": "memory",
+    "target": "docs/guides/shell-and-tooling-patterns.md",
+    "recommendation": "Add to shell-and-tooling-patterns.md: 'In awk, sub()/gsub() modify $0 in-place. All subsequent pattern rules evaluate against the modified $0. Always add next after a rule that modifies $0 if later rules check $0 patterns.' Fresh bug from 2026-02-21, not yet in any guide.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/interlock/docs/solutions/2026-02-16-advisory-only-timeout-eliminates-toctou.md",
+    "title": "Advisory-Only Timeout Eliminates TOCTOU Race",
+    "action": "memory",
+    "target": "docs/guides/multi-agent-coordination.md",
+    "recommendation": "Add to multi-agent coordination guide: 'Advisory-only enforcement pattern: convert background state-mutating actors to read-only observers. Push mutation to the edges — let the state owner make explicit decisions. Read-only code cannot race.' Reusable concurrency pattern.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "services/intermute/docs/solutions/database-issues/silent-json-errors-sqlite-storage-20260211.md",
+    "title": "Troubleshooting: Silent JSON Marshal/Unmarshal Errors in Event-Sourced SQLite Store",
+    "action": "memory",
+    "target": "docs/guides/data-integrity-patterns.md",
+    "recommendation": "Add to data-integrity-patterns.md: 'Never use _ = json.Marshal/Unmarshal in Go. Write paths: fail hard (return error). Read paths: log warning with entity ID, continue with zero value. Grep for _ = json. as a CI check.' Also: 'Wrap multi-table materializations in transactions.'",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/best-practices/extract-engine-logic-into-shared-module-20260212.md",
+    "title": "Extract engine-internal logic into shared modules before adding new modes",
+    "action": "none",
+    "target": "plugins/tldr-swinton/AGENTS.md",
+    "recommendation": "Module-specific refactoring pattern. The extract-upgrade-wire pattern and fallback chain design are good but scoped to tldr-swinton's engine architecture. No need to propagate beyond the module.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/best-practices/hooks-vs-skills-separation-plugin-20260211.md",
+    "title": "Best Practice: Hooks for Per-File Tactics, Skills for Session Strategy",
+    "action": "claude_md",
+    "target": "Interverse CLAUDE.md or docs/guides/plugin-troubleshooting.md",
+    "recommendation": "Add to plugin troubleshooting guide: 'Hooks handle per-file automatic enforcement (zero cooperation needed). Skills handle session-level strategic decisions. Never duplicate the same behavior in both — single enforcement point per concern.' This is a cross-cutting plugin design principle.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/best-practices/layered-enforcement-architecture-plugin-20260211.md",
+    "title": "Best Practice: 4-Layer Defense-in-Depth for Agent Tool Adoption",
+    "action": "none",
+    "target": "plugins/tldr-swinton/AGENTS.md",
+    "recommendation": "Closely related to hooks-vs-skills doc (doc 12). The 4-layer architecture (presets, skills, hooks, CLI self-hints) is an implementation of those principles. The principle-level lesson (doc 12) is more useful to propagate; this one is fine as reference.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/best-practices/parallel-agents-miss-cross-cutting-schema-bugs.md",
+    "title": "Parallel Agents Miss Cross-Cutting Schema Bugs",
+    "action": "memory",
+    "target": "docs/guides/multi-agent-coordination.md",
+    "recommendation": "Add to multi-agent coordination guide: 'After parallel agent implementation, always run quality gates with full unified diff — not individual agent diffs. Schema consistency is a cross-cutting concern that no single implementing agent owns.' Complements existing synthesis pattern section.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/build-errors/lfs-submodule-blocks-plugin-install.md",
+    "title": "Git LFS Submodule Blocks Claude Code Plugin Install",
+    "action": "none",
+    "target": "plugins/tldr-swinton/AGENTS.md",
+    "recommendation": "Resolved issue (commit 108e271). The fix (update=none + fetchRecurseSubmodules=false in .gitmodules) is already applied. The doc is useful historical reference but the lesson is module-specific.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/build-errors/plugin-version-drift-breaks-loading.md",
+    "title": "Plugin Version Drift Between Repo and Marketplace Breaks Loading",
+    "action": "none",
+    "target": "docs/guides/plugin-troubleshooting.md",
+    "recommendation": "The three-version-location lesson is already covered in plugin-troubleshooting.md (version check in diagnostic checklist, line 7/15) and in MEMORY.md (Claude Code Plugin Schema section). The doc provides good detail but the lesson is propagated.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/build-errors/stale-plugin-cache-ghost-entries.md",
+    "title": "Stale Plugin Cache Creates Ghost Entries and Load Failures",
+    "action": "memory",
+    "target": "docs/guides/plugin-troubleshooting.md",
+    "recommendation": "Add to plugin-troubleshooting.md: 'Ghost plugins from renames persist in cache and enabledPlugins in settings.json. Worst case: old name in settings.json causes failed-to-load every session. Fix: remove stale key from settings.json, delete cache dir, reinstall.' The enabledPlugins detail is not covered anywhere.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/integration-issues/claude-code-hook-stdin-api.md",
+    "title": "Claude Code Hook Scripts: stdin JSON API, Not Environment Variables",
+    "action": "none",
+    "target": "docs/guides/plugin-troubleshooting.md",
+    "recommendation": "The stdin JSON API and session_id patterns are already documented in plugin-troubleshooting.md (hooks format section). The doc provides a complete reference with testing patterns but the core lesson is covered.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/integration-issues/cli-plugin-low-agent-adoption-vs-mcp-20260211.md",
+    "title": "Integration Pattern: CLI+Plugin vs MCP for Agent Tool Adoption",
+    "action": "none",
+    "target": "plugins/tldr-swinton/AGENTS.md",
+    "recommendation": "Strategic analysis of CLI+Plugin vs MCP adoption patterns. Valuable as a design reference but the conclusions (build MCP server, add presets, smarter hooks) are module-specific roadmap items, not reusable lessons to propagate.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/integration-issues/codex-dispatch-background-mode-failure.md",
+    "title": "Codex dispatch.sh Fails in Bash Tool Background Mode",
+    "action": "memory",
+    "target": "Interverse MEMORY.md",
+    "recommendation": "Add to MEMORY.md: 'Bash tool background mode (run_in_background: true) corrupts arguments for complex multi-flag commands. Use foreground mode with timeout: 600000 instead. For parallelism, issue multiple foreground Bash tool calls in the same message.' Affects any dispatch workflow.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/performance-issues/duplicated-index-builds-projectindex-20260211.md",
+    "title": "Troubleshooting: Duplicated ProjectIndex Builds Across Engine Calls",
+    "action": "none",
+    "target": "plugins/tldr-swinton/AGENTS.md",
+    "recommendation": "Module-specific performance optimization. The thread-through pattern (_project_index optional param) is good engineering but scoped to tldr-swinton's engine layer. No cross-cutting lesson.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/tldr-swinton/docs/solutions/workflow-issues/bd-commands-hang-stale-startlock-20260213.md",
+    "title": "Troubleshooting: Beads bd Commands Hang Indefinitely Due to Stale Startlock",
+    "action": "memory",
+    "target": "docs/guides/shell-and-tooling-patterns.md",
+    "recommendation": "Add to shell-and-tooling-patterns.md under a Beads Daemon section: 'If bd commands hang, the daemon startlock is stale. One-liner fix: kill daemon, rm .beads/bd.sock .beads/bd.sock.startlock .beads/daemon.pid .beads/daemon.lock.' Common failure mode after force-killed sessions.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "plugins/tool-time/docs/solutions/best-practices/event-type-contract-analyze-20260214.md",
+    "title": "Best Practice: Event Type Contract for Hook-Based Analytics",
+    "action": "none",
+    "target": "plugins/tool-time/AGENTS.md",
+    "recommendation": "Module-specific analytics contract. The Pre/Post event dedup rules and retry detection scope are important for tool-time but not applicable outside it. The doc is well-scoped to its module.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/tuivision/docs/solutions/patterns/critical-patterns.md",
+    "title": "tuivision Critical Patterns",
+    "action": "none",
+    "target": "plugins/tuivision/AGENTS.md",
+    "recommendation": "Module-specific required reading for xterm.js integration. The RGB color extraction via raw fg/bg properties and attribute bitmask patterns are documented here and cross-referenced from the companion ui-bug doc. Well-scoped.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "plugins/tuivision/docs/solutions/ui-bugs/rgb-color-rendering-TerminalRenderer-20260126.md",
+    "title": "RGB Color Rendering Incorrect in TUI Screenshots",
+    "action": "none",
+    "target": "plugins/tuivision/AGENTS.md",
+    "recommendation": "Companion to critical-patterns.md. The root cause (xterm.js getFgColor returns -1 for RGB) and fix (raw cell.fg bit masking) are covered in the patterns doc. This doc provides historical investigation detail.",
+    "already_covered": false,
+    "cross_cutting": false
+  }
+]

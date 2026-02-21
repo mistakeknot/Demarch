@@ -1,0 +1,407 @@
+{
+  "summary": {
+    "total_docs": 74,
+    "actionable": 30,
+    "already_covered": 22,
+    "prune": 8,
+    "no_action": 22
+  },
+  "by_target": {
+    "~/.claude/CLAUDE.md": [
+      {
+        "priority": "P0",
+        "source_docs": [
+          "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md"
+        ],
+        "recommendation": "Add --write-output and --timeout rules to the Oracle section",
+        "content_draft": "Always use `--write-output <path>` for Oracle browser mode — never redirect stdout (`> file`). Never wrap Oracle with external `timeout` — use `--timeout <seconds>` instead. Both cause silent output loss."
+      }
+    ],
+    "Interverse/CLAUDE.md": [
+      {
+        "priority": "P1",
+        "source_docs": [
+          "docs/solutions/patterns/critical-patterns.md"
+        ],
+        "recommendation": "Add a Critical Patterns section pointing to the required-reading file",
+        "content_draft": "## Critical Patterns\n\nBefore creating plugins with compiled MCP servers or hooks, read `docs/solutions/patterns/critical-patterns.md` — launcher script pattern, hooks.json format, orphaned_at cleanup."
+      },
+      {
+        "priority": "P2",
+        "source_docs": [
+          "plugins/tldr-swinton/docs/solutions/best-practices/hooks-vs-skills-separation-plugin-20260211.md"
+        ],
+        "recommendation": "Add hooks-vs-skills design principle",
+        "content_draft": "## Plugin Design Principle\n\nHooks handle per-file automatic enforcement (zero cooperation needed). Skills handle session-level strategic decisions. Never duplicate the same behavior in both — single enforcement point per concern."
+      }
+    ],
+    "hub/autarch/CLAUDE.md": [
+      {
+        "priority": "P0",
+        "source_docs": [
+          "hub/autarch/docs/solutions/runtime-errors/arbiter-state-pointer-escape-20260201.md"
+        ],
+        "recommendation": "Add Go concurrency rule: never return pointers to internal mutable state",
+        "content_draft": "## Concurrency Rules\n\n- Never return pointers to internal mutable state from synchronized methods. `State()` returns deep-copied snapshots via `Clone()`. All types crossing goroutine boundaries need `Clone()` methods.\n- Run tests with `-race` flag."
+      },
+      {
+        "priority": "P0",
+        "source_docs": [
+          "hub/autarch/docs/solutions/ui-bugs/swallowed-generation-error-msg-20260131.md"
+        ],
+        "recommendation": "Add Bubble Tea message routing rule: never swallow child messages",
+        "content_draft": "## Bubble Tea Rules\n\n- In parent `Update()` methods, never swallow messages that child views need. Default to fall-through. Only return early for messages exclusively owned by the parent. Error messages must always reach the view layer."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/autarch/docs/solutions/ui-bugs/ansi-aware-string-splicing-for-overlays.md"
+        ],
+        "recommendation": "Add ANSI-aware string operations rule",
+        "content_draft": "- Never use `[]rune` slicing on ANSI-styled strings for visual-column operations. Use `ansi.Truncate`/`TruncateLeft` from `charmbracelet/x/ansi`. Grep for `[]rune` + `lipgloss.Width` — that combination is always a bug."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/autarch/docs/solutions/ui-bugs/tui-breadcrumb-hidden-by-oversized-child-view-20260127.md",
+          "hub/autarch/docs/solutions/ui-bugs/tui-dimension-mismatch-splitlayout-20260126.md"
+        ],
+        "recommendation": "Add TUI layout sizing rule (merged from two docs)",
+        "content_draft": "- Always subtract chrome dimensions (header, footer, sidebar, padding) from `WindowSizeMsg` before passing to child views. Children must only know about their allocated space. Available Width = Terminal Width - Parent Horizontal Padding."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/autarch/docs/solutions/workflow-issues/over-planning-before-reproduction-20260203.md"
+        ],
+        "recommendation": "Add reproduce-before-planning workflow rule",
+        "content_draft": "## Workflow Rules\n\n- Reproduce bugs before planning fixes. Phase 0 (reproduction + failing test) is mandatory before any multi-phase fix plan. If bug cannot be reproduced, document as could-not-reproduce and close."
+      }
+    ],
+    "hub/autarch/AGENTS.md": [
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/autarch/docs/solutions/patterns/chat-first-tui-design-20260204.md"
+        ],
+        "recommendation": "Add TUI Design Principles section summarizing 5 chat-first principles",
+        "content_draft": "## TUI Design Principles\n\nChat is primary input surface. Typing safety: no single-key shortcuts that fire during text entry. Discoverability via slash commands. Ctrl+ only for shortcuts. Minimal modes (avoid vim-style modal traps)."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/autarch/docs/solutions/patterns/oracle-review-issues-3-6-20260201.md"
+        ],
+        "recommendation": "Add three reusable Go/TUI patterns from Oracle review",
+        "content_draft": "### Coding Standards (from Oracle review)\n\n- Use phase constants, not integer literals, for array indices.\n- Focus-aware keyboard routing: switch on `shell.Focus()`, not `component.Focused()`.\n- Error observability: non-fatal errors log to stderr with `warning:` prefix. Never silently swallow errors."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/autarch/docs/solutions/ui-bugs/tui-scrolling-keyboard-and-mouse.md"
+        ],
+        "recommendation": "Add shell focus and key matching patterns",
+        "content_draft": "### TUI Input Patterns\n\n- Shell layout owns focus state — use `shell.Focus()` not `component.Focused()` for routing decisions.\n- Use `msg.String()` for key matching instead of `key.Matches()` for raw key events.\n- Avoid Ctrl+J (= LF/Enter in terminals)."
+      },
+      {
+        "priority": "P2",
+        "source_docs": [
+          "hub/autarch/docs/solutions/architecture-decisions/spec-phase-reordering-strategy.md"
+        ],
+        "recommendation": "Document canonical spec phase ordering under Gurgeh/Arbiter section",
+        "content_draft": "### Spec Phase Ordering\n\nCanonical order: Vision > Problem > Users > Features > CUJs > Requirements > Scope > Acceptance. Ordering must reflect information dependencies — later phases consume earlier phase outputs."
+      }
+    ],
+    "hub/clavain/AGENTS.md": [
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md"
+        ],
+        "recommendation": "Add Renaming/Deleting Agents subsection with grep sweep checklist",
+        "content_draft": "### Renaming/Deleting Agents\n\nGrep sweep checklist (10 locations): agents/*.md, skills/*/SKILL.md, commands/*.md, hooks/*.sh, lib-*.sh, plugin.json, CLAUDE.md, AGENTS.md, dispatch templates, test fixtures. Do NOT update historical records (solution docs, sprint logs)."
+      }
+    ],
+    "MEMORY.md": [
+      {
+        "priority": "P0",
+        "source_docs": [
+          "plugins/tldr-swinton/docs/solutions/integration-issues/codex-dispatch-background-mode-failure.md"
+        ],
+        "recommendation": "Add Bash tool background mode argument corruption warning",
+        "content_draft": "- **Bash tool background mode corrupts complex args** — `run_in_background: true` corrupts arguments for multi-flag commands. Use foreground mode with `timeout: 600000` instead. For parallelism, issue multiple foreground Bash tool calls in the same message."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md"
+        ],
+        "recommendation": "Add LLM compounding feedback loop / provenance tracking lesson",
+        "content_draft": "- **LLM compounding feedback loop**: when injecting prior findings into agent context, track provenance (independent vs primed). Only independent re-confirmations update freshness. Primed confirmations are echoes, not evidence."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md"
+        ],
+        "recommendation": "Add monorepo glob depth warning",
+        "content_draft": "- **Monorepo glob patterns**: always prefix with `**` to search at any depth. Never assume fixed depth between project root and target files. Applies to Python glob, shell find, and tool Glob patterns alike."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md"
+        ],
+        "recommendation": "Add MCP bootstrap wrapper pattern to plugin schema section",
+        "content_draft": "- **MCP bootstrap wrapper**: Claude Code plugin cache does NOT run npm install. Node.js MCP servers need a `start.sh` wrapper that checks for `node_modules`, installs if missing, then `exec`'s into node. Output to stderr only (stdout is JSON-RPC)."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md"
+        ],
+        "recommendation": "Add agent registry session lifecycle note to plugin schema section",
+        "content_draft": "- **Agent registry loaded at session start** — new agent `.md` files created mid-session are NOT available as `subagent_type`. Workaround: use `subagent_type: general-purpose` with full prompt. Proper fix: commit, publish, restart session."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md"
+        ],
+        "recommendation": "Add mid-session publish Stop hook breakage explanation",
+        "content_draft": "- **Mid-session publish breaks Stop hooks**: Claude Code bakes hook paths at session start. When marketplace push triggers cache update, old version dir is deleted. `bump-version.sh` creates old->new symlink as mitigation."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md"
+        ],
+        "recommendation": "Add disable-model-invocation chaining rule to plugin schema section",
+        "content_draft": "- **`disable-model-invocation: true` blocks Skill tool chaining** — if command A calls command B via Skill tool, B must have `disable-model-invocation: false`. Only use `true` for destructive operations (deploy, delete)."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md"
+        ],
+        "recommendation": "Add duplicate MCP registration warning to plugin schema section",
+        "content_draft": "- **Duplicate MCP registration**: an MCP server in both `plugin.json` AND `~/.claude/settings.json` creates two tool namespaces with doubled context cost (~12K tokens wasted). Check for duplicates with grep across settings. Run `claude doctor` periodically."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "plugins/interfluence/docs/solutions/marketplace-cached-clone-stale.md"
+        ],
+        "recommendation": "Add marketplace cached clone stale warning",
+        "content_draft": "- **Marketplace cached clone stale**: after pushing marketplace changes, pull the cached clone at `~/.claude/plugins/marketplaces/interagency-marketplace/`. Claude Code reads from cache, not working copy."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "plugins/interkasten/docs/solutions/integration-issues/new-marketplace-plugin-not-installed-20260215.md"
+        ],
+        "recommendation": "Add note that adding to marketplace.json does not auto-install",
+        "content_draft": "- **Adding a plugin to marketplace.json does NOT auto-install** on machines that already have the marketplace. Must explicitly install via `claude plugins install` or manual clone+register in `installed_plugins.json`."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "docs/solutions/patterns/intercore-schema-upgrade-deployment-20260218.md"
+        ],
+        "recommendation": "Update Intercore CLI Gotchas: binary rebuild required before ic init",
+        "content_draft": "- **Schema is go:embed'd in the ic binary** — after adding tables to schema.sql, rebuild the binary (`go build`) BEFORE running `ic init`. 3-step: rebuild -> ic init -> verify. Additive-only migrations use `CREATE TABLE IF NOT EXISTS`."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "docs/solutions/patterns/cas-spawn-link-orphan-cleanup-20260219.md"
+        ],
+        "recommendation": "Add CAS spawn-link-orphan pattern to Intercore section",
+        "content_draft": "- **CAS guard on create-then-link operations**: any spawn-resource-then-link-ID pattern needs CAS guard (`AND dispatch_id IS NULL`) on the link step + kill orphan on failure. See `UpdateAgentDispatch` in `runtrack/store.go`."
+      },
+      {
+        "priority": "P2",
+        "source_docs": [
+          "hub/autarch/docs/solutions/patterns/arbiter-spec-sprint-architecture.md"
+        ],
+        "recommendation": "Add Go import-cycle adapter pattern",
+        "content_draft": "### Go Architecture Patterns\n\n- **Import-cycle adapter pattern**: when sub-packages need parent types but parent calls sub-packages, use local adapter sub-packages with mirrored types. Always verify actual API signatures before implementing against a plan."
+      },
+      {
+        "priority": "P2",
+        "source_docs": [
+          "docs/solutions/patterns/argparse-parents-subparser-default-overwrite-20260219.md"
+        ],
+        "recommendation": "Add Python argparse parents gotcha",
+        "content_draft": "### Python CLI Gotchas\n\n- **argparse `parents=[shared]`** on both main parser and subparsers causes subparser defaults to overwrite main parser values. Use `default=argparse.SUPPRESS` on subparser copies."
+      },
+      {
+        "priority": "P2",
+        "source_docs": [
+          "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md"
+        ],
+        "recommendation": "Add SKILL.md extraction pattern",
+        "content_draft": "### Clavain Development Patterns\n\n- **SKILL.md inline logic extraction**: when a SKILL.md contains function definitions, raw SQL, or asymmetric apply/revert pairs, extract to `lib-*.sh` and have the SKILL.md call library functions."
+      }
+    ],
+    "docs/guides/plugin-troubleshooting.md": [
+      {
+        "priority": "P1",
+        "source_docs": [
+          "plugins/tldr-swinton/docs/solutions/build-errors/stale-plugin-cache-ghost-entries.md"
+        ],
+        "recommendation": "Add ghost plugin entry cleanup procedure",
+        "content_draft": "## Ghost Plugin Entries\n\nRenamed plugins leave ghost entries in `enabledPlugins` (settings.json) and cache dirs. Worst case: old name in settings.json causes failed-to-load every session. Fix: remove stale key from settings.json, delete cache dir, reinstall under new name."
+      }
+    ],
+    "docs/guides/shell-and-tooling-patterns.md": [
+      {
+        "priority": "P1",
+        "source_docs": [
+          "plugins/interlearn/docs/solutions/patterns/awk-sub-pattern-fallthrough-20260221.md"
+        ],
+        "recommendation": "Add awk sub() $0 mutation gotcha",
+        "content_draft": "## awk sub() $0 Mutation\n\nIn awk, `sub()`/`gsub()` modify `$0` in-place. All subsequent pattern rules evaluate against the modified `$0`. Always add `next` after a rule that modifies `$0` if later rules check `$0` patterns."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "plugins/tldr-swinton/docs/solutions/workflow-issues/bd-commands-hang-stale-startlock-20260213.md"
+        ],
+        "recommendation": "Add beads daemon stale startlock recovery",
+        "content_draft": "## Beads Daemon Stale Startlock\n\nIf `bd` commands hang, the daemon startlock is stale. One-liner fix: `kill $(cat .beads/daemon.pid 2>/dev/null) 2>/dev/null; rm -f .beads/bd.sock .beads/bd.sock.startlock .beads/daemon.pid .beads/daemon.lock`. Common after force-killed sessions."
+      }
+    ],
+    "docs/guides/multi-agent-coordination.md": [
+      {
+        "priority": "P1",
+        "source_docs": [
+          "plugins/interlock/docs/solutions/2026-02-16-advisory-only-timeout-eliminates-toctou.md"
+        ],
+        "recommendation": "Add advisory-only enforcement pattern",
+        "content_draft": "## Advisory-Only Enforcement Pattern\n\nConvert background state-mutating actors to read-only observers. Push mutation to the edges — let the state owner make explicit decisions. Read-only code cannot race."
+      },
+      {
+        "priority": "P1",
+        "source_docs": [
+          "plugins/tldr-swinton/docs/solutions/best-practices/parallel-agents-miss-cross-cutting-schema-bugs.md"
+        ],
+        "recommendation": "Add cross-cutting quality gate rule for parallel agents",
+        "content_draft": "## Post-Parallel Quality Gates\n\nAfter parallel agent implementation, always run quality gates with the full unified diff — not individual agent diffs. Schema consistency is a cross-cutting concern that no single implementing agent owns."
+      }
+    ],
+    "docs/guides/data-integrity-patterns.md": [
+      {
+        "priority": "P0",
+        "source_docs": [
+          "services/intermute/docs/solutions/database-issues/silent-json-errors-sqlite-storage-20260211.md"
+        ],
+        "recommendation": "Add silent JSON marshal/unmarshal error handling rules for Go",
+        "content_draft": "## Silent JSON Errors in Go\n\nNever use `_ = json.Marshal/Unmarshal`. Write paths: fail hard (return error). Read paths: log warning with entity ID, continue with zero value. Grep for `_ = json.` as a CI check. Wrap multi-table materializations in transactions."
+      }
+    ]
+  },
+  "prune_candidates": [
+    {
+      "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+      "reason": "Key lessons are verbatim in MEMORY.md under 'Model Routing (B1 Sprint Learnings)' — resolution order, inherit sentinel, phase names all present",
+      "verdict": "keep-as-historical"
+    },
+    {
+      "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-skill-tool-clavain-20260211.md",
+      "reason": "Superseded by disable-model-invocation-blocks-lfg-pipeline (broader fix, explicitly says it supersedes this doc)",
+      "verdict": "delete"
+    },
+    {
+      "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+      "reason": "Prevention rules already propagated verbatim to ~/.claude/CLAUDE.md under 'Settings Hygiene'",
+      "verdict": "keep-as-historical"
+    },
+    {
+      "path": "docs/solutions/integration-issues/plugin-loading-failures-interverse-20260215.md",
+      "reason": "All patterns consolidated into plugin-troubleshooting.md guide and critical-patterns.md",
+      "verdict": "keep-as-historical"
+    },
+    {
+      "path": "docs/solutions/integration-issues/plugin-validation-errors-cache-manifest-divergence-20260217.md",
+      "reason": "Second incident of same patterns already in plugin-troubleshooting.md guide",
+      "verdict": "keep-as-historical"
+    },
+    {
+      "path": "hub/autarch/docs/solutions/patterns/preserve-original-intent-after-simplification.md",
+      "reason": "Duplicates existing global skill at ~/.claude/skills/preserve-original-intent/SKILL.md and workflow-patterns.md entry",
+      "verdict": "delete"
+    },
+    {
+      "path": "infra/intercore/docs/solutions/e8-portfolio-orchestration-learnings.md",
+      "reason": "All key lessons (cross-DB cursor atomicity, time.After, advisory limits, sentinels) already in MEMORY.md",
+      "verdict": "keep-as-historical"
+    },
+    {
+      "path": "infra/intercore/docs/solutions/e9-portfolio-dependency-scheduling-learnings.md",
+      "reason": "All key lessons (TOCTOU, terminal status exhaustiveness, queryCtx, Advance 9-param) already in MEMORY.md",
+      "verdict": "keep-as-historical"
+    }
+  ],
+  "cross_cutting_themes": [
+    {
+      "theme": "Plugin lifecycle gotchas (cache, session, registry)",
+      "docs": [
+        "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+        "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+        "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+        "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+        "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+        "plugins/interfluence/docs/solutions/marketplace-cached-clone-stale.md",
+        "plugins/interkasten/docs/solutions/integration-issues/new-marketplace-plugin-not-installed-20260215.md",
+        "plugins/tldr-swinton/docs/solutions/build-errors/stale-plugin-cache-ghost-entries.md"
+      ],
+      "lesson": "Claude Code plugin cache, registry, and marketplace have numerous lifecycle gaps. Session start bakes paths and registry. Mid-session changes break hooks. Cache diverges silently. Marketplace pushes need cache pulls. Ghost entries persist after renames. All 8 docs expand the Plugin Schema section of MEMORY.md."
+    },
+    {
+      "theme": "TOCTOU and CAS patterns in concurrent systems",
+      "docs": [
+        "docs/solutions/database-issues/toctou-gate-check-cas-dispatch-intercore-20260221.md",
+        "docs/solutions/patterns/cas-spawn-link-orphan-cleanup-20260219.md",
+        "plugins/interlock/docs/solutions/2026-02-16-advisory-only-timeout-eliminates-toctou.md"
+      ],
+      "lesson": "Three different TOCTOU patterns discovered across intercore and interlock: check-then-insert needs wrapping in BeginTx, spawn-then-link needs CAS guard + orphan cleanup, and background state mutation can be eliminated by converting to advisory-only observers. The advisory-only pattern is the most broadly applicable."
+    },
+    {
+      "theme": "Bubble Tea TUI layout and message routing",
+      "docs": [
+        "hub/autarch/docs/solutions/ui-bugs/swallowed-generation-error-msg-20260131.md",
+        "hub/autarch/docs/solutions/ui-bugs/tui-breadcrumb-hidden-by-oversized-child-view-20260127.md",
+        "hub/autarch/docs/solutions/ui-bugs/tui-dimension-mismatch-splitlayout-20260126.md",
+        "hub/autarch/docs/solutions/ui-bugs/ansi-aware-string-splicing-for-overlays.md",
+        "hub/autarch/docs/solutions/ui-bugs/tui-scrolling-keyboard-and-mouse.md",
+        "hub/autarch/docs/solutions/patterns/chat-first-tui-design-20260204.md"
+      ],
+      "lesson": "Six TUI bugs and patterns form a coherent set of rules: never swallow child messages, subtract chrome before passing sizes to children, use ANSI-aware string ops not rune slicing, route by shell.Focus() not component.Focused(). These should become autarch CLAUDE.md rules to prevent recurrence."
+    },
+    {
+      "theme": "LLM output reliability (provenance, compounding, stale context)",
+      "docs": [
+        "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+        "plugins/tldr-swinton/docs/solutions/best-practices/parallel-agents-miss-cross-cutting-schema-bugs.md"
+      ],
+      "lesson": "Two facets of the same problem: LLM agents operating on stale or primed context produce unreliable results. Provenance tracking distinguishes independent findings from echoes. Cross-cutting quality gates catch schema-level inconsistencies that no single parallel agent can detect."
+    },
+    {
+      "theme": "Go concurrency and state safety",
+      "docs": [
+        "hub/autarch/docs/solutions/runtime-errors/arbiter-state-pointer-escape-20260201.md",
+        "hub/autarch/docs/solutions/patterns/arbiter-spec-sprint-architecture.md"
+      ],
+      "lesson": "Two Go architecture patterns with cross-project applicability: (1) never return pointers to mutable state from synchronized methods — use Clone(), (2) import-cycle adapter sub-packages with mirrored types. Both apply to any Go project with concurrent state."
+    },
+    {
+      "theme": "Silent failures in serialization and validation",
+      "docs": [
+        "services/intermute/docs/solutions/database-issues/silent-json-errors-sqlite-storage-20260211.md",
+        "docs/solutions/patterns/guard-fallthrough-null-validation-20260216.md"
+      ],
+      "lesson": "Two manifestations of 'fail open' anti-pattern: discarding json.Marshal/Unmarshal errors with _ causes silent data corruption; guard clauses that skip validation when context is null allow unvalidated input through. Both need fail-closed discipline."
+    }
+  ]
+}

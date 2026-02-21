@@ -1,0 +1,146 @@
+[
+  {
+    "path": "docs/solutions/database-issues/toctou-gate-check-cas-dispatch-intercore-20260221.md",
+    "title": "TOCTOU in Gate-Phase Advance + Missing CAS on Dispatch Status",
+    "action": "memory",
+    "target": "Interverse MEMORY.md — Intercore CLI Gotchas section",
+    "recommendation": "Add one-liners: (1) Advance() now wraps gate+phase in BeginTx with tx-scoped querier wrappers — never evaluate gates outside a transaction. (2) Dispatch UpdateStatus uses CAS guard (AND status=?) plus Go-level terminal-state rejection — both are required, CAS alone is insufficient.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/environment-issues/git-credential-lock-multi-user-20260216.md",
+    "title": "Git Credential Store Lock Failure in Multi-User Setup",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "This is a one-time environment fix specific to the claude-user setup. The solution (move credentials to ~/.claude/) is already applied. No ongoing lesson needs propagation — the fix is self-contained and unlikely to recur.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "docs/solutions/integration-issues/plugin-loading-failures-interverse-20260215.md",
+    "title": "Claude Code Plugin Loading Failures (4 Plugins)",
+    "action": "prune",
+    "target": "docs/guides/plugin-troubleshooting.md already consolidates all lessons",
+    "recommendation": "This doc's diagnostic checklist, hooks format, orphaned_at pattern, and launcher script pattern are all fully consolidated into docs/guides/plugin-troubleshooting.md, MEMORY.md (Claude Code Plugin Schema section), and critical-patterns.md. The doc can be kept as incident record but adds no net-new knowledge.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "docs/solutions/integration-issues/plugin-validation-errors-cache-manifest-divergence-20260217.md",
+    "title": "Plugin Validation Errors: Cache/Manifest Divergence (4 Plugins)",
+    "action": "prune",
+    "target": "docs/guides/plugin-troubleshooting.md already consolidates all lessons",
+    "recommendation": "Same as the Feb 15 plugin failures doc — all patterns (cache divergence, invalid hook events, manifest omission, 14-event allowlist) are consolidated in plugin-troubleshooting.md and MEMORY.md. The doc is a second incident of the same patterns. Keep as historical record only.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "docs/solutions/patterns/argparse-parents-subparser-default-overwrite-20260219.md",
+    "title": "argparse parents=[shared] Overwrites Flags Parsed by Main Parser",
+    "action": "memory",
+    "target": "Interverse MEMORY.md — new 'Python CLI Gotchas' section",
+    "recommendation": "Add one-liner: 'argparse parents=[shared] on both main parser and subparsers causes subparser defaults to overwrite main parser values. Use default=argparse.SUPPRESS on subparser copies.' This is a reusable Python pattern not covered anywhere in existing docs.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/patterns/cas-spawn-link-orphan-cleanup-20260219.md",
+    "title": "CAS Dispatch Linking with Orphan Process Cleanup",
+    "action": "memory",
+    "target": "Interverse MEMORY.md — Intercore CLI Gotchas section",
+    "recommendation": "Add one-liner: 'Any create-resource-then-link-ID operation needs CAS guard (AND dispatch_id IS NULL) on the link step + kill orphan on failure. See UpdateAgentDispatch in runtrack/store.go.' The TOCTOU entry in MEMORY.md mentions check-then-insert but not the spawn-link-orphan pattern.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/patterns/critical-patterns.md",
+    "title": "Critical Patterns — Required Reading",
+    "action": "claude_md",
+    "target": "Interverse CLAUDE.md",
+    "recommendation": "Add a '## Critical Patterns' section to Interverse CLAUDE.md pointing to this file: 'Before creating plugins with compiled MCP servers or hooks, read docs/solutions/patterns/critical-patterns.md — launcher script pattern, hooks.json format, orphaned_at cleanup.' CLAUDE.md is loaded every session; this file is not auto-discovered.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "docs/solutions/patterns/guard-fallthrough-null-validation-20260216.md",
+    "title": "Guard Fallthrough: Validation That Silently Skips on Null",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "Already fully consolidated into docs/guides/data-integrity-patterns.md ('Guard Fallthrough' section). The solution doc provides a useful detailed reference and cross-references correctly. No additional propagation needed.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/patterns/intercore-schema-upgrade-deployment-20260218.md",
+    "title": "intercore Schema Upgrade + Binary Deployment Pattern",
+    "action": "memory",
+    "target": "Interverse MEMORY.md — Intercore CLI Gotchas section",
+    "recommendation": "Add one-liner: 'After adding tables to schema.sql, rebuild the ic binary (go build) BEFORE running ic init — schema is go:embed'd. 3-step: rebuild → ic init → verify. Additive-only migrations use CREATE TABLE IF NOT EXISTS.' The existing MEMORY.md entry about 'ic init auto-migrates' is incomplete — it doesn't mention the binary rebuild requirement.",
+    "already_covered": false,
+    "cross_cutting": false
+  },
+  {
+    "path": "docs/solutions/patterns/set-e-with-fallback-paths-20260216.md",
+    "title": "set -euo pipefail with Fallback Recovery Paths",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "Already fully consolidated into docs/guides/shell-and-tooling-patterns.md ('set -euo pipefail with Fallback Paths' section). The solution doc and guide contain identical content. No additional propagation needed.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/patterns/synthesis-subagent-context-isolation-20260216.md",
+    "title": "Synthesis Subagent for Context-Efficient Multi-Agent Orchestration",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "Already fully consolidated into docs/guides/multi-agent-coordination.md ('Three-Tier Context Isolation' section). The guide reproduces all key design decisions and context savings numbers. No additional propagation needed.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/patterns/token-accounting-billing-vs-context-20260216.md",
+    "title": "Token Accounting: Billing Tokens vs Effective Context",
+    "action": "memory",
+    "target": "Interverse MEMORY.md — new 'Token Measurement' one-liner",
+    "recommendation": "Add one-liner: 'Never use billing tokens (input+output) to reason about context window capacity. Effective context = input + cache_read + cache_creation — can be 630x larger than billing tokens. Use effective context for all threshold/dispatch decisions.' The guide covers the synthesis pattern but not this measurement gotcha.",
+    "already_covered": false,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/patterns/wal-protocol-completeness-20260216.md",
+    "title": "WAL Protocol Completeness: Every Write Path Needs Protection",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "Already fully consolidated into docs/guides/data-integrity-patterns.md ('WAL Protocol Completeness' section with WAL Delete Placement rule). No additional propagation needed.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/runtime-errors/jq-null-slice-from-empty-string-return-clavain-20260216.md",
+    "title": "jq Null-Slice Runtime Error from Empty-String Function Returns",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "Already consolidated into docs/guides/shell-and-tooling-patterns.md (jq null safety section). The MEMORY.md cross-reference also notes the null[:10] behavior. No additional propagation needed.",
+    "already_covered": true,
+    "cross_cutting": true
+  },
+  {
+    "path": "docs/solutions/workflow-issues/auto-build-launcher-go-mcp-plugins-20260215.md",
+    "title": "Compiled MCP Binary Missing After Plugin Install",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "Already consolidated into docs/solutions/patterns/critical-patterns.md (Pattern #1) and docs/guides/plugin-troubleshooting.md. The launcher script pattern is well-documented. No additional propagation needed.",
+    "already_covered": true,
+    "cross_cutting": false
+  },
+  {
+    "path": "docs/solutions/workflow-issues/bd-sync-from-main-trunk-based-20260216.md",
+    "title": "bd sync --from-main Fails on Trunk-Based Repos",
+    "action": "none",
+    "target": "N/A",
+    "recommendation": "Already consolidated into docs/guides/shell-and-tooling-patterns.md (beads sync modes section). The sync mode reference table is reproduced there. No additional propagation needed.",
+    "already_covered": true,
+    "cross_cutting": false
+  }
+]
