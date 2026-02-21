@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interverse Ecosystem</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0d1117;
+  color: #c9d1d9;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+#toolbar .title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #f0f6fc;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+
+#toolbar .stats {
+  font-size: 11px;
+  color: #8b949e;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+
+.filter-btn {
+  border: 1px solid #30363d;
+  background: transparent;
+  color: #8b949e;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.filter-btn.active {
+  border-color: var(--type-color);
+  color: var(--type-color);
+  background: color-mix(in srgb, var(--type-color) 12%, transparent);
+}
+
+.filter-btn:hover { border-color: #58a6ff; }
+
+.filter-btn.meta {
+  font-weight: 600;
+  border-color: #58a6ff;
+  color: #58a6ff;
+}
+
+.filter-btn.meta:hover { background: rgba(88, 166, 255, 0.1); }
+
+#graph { width: 100vw; height: 100vh; padding-top: 44px; }
+#graph svg { width: 100%; height: 100%; }
+
+.node circle { cursor: pointer; transition: opacity 0.2s; }
+.node circle:hover { filter: brightness(1.3); }
+.node text { font-size: 10px; fill: #8b949e; pointer-events: none; user-select: none; }
+
+.link { stroke-opacity: 0.3; transition: stroke-opacity 0.2s; }
+.link.provides-skill { stroke: #50C878; }
+.link.provides-agent { stroke: #FF8C42; }
+.link.provides-mcp { stroke: #9B59B6; stroke-dasharray: 4 2; }
+.link.fires-hook { stroke: #E74C3C; stroke-dasharray: 2 2; }
+.link.companion-of { stroke: #F39C12; stroke-dasharray: 6 3; stroke-width: 2; }
+.link.depends-on { stroke: #1ABC9C; stroke-dasharray: 4 4; }
+.link.part-of { stroke: #30363d; }
+
+.dimmed circle { opacity: 0.1; }
+.dimmed text { opacity: 0.1; }
+.link.dimmed { stroke-opacity: 0.03; }
+
+.highlighted circle { filter: brightness(1.4) drop-shadow(0 0 6px var(--glow)); }
+.highlighted text { fill: #f0f6fc; font-weight: 600; }
+.link.highlighted { stroke-opacity: 0.8; stroke-width: 2; }
+
+#detail-panel {
+  position: fixed;
+  top: 44px;
+  right: -360px;
+  width: 340px;
+  height: calc(100vh - 44px);
+  background: #161b22;
+  border-left: 1px solid #30363d;
+  z-index: 90;
+  transition: right 0.25s ease;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+#detail-panel.open { right: 0; }
+
+#detail-panel .close-btn {
+  position: absolute; top: 12px; right: 12px;
+  background: none; border: none; color: #8b949e; cursor: pointer; font-size: 18px;
+}
+#detail-panel .close-btn:hover { color: #f0f6fc; }
+
+#detail-panel h2 { font-size: 18px; color: #f0f6fc; margin-bottom: 4px; padding-right: 24px; }
+
+#detail-panel .type-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 11px; font-weight: 600; margin-bottom: 12px;
+}
+
+#detail-panel .description { font-size: 13px; color: #8b949e; line-height: 1.5; margin-bottom: 16px; }
+
+#detail-panel .section-title {
+  font-size: 12px; font-weight: 600; color: #58a6ff;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-top: 16px; margin-bottom: 8px;
+}
+
+#detail-panel .child-list { list-style: none; padding: 0; }
+#detail-panel .child-list li {
+  font-size: 12px; color: #c9d1d9; padding: 3px 0 3px 8px; cursor: pointer;
+}
+#detail-panel .child-list li:hover { color: #58a6ff; }
+#detail-panel .child-type { font-size: 10px; color: #8b949e; margin-left: 4px; }
+
+#detail-panel .meta-item { font-size: 12px; color: #8b949e; margin-bottom: 4px; }
+#detail-panel .meta-item span { color: #c9d1d9; }
+
+#search-box {
+  border: 1px solid #30363d; background: #0d1117; color: #c9d1d9;
+  padding: 4px 10px; border-radius: 6px; font-size: 12px;
+  width: 160px; margin-left: auto;
+}
+#search-box:focus { outline: none; border-color: #58a6ff; }
+
+.legend {
+  position: fixed; bottom: 12px; left: 12px;
+  background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d;
+  border-radius: 8px; padding: 10px 14px; font-size: 11px; z-index: 80;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <span class="title">Interverse Ecosystem</span>
+  <span class="stats" id="stats"></span>
+  <button class="filter-btn meta" onclick="showAll()">All</button>
+  <button class="filter-btn meta" onclick="hideAll()">None</button>
+  <input type="text" id="search-box" placeholder="Search nodes..." oninput="onSearch(this.value)">
+</div>
+
+<div id="graph"></div>
+
+<div id="detail-panel">
+  <button class="close-btn" onclick="closePanel()">&times;</button>
+  <div id="panel-content"></div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<script>
+// DATA_PLACEHOLDER is replaced by the generator with scanned JSON
+const data = {
+  "generated": "2026-02-21T02:09:16.373Z",
+  "stats": {
+    "nodes": 121,
+    "edges": 143,
+    "byType": {
+      "monorepo": 1,
+      "plugin": 31,
+      "skill": 46,
+      "hook-event": 5,
+      "agent": 21,
+      "mcp-server": 12,
+      "hub": 1,
+      "kernel": 1,
+      "service": 1,
+      "sdk": 1,
+      "tui": 1
+    }
+  },
+  "nodes": [
+    {
+      "id": "interverse",
+      "type": "monorepo",
+      "label": "Interverse",
+      "description": "Monorepo for the inter-module ecosystem",
+      "meta": {}
+    },
+    {
+      "id": "intercheck",
+      "type": "plugin",
+      "label": "intercheck",
+      "description": "Code quality guards and session health monitoring",
+      "meta": {
+        "version": "0.1.6",
+        "path": "plugins/intercheck"
+      }
+    },
+    {
+      "id": "intercheck:status",
+      "type": "skill",
+      "label": "status",
+      "description": "",
+      "meta": {
+        "plugin": "intercheck",
+        "path": "plugins/intercheck/skills/status"
+      }
+    },
+    {
+      "id": "hook:PostToolUse",
+      "type": "hook-event",
+      "label": "PostToolUse",
+      "description": "Hook event: PostToolUse",
+      "meta": {}
+    },
+    {
+      "id": "intercraft",
+      "type": "plugin",
+      "label": "intercraft",
+      "description": "Agent-native architecture patterns — design, review, and audit for agent-first applications.",
+      "meta": {
+        "version": "0.1.0",
+        "path": "plugins/intercraft",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "intercraft:agent-native-architecture",
+      "type": "skill",
+      "label": "agent-native-architecture",
+      "description": "Build applications where agents are first-class citizens. Use this skill when designing autonomous agents, creating MCP tools, implementing self-modifying systems, or building apps where features are outcomes achieved by agents operating in a loop.",
+      "meta": {
+        "plugin": "intercraft",
+        "path": "plugins/intercraft/skills/agent-native-architecture"
+      }
+    },
+    {
+      "id": "intercraft:agent:agent-native-reviewer",
+      "type": "agent",
+      "label": "agent-native-reviewer",
+      "description": "",
+      "meta": {
+        "plugin": "intercraft",
+        "path": "./agents/review/agent-native-reviewer.md"
+      }
+    },
+    {
+      "id": "interdev",
+      "type": "plugin",
+      "label": "interdev",
+      "description": "Developer tooling for Claude Code — MCP CLI interaction, skill authoring, plugin development, and Claude Code reference.",
+      "meta": {
+        "version": "0.2.0",
+        "path": "plugins/interdev"
+      }
+    },
+    {
+      "id": "interdev:mcp-cli",
+      "type": "skill",
+      "label": "mcp-cli",
+      "description": "Use when interacting with MCP servers on-demand via the mcp CLI tool — discover tools, resources, and prompts without polluting context with pre-loaded integrations",
+      "meta": {
+        "plugin": "interdev",
+        "path": "plugins/interdev/skills/mcp-cli"
+      }
+    },
+    {
+      "id": "interdev:working-with-claude-code",
+      "type": "skill",
+      "label": "working-with-claude-code",
+      "description": "Use when working with Claude Code CLI, plugins, hooks, MCP servers, skills, configuration, or any Claude Code feature - provides comprehensive official documentation for all aspects of Claude Code",
+      "meta": {
+        "plugin": "interdev",
+        "path": "plugins/interdev/skills/working-with-claude-code"
+      }
+    },
+    {
+      "id": "interdev:developing-claude-code-plugins",
+      "type": "skill",
+      "label": "developing-claude-code-plugins",
+      "description": "Use when working on Claude Code plugins (creating, modifying, testing, releasing, or maintaining) - provides streamlined workflows, patterns, and examples for the complete plugin lifecycle",
+      "meta": {
+        "plugin": "interdev",
+        "path": "plugins/interdev/skills/developing-claude-code-plugins"
+      }
+    },
+    {
+      "id": "interdev:create-agent-skills",
+      "type": "skill",
+      "label": "create-agent-skills",
+      "description": "Expert guidance for creating Claude Code skills and slash commands. Use when working with SKILL.md files, authoring new skills, improving existing skills, creating slash commands, or understanding skill structure and best practices.",
+      "meta": {
+        "plugin": "interdev",
+        "path": "plugins/interdev/skills/create-agent-skills"
+      }
+    },
+    {
+      "id": "interdev:writing-skills",
+      "type": "skill",
+      "label": "writing-skills",
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment",
+      "meta": {
+        "plugin": "interdev",
+        "path": "plugins/interdev/skills/writing-skills"
+      }
+    },
+    {
+      "id": "interdoc",
+      "type": "plugin",
+      "label": "interdoc",
+      "description": "Recursive AGENTS.md generator with integrated GPT 5.2 Pro critique, CLAUDE.md harmonization, incremental updates, diff previews, and smart monorepo scoping. Cross-AI compatible.",
+      "meta": {
+        "version": "5.1.1",
+        "path": "plugins/interdoc",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "interdoc:interdoc",
+      "type": "skill",
+      "label": "interdoc",
+      "description": "Generate, update, and review AGENTS.md with GPT 5.2 Pro critique. Use when asked to \"generate AGENTS.md\", \"update AGENTS.md\", \"document this repo\", \"document this codebase\", \"review docs\", \"critique docs\", \"fix stale references\", \"fix docs\", \"interdoc fix\", or \"auracoil\".",
+      "meta": {
+        "plugin": "interdoc",
+        "path": "plugins/interdoc/skills/interdoc"
+      }
+    },
+    {
+      "id": "interfluence",
+      "type": "plugin",
+      "label": "interfluence",
+      "description": "Analyze your writing style and adapt Claude's output to sound like you. Ingest writing samples, build a voice profile, and apply it to any human-facing documentation or copy.",
+      "meta": {
+        "version": "0.2.5",
+        "path": "plugins/interfluence",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "interfluence:skills",
+      "type": "skill",
+      "label": "skills",
+      "description": "",
+      "meta": {
+        "plugin": "interfluence",
+        "path": "plugins/interfluence/skills"
+      }
+    },
+    {
+      "id": "interfluence:agent:voice-analyzer",
+      "type": "agent",
+      "label": "voice-analyzer",
+      "description": "",
+      "meta": {
+        "plugin": "interfluence",
+        "path": "./agents/voice-analyzer.md"
+      }
+    },
+    {
+      "id": "mcp:interfluence:interfluence",
+      "type": "mcp-server",
+      "label": "interfluence",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interfluence",
+        "type": "stdio",
+        "command": "node"
+      }
+    },
+    {
+      "id": "interflux",
+      "type": "plugin",
+      "label": "interflux",
+      "description": "Multi-agent review and research with scored triage, domain detection, content slicing, and knowledge injection. 17 agents (12 review + 5 research), 3 commands, 2 skills, 2 MCP servers. Companion plugin for Clavain.",
+      "meta": {
+        "version": "0.2.18",
+        "path": "plugins/interflux",
+        "commandCount": 3
+      }
+    },
+    {
+      "id": "interflux:flux-drive",
+      "type": "skill",
+      "label": "flux-drive",
+      "description": "Use when reviewing documents or codebases with multi-agent analysis — triages relevant agents from roster, launches only what matters in background mode",
+      "meta": {
+        "plugin": "interflux",
+        "path": "plugins/interflux/skills/flux-drive"
+      }
+    },
+    {
+      "id": "interflux:flux-research",
+      "type": "skill",
+      "label": "flux-research",
+      "description": "Use when researching a topic with multi-agent analysis — triages relevant research agents, dispatches in parallel, synthesizes answer with source attribution",
+      "meta": {
+        "plugin": "interflux",
+        "path": "plugins/interflux/skills/flux-research"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-architecture",
+      "type": "agent",
+      "label": "fd-architecture",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-architecture.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-safety",
+      "type": "agent",
+      "label": "fd-safety",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-safety.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-correctness",
+      "type": "agent",
+      "label": "fd-correctness",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-correctness.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-user-product",
+      "type": "agent",
+      "label": "fd-user-product",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-user-product.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-quality",
+      "type": "agent",
+      "label": "fd-quality",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-quality.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-game-design",
+      "type": "agent",
+      "label": "fd-game-design",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-game-design.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-performance",
+      "type": "agent",
+      "label": "fd-performance",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-performance.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-systems",
+      "type": "agent",
+      "label": "fd-systems",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-systems.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-decisions",
+      "type": "agent",
+      "label": "fd-decisions",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-decisions.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-people",
+      "type": "agent",
+      "label": "fd-people",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-people.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-resilience",
+      "type": "agent",
+      "label": "fd-resilience",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-resilience.md"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-perception",
+      "type": "agent",
+      "label": "fd-perception",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-perception.md"
+      }
+    },
+    {
+      "id": "interflux:agent:framework-docs-researcher",
+      "type": "agent",
+      "label": "framework-docs-researcher",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/research/framework-docs-researcher.md"
+      }
+    },
+    {
+      "id": "interflux:agent:repo-research-analyst",
+      "type": "agent",
+      "label": "repo-research-analyst",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/research/repo-research-analyst.md"
+      }
+    },
+    {
+      "id": "interflux:agent:git-history-analyzer",
+      "type": "agent",
+      "label": "git-history-analyzer",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/research/git-history-analyzer.md"
+      }
+    },
+    {
+      "id": "interflux:agent:learnings-researcher",
+      "type": "agent",
+      "label": "learnings-researcher",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/research/learnings-researcher.md"
+      }
+    },
+    {
+      "id": "interflux:agent:best-practices-researcher",
+      "type": "agent",
+      "label": "best-practices-researcher",
+      "description": "",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/research/best-practices-researcher.md"
+      }
+    },
+    {
+      "id": "mcp:interflux:qmd",
+      "type": "mcp-server",
+      "label": "qmd",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interflux",
+        "type": "stdio",
+        "command": "qmd"
+      }
+    },
+    {
+      "id": "mcp:interflux:exa",
+      "type": "mcp-server",
+      "label": "exa",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interflux",
+        "type": "stdio",
+        "command": "npx"
+      }
+    },
+    {
+      "id": "hook:SessionStart",
+      "type": "hook-event",
+      "label": "SessionStart",
+      "description": "Hook event: SessionStart",
+      "meta": {}
+    },
+    {
+      "id": "interform",
+      "type": "plugin",
+      "label": "interform",
+      "description": "Design patterns and visual quality for Claude Code — distinctive, production-grade interfaces.",
+      "meta": {
+        "version": "0.1.0",
+        "path": "plugins/interform"
+      }
+    },
+    {
+      "id": "interform:distinctive-design",
+      "type": "skill",
+      "label": "distinctive-design",
+      "description": "Use when creating distinctive, production-grade interfaces with high design quality — web, TUI, native, or print. Generates creative, polished output that avoids generic AI aesthetics.",
+      "meta": {
+        "plugin": "interform",
+        "path": "plugins/interform/skills/distinctive-design"
+      }
+    },
+    {
+      "id": "interject",
+      "type": "plugin",
+      "label": "interject",
+      "description": "Ambient discovery and research engine. Continuously scans arXiv, Hacker News, GitHub, and Anthropic docs for new capabilities, workflows, and tools relevant to your engineering ecosystem. Creates beads with briefings and draft plans based on a learned recommendation model.",
+      "meta": {
+        "version": "0.1.6",
+        "path": "plugins/interject"
+      }
+    },
+    {
+      "id": "interject:skills",
+      "type": "skill",
+      "label": "skills",
+      "description": "",
+      "meta": {
+        "plugin": "interject",
+        "path": "plugins/interject/skills"
+      }
+    },
+    {
+      "id": "mcp:interject:interject",
+      "type": "mcp-server",
+      "label": "interject",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interject",
+        "type": "stdio",
+        "command": "uv"
+      }
+    },
+    {
+      "id": "interkasten",
+      "type": "plugin",
+      "label": "interkasten",
+      "description": "Living bridge between your projects folder and Notion — bidirectional sync with adaptive AI documentation and pagent workflow automation",
+      "meta": {
+        "version": "0.4.3",
+        "path": "plugins/interkasten",
+        "commandCount": 2
+      }
+    },
+    {
+      "id": "interkasten:layout",
+      "type": "skill",
+      "label": "layout",
+      "description": "",
+      "meta": {
+        "plugin": "interkasten",
+        "path": "plugins/interkasten/skills/layout"
+      }
+    },
+    {
+      "id": "interkasten:onboard",
+      "type": "skill",
+      "label": "onboard",
+      "description": "",
+      "meta": {
+        "plugin": "interkasten",
+        "path": "plugins/interkasten/skills/onboard"
+      }
+    },
+    {
+      "id": "interkasten:doctor",
+      "type": "skill",
+      "label": "doctor",
+      "description": "",
+      "meta": {
+        "plugin": "interkasten",
+        "path": "plugins/interkasten/skills/doctor"
+      }
+    },
+    {
+      "id": "mcp:interkasten:interkasten",
+      "type": "mcp-server",
+      "label": "interkasten",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interkasten",
+        "type": "stdio",
+        "command": "bash"
+      }
+    },
+    {
+      "id": "hook:Stop",
+      "type": "hook-event",
+      "label": "Stop",
+      "description": "Hook event: Stop",
+      "meta": {}
+    },
+    {
+      "id": "interleave",
+      "type": "plugin",
+      "label": "interleave",
+      "description": "Deterministic Skeleton with LLM Islands — token-efficient document generation via template-then-fill.",
+      "meta": {
+        "version": "0.1.1",
+        "path": "plugins/interleave"
+      }
+    },
+    {
+      "id": "interleave:interleave",
+      "type": "skill",
+      "label": "interleave",
+      "description": "",
+      "meta": {
+        "plugin": "interleave",
+        "path": "plugins/interleave/skills/interleave"
+      }
+    },
+    {
+      "id": "interlens",
+      "type": "plugin",
+      "label": "interlens",
+      "description": "288 FLUX cognitive lenses for structured thinking — MCP server with lens search, thinking mode workflows, belief statement generation, quality evaluation, and solution synthesis.",
+      "meta": {
+        "version": "2.2.4",
+        "path": "plugins/interlens"
+      }
+    },
+    {
+      "id": "mcp:interlens:interlens",
+      "type": "mcp-server",
+      "label": "interlens",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interlens",
+        "type": "stdio",
+        "command": "node"
+      }
+    },
+    {
+      "id": "interline",
+      "type": "plugin",
+      "label": "interline",
+      "description": "Dynamic statusline for Claude Code — shows workflow phase, bead context, and Codex dispatch state. Integrates with Clavain and interphase.",
+      "meta": {
+        "version": "0.2.5",
+        "path": "plugins/interline"
+      }
+    },
+    {
+      "id": "interlock",
+      "type": "plugin",
+      "label": "interlock",
+      "description": "MCP server for intermute file reservation and agent coordination. 11 tools: reserve, release, conflict check, messaging, agent listing, negotiation. Companion plugin for Clavain.",
+      "meta": {
+        "version": "0.2.1",
+        "path": "plugins/interlock"
+      }
+    },
+    {
+      "id": "mcp:interlock:interlock",
+      "type": "mcp-server",
+      "label": "interlock",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interlock",
+        "type": "stdio",
+        "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh"
+      }
+    },
+    {
+      "id": "hook:PreToolUse",
+      "type": "hook-event",
+      "label": "PreToolUse",
+      "description": "Hook event: PreToolUse",
+      "meta": {}
+    },
+    {
+      "id": "intermap",
+      "type": "plugin",
+      "label": "intermap",
+      "description": "Project-level code mapping: project registry, call graphs, architecture analysis, agent overlay. MCP server with 6 tools.",
+      "meta": {
+        "version": "0.1.3",
+        "path": "plugins/intermap"
+      }
+    },
+    {
+      "id": "intermap:skills",
+      "type": "skill",
+      "label": "skills",
+      "description": "",
+      "meta": {
+        "plugin": "intermap",
+        "path": "plugins/intermap/skills"
+      }
+    },
+    {
+      "id": "mcp:intermap:intermap",
+      "type": "mcp-server",
+      "label": "intermap",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "intermap",
+        "type": "stdio",
+        "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh"
+      }
+    },
+    {
+      "id": "intermem",
+      "type": "plugin",
+      "label": "intermem",
+      "description": "Memory synthesis — graduates stable auto-memory facts to AGENTS.md/CLAUDE.md",
+      "meta": {
+        "version": "0.2.1",
+        "path": "plugins/intermem"
+      }
+    },
+    {
+      "id": "intermem:synthesize",
+      "type": "skill",
+      "label": "synthesize",
+      "description": "",
+      "meta": {
+        "plugin": "intermem",
+        "path": "plugins/intermem/skills/synthesize"
+      }
+    },
+    {
+      "id": "intermux",
+      "type": "plugin",
+      "label": "intermux",
+      "description": "Agent activity visibility -- tmux monitoring, activity feeds, health detection. Enriches intermute with live context.",
+      "meta": {
+        "version": "0.1.1",
+        "path": "plugins/intermux"
+      }
+    },
+    {
+      "id": "intermux:status",
+      "type": "skill",
+      "label": "status",
+      "description": "",
+      "meta": {
+        "plugin": "intermux",
+        "path": "plugins/intermux/skills/status"
+      }
+    },
+    {
+      "id": "mcp:intermux:intermux",
+      "type": "mcp-server",
+      "label": "intermux",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "intermux",
+        "type": "stdio",
+        "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh"
+      }
+    },
+    {
+      "id": "internext",
+      "type": "plugin",
+      "label": "internext",
+      "description": "Work prioritization and next-task analysis for Claude Code — tradeoff-aware recommendations from project state.",
+      "meta": {
+        "version": "0.1.2",
+        "path": "plugins/internext"
+      }
+    },
+    {
+      "id": "internext:next-work",
+      "type": "skill",
+      "label": "next-work",
+      "description": "Analyze project state and recommend what to work on next — surfaces tradeoffs between options, scores by impact/effort/risk, and gives an opinionated recommendation.",
+      "meta": {
+        "plugin": "internext",
+        "path": "plugins/internext/skills/next-work"
+      }
+    },
+    {
+      "id": "interpath",
+      "type": "plugin",
+      "label": "interpath",
+      "description": "Product artifact generator — roadmaps, PRDs, vision docs, changelogs, and status reports from beads, brainstorms, and project state. Companion plugin for Clavain.",
+      "meta": {
+        "version": "0.2.2",
+        "path": "plugins/interpath"
+      }
+    },
+    {
+      "id": "interpeer",
+      "type": "plugin",
+      "label": "interpeer",
+      "description": "Cross-AI peer review — quick (Claude↔Codex), deep (Oracle), council (multi-model), mine (disagreement extraction).",
+      "meta": {
+        "version": "0.1.0",
+        "path": "plugins/interpeer"
+      }
+    },
+    {
+      "id": "interpeer:interpeer",
+      "type": "skill",
+      "label": "interpeer",
+      "description": "Cross-AI peer review with escalation modes — quick (Claude↔Codex), deep (reviewed Oracle query, formerly prompterpeer), council (multi-model synthesis, formerly winterpeer), mine (disagreement extraction, formerly splinterpeer). Auto-detects host agent.",
+      "meta": {
+        "plugin": "interpeer",
+        "path": "plugins/interpeer/skills/interpeer"
+      }
+    },
+    {
+      "id": "interphase",
+      "type": "plugin",
+      "label": "interphase",
+      "description": "Phase tracking, gate validation, and work discovery for the Beads issue tracker. Companion plugin for Clavain — adds lifecycle state management on top of the core beads plugin.",
+      "meta": {
+        "version": "0.3.2",
+        "path": "plugins/interphase"
+      }
+    },
+    {
+      "id": "interpub",
+      "type": "plugin",
+      "label": "interpub",
+      "description": "Safe plugin publishing — bumps all version locations, validates sync, commits and pushes with confirmation.",
+      "meta": {
+        "version": "0.1.2",
+        "path": "plugins/interpub",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "intersearch",
+      "type": "plugin",
+      "label": "intersearch",
+      "description": "Shared embedding and search infrastructure for the Interverse ecosystem — sentence-transformer embeddings and Exa web search.",
+      "meta": {
+        "version": "0.1.1",
+        "path": "plugins/intersearch"
+      }
+    },
+    {
+      "id": "interserve",
+      "type": "plugin",
+      "label": "interserve",
+      "description": "Interserve — Codex spark classifier and context compression via MCP",
+      "meta": {
+        "version": "0.1.2",
+        "path": "plugins/interserve"
+      }
+    },
+    {
+      "id": "mcp:interserve:interserve",
+      "type": "mcp-server",
+      "label": "interserve",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "interserve",
+        "type": "stdio",
+        "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh"
+      }
+    },
+    {
+      "id": "interslack",
+      "type": "plugin",
+      "label": "interslack",
+      "description": "Slack integration for Claude Code — send messages, read channels, test integrations.",
+      "meta": {
+        "version": "0.1.0",
+        "path": "plugins/interslack"
+      }
+    },
+    {
+      "id": "interslack:slack-messaging",
+      "type": "skill",
+      "label": "slack-messaging",
+      "description": "Use when asked to send or read Slack messages, check Slack channels, test Slack integrations, or interact with a Slack workspace from the command line.",
+      "meta": {
+        "plugin": "interslack",
+        "path": "plugins/interslack/skills/slack-messaging"
+      }
+    },
+    {
+      "id": "interstat",
+      "type": "plugin",
+      "label": "interstat",
+      "description": "Token efficiency benchmarking for agent workflows",
+      "meta": {
+        "version": "0.2.3",
+        "path": "plugins/interstat"
+      }
+    },
+    {
+      "id": "interstat:skills",
+      "type": "skill",
+      "label": "skills",
+      "description": "",
+      "meta": {
+        "plugin": "interstat",
+        "path": "plugins/interstat/skills"
+      }
+    },
+    {
+      "id": "hook:SessionEnd",
+      "type": "hook-event",
+      "label": "SessionEnd",
+      "description": "Hook event: SessionEnd",
+      "meta": {}
+    },
+    {
+      "id": "intersynth",
+      "type": "plugin",
+      "label": "intersynth",
+      "description": "Multi-agent synthesis engine — collects findings from parallel review/research agents, deduplicates, writes verdicts, produces compact summaries. Keeps agent output out of the host context.",
+      "meta": {
+        "version": "0.1.2",
+        "path": "plugins/intersynth"
+      }
+    },
+    {
+      "id": "intersynth:agent:synthesize-review",
+      "type": "agent",
+      "label": "synthesize-review",
+      "description": "",
+      "meta": {
+        "plugin": "intersynth",
+        "path": "./agents/synthesize-review.md"
+      }
+    },
+    {
+      "id": "intersynth:agent:synthesize-research",
+      "type": "agent",
+      "label": "synthesize-research",
+      "description": "",
+      "meta": {
+        "plugin": "intersynth",
+        "path": "./agents/synthesize-research.md"
+      }
+    },
+    {
+      "id": "intertest",
+      "type": "plugin",
+      "label": "intertest",
+      "description": "Engineering quality disciplines — systematic debugging, test-driven development, and verification gates.",
+      "meta": {
+        "version": "0.1.1",
+        "path": "plugins/intertest"
+      }
+    },
+    {
+      "id": "intertest:systematic-debugging",
+      "type": "skill",
+      "label": "systematic-debugging",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes",
+      "meta": {
+        "plugin": "intertest",
+        "path": "plugins/intertest/skills/systematic-debugging"
+      }
+    },
+    {
+      "id": "intertest:test-driven-development",
+      "type": "skill",
+      "label": "test-driven-development",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code",
+      "meta": {
+        "plugin": "intertest",
+        "path": "plugins/intertest/skills/test-driven-development"
+      }
+    },
+    {
+      "id": "intertest:verification-before-completion",
+      "type": "skill",
+      "label": "verification-before-completion",
+      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always",
+      "meta": {
+        "plugin": "intertest",
+        "path": "plugins/intertest/skills/verification-before-completion"
+      }
+    },
+    {
+      "id": "interwatch",
+      "type": "plugin",
+      "label": "interwatch",
+      "description": "Doc freshness monitoring — drift detection, confidence scoring, and auto-refresh orchestration across product artifacts and code docs. Companion plugin for Clavain.",
+      "meta": {
+        "version": "0.1.2",
+        "path": "plugins/interwatch"
+      }
+    },
+    {
+      "id": "tldr-swinton",
+      "type": "plugin",
+      "label": "tldr-swinton",
+      "description": "Token-efficient code reconnaissance for LLMs. Autonomous skills save 48-85% tokens via diff-context, semantic search, structural patterns, and symbol analysis. Includes MCP server for direct tool integration.",
+      "meta": {
+        "version": "0.7.14",
+        "path": "plugins/tldr-swinton",
+        "commandCount": 6
+      }
+    },
+    {
+      "id": "tldr-swinton:tldrs-session-start",
+      "type": "skill",
+      "label": "tldrs-session-start",
+      "description": "\"Use when starting any coding task: fix bugs, debug, implement features, refactor, write tests, review code, migrate, port, or explore a codebase. Also use when resuming a previous session, onboarding to a repo, or before reading code files in a new conversation. Provides diff-focused context that saves 48-73% tokens.\"",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "plugins/tldr-swinton/.claude-plugin/skills/tldrs-session-start"
+      }
+    },
+    {
+      "id": "tldr-swinton:tldrs-map-codebase",
+      "type": "skill",
+      "label": "tldrs-map-codebase",
+      "description": "\"Use when asked to understand a codebase's architecture, explore an unfamiliar project, onboard to a new repo, identify which modules exist, find entry points, or get a bird's-eye view before diving into code. Also use when the user says 'what does this project do' or 'show me the structure'. Provides structural overview without reading individual files.\"",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "plugins/tldr-swinton/.claude-plugin/skills/tldrs-map-codebase"
+      }
+    },
+    {
+      "id": "tldr-swinton:tldrs-interbench-sync",
+      "type": "skill",
+      "label": "tldrs-interbench-sync",
+      "description": "\"Sync interbench eval coverage with tldrs capabilities. Run when tldrs gains new formats, flags, or commands. Reads the tldrs manifest as ground truth and generates minimal targeted edits to 4 interbench files.\"",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "plugins/tldr-swinton/.claude-plugin/skills/tldrs-interbench-sync"
+      }
+    },
+    {
+      "id": "tldr-swinton:finding-duplicate-functions",
+      "type": "skill",
+      "label": "finding-duplicate-functions",
+      "description": "Use when auditing a codebase for semantic duplication - functions that do the same thing but have different names or implementations. Especially useful for LLM-generated codebases where new functions are often created rather than reusing existing ones.",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "plugins/tldr-swinton/.claude-plugin/skills/finding-duplicate-functions"
+      }
+    },
+    {
+      "id": "mcp:tldr-swinton:tldr-code",
+      "type": "mcp-server",
+      "label": "tldr-code",
+      "description": "MCP server: stdio",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "type": "stdio",
+        "command": "tldr-mcp"
+      }
+    },
+    {
+      "id": "tool-time",
+      "type": "plugin",
+      "label": "tool-time",
+      "description": "Tool usage analytics for Claude Code. Tracks tool patterns via hooks, detects inefficiencies, and offers community comparison with anonymized data.",
+      "meta": {
+        "version": "0.3.5",
+        "path": "plugins/tool-time"
+      }
+    },
+    {
+      "id": "tuivision",
+      "type": "plugin",
+      "label": "tuivision",
+      "description": "TUI automation and visual testing - Playwright for terminal applications. Spawn, interact with, and screenshot TUI apps.",
+      "meta": {
+        "version": "0.1.4",
+        "path": "plugins/tuivision"
+      }
+    },
+    {
+      "id": "clavain",
+      "type": "hub",
+      "label": "clavain",
+      "description": "Self-improving agent rig — codifies product and engineering discipline into composable workflows from brainstorm to ship. Compounds knowledge, generates domain agents, and monitors its own docs. Orchestrates Claude, Codex, and GPT-5.2 Pro through 15 skills, 4 agents, 52 commands, 12 hooks. Companions: interphase, interline, interflux, interpath, interwatch, interslack, interform, intercraft, interdev, interpeer, intertest.",
+      "meta": {
+        "version": "0.6.56",
+        "path": "hub/clavain"
+      }
+    },
+    {
+      "id": "clavain:brainstorming",
+      "type": "skill",
+      "label": "brainstorming",
+      "description": "Freeform brainstorming mode — loads collaborative dialogue style (one question at a time, multiple choice, incremental design). Use for open-ended exploration without structured phases. For a guided workflow with repo research, use /brainstorm instead.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/brainstorming"
+      }
+    },
+    {
+      "id": "clavain:code-review-discipline",
+      "type": "skill",
+      "label": "code-review-discipline",
+      "description": "Use when requesting or receiving code review — covers dispatching reviewer subagents, handling feedback with technical rigor, and avoiding performative agreement",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/code-review-discipline"
+      }
+    },
+    {
+      "id": "clavain:dispatching-parallel-agents",
+      "type": "skill",
+      "label": "dispatching-parallel-agents",
+      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/dispatching-parallel-agents"
+      }
+    },
+    {
+      "id": "clavain:engineering-docs",
+      "type": "skill",
+      "label": "engineering-docs",
+      "description": "Use when capturing a solved problem as categorized documentation with YAML frontmatter for fast lookup",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/engineering-docs"
+      }
+    },
+    {
+      "id": "clavain:executing-plans",
+      "type": "skill",
+      "label": "executing-plans",
+      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/executing-plans"
+      }
+    },
+    {
+      "id": "clavain:file-todos",
+      "type": "skill",
+      "label": "file-todos",
+      "description": "This skill should be used when managing the file-based todo tracking system in the todos/ directory. It provides workflows for creating todos, managing status and dependencies, conducting triage, and integrating with slash commands and code review processes.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/file-todos"
+      }
+    },
+    {
+      "id": "clavain:galiana",
+      "type": "skill",
+      "label": "galiana",
+      "description": "Show discipline analytics — defect escape rate, override rate, cost metrics, and agent scorecard",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/galiana"
+      }
+    },
+    {
+      "id": "clavain:interserve",
+      "type": "skill",
+      "label": "interserve",
+      "description": "Dispatch tasks to Codex CLI agents — single megaprompt for one task, parallel delegation for many. Includes structured debate triggers and Oracle escalation.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/interserve"
+      }
+    },
+    {
+      "id": "clavain:landing-a-change",
+      "type": "skill",
+      "label": "landing-a-change",
+      "description": "Use when implementation is complete and all tests pass — guides the disciplined process of verifying, documenting, and landing a change on trunk",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/landing-a-change"
+      }
+    },
+    {
+      "id": "clavain:refactor-safely",
+      "type": "skill",
+      "label": "refactor-safely",
+      "description": "Use when performing significant refactoring — guides a disciplined process that leverages duplication detection, characterization tests, staged execution, and continuous simplicity review",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/refactor-safely"
+      }
+    },
+    {
+      "id": "clavain:subagent-driven-development",
+      "type": "skill",
+      "label": "subagent-driven-development",
+      "description": "Use when executing implementation plans with independent tasks in the current session",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/subagent-driven-development"
+      }
+    },
+    {
+      "id": "clavain:upstream-sync",
+      "type": "skill",
+      "label": "upstream-sync",
+      "description": "Use when checking for updates from upstream tool repos (beads, oracle, superpowers, compound-engineering) or when the /clavain:upstream-sync command is invoked",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/upstream-sync"
+      }
+    },
+    {
+      "id": "clavain:using-clavain",
+      "type": "skill",
+      "label": "using-clavain",
+      "description": "Use when starting any conversation - establishes how to find and use skills, agents, and commands, requiring Skill tool invocation before ANY response including clarifying questions",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/using-clavain"
+      }
+    },
+    {
+      "id": "clavain:using-tmux-for-interactive-commands",
+      "type": "skill",
+      "label": "using-tmux-for-interactive-commands",
+      "description": "Use when you need to run interactive CLI tools (vim, git rebase -i, Python REPL, etc.) that require real-time input/output - provides tmux-based approach for controlling interactive sessions through detached sessions and send-keys",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/using-tmux-for-interactive-commands"
+      }
+    },
+    {
+      "id": "clavain:writing-plans",
+      "type": "skill",
+      "label": "writing-plans",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code",
+      "meta": {
+        "plugin": "clavain",
+        "path": "hub/clavain/skills/writing-plans"
+      }
+    },
+    {
+      "id": "mcp:clavain:context7",
+      "type": "mcp-server",
+      "label": "context7",
+      "description": "MCP server: http",
+      "meta": {
+        "plugin": "clavain",
+        "type": "http"
+      }
+    },
+    {
+      "id": "intercore",
+      "type": "kernel",
+      "label": "Intercore",
+      "description": "Kernel — phases, gates, runs, dispatches, state machine",
+      "meta": {
+        "path": "infra/intercore"
+      }
+    },
+    {
+      "id": "intermute-service",
+      "type": "service",
+      "label": "Intermute",
+      "description": "Multi-agent coordination service (Go)",
+      "meta": {
+        "path": "services/intermute"
+      }
+    },
+    {
+      "id": "interbase-sdk",
+      "type": "sdk",
+      "label": "Interbase",
+      "description": "Shared integration SDK for dual-mode plugins",
+      "meta": {
+        "path": "sdk/interbase"
+      }
+    },
+    {
+      "id": "autarch",
+      "type": "tui",
+      "label": "Autarch",
+      "description": "TUI frontend — desktop application for the agent rig",
+      "meta": {
+        "path": "Interforge"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "intercheck",
+      "target": "intercheck:status",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intercheck",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intercraft",
+      "target": "intercraft:agent-native-architecture",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intercraft",
+      "target": "intercraft:agent:agent-native-reviewer",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interdev",
+      "target": "interdev:mcp-cli",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interdev",
+      "target": "interdev:working-with-claude-code",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interdev",
+      "target": "interdev:developing-claude-code-plugins",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interdev",
+      "target": "interdev:create-agent-skills",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interdev",
+      "target": "interdev:writing-skills",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interdoc",
+      "target": "interdoc:interdoc",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interfluence",
+      "target": "interfluence:skills",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interfluence",
+      "target": "interfluence:agent:voice-analyzer",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interfluence",
+      "target": "mcp:interfluence:interfluence",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interfluence",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:flux-drive",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:flux-research",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-architecture",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-safety",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-correctness",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-user-product",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-quality",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-game-design",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-performance",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-systems",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-decisions",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-people",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-resilience",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-perception",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:framework-docs-researcher",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:repo-research-analyst",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:git-history-analyzer",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:learnings-researcher",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:best-practices-researcher",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "mcp:interflux:qmd",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interflux",
+      "target": "mcp:interflux:exa",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interflux",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interflux",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "interform",
+      "target": "interform:distinctive-design",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interject",
+      "target": "interject:skills",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interject",
+      "target": "mcp:interject:interject",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interject",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interkasten",
+      "target": "interkasten:layout",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interkasten",
+      "target": "interkasten:onboard",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interkasten",
+      "target": "interkasten:doctor",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interkasten",
+      "target": "mcp:interkasten:interkasten",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interkasten",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interkasten",
+      "target": "hook:Stop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interleave",
+      "target": "interleave:interleave",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interlens",
+      "target": "mcp:interlens:interlens",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interlock",
+      "target": "mcp:interlock:interlock",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interlock",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interlock",
+      "target": "hook:PreToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interlock",
+      "target": "hook:Stop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interlock",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "intermap",
+      "target": "intermap:skills",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intermap",
+      "target": "mcp:intermap:intermap",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "intermem",
+      "target": "intermem:synthesize",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intermux",
+      "target": "intermux:status",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intermux",
+      "target": "mcp:intermux:intermux",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "intermux",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "internext",
+      "target": "internext:next-work",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interpath",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "interpeer",
+      "target": "interpeer:interpeer",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interphase",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "interserve",
+      "target": "mcp:interserve:interserve",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interserve",
+      "target": "hook:PreToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interslack",
+      "target": "interslack:slack-messaging",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "interstat:skills",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intersynth",
+      "target": "intersynth:agent:synthesize-review",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intersynth",
+      "target": "intersynth:agent:synthesize-research",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intertest",
+      "target": "intertest:systematic-debugging",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertest",
+      "target": "intertest:test-driven-development",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertest",
+      "target": "intertest:verification-before-completion",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interwatch",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:tldrs-session-start",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:tldrs-map-codebase",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:tldrs-interbench-sync",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:finding-duplicate-functions",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "mcp:tldr-swinton:tldr-code",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:PreToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:brainstorming",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:code-review-discipline",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:dispatching-parallel-agents",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:engineering-docs",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:executing-plans",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:file-todos",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:galiana",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:interserve",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:landing-a-change",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:refactor-safely",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:subagent-driven-development",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:upstream-sync",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:using-clavain",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:using-tmux-for-interactive-commands",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:writing-plans",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "mcp:clavain:context7",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:Stop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intercore",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intermute-service",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interbase-sdk",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "autarch",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "autarch",
+      "target": "intercore",
+      "type": "depends-on"
+    },
+    {
+      "source": "clavain",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "clavain",
+      "target": "intercore",
+      "type": "depends-on"
+    },
+    {
+      "source": "intercheck",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intercraft",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interdev",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interdoc",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interfluence",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interflux",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interform",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interject",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interkasten",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interleave",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interlens",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interline",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interlock",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intermap",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intermem",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intermux",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "internext",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interpath",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interpeer",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interphase",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interpub",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intersearch",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interserve",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interslack",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interstat",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intersynth",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertest",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interwatch",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "tool-time",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "tuivision",
+      "target": "interverse",
+      "type": "part-of"
+    }
+  ]
+};
+
+const TYPE_COLORS = {
+  'plugin': '#4A90D9', 'skill': '#50C878', 'agent': '#FF8C42',
+  'mcp-server': '#9B59B6', 'hook-event': '#E74C3C', 'hub': '#F39C12',
+  'kernel': '#1ABC9C', 'service': '#E74C3C', 'sdk': '#95A5A6',
+  'tui': '#E91E63', 'monorepo': '#58a6ff'
+};
+
+const TYPE_SIZES = {
+  'monorepo': 24, 'hub': 20, 'kernel': 16, 'service': 14, 'tui': 14,
+  'sdk': 12, 'plugin': 12, 'skill': 6, 'agent': 6, 'mcp-server': 7, 'hook-event': 7
+};
+
+const TYPE_LABELS = {
+  'plugin': 'Plugin', 'skill': 'Skill', 'agent': 'Agent', 'mcp-server': 'MCP Server',
+  'hook-event': 'Hook Event', 'hub': 'Hub', 'kernel': 'Kernel', 'service': 'Service',
+  'sdk': 'SDK', 'tui': 'TUI', 'monorepo': 'Monorepo'
+};
+
+// State
+const activeFilters = new Set(Object.keys(TYPE_COLORS));
+let selectedNode = null;
+let searchQuery = '';
+
+// Stats
+document.getElementById('stats').textContent =
+  data.stats.nodes + ' nodes \u00b7 ' + data.stats.edges + ' edges \u00b7 Generated ' + new Date(data.generated).toLocaleDateString();
+
+// Build filter buttons
+const toolbar = document.getElementById('toolbar');
+const searchBox = document.getElementById('search-box');
+for (const [type, color] of Object.entries(TYPE_COLORS)) {
+  const count = data.stats.byType[type] || 0;
+  if (count === 0) continue;
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn active';
+  btn.style.setProperty('--type-color', color);
+  btn.textContent = TYPE_LABELS[type] + ' (' + count + ')';
+  btn.dataset.type = type;
+  btn.onclick = function() { toggleFilter(type, btn); };
+  toolbar.insertBefore(btn, searchBox);
+}
+
+// Build legend
+const legend = document.getElementById('legend');
+for (const [type, color] of Object.entries(TYPE_COLORS)) {
+  if (!(data.stats.byType[type] > 0)) continue;
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  const dot = document.createElement('div');
+  dot.className = 'legend-dot';
+  dot.style.background = color;
+  item.appendChild(dot);
+  item.appendChild(document.createTextNode(TYPE_LABELS[type]));
+  legend.appendChild(item);
+}
+
+// D3 Setup
+const width = window.innerWidth;
+const height = window.innerHeight - 44;
+
+const svg = d3.select('#graph').append('svg').attr('width', width).attr('height', height);
+const g = svg.append('g');
+
+const zoomBehavior = d3.zoom()
+  .scaleExtent([0.1, 4])
+  .on('zoom', function(event) { g.attr('transform', event.transform); });
+
+svg.call(zoomBehavior);
+
+// Graph data
+const graphNodes = data.nodes.map(function(n) { return Object.assign({}, n); });
+const graphLinks = data.edges.map(function(e) { return Object.assign({}, e); });
+
+// Force simulation
+const simulation = d3.forceSimulation(graphNodes)
+  .force('link', d3.forceLink(graphLinks).id(function(d) { return d.id; }).distance(function(d) {
+    if (d.type === 'part-of') return 100;
+    if (d.type === 'companion-of') return 120;
+    if (d.type === 'provides-skill' || d.type === 'provides-agent') return 50;
+    return 80;
+  }))
+  .force('charge', d3.forceManyBody().strength(function(d) {
+    if (d.type === 'monorepo' || d.type === 'hub') return -400;
+    if (d.type === 'plugin' || d.type === 'kernel') return -200;
+    return -60;
+  }))
+  .force('center', d3.forceCenter(width / 2, height / 2))
+  .force('collision', d3.forceCollide().radius(function(d) { return (TYPE_SIZES[d.type] || 8) + 4; }));
+
+// Draw links
+const link = g.append('g').selectAll('line').data(graphLinks).join('line')
+  .attr('class', function(d) { return 'link ' + d.type; })
+  .attr('stroke-width', function(d) { return d.type === 'companion-of' ? 2 : 1; });
+
+// Draw nodes
+const node = g.append('g').selectAll('g').data(graphNodes).join('g')
+  .attr('class', 'node')
+  .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
+
+node.append('circle')
+  .attr('r', function(d) { return TYPE_SIZES[d.type] || 8; })
+  .attr('fill', function(d) { return TYPE_COLORS[d.type] || '#8b949e'; })
+  .style('--glow', function(d) { return TYPE_COLORS[d.type] || '#8b949e'; })
+  .on('click', function(event, d) { event.stopPropagation(); selectNode(d); });
+
+node.append('text')
+  .attr('dx', function(d) { return (TYPE_SIZES[d.type] || 8) + 4; })
+  .attr('dy', 3)
+  .text(function(d) { return d.label; })
+  .style('font-size', function(d) {
+    if (d.type === 'monorepo' || d.type === 'hub') return '13px';
+    if (d.type === 'plugin' || d.type === 'kernel' || d.type === 'service') return '11px';
+    return '9px';
+  });
+
+svg.on('click', function() { deselectAll(); closePanel(); });
+
+simulation.on('tick', function() {
+  link.attr('x1', function(d) { return d.source.x; })
+    .attr('y1', function(d) { return d.source.y; })
+    .attr('x2', function(d) { return d.target.x; })
+    .attr('y2', function(d) { return d.target.y; });
+  node.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+});
+
+// --- Interaction ---
+
+function getNodeId(n) { return typeof n === 'object' ? n.id : n; }
+
+function selectNode(d) {
+  selectedNode = d;
+  var connectedIds = new Set([d.id]);
+  graphLinks.forEach(function(l) {
+    if (getNodeId(l.source) === d.id) connectedIds.add(getNodeId(l.target));
+    if (getNodeId(l.target) === d.id) connectedIds.add(getNodeId(l.source));
+  });
+
+  node.classed('highlighted', function(n) { return connectedIds.has(n.id); });
+  node.classed('dimmed', function(n) { return !connectedIds.has(n.id); });
+  link.classed('highlighted', function(l) { return getNodeId(l.source) === d.id || getNodeId(l.target) === d.id; });
+  link.classed('dimmed', function(l) { return getNodeId(l.source) !== d.id && getNodeId(l.target) !== d.id; });
+
+  showDetailPanel(d);
+}
+
+function deselectAll() {
+  selectedNode = null;
+  node.classed('highlighted', false).classed('dimmed', false);
+  link.classed('highlighted', false).classed('dimmed', false);
+}
+
+function showDetailPanel(d) {
+  var panel = document.getElementById('detail-panel');
+  var content = document.getElementById('panel-content');
+  var color = TYPE_COLORS[d.type] || '#8b949e';
+
+  // Find children and parents
+  var children = [], parents = [];
+  graphLinks.forEach(function(l) {
+    var sid = getNodeId(l.source), tid = getNodeId(l.target);
+    if (sid === d.id && l.type !== 'part-of') {
+      var tn = graphNodes.find(function(n) { return n.id === tid; });
+      if (tn) children.push(Object.assign({edgeType: l.type}, tn));
+    }
+    if (tid === d.id && l.type !== 'part-of') {
+      var sn = graphNodes.find(function(n) { return n.id === sid; });
+      if (sn) parents.push(Object.assign({edgeType: l.type}, sn));
+    }
+  });
+
+  // Build panel content using DOM methods (safe against injection)
+  while (content.firstChild) content.removeChild(content.firstChild);
+
+  var h2 = document.createElement('h2');
+  h2.textContent = d.label;
+  content.appendChild(h2);
+
+  var badge = document.createElement('div');
+  badge.className = 'type-badge';
+  badge.style.cssText = 'background:' + color + '22;color:' + color + ';border:1px solid ' + color;
+  badge.textContent = TYPE_LABELS[d.type];
+  content.appendChild(badge);
+
+  if (d.description) {
+    var desc = document.createElement('div');
+    desc.className = 'description';
+    desc.textContent = d.description;
+    content.appendChild(desc);
+  }
+
+  // Meta
+  if (d.meta) {
+    var metaFields = [
+      ['Version', d.meta.version], ['Path', d.meta.path],
+      ['Commands', d.meta.commandCount], ['Plugin', d.meta.plugin]
+    ];
+    metaFields.forEach(function(pair) {
+      if (!pair[1]) return;
+      var mi = document.createElement('div');
+      mi.className = 'meta-item';
+      mi.textContent = pair[0] + ': ';
+      var sp = document.createElement('span');
+      sp.textContent = pair[1];
+      mi.appendChild(sp);
+      content.appendChild(mi);
+    });
+  }
+
+  // Children grouped by edge type
+  if (children.length > 0) {
+    var grouped = {};
+    children.forEach(function(c) {
+      if (!grouped[c.edgeType]) grouped[c.edgeType] = [];
+      grouped[c.edgeType].push(c);
+    });
+
+    var sectionLabels = {
+      'provides-skill': 'Skills', 'provides-agent': 'Agents', 'provides-mcp': 'MCP Servers',
+      'fires-hook': 'Hook Events', 'companion-of': 'Companions', 'depends-on': 'Dependencies'
+    };
+
+    Object.keys(grouped).forEach(function(edgeType) {
+      var title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = sectionLabels[edgeType] || edgeType;
+      content.appendChild(title);
+
+      var ul = document.createElement('ul');
+      ul.className = 'child-list';
+      grouped[edgeType].forEach(function(item) {
+        var li = document.createElement('li');
+        li.style.borderLeft = '2px solid ' + (TYPE_COLORS[item.type] || '#8b949e');
+        li.textContent = item.label + ' ';
+        var typeSpan = document.createElement('span');
+        typeSpan.className = 'child-type';
+        typeSpan.textContent = TYPE_LABELS[item.type];
+        li.appendChild(typeSpan);
+        li.onclick = function() { navigateTo(item.id); };
+        ul.appendChild(li);
+      });
+      content.appendChild(ul);
+    });
+  }
+
+  // Parents
+  if (parents.length > 0) {
+    var pTitle = document.createElement('div');
+    pTitle.className = 'section-title';
+    pTitle.textContent = 'Provided by';
+    content.appendChild(pTitle);
+
+    var pUl = document.createElement('ul');
+    pUl.className = 'child-list';
+    parents.forEach(function(p) {
+      var li = document.createElement('li');
+      li.style.borderLeft = '2px solid ' + (TYPE_COLORS[p.type] || '#8b949e');
+      li.textContent = p.label + ' ';
+      var ts = document.createElement('span');
+      ts.className = 'child-type';
+      ts.textContent = TYPE_LABELS[p.type];
+      li.appendChild(ts);
+      li.onclick = function() { navigateTo(p.id); };
+      pUl.appendChild(li);
+    });
+    content.appendChild(pUl);
+  }
+
+  panel.classList.add('open');
+}
+
+function closePanel() { document.getElementById('detail-panel').classList.remove('open'); }
+
+function navigateTo(nodeId) {
+  var targetNode = graphNodes.find(function(n) { return n.id === nodeId; });
+  if (targetNode) {
+    selectNode(targetNode);
+    var transform = d3.zoomTransform(svg.node());
+    var x = width / 2 - targetNode.x * transform.k;
+    var y = height / 2 - targetNode.y * transform.k;
+    svg.transition().duration(500).call(
+      zoomBehavior.transform,
+      d3.zoomIdentity.translate(x, y).scale(transform.k)
+    );
+  }
+}
+
+// Filters
+function toggleFilter(type, btn) {
+  if (activeFilters.has(type)) { activeFilters.delete(type); btn.classList.remove('active'); }
+  else { activeFilters.add(type); btn.classList.add('active'); }
+  applyFilters();
+}
+
+function showAll() {
+  Object.keys(TYPE_COLORS).forEach(function(t) { activeFilters.add(t); });
+  document.querySelectorAll('.filter-btn[data-type]').forEach(function(b) { b.classList.add('active'); });
+  applyFilters();
+}
+
+function hideAll() {
+  activeFilters.clear();
+  document.querySelectorAll('.filter-btn[data-type]').forEach(function(b) { b.classList.remove('active'); });
+  applyFilters();
+}
+
+function applyFilters() {
+  node.style('display', function(d) {
+    if (!activeFilters.has(d.type)) return 'none';
+    if (searchQuery && !d.label.toLowerCase().includes(searchQuery) && !d.id.toLowerCase().includes(searchQuery)) return 'none';
+    return null;
+  });
+  link.style('display', function(l) {
+    var sn = graphNodes.find(function(n) { return n.id === getNodeId(l.source); });
+    var tn = graphNodes.find(function(n) { return n.id === getNodeId(l.target); });
+    if (!sn || !tn || !activeFilters.has(sn.type) || !activeFilters.has(tn.type)) return 'none';
+    return null;
+  });
+}
+
+function onSearch(query) {
+  searchQuery = query.toLowerCase().trim();
+  applyFilters();
+  if (searchQuery) {
+    node.classed('highlighted', function(d) {
+      return d.label.toLowerCase().includes(searchQuery) || d.id.toLowerCase().includes(searchQuery);
+    });
+    node.classed('dimmed', function(d) {
+      return !(d.label.toLowerCase().includes(searchQuery) || d.id.toLowerCase().includes(searchQuery));
+    });
+  } else { deselectAll(); }
+}
+
+// Drag
+function dragstarted(event, d) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x; d.fy = d.y;
+}
+function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+function dragended(event, d) {
+  if (!event.active) simulation.alphaTarget(0);
+  d.fx = null; d.fy = null;
+}
+
+// Zoom to fit after layout settles
+setTimeout(function() {
+  var bounds = g.node().getBBox();
+  var scale = 0.8 / Math.max(bounds.width / width, bounds.height / height);
+  var midX = bounds.x + bounds.width / 2;
+  var midY = bounds.y + bounds.height / 2;
+  svg.transition().duration(750).call(
+    zoomBehavior.transform,
+    d3.zoomIdentity.translate(width / 2 - scale * midX, height / 2 - scale * midY).scale(scale)
+  );
+}, 2000);
+</script>
+</body>
+</html>
