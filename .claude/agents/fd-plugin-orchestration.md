@@ -1,7 +1,7 @@
 ---
 generated_by: flux-gen
 domain: claude-code-plugin
-generated_at: '2026-02-15T22:00:00+00:00'
+generated_at: '2026-02-21T20:00:00+00:00'
 flux_gen_version: 3
 custom: true
 ---
@@ -60,7 +60,7 @@ If docs don't exist, operate in generic mode:
 
 ### 5. State Machine Correctness
 
-- Check that hook-based state transitions (e.g., reservation acquire → edit → release) handle all edge cases.
+- Check that hook-based state transitions (e.g., reservation acquire -> edit -> release) handle all edge cases.
 - Verify that timeout/TTL mechanisms properly clean up stale state (expired reservations, orphaned locks).
 - Flag state that persists across sessions without cleanup (leaked temp files, stale PID files).
 - Check that error paths release all acquired locks and reservations (no resource leaks on failure).

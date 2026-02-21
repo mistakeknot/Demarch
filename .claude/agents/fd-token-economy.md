@@ -1,7 +1,7 @@
 ---
 generated_by: flux-gen
 domain: claude-code-plugin
-generated_at: '2026-02-15T22:00:00+00:00'
+generated_at: '2026-02-21T20:00:00+00:00'
 flux_gen_version: 3
 custom: true
 ---
@@ -64,7 +64,7 @@ If docs don't exist, operate in generic mode:
 - Estimate the total context cost of all installed plugins combined (skills + MCP schemas + hook outputs + CLAUDE.md chain).
 - Flag combinations of plugins that push the total over practical limits (leaving insufficient room for user work).
 - Check that plugins with overlapping functionality don't duplicate context (e.g., two plugins both injecting git workflow instructions).
-- Verify that the CLAUDE.md inheritance chain (global → project → subproject) doesn't repeat information at each level.
+- Verify that the CLAUDE.md inheritance chain (global -> project -> subproject) doesn't repeat information at each level.
 
 ## What NOT to Flag
 
