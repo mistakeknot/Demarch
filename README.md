@@ -19,6 +19,7 @@ Each subproject keeps its own `.git` and GitHub repo. This monorepo provides sha
 | [interdoc](https://github.com/mistakeknot/interdoc) | 5.1.0 | Recursive AGENTS.md generator with structural auto-fix, CLAUDE.md harmonization, and GPT critique |
 | [interfluence](https://github.com/mistakeknot/interfluence) | 0.1.2 | Voice profile and style adaptation — analyze writing samples, build a profile, apply it to output |
 | [interflux](https://github.com/mistakeknot/interflux) | 0.2.0 | Multi-agent review and research engine — 7 review agents, 5 research agents, MCP servers |
+| [interject](https://github.com/mistakeknot/interject) | 0.1.6 | Ambient discovery and research engine |
 | [interkasten](https://github.com/mistakeknot/interkasten) | 0.3.1 | Bidirectional Notion sync with MCP server — project management, key doc tracking, push sync |
 | [interline](https://github.com/mistakeknot/interline) | 0.2.3 | Dynamic statusline — active beads, workflow phase, coordination status, Codex dispatch |
 | [interlock](https://github.com/mistakeknot/interlock) | 0.1.0 | Multi-agent file coordination — reserve files, detect conflicts, exchange messages (MCP) |
