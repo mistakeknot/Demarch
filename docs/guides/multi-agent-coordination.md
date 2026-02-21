@@ -79,7 +79,22 @@ FROM agent_runs ORDER BY ctx ...
 - `ReleaseByPattern` treats 404 as success (idempotent concurrent DELETE via `isNotFound` guard)
 - 107 structural tests in interlock cover all coordination features
 
+## Advisory-Only Enforcement Pattern
+
+Convert background state-mutating actors to read-only observers. Push mutation to the edges — let the state owner make explicit decisions. Read-only code cannot race. This eliminates an entire class of TOCTOU bugs by ensuring concurrent actors never write to shared state directly.
+
+Applied in interlock: `CheckExpiredNegotiations` is advisory-only — it reports expired negotiations but does NOT force-release, letting the state owner (the holding agent) decide.
+
+## Post-Parallel Quality Gates
+
+After parallel agent implementation, always run quality gates with the **full unified diff** — not individual agent diffs. Schema consistency is a cross-cutting concern that no single implementing agent owns. A unified diff catches:
+- Conflicting field renames across files
+- Missing imports or type updates from adjacent changes
+- Interface/contract violations that only surface when all changes are combined
+
 ## Detailed Solution Docs
 
 - `docs/solutions/patterns/synthesis-subagent-context-isolation-20260216.md`
 - `docs/solutions/patterns/token-accounting-billing-vs-context-20260216.md`
+- `plugins/interlock/docs/solutions/2026-02-16-advisory-only-timeout-eliminates-toctou.md`
+- `plugins/tldr-swinton/docs/solutions/best-practices/parallel-agents-miss-cross-cutting-schema-bugs.md`

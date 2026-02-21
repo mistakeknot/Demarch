@@ -99,8 +99,34 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 Hooks must output valid JSON to stdout. Use `set -euo pipefail` in all hook scripts.
 
+## awk `sub()` $0 Mutation
+
+In awk, `sub()`/`gsub()` modify `$0` in-place. All subsequent pattern rules in the same program evaluate against the modified `$0`. Always add `next` after a rule that modifies `$0` if later rules check `$0` patterns.
+
+```awk
+# WRONG — Rule 2 fires on the same line because sub() changed $0
+found && /^  - / { sub(/^  - */, ""); items = items "," $0 }
+found && !/^  - / { exit }  # Fires immediately — modified $0 no longer matches ^  -
+
+# RIGHT — next prevents Rule 2 from seeing the modified line
+found && /^  - / { sub(/^  - */, ""); items = items "," $0; next }
+found && !/^  - / { exit }
+```
+
+## Beads Daemon Stale Startlock
+
+If `bd` commands hang, the daemon startlock is stale. One-liner fix:
+
+```bash
+kill $(cat .beads/daemon.pid 2>/dev/null) 2>/dev/null; rm -f .beads/bd.sock .beads/bd.sock.startlock .beads/daemon.pid .beads/daemon.lock
+```
+
+Common after force-killed sessions or network disconnects.
+
 ## Detailed Solution Docs
 
 - `docs/solutions/patterns/set-e-with-fallback-paths-20260216.md`
 - `docs/solutions/runtime-errors/jq-null-slice-from-empty-string-return-clavain-20260216.md`
 - `docs/solutions/workflow-issues/bd-sync-from-main-trunk-based-20260216.md`
+- `plugins/interlearn/docs/solutions/patterns/awk-sub-pattern-fallthrough-20260221.md`
+- `plugins/tldr-swinton/docs/solutions/workflow-issues/bd-commands-hang-stale-startlock-20260213.md`

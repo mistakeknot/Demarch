@@ -1,0 +1,2318 @@
+{
+  "generated": "2026-02-21T15:30:46Z",
+  "count": 73,
+  "entries": [
+    {
+      "path": "infra/agent-rig/docs/solutions/best-practices/reversible-cli-install-with-mcp-config-agent-rig-20260211.md",
+      "module": "agent-rig",
+      "title": "Best Practice: Reversible CLI Installation with MCP Server Configuration",
+      "date": "2026-02-11",
+      "problem_type": "best_practice",
+      "severity": "high",
+      "tags": [
+        "mcp-servers",
+        "state-tracking",
+        "uninstall",
+        "claude-code",
+        "reversible-install",
+        "cli-lifecycle"
+      ]
+    },
+    {
+      "path": "infra/agent-rig/docs/solutions/best-practices/state-diff-incremental-update-agent-rig-20260211.md",
+      "module": "agent-rig",
+      "title": "Best Practice: State-Diff Incremental Updates with Dependency Ordering",
+      "date": "2026-02-11",
+      "problem_type": "best_practice",
+      "severity": "medium",
+      "tags": [
+        "state-diff",
+        "incremental-update",
+        "topological-sort",
+        "idempotent-install",
+        "dependency-ordering",
+        "cli-lifecycle"
+      ]
+    },
+    {
+      "path": "infra/agent-rig/docs/solutions/best-practices/tagged-block-env-and-hash-based-merge-agent-rig-20260211.md",
+      "module": "agent-rig",
+      "title": "Best Practice: Tagged-Block Shell Profiles and Hash-Based File Modification Detection",
+      "date": "2026-02-11",
+      "problem_type": "best_practice",
+      "severity": "medium",
+      "tags": [
+        "tagged-blocks",
+        "shell-profile",
+        "env-vars",
+        "sha256-hash",
+        "behavioral-merge",
+        "idempotent-file-management"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/architecture-decisions/spec-phase-reordering-strategy.md",
+      "module": "autarch",
+      "title": "Spec Phase Reordering Strategy",
+      "date": "2026-02-04",
+      "problem_type": "architecture-decisions",
+      "severity": "",
+      "tags": [
+        "prd",
+        "phases",
+        "cuj",
+        "requirements",
+        "ordering"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/architecture-decisions/spec-propagation-consistency-pattern.md",
+      "module": "autarch",
+      "title": "Spec Propagation Consistency Pattern",
+      "date": "2026-02-04",
+      "problem_type": "architecture-decisions",
+      "severity": "",
+      "tags": [
+        "orchestrator",
+        "propagation",
+        "claude-code",
+        "token-efficiency"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/logic-errors/prd-requirements-blank-on-generation.md",
+      "module": "autarch",
+      "title": "PRD Requirements Blank on Generation",
+      "date": "2026-02-04",
+      "problem_type": "logic-errors",
+      "severity": "",
+      "tags": [
+        "orchestrator",
+        "phase-generation",
+        "claude-code",
+        "exploration"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/patterns/arbiter-spec-sprint-architecture.md",
+      "module": "autarch",
+      "title": "Arbiter Spec Sprint Architecture Patterns",
+      "date": "2026-01-26",
+      "problem_type": "architecture",
+      "severity": "medium",
+      "tags": [
+        "arbiter",
+        "import-cycle",
+        "architecture",
+        "hunter-api",
+        "tui"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/patterns/chat-first-tui-design-20260204.md",
+      "module": "autarch",
+      "title": "Chat-First TUI Design: Keybindings, Slash Commands, and Layout",
+      "date": "2026-02-04",
+      "problem_type": "patterns",
+      "severity": "",
+      "tags": [
+        "tui",
+        "chat-first",
+        "keybindings",
+        "slash-commands",
+        "layout",
+        "accessibility",
+        "bubble-tea"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/patterns/oracle-review-issues-3-6-20260201.md",
+      "module": "autarch",
+      "title": "Oracle Architecture Review: Issues 3-6 Resolution",
+      "date": "2026-02-01",
+      "problem_type": "patterns",
+      "severity": "",
+      "tags": [
+        "architecture-review",
+        "oracle",
+        "code-cleanup",
+        "constants",
+        "error-surfacing",
+        "focus-routing"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/runtime-errors/arbiter-state-pointer-escape-20260201.md",
+      "module": "autarch",
+      "title": "Fix Arbiter State() Pointer Escape and Concurrency Races",
+      "date": "2026-02-01",
+      "problem_type": "runtime-errors",
+      "severity": "",
+      "tags": [
+        "concurrency",
+        "race-condition",
+        "pointer-escape",
+        "deep-copy",
+        "go"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/ui-bugs/ansi-aware-string-splicing-for-overlays.md",
+      "module": "autarch",
+      "title": "ANSI-Aware String Splicing for TUI Overlays",
+      "date": "2026-02-01",
+      "problem_type": "ui_bug",
+      "severity": "medium",
+      "tags": [
+        "tui",
+        "ansi",
+        "lipgloss",
+        "overlay",
+        "charmbracelet",
+        "string-width"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/ui-bugs/swallowed-generation-error-msg-20260131.md",
+      "module": "autarch",
+      "title": "Fix Swallowed GenerationErrorMsg in UnifiedApp",
+      "date": "2026-01-31",
+      "problem_type": "ui-bugs",
+      "severity": "",
+      "tags": [
+        "bubble-tea",
+        "message-routing",
+        "error-handling",
+        "swallowed-error"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/ui-bugs/tui-breadcrumb-hidden-by-oversized-child-view-20260127.md",
+      "module": "autarch",
+      "title": "TUI Breadcrumb Header Hidden by Oversized Child View",
+      "date": "2026-01-27",
+      "problem_type": "ui-bugs",
+      "severity": "",
+      "tags": [
+        "bubbletea",
+        "lipgloss",
+        "tui",
+        "layout",
+        "window-size",
+        "breadcrumb"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/ui-bugs/tui-dimension-mismatch-splitlayout-20260126.md",
+      "module": "autarch",
+      "title": "TUI Dimension Mismatch: Parent Padding vs Child Sizing",
+      "date": "2026-01-26",
+      "problem_type": "ui_bug",
+      "severity": "high",
+      "tags": [
+        "tui",
+        "lipgloss",
+        "bubble-tea",
+        "layout",
+        "visual-bug",
+        "dimension-mismatch",
+        "ansi-handling"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/ui-bugs/tui-scrolling-keyboard-and-mouse.md",
+      "module": "autarch",
+      "title": "TUI Scrolling - Keyboard and Mouse Focus Issues",
+      "date": "2026-02-04",
+      "problem_type": "ui-bugs",
+      "severity": "",
+      "tags": [
+        "bubble-tea",
+        "tui",
+        "focus",
+        "keyboard",
+        "mouse",
+        "scrolling"
+      ]
+    },
+    {
+      "path": "hub/autarch/docs/solutions/workflow-issues/over-planning-before-reproduction-20260203.md",
+      "module": "autarch",
+      "title": "Over-Planning Before Bug Reproduction",
+      "date": "2026-02-03",
+      "problem_type": "workflow-issues",
+      "severity": "",
+      "tags": [
+        "planning",
+        "debugging",
+        "reproduction",
+        "process",
+        "over-engineering",
+        "reviewers"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
+      "module": "clavain",
+      "title": "Extract SKILL.md Inline Logic into Testable Library Functions",
+      "date": "2026-02-19",
+      "problem_type": "architecture",
+      "severity": "P2",
+      "tags": [
+        "skill-md",
+        "testing",
+        "library-pattern",
+        "flock",
+        "interspect"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
+      "module": "clavain",
+      "title": "Best Practice: Agent Consolidation with Complete Reference Sweep",
+      "date": "2026-02-10",
+      "problem_type": "best_practice",
+      "severity": "medium",
+      "tags": [
+        "agent-consolidation",
+        "rename-sweep",
+        "stale-references",
+        "plugin-maintenance",
+        "grep-sweep"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+      "module": "clavain",
+      "title": "Best Practice: Provenance Tracking Breaks Compounding Feedback Loops",
+      "date": "2026-02-10",
+      "problem_type": "best_practice",
+      "severity": "high",
+      "tags": [
+        "compounding",
+        "feedback-loop",
+        "knowledge-layer",
+        "provenance",
+        "flux-drive",
+        "multi-agent"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
+      "module": "clavain",
+      "title": "Best Practice: Smoke Test Agent Prompts Must Override the Task Tool Write-First Wrapper",
+      "date": "2026-02-10",
+      "problem_type": "best_practice",
+      "severity": "medium",
+      "tags": [
+        "smoke-test",
+        "subagent",
+        "instruction-conflict",
+        "task-tool",
+        "mandatory-first-step"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
+      "module": "clavain",
+      "title": "Best Practice: Template System Has Multiple Independent Consumers",
+      "date": "2026-02-11",
+      "problem_type": "best_practice",
+      "severity": "medium",
+      "tags": [
+        "clodex",
+        "flux-drive",
+        "templates",
+        "dispatch",
+        "refactoring-safety"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
+      "module": "clavain",
+      "title": "Unify Content-Assembly Abstractions Before Adding Variants",
+      "date": "2026-02-11",
+      "problem_type": "best_practice",
+      "severity": "high",
+      "tags": [
+        "flux-drive",
+        "content-assembly",
+        "diff-slicing",
+        "pyramid-mode",
+        "abstraction",
+        "strongdm"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
+      "module": "clavain",
+      "title": "Troubleshooting: Codex CLI Deprecated Flags Cause Agent Dispatch Failures",
+      "date": "2026-02-11",
+      "problem_type": "integration_issue",
+      "severity": "medium",
+      "tags": [
+        "codex-cli",
+        "deprecated-flags",
+        "approval-mode",
+        "full-auto",
+        "clodex",
+        "ai-agent-hallucination"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
+      "module": "clavain",
+      "title": "Troubleshooting: Glob Pattern Misses Subproject Files in Monorepo",
+      "date": "2026-02-15",
+      "problem_type": "integration_issue",
+      "severity": "medium",
+      "tags": [
+        "glob",
+        "monorepo",
+        "findings",
+        "python",
+        "path-discovery"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+      "module": "clavain",
+      "title": "Troubleshooting: MCP Plugin Cache Missing node_modules",
+      "date": "2026-02-10",
+      "problem_type": "integration_issue",
+      "severity": "high",
+      "tags": [
+        "mcp",
+        "plugin-cache",
+        "node-modules",
+        "native-modules",
+        "canvas",
+        "libgif"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+      "module": "clavain",
+      "title": "New Agent Files Not Available as subagent_type Until Session Restart",
+      "date": "2026-02-10",
+      "problem_type": "integration_issue",
+      "severity": "medium",
+      "tags": [
+        "agents",
+        "subagent-type",
+        "session-start",
+        "plugin-registry",
+        "flux-drive-v2"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
+      "module": "clavain",
+      "title": "Troubleshooting: Oracle Browser Mode Output Lost in Flux-Drive Reviews",
+      "date": "2026-02-11",
+      "problem_type": "integration_issue",
+      "severity": "high",
+      "tags": [
+        "oracle",
+        "browser-mode",
+        "flux-drive",
+        "stdout-redirect",
+        "write-output",
+        "timeout"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+      "module": "clavain",
+      "title": "Stop Hooks Break After Mid-Session Plugin Publish",
+      "date": "2026-02-12",
+      "problem_type": "integration_issue",
+      "severity": "medium",
+      "tags": [
+        "hooks",
+        "stop-hooks",
+        "plugin-cache",
+        "bump-version",
+        "publish",
+        "symlink",
+        "session-lifecycle"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+      "module": "clavain",
+      "title": "Hierarchical Config Resolution with Sentinel Values",
+      "date": "2026-02-20",
+      "problem_type": "patterns",
+      "severity": "",
+      "tags": [
+        "routing",
+        "yaml-parsing",
+        "shell",
+        "config-resolution"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
+      "module": "clavain",
+      "title": "Troubleshooting: Cannot Import Functions from conftest.py in Pytest",
+      "date": "2026-02-10",
+      "problem_type": "test_failure",
+      "severity": "medium",
+      "tags": [
+        "pytest",
+        "conftest",
+        "imports",
+        "test-helpers",
+        "python"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
+      "module": "clavain",
+      "title": "Troubleshooting: Beads Pre-Commit Hook Blocks Git Commits Due to JSONL Permission Mask",
+      "date": "2026-02-10",
+      "problem_type": "workflow_issue",
+      "severity": "medium",
+      "tags": [
+        "beads",
+        "git-hooks",
+        "pre-commit",
+        "acl",
+        "permissions",
+        "claude-user"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+      "module": "clavain",
+      "title": "Troubleshooting: disable-model-invocation Blocks All Command Chaining in /lfg Pipeline",
+      "date": "2026-02-11",
+      "problem_type": "workflow_issue",
+      "severity": "high",
+      "tags": [
+        "claude-code-plugin",
+        "disable-model-invocation",
+        "command-chaining",
+        "lfg",
+        "orchestration",
+        "clavain"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+      "module": "clavain",
+      "title": "Troubleshooting: Duplicate MCP Server Registration Wastes Context Budget",
+      "date": "2026-02-10",
+      "problem_type": "workflow_issue",
+      "severity": "medium",
+      "tags": [
+        "mcp",
+        "context-budget",
+        "duplicate-registration",
+        "settings-hygiene",
+        "claude-doctor"
+      ]
+    },
+    {
+      "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+      "module": "clavain",
+      "title": "Troubleshooting: Settings Permission Bloat from Heredoc Bash Commands",
+      "date": "2026-02-10",
+      "problem_type": "workflow_issue",
+      "severity": "high",
+      "tags": [
+        "settings-hygiene",
+        "heredoc",
+        "permissions",
+        "bloat",
+        "pretooluse-hook"
+      ]
+    },
+    {
+      "path": "infra/intercore/docs/solutions/e8-portfolio-orchestration-learnings.md",
+      "module": "intercore",
+      "title": "E8 Portfolio Orchestration — Sprint Learnings",
+      "date": "2026-02-21",
+      "problem_type": "architecture",
+      "severity": "medium",
+      "tags": [
+        "intercore",
+        "portfolio",
+        "cross-db",
+        "relay",
+        "sqlite",
+        "gates"
+      ]
+    },
+    {
+      "path": "infra/intercore/docs/solutions/e9-portfolio-dependency-scheduling-learnings.md",
+      "module": "intercore",
+      "title": "E9 Portfolio Dependency Scheduling Learnings",
+      "date": "2026-02-20",
+      "problem_type": "correctness",
+      "severity": "high",
+      "tags": [
+        "portfolio",
+        "gate-evaluation",
+        "cycle-detection",
+        "toctou",
+        "sqlite",
+        "intercore"
+      ]
+    },
+    {
+      "path": "plugins/interfluence/docs/solutions/marketplace-cached-clone-stale.md",
+      "module": "interfluence",
+      "title": "Marketplace plugin not visible after publishing",
+      "date": "2026-02-11",
+      "problem_type": "plugin-publishing",
+      "severity": "moderate",
+      "tags": [
+        "marketplace",
+        "cache",
+        "git",
+        "plugin-publishing",
+        "interagency-marketplace"
+      ]
+    },
+    {
+      "path": "plugins/interkasten/docs/solutions/integration-issues/new-marketplace-plugin-not-installed-20260215.md",
+      "module": "interkasten",
+      "title": "Troubleshooting: New Marketplace Plugin Not Auto-Installed",
+      "date": "2026-02-15",
+      "problem_type": "integration_issue",
+      "severity": "high",
+      "tags": [
+        "plugin",
+        "marketplace",
+        "installed-plugins",
+        "cache",
+        "claude-code",
+        "onboarding"
+      ]
+    },
+    {
+      "path": "plugins/interlearn/docs/solutions/patterns/awk-sub-pattern-fallthrough-20260221.md",
+      "module": "interlearn",
+      "title": "Awk sub() Mutates $0 Causing Pattern Fall-Through on Same Line",
+      "date": "2026-02-21",
+      "problem_type": "correctness",
+      "severity": "P2",
+      "tags": [
+        "awk",
+        "shell",
+        "parsing",
+        "frontmatter",
+        "pattern-matching",
+        "sub",
+        "$0-mutation"
+      ]
+    },
+    {
+      "path": "plugins/interlock/docs/solutions/2026-02-16-advisory-only-timeout-eliminates-toctou.md",
+      "module": "interlock",
+      "title": "Advisory-Only Timeout Eliminates TOCTOU Race in Multi-Agent Coordination",
+      "date": "2026-02-16",
+      "problem_type": "concurrency",
+      "severity": "P0",
+      "tags": [
+        "race-condition",
+        "toctou",
+        "idempotency",
+        "advisory-pattern",
+        "go"
+      ]
+    },
+    {
+      "path": "services/intermute/docs/solutions/database-issues/silent-json-errors-sqlite-storage-20260211.md",
+      "module": "intermute",
+      "title": "Troubleshooting: Silent JSON Marshal/Unmarshal Errors in Event-Sourced SQLite Store",
+      "date": "2026-02-11",
+      "problem_type": "database_issue",
+      "severity": "critical",
+      "tags": [
+        "json-marshal",
+        "json-unmarshal",
+        "sqlite",
+        "event-sourcing",
+        "data-integrity",
+        "error-handling"
+      ]
+    },
+    {
+      "path": "docs/solutions/best-practices/silent-api-misuse-patterns-intercore-20260221.md",
+      "module": "interverse",
+      "title": "Best Practice: Silent API Misuse Patterns in Go",
+      "date": "2026-02-21",
+      "problem_type": "best_practice",
+      "severity": "medium",
+      "tags": [
+        "go",
+        "silent-failure",
+        "error-handling",
+        "utf8",
+        "sql",
+        "quality-gates",
+        "multi-agent-review"
+      ]
+    },
+    {
+      "path": "docs/solutions/database-issues/toctou-gate-check-cas-dispatch-intercore-20260221.md",
+      "module": "interverse",
+      "title": "Troubleshooting: TOCTOU in Gate-Phase Advance + Missing CAS on Dispatch Status",
+      "date": "2026-02-21",
+      "problem_type": "database_issue",
+      "severity": "high",
+      "tags": [
+        "sqlite",
+        "toctou",
+        "cas",
+        "optimistic-concurrency",
+        "transaction",
+        "go",
+        "begintx",
+        "querier-interface"
+      ]
+    },
+    {
+      "path": "docs/solutions/environment-issues/git-credential-lock-multi-user-20260216.md",
+      "module": "interverse",
+      "title": "Git Credential Store Lock Failure in Multi-User Setup",
+      "date": "2026-02-16",
+      "problem_type": "environment_issue",
+      "severity": "high",
+      "tags": [
+        "git",
+        "credentials",
+        "multi-user",
+        "claude-user",
+        "permissions",
+        "ACL",
+        "plugin-install"
+      ]
+    },
+    {
+      "path": "docs/solutions/integration-issues/plugin-loading-failures-interverse-20260215.md",
+      "module": "interverse",
+      "title": "Troubleshooting: Claude Code Plugin Loading Failures (4 Plugins)",
+      "date": "2026-02-15",
+      "problem_type": "integration_issue",
+      "severity": "high",
+      "tags": [
+        "claude-code",
+        "plugin",
+        "mcp",
+        "hooks",
+        "orphaned-at",
+        "version-mismatch",
+        "binary-missing"
+      ]
+    },
+    {
+      "path": "docs/solutions/integration-issues/plugin-validation-errors-cache-manifest-divergence-20260217.md",
+      "module": "interverse",
+      "title": "Plugin Validation Errors: Cache/Manifest Divergence (4 Plugins)",
+      "date": "2026-02-17",
+      "problem_type": "integration_issue",
+      "severity": "high",
+      "tags": [
+        "claude-code",
+        "plugin",
+        "cache-divergence",
+        "hooks-format",
+        "manifest",
+        "orphaned-at",
+        "hook-event-types"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/argparse-parents-subparser-default-overwrite-20260219.md",
+      "module": "interverse",
+      "title": "argparse `parents=[shared]` Overwrites Flags Parsed by Main Parser",
+      "date": "2026-02-19",
+      "problem_type": "python_pattern",
+      "severity": "medium",
+      "tags": [
+        "python",
+        "argparse",
+        "cli",
+        "subparsers",
+        "parents",
+        "defaults",
+        "suppress"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/cas-spawn-link-orphan-cleanup-20260219.md",
+      "module": "interverse",
+      "title": "CAS Dispatch Linking with Orphan Process Cleanup",
+      "date": "2026-02-19",
+      "problem_type": "concurrency_pattern",
+      "severity": "medium",
+      "tags": [
+        "sqlite",
+        "concurrency",
+        "cas",
+        "spawn",
+        "orphan-cleanup",
+        "single-connection",
+        "go"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/critical-patterns.md",
+      "module": "interverse",
+      "title": "Critical Patterns — Required Reading",
+      "date": "",
+      "problem_type": "patterns",
+      "severity": "",
+      "tags": []
+    },
+    {
+      "path": "docs/solutions/patterns/guard-fallthrough-null-validation-20260216.md",
+      "module": "interverse",
+      "title": "Guard Fallthrough: Validation That Silently Skips on Null",
+      "date": "2026-02-16",
+      "problem_type": "security_pattern",
+      "severity": "high",
+      "tags": [
+        "path-traversal",
+        "validation",
+        "guard-clause",
+        "null-safety",
+        "security",
+        "typescript"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/intercore-schema-upgrade-deployment-20260218.md",
+      "module": "interverse",
+      "title": "intercore Schema Upgrade + Binary Deployment Pattern",
+      "date": "2026-02-18",
+      "problem_type": "patterns",
+      "severity": "medium",
+      "tags": [
+        "intercore",
+        "sqlite",
+        "migration",
+        "deployment",
+        "go-embed"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/set-e-with-fallback-paths-20260216.md",
+      "module": "interverse",
+      "title": "`set -euo pipefail` with Fallback Recovery Paths",
+      "date": "2026-02-16",
+      "problem_type": "shell_pattern",
+      "severity": "medium",
+      "tags": [
+        "bash",
+        "set-e",
+        "error-handling",
+        "hooks",
+        "fallback",
+        "shell"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/synthesis-subagent-context-isolation-20260216.md",
+      "module": "interverse",
+      "title": "Synthesis Subagent for Context-Efficient Multi-Agent Orchestration",
+      "date": "2026-02-16",
+      "problem_type": "patterns",
+      "severity": "high",
+      "tags": [
+        "multi-agent",
+        "context-window",
+        "synthesis",
+        "intersynth",
+        "verdict",
+        "subagent"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/token-accounting-billing-vs-context-20260216.md",
+      "module": "interverse",
+      "title": "Token Accounting: Billing Tokens vs Effective Context",
+      "date": "2026-02-16",
+      "problem_type": "measurement_error",
+      "severity": "high",
+      "tags": [
+        "tokens",
+        "context-window",
+        "cache",
+        "billing",
+        "measurement",
+        "decision-gate",
+        "interstat"
+      ]
+    },
+    {
+      "path": "docs/solutions/patterns/wal-protocol-completeness-20260216.md",
+      "module": "interverse",
+      "title": "WAL Protocol Completeness: Every Write Path Needs Protection",
+      "date": "2026-02-16",
+      "problem_type": "data_integrity_pattern",
+      "severity": "high",
+      "tags": [
+        "wal",
+        "crash-recovery",
+        "write-ahead-log",
+        "conflict-resolution",
+        "data-integrity",
+        "typescript"
+      ]
+    },
+    {
+      "path": "docs/solutions/runtime-errors/jq-null-slice-from-empty-string-return-clavain-20260216.md",
+      "module": "interverse",
+      "title": "Troubleshooting: jq Null-Slice Runtime Error from Empty-String Function Returns",
+      "date": "2026-02-16",
+      "problem_type": "runtime_error",
+      "severity": "high",
+      "tags": [
+        "jq",
+        "null-safety",
+        "shell",
+        "bash",
+        "checkpoint",
+        "json",
+        "empty-string",
+        "runtime-error"
+      ]
+    },
+    {
+      "path": "docs/solutions/workflow-issues/auto-build-launcher-go-mcp-plugins-20260215.md",
+      "module": "interverse",
+      "title": "Troubleshooting: Compiled MCP Binary Missing After Plugin Install",
+      "date": "2026-02-15",
+      "problem_type": "workflow_issue",
+      "severity": "medium",
+      "tags": [
+        "go",
+        "mcp",
+        "plugin",
+        "auto-build",
+        "launcher",
+        "compiled-binary"
+      ]
+    },
+    {
+      "path": "docs/solutions/workflow-issues/bd-sync-from-main-trunk-based-20260216.md",
+      "module": "interverse",
+      "title": "`bd sync --from-main` Fails on Trunk-Based Repos",
+      "date": "2026-02-16",
+      "problem_type": "workflow_issue",
+      "severity": "medium",
+      "tags": [
+        "beads",
+        "bd",
+        "sync",
+        "trunk-based",
+        "git",
+        "workflow"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/best-practices/extract-engine-logic-into-shared-module-20260212.md",
+      "module": "tldr-swinton",
+      "title": "Extract engine-internal logic into shared modules before adding new modes",
+      "date": "2026-02-12",
+      "problem_type": "best-practices",
+      "severity": "medium",
+      "tags": [
+        "refactoring",
+        "architecture",
+        "block-compression",
+        "knapsack",
+        "difflens"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/best-practices/hooks-vs-skills-separation-plugin-20260211.md",
+      "module": "tldr-swinton",
+      "title": "Best Practice: Hooks for Per-File Tactics, Skills for Session Strategy",
+      "date": "2026-02-11",
+      "problem_type": "best_practice",
+      "severity": "high",
+      "tags": [
+        "plugin-design",
+        "hooks-vs-skills",
+        "separation-of-concerns",
+        "preset-naming",
+        "agent-adoption"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/best-practices/layered-enforcement-architecture-plugin-20260211.md",
+      "module": "tldr-swinton",
+      "title": "Best Practice: 4-Layer Defense-in-Depth for Agent Tool Adoption",
+      "date": "2026-02-11",
+      "problem_type": "best_practice",
+      "severity": "high",
+      "tags": [
+        "defense-in-depth",
+        "layered-enforcement",
+        "plugin-architecture",
+        "presets",
+        "hooks",
+        "skills"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/best-practices/parallel-agents-miss-cross-cutting-schema-bugs.md",
+      "module": "tldr-swinton",
+      "title": "Parallel agents miss cross-cutting schema bugs",
+      "date": "2026-02-12",
+      "problem_type": "best-practices",
+      "severity": "medium",
+      "tags": [
+        "multi-agent",
+        "quality-gates",
+        "schema-consistency",
+        "code-review"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/build-errors/lfs-submodule-blocks-plugin-install.md",
+      "module": "tldr-swinton",
+      "title": "Git LFS Submodule Blocks Claude Code Plugin Install",
+      "date": "",
+      "problem_type": "build-errors",
+      "severity": "high",
+      "tags": [
+        "git",
+        "lfs",
+        "submodule",
+        "plugin-install",
+        "claude-code",
+        "gitmodules"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/build-errors/plugin-version-drift-breaks-loading.md",
+      "module": "tldr-swinton",
+      "title": "Plugin Version Drift Between Repo and Marketplace Breaks Loading",
+      "date": "",
+      "problem_type": "build-errors",
+      "severity": "high",
+      "tags": [
+        "plugin",
+        "version",
+        "marketplace",
+        "cache",
+        "claude-code",
+        "publishing"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/build-errors/stale-plugin-cache-ghost-entries.md",
+      "module": "tldr-swinton",
+      "title": "Stale Plugin Cache Creates Ghost Entries and Load Failures",
+      "date": "",
+      "problem_type": "build-errors",
+      "severity": "medium",
+      "tags": [
+        "plugin",
+        "cache",
+        "claude-code",
+        "ghost",
+        "cleanup",
+        "installation"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/integration-issues/claude-code-hook-stdin-api.md",
+      "module": "tldr-swinton",
+      "title": "Claude Code Hook Scripts Use stdin JSON, Not Environment Variables",
+      "date": "",
+      "problem_type": "integration-issues",
+      "severity": "medium",
+      "tags": [
+        "claude-code",
+        "hooks",
+        "PreToolUse",
+        "stdin",
+        "json",
+        "plugin",
+        "bash"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/integration-issues/cli-plugin-low-agent-adoption-vs-mcp-20260211.md",
+      "module": "tldr-swinton",
+      "title": "Integration Pattern: CLI+Plugin vs MCP for Agent Tool Adoption",
+      "date": "2026-02-11",
+      "problem_type": "integration_issue",
+      "severity": "high",
+      "tags": [
+        "mcp",
+        "agent-adoption",
+        "token-savings",
+        "cli-vs-mcp",
+        "tool-descriptions",
+        "qmd"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/integration-issues/codex-dispatch-background-mode-failure.md",
+      "module": "tldr-swinton",
+      "title": "Codex dispatch.sh Fails in Bash Tool Background Mode",
+      "date": "",
+      "problem_type": "integration-issues",
+      "severity": "medium",
+      "tags": [
+        "codex",
+        "dispatch",
+        "interclode",
+        "background",
+        "bash-tool",
+        "argument-parsing",
+        "shell-quoting"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/performance-issues/duplicated-index-builds-projectindex-20260211.md",
+      "module": "tldr-swinton",
+      "title": "Troubleshooting: Duplicated ProjectIndex Builds Across Engine Calls",
+      "date": "2026-02-11",
+      "problem_type": "performance_issue",
+      "severity": "medium",
+      "tags": [
+        "project-index",
+        "shared-state",
+        "deduplication",
+        "call-chain-threading",
+        "performance"
+      ]
+    },
+    {
+      "path": "plugins/tldr-swinton/docs/solutions/workflow-issues/bd-commands-hang-stale-startlock-20260213.md",
+      "module": "tldr-swinton",
+      "title": "Troubleshooting: Beads `bd` Commands Hang Indefinitely Due to Stale Startlock",
+      "date": "2026-02-13",
+      "problem_type": "workflow_issue",
+      "severity": "high",
+      "tags": [
+        "beads",
+        "daemon",
+        "stale-lock",
+        "hang",
+        "bd-cli",
+        "unix-socket",
+        "ipc"
+      ]
+    },
+    {
+      "path": "plugins/tool-time/docs/solutions/best-practices/event-type-contract-analyze-20260214.md",
+      "module": "tool-time",
+      "title": "Best Practice: Event Type Contract for Hook-Based Analytics",
+      "date": "2026-02-14",
+      "problem_type": "best_practice",
+      "severity": "high",
+      "tags": [
+        "event-types",
+        "hook-events",
+        "double-counting",
+        "pre-post-pairs",
+        "analytics",
+        "tool-chains"
+      ]
+    },
+    {
+      "path": "plugins/tuivision/docs/solutions/patterns/critical-patterns.md",
+      "module": "tuivision",
+      "title": "tuivision Critical Patterns",
+      "date": "",
+      "problem_type": "patterns",
+      "severity": "",
+      "tags": []
+    },
+    {
+      "path": "plugins/tuivision/docs/solutions/ui-bugs/rgb-color-rendering-TerminalRenderer-20260126.md",
+      "module": "tuivision",
+      "title": "RGB Color Rendering Incorrect in TUI Screenshots",
+      "date": "2026-01-26",
+      "problem_type": "ui_bug",
+      "severity": "high",
+      "tags": [
+        "xterm-js",
+        "rgb-colors",
+        "true-color",
+        "terminal-rendering"
+      ]
+    }
+  ],
+  "by_module": {
+    "agent-rig": [
+      {
+        "path": "infra/agent-rig/docs/solutions/best-practices/reversible-cli-install-with-mcp-config-agent-rig-20260211.md",
+        "module": "agent-rig",
+        "title": "Best Practice: Reversible CLI Installation with MCP Server Configuration",
+        "date": "2026-02-11",
+        "problem_type": "best_practice",
+        "severity": "high",
+        "tags": [
+          "mcp-servers",
+          "state-tracking",
+          "uninstall",
+          "claude-code",
+          "reversible-install",
+          "cli-lifecycle"
+        ]
+      },
+      {
+        "path": "infra/agent-rig/docs/solutions/best-practices/state-diff-incremental-update-agent-rig-20260211.md",
+        "module": "agent-rig",
+        "title": "Best Practice: State-Diff Incremental Updates with Dependency Ordering",
+        "date": "2026-02-11",
+        "problem_type": "best_practice",
+        "severity": "medium",
+        "tags": [
+          "state-diff",
+          "incremental-update",
+          "topological-sort",
+          "idempotent-install",
+          "dependency-ordering",
+          "cli-lifecycle"
+        ]
+      },
+      {
+        "path": "infra/agent-rig/docs/solutions/best-practices/tagged-block-env-and-hash-based-merge-agent-rig-20260211.md",
+        "module": "agent-rig",
+        "title": "Best Practice: Tagged-Block Shell Profiles and Hash-Based File Modification Detection",
+        "date": "2026-02-11",
+        "problem_type": "best_practice",
+        "severity": "medium",
+        "tags": [
+          "tagged-blocks",
+          "shell-profile",
+          "env-vars",
+          "sha256-hash",
+          "behavioral-merge",
+          "idempotent-file-management"
+        ]
+      }
+    ],
+    "autarch": [
+      {
+        "path": "hub/autarch/docs/solutions/architecture-decisions/spec-phase-reordering-strategy.md",
+        "module": "autarch",
+        "title": "Spec Phase Reordering Strategy",
+        "date": "2026-02-04",
+        "problem_type": "architecture-decisions",
+        "severity": "",
+        "tags": [
+          "prd",
+          "phases",
+          "cuj",
+          "requirements",
+          "ordering"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/architecture-decisions/spec-propagation-consistency-pattern.md",
+        "module": "autarch",
+        "title": "Spec Propagation Consistency Pattern",
+        "date": "2026-02-04",
+        "problem_type": "architecture-decisions",
+        "severity": "",
+        "tags": [
+          "orchestrator",
+          "propagation",
+          "claude-code",
+          "token-efficiency"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/logic-errors/prd-requirements-blank-on-generation.md",
+        "module": "autarch",
+        "title": "PRD Requirements Blank on Generation",
+        "date": "2026-02-04",
+        "problem_type": "logic-errors",
+        "severity": "",
+        "tags": [
+          "orchestrator",
+          "phase-generation",
+          "claude-code",
+          "exploration"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/patterns/arbiter-spec-sprint-architecture.md",
+        "module": "autarch",
+        "title": "Arbiter Spec Sprint Architecture Patterns",
+        "date": "2026-01-26",
+        "problem_type": "architecture",
+        "severity": "medium",
+        "tags": [
+          "arbiter",
+          "import-cycle",
+          "architecture",
+          "hunter-api",
+          "tui"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/patterns/chat-first-tui-design-20260204.md",
+        "module": "autarch",
+        "title": "Chat-First TUI Design: Keybindings, Slash Commands, and Layout",
+        "date": "2026-02-04",
+        "problem_type": "patterns",
+        "severity": "",
+        "tags": [
+          "tui",
+          "chat-first",
+          "keybindings",
+          "slash-commands",
+          "layout",
+          "accessibility",
+          "bubble-tea"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/patterns/oracle-review-issues-3-6-20260201.md",
+        "module": "autarch",
+        "title": "Oracle Architecture Review: Issues 3-6 Resolution",
+        "date": "2026-02-01",
+        "problem_type": "patterns",
+        "severity": "",
+        "tags": [
+          "architecture-review",
+          "oracle",
+          "code-cleanup",
+          "constants",
+          "error-surfacing",
+          "focus-routing"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/runtime-errors/arbiter-state-pointer-escape-20260201.md",
+        "module": "autarch",
+        "title": "Fix Arbiter State() Pointer Escape and Concurrency Races",
+        "date": "2026-02-01",
+        "problem_type": "runtime-errors",
+        "severity": "",
+        "tags": [
+          "concurrency",
+          "race-condition",
+          "pointer-escape",
+          "deep-copy",
+          "go"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/ui-bugs/ansi-aware-string-splicing-for-overlays.md",
+        "module": "autarch",
+        "title": "ANSI-Aware String Splicing for TUI Overlays",
+        "date": "2026-02-01",
+        "problem_type": "ui_bug",
+        "severity": "medium",
+        "tags": [
+          "tui",
+          "ansi",
+          "lipgloss",
+          "overlay",
+          "charmbracelet",
+          "string-width"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/ui-bugs/swallowed-generation-error-msg-20260131.md",
+        "module": "autarch",
+        "title": "Fix Swallowed GenerationErrorMsg in UnifiedApp",
+        "date": "2026-01-31",
+        "problem_type": "ui-bugs",
+        "severity": "",
+        "tags": [
+          "bubble-tea",
+          "message-routing",
+          "error-handling",
+          "swallowed-error"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/ui-bugs/tui-breadcrumb-hidden-by-oversized-child-view-20260127.md",
+        "module": "autarch",
+        "title": "TUI Breadcrumb Header Hidden by Oversized Child View",
+        "date": "2026-01-27",
+        "problem_type": "ui-bugs",
+        "severity": "",
+        "tags": [
+          "bubbletea",
+          "lipgloss",
+          "tui",
+          "layout",
+          "window-size",
+          "breadcrumb"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/ui-bugs/tui-dimension-mismatch-splitlayout-20260126.md",
+        "module": "autarch",
+        "title": "TUI Dimension Mismatch: Parent Padding vs Child Sizing",
+        "date": "2026-01-26",
+        "problem_type": "ui_bug",
+        "severity": "high",
+        "tags": [
+          "tui",
+          "lipgloss",
+          "bubble-tea",
+          "layout",
+          "visual-bug",
+          "dimension-mismatch",
+          "ansi-handling"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/ui-bugs/tui-scrolling-keyboard-and-mouse.md",
+        "module": "autarch",
+        "title": "TUI Scrolling - Keyboard and Mouse Focus Issues",
+        "date": "2026-02-04",
+        "problem_type": "ui-bugs",
+        "severity": "",
+        "tags": [
+          "bubble-tea",
+          "tui",
+          "focus",
+          "keyboard",
+          "mouse",
+          "scrolling"
+        ]
+      },
+      {
+        "path": "hub/autarch/docs/solutions/workflow-issues/over-planning-before-reproduction-20260203.md",
+        "module": "autarch",
+        "title": "Over-Planning Before Bug Reproduction",
+        "date": "2026-02-03",
+        "problem_type": "workflow-issues",
+        "severity": "",
+        "tags": [
+          "planning",
+          "debugging",
+          "reproduction",
+          "process",
+          "over-engineering",
+          "reviewers"
+        ]
+      }
+    ],
+    "clavain": [
+      {
+        "path": "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
+        "module": "clavain",
+        "title": "Extract SKILL.md Inline Logic into Testable Library Functions",
+        "date": "2026-02-19",
+        "problem_type": "architecture",
+        "severity": "P2",
+        "tags": [
+          "skill-md",
+          "testing",
+          "library-pattern",
+          "flock",
+          "interspect"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
+        "module": "clavain",
+        "title": "Best Practice: Agent Consolidation with Complete Reference Sweep",
+        "date": "2026-02-10",
+        "problem_type": "best_practice",
+        "severity": "medium",
+        "tags": [
+          "agent-consolidation",
+          "rename-sweep",
+          "stale-references",
+          "plugin-maintenance",
+          "grep-sweep"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+        "module": "clavain",
+        "title": "Best Practice: Provenance Tracking Breaks Compounding Feedback Loops",
+        "date": "2026-02-10",
+        "problem_type": "best_practice",
+        "severity": "high",
+        "tags": [
+          "compounding",
+          "feedback-loop",
+          "knowledge-layer",
+          "provenance",
+          "flux-drive",
+          "multi-agent"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
+        "module": "clavain",
+        "title": "Best Practice: Smoke Test Agent Prompts Must Override the Task Tool Write-First Wrapper",
+        "date": "2026-02-10",
+        "problem_type": "best_practice",
+        "severity": "medium",
+        "tags": [
+          "smoke-test",
+          "subagent",
+          "instruction-conflict",
+          "task-tool",
+          "mandatory-first-step"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
+        "module": "clavain",
+        "title": "Best Practice: Template System Has Multiple Independent Consumers",
+        "date": "2026-02-11",
+        "problem_type": "best_practice",
+        "severity": "medium",
+        "tags": [
+          "clodex",
+          "flux-drive",
+          "templates",
+          "dispatch",
+          "refactoring-safety"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
+        "module": "clavain",
+        "title": "Unify Content-Assembly Abstractions Before Adding Variants",
+        "date": "2026-02-11",
+        "problem_type": "best_practice",
+        "severity": "high",
+        "tags": [
+          "flux-drive",
+          "content-assembly",
+          "diff-slicing",
+          "pyramid-mode",
+          "abstraction",
+          "strongdm"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
+        "module": "clavain",
+        "title": "Troubleshooting: Codex CLI Deprecated Flags Cause Agent Dispatch Failures",
+        "date": "2026-02-11",
+        "problem_type": "integration_issue",
+        "severity": "medium",
+        "tags": [
+          "codex-cli",
+          "deprecated-flags",
+          "approval-mode",
+          "full-auto",
+          "clodex",
+          "ai-agent-hallucination"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
+        "module": "clavain",
+        "title": "Troubleshooting: Glob Pattern Misses Subproject Files in Monorepo",
+        "date": "2026-02-15",
+        "problem_type": "integration_issue",
+        "severity": "medium",
+        "tags": [
+          "glob",
+          "monorepo",
+          "findings",
+          "python",
+          "path-discovery"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+        "module": "clavain",
+        "title": "Troubleshooting: MCP Plugin Cache Missing node_modules",
+        "date": "2026-02-10",
+        "problem_type": "integration_issue",
+        "severity": "high",
+        "tags": [
+          "mcp",
+          "plugin-cache",
+          "node-modules",
+          "native-modules",
+          "canvas",
+          "libgif"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+        "module": "clavain",
+        "title": "New Agent Files Not Available as subagent_type Until Session Restart",
+        "date": "2026-02-10",
+        "problem_type": "integration_issue",
+        "severity": "medium",
+        "tags": [
+          "agents",
+          "subagent-type",
+          "session-start",
+          "plugin-registry",
+          "flux-drive-v2"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
+        "module": "clavain",
+        "title": "Troubleshooting: Oracle Browser Mode Output Lost in Flux-Drive Reviews",
+        "date": "2026-02-11",
+        "problem_type": "integration_issue",
+        "severity": "high",
+        "tags": [
+          "oracle",
+          "browser-mode",
+          "flux-drive",
+          "stdout-redirect",
+          "write-output",
+          "timeout"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+        "module": "clavain",
+        "title": "Stop Hooks Break After Mid-Session Plugin Publish",
+        "date": "2026-02-12",
+        "problem_type": "integration_issue",
+        "severity": "medium",
+        "tags": [
+          "hooks",
+          "stop-hooks",
+          "plugin-cache",
+          "bump-version",
+          "publish",
+          "symlink",
+          "session-lifecycle"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+        "module": "clavain",
+        "title": "Hierarchical Config Resolution with Sentinel Values",
+        "date": "2026-02-20",
+        "problem_type": "patterns",
+        "severity": "",
+        "tags": [
+          "routing",
+          "yaml-parsing",
+          "shell",
+          "config-resolution"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
+        "module": "clavain",
+        "title": "Troubleshooting: Cannot Import Functions from conftest.py in Pytest",
+        "date": "2026-02-10",
+        "problem_type": "test_failure",
+        "severity": "medium",
+        "tags": [
+          "pytest",
+          "conftest",
+          "imports",
+          "test-helpers",
+          "python"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
+        "module": "clavain",
+        "title": "Troubleshooting: Beads Pre-Commit Hook Blocks Git Commits Due to JSONL Permission Mask",
+        "date": "2026-02-10",
+        "problem_type": "workflow_issue",
+        "severity": "medium",
+        "tags": [
+          "beads",
+          "git-hooks",
+          "pre-commit",
+          "acl",
+          "permissions",
+          "claude-user"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+        "module": "clavain",
+        "title": "Troubleshooting: disable-model-invocation Blocks All Command Chaining in /lfg Pipeline",
+        "date": "2026-02-11",
+        "problem_type": "workflow_issue",
+        "severity": "high",
+        "tags": [
+          "claude-code-plugin",
+          "disable-model-invocation",
+          "command-chaining",
+          "lfg",
+          "orchestration",
+          "clavain"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+        "module": "clavain",
+        "title": "Troubleshooting: Duplicate MCP Server Registration Wastes Context Budget",
+        "date": "2026-02-10",
+        "problem_type": "workflow_issue",
+        "severity": "medium",
+        "tags": [
+          "mcp",
+          "context-budget",
+          "duplicate-registration",
+          "settings-hygiene",
+          "claude-doctor"
+        ]
+      },
+      {
+        "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+        "module": "clavain",
+        "title": "Troubleshooting: Settings Permission Bloat from Heredoc Bash Commands",
+        "date": "2026-02-10",
+        "problem_type": "workflow_issue",
+        "severity": "high",
+        "tags": [
+          "settings-hygiene",
+          "heredoc",
+          "permissions",
+          "bloat",
+          "pretooluse-hook"
+        ]
+      }
+    ],
+    "intercore": [
+      {
+        "path": "infra/intercore/docs/solutions/e8-portfolio-orchestration-learnings.md",
+        "module": "intercore",
+        "title": "E8 Portfolio Orchestration — Sprint Learnings",
+        "date": "2026-02-21",
+        "problem_type": "architecture",
+        "severity": "medium",
+        "tags": [
+          "intercore",
+          "portfolio",
+          "cross-db",
+          "relay",
+          "sqlite",
+          "gates"
+        ]
+      },
+      {
+        "path": "infra/intercore/docs/solutions/e9-portfolio-dependency-scheduling-learnings.md",
+        "module": "intercore",
+        "title": "E9 Portfolio Dependency Scheduling Learnings",
+        "date": "2026-02-20",
+        "problem_type": "correctness",
+        "severity": "high",
+        "tags": [
+          "portfolio",
+          "gate-evaluation",
+          "cycle-detection",
+          "toctou",
+          "sqlite",
+          "intercore"
+        ]
+      }
+    ],
+    "interfluence": [
+      {
+        "path": "plugins/interfluence/docs/solutions/marketplace-cached-clone-stale.md",
+        "module": "interfluence",
+        "title": "Marketplace plugin not visible after publishing",
+        "date": "2026-02-11",
+        "problem_type": "plugin-publishing",
+        "severity": "moderate",
+        "tags": [
+          "marketplace",
+          "cache",
+          "git",
+          "plugin-publishing",
+          "interagency-marketplace"
+        ]
+      }
+    ],
+    "interkasten": [
+      {
+        "path": "plugins/interkasten/docs/solutions/integration-issues/new-marketplace-plugin-not-installed-20260215.md",
+        "module": "interkasten",
+        "title": "Troubleshooting: New Marketplace Plugin Not Auto-Installed",
+        "date": "2026-02-15",
+        "problem_type": "integration_issue",
+        "severity": "high",
+        "tags": [
+          "plugin",
+          "marketplace",
+          "installed-plugins",
+          "cache",
+          "claude-code",
+          "onboarding"
+        ]
+      }
+    ],
+    "interlearn": [
+      {
+        "path": "plugins/interlearn/docs/solutions/patterns/awk-sub-pattern-fallthrough-20260221.md",
+        "module": "interlearn",
+        "title": "Awk sub() Mutates $0 Causing Pattern Fall-Through on Same Line",
+        "date": "2026-02-21",
+        "problem_type": "correctness",
+        "severity": "P2",
+        "tags": [
+          "awk",
+          "shell",
+          "parsing",
+          "frontmatter",
+          "pattern-matching",
+          "sub",
+          "$0-mutation"
+        ]
+      }
+    ],
+    "interlock": [
+      {
+        "path": "plugins/interlock/docs/solutions/2026-02-16-advisory-only-timeout-eliminates-toctou.md",
+        "module": "interlock",
+        "title": "Advisory-Only Timeout Eliminates TOCTOU Race in Multi-Agent Coordination",
+        "date": "2026-02-16",
+        "problem_type": "concurrency",
+        "severity": "P0",
+        "tags": [
+          "race-condition",
+          "toctou",
+          "idempotency",
+          "advisory-pattern",
+          "go"
+        ]
+      }
+    ],
+    "intermute": [
+      {
+        "path": "services/intermute/docs/solutions/database-issues/silent-json-errors-sqlite-storage-20260211.md",
+        "module": "intermute",
+        "title": "Troubleshooting: Silent JSON Marshal/Unmarshal Errors in Event-Sourced SQLite Store",
+        "date": "2026-02-11",
+        "problem_type": "database_issue",
+        "severity": "critical",
+        "tags": [
+          "json-marshal",
+          "json-unmarshal",
+          "sqlite",
+          "event-sourcing",
+          "data-integrity",
+          "error-handling"
+        ]
+      }
+    ],
+    "interverse": [
+      {
+        "path": "docs/solutions/best-practices/silent-api-misuse-patterns-intercore-20260221.md",
+        "module": "interverse",
+        "title": "Best Practice: Silent API Misuse Patterns in Go",
+        "date": "2026-02-21",
+        "problem_type": "best_practice",
+        "severity": "medium",
+        "tags": [
+          "go",
+          "silent-failure",
+          "error-handling",
+          "utf8",
+          "sql",
+          "quality-gates",
+          "multi-agent-review"
+        ]
+      },
+      {
+        "path": "docs/solutions/database-issues/toctou-gate-check-cas-dispatch-intercore-20260221.md",
+        "module": "interverse",
+        "title": "Troubleshooting: TOCTOU in Gate-Phase Advance + Missing CAS on Dispatch Status",
+        "date": "2026-02-21",
+        "problem_type": "database_issue",
+        "severity": "high",
+        "tags": [
+          "sqlite",
+          "toctou",
+          "cas",
+          "optimistic-concurrency",
+          "transaction",
+          "go",
+          "begintx",
+          "querier-interface"
+        ]
+      },
+      {
+        "path": "docs/solutions/environment-issues/git-credential-lock-multi-user-20260216.md",
+        "module": "interverse",
+        "title": "Git Credential Store Lock Failure in Multi-User Setup",
+        "date": "2026-02-16",
+        "problem_type": "environment_issue",
+        "severity": "high",
+        "tags": [
+          "git",
+          "credentials",
+          "multi-user",
+          "claude-user",
+          "permissions",
+          "ACL",
+          "plugin-install"
+        ]
+      },
+      {
+        "path": "docs/solutions/integration-issues/plugin-loading-failures-interverse-20260215.md",
+        "module": "interverse",
+        "title": "Troubleshooting: Claude Code Plugin Loading Failures (4 Plugins)",
+        "date": "2026-02-15",
+        "problem_type": "integration_issue",
+        "severity": "high",
+        "tags": [
+          "claude-code",
+          "plugin",
+          "mcp",
+          "hooks",
+          "orphaned-at",
+          "version-mismatch",
+          "binary-missing"
+        ]
+      },
+      {
+        "path": "docs/solutions/integration-issues/plugin-validation-errors-cache-manifest-divergence-20260217.md",
+        "module": "interverse",
+        "title": "Plugin Validation Errors: Cache/Manifest Divergence (4 Plugins)",
+        "date": "2026-02-17",
+        "problem_type": "integration_issue",
+        "severity": "high",
+        "tags": [
+          "claude-code",
+          "plugin",
+          "cache-divergence",
+          "hooks-format",
+          "manifest",
+          "orphaned-at",
+          "hook-event-types"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/argparse-parents-subparser-default-overwrite-20260219.md",
+        "module": "interverse",
+        "title": "argparse `parents=[shared]` Overwrites Flags Parsed by Main Parser",
+        "date": "2026-02-19",
+        "problem_type": "python_pattern",
+        "severity": "medium",
+        "tags": [
+          "python",
+          "argparse",
+          "cli",
+          "subparsers",
+          "parents",
+          "defaults",
+          "suppress"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/cas-spawn-link-orphan-cleanup-20260219.md",
+        "module": "interverse",
+        "title": "CAS Dispatch Linking with Orphan Process Cleanup",
+        "date": "2026-02-19",
+        "problem_type": "concurrency_pattern",
+        "severity": "medium",
+        "tags": [
+          "sqlite",
+          "concurrency",
+          "cas",
+          "spawn",
+          "orphan-cleanup",
+          "single-connection",
+          "go"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/critical-patterns.md",
+        "module": "interverse",
+        "title": "Critical Patterns — Required Reading",
+        "date": "",
+        "problem_type": "patterns",
+        "severity": "",
+        "tags": []
+      },
+      {
+        "path": "docs/solutions/patterns/guard-fallthrough-null-validation-20260216.md",
+        "module": "interverse",
+        "title": "Guard Fallthrough: Validation That Silently Skips on Null",
+        "date": "2026-02-16",
+        "problem_type": "security_pattern",
+        "severity": "high",
+        "tags": [
+          "path-traversal",
+          "validation",
+          "guard-clause",
+          "null-safety",
+          "security",
+          "typescript"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/intercore-schema-upgrade-deployment-20260218.md",
+        "module": "interverse",
+        "title": "intercore Schema Upgrade + Binary Deployment Pattern",
+        "date": "2026-02-18",
+        "problem_type": "patterns",
+        "severity": "medium",
+        "tags": [
+          "intercore",
+          "sqlite",
+          "migration",
+          "deployment",
+          "go-embed"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/set-e-with-fallback-paths-20260216.md",
+        "module": "interverse",
+        "title": "`set -euo pipefail` with Fallback Recovery Paths",
+        "date": "2026-02-16",
+        "problem_type": "shell_pattern",
+        "severity": "medium",
+        "tags": [
+          "bash",
+          "set-e",
+          "error-handling",
+          "hooks",
+          "fallback",
+          "shell"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/synthesis-subagent-context-isolation-20260216.md",
+        "module": "interverse",
+        "title": "Synthesis Subagent for Context-Efficient Multi-Agent Orchestration",
+        "date": "2026-02-16",
+        "problem_type": "patterns",
+        "severity": "high",
+        "tags": [
+          "multi-agent",
+          "context-window",
+          "synthesis",
+          "intersynth",
+          "verdict",
+          "subagent"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/token-accounting-billing-vs-context-20260216.md",
+        "module": "interverse",
+        "title": "Token Accounting: Billing Tokens vs Effective Context",
+        "date": "2026-02-16",
+        "problem_type": "measurement_error",
+        "severity": "high",
+        "tags": [
+          "tokens",
+          "context-window",
+          "cache",
+          "billing",
+          "measurement",
+          "decision-gate",
+          "interstat"
+        ]
+      },
+      {
+        "path": "docs/solutions/patterns/wal-protocol-completeness-20260216.md",
+        "module": "interverse",
+        "title": "WAL Protocol Completeness: Every Write Path Needs Protection",
+        "date": "2026-02-16",
+        "problem_type": "data_integrity_pattern",
+        "severity": "high",
+        "tags": [
+          "wal",
+          "crash-recovery",
+          "write-ahead-log",
+          "conflict-resolution",
+          "data-integrity",
+          "typescript"
+        ]
+      },
+      {
+        "path": "docs/solutions/runtime-errors/jq-null-slice-from-empty-string-return-clavain-20260216.md",
+        "module": "interverse",
+        "title": "Troubleshooting: jq Null-Slice Runtime Error from Empty-String Function Returns",
+        "date": "2026-02-16",
+        "problem_type": "runtime_error",
+        "severity": "high",
+        "tags": [
+          "jq",
+          "null-safety",
+          "shell",
+          "bash",
+          "checkpoint",
+          "json",
+          "empty-string",
+          "runtime-error"
+        ]
+      },
+      {
+        "path": "docs/solutions/workflow-issues/auto-build-launcher-go-mcp-plugins-20260215.md",
+        "module": "interverse",
+        "title": "Troubleshooting: Compiled MCP Binary Missing After Plugin Install",
+        "date": "2026-02-15",
+        "problem_type": "workflow_issue",
+        "severity": "medium",
+        "tags": [
+          "go",
+          "mcp",
+          "plugin",
+          "auto-build",
+          "launcher",
+          "compiled-binary"
+        ]
+      },
+      {
+        "path": "docs/solutions/workflow-issues/bd-sync-from-main-trunk-based-20260216.md",
+        "module": "interverse",
+        "title": "`bd sync --from-main` Fails on Trunk-Based Repos",
+        "date": "2026-02-16",
+        "problem_type": "workflow_issue",
+        "severity": "medium",
+        "tags": [
+          "beads",
+          "bd",
+          "sync",
+          "trunk-based",
+          "git",
+          "workflow"
+        ]
+      }
+    ],
+    "tldr-swinton": [
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/best-practices/extract-engine-logic-into-shared-module-20260212.md",
+        "module": "tldr-swinton",
+        "title": "Extract engine-internal logic into shared modules before adding new modes",
+        "date": "2026-02-12",
+        "problem_type": "best-practices",
+        "severity": "medium",
+        "tags": [
+          "refactoring",
+          "architecture",
+          "block-compression",
+          "knapsack",
+          "difflens"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/best-practices/hooks-vs-skills-separation-plugin-20260211.md",
+        "module": "tldr-swinton",
+        "title": "Best Practice: Hooks for Per-File Tactics, Skills for Session Strategy",
+        "date": "2026-02-11",
+        "problem_type": "best_practice",
+        "severity": "high",
+        "tags": [
+          "plugin-design",
+          "hooks-vs-skills",
+          "separation-of-concerns",
+          "preset-naming",
+          "agent-adoption"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/best-practices/layered-enforcement-architecture-plugin-20260211.md",
+        "module": "tldr-swinton",
+        "title": "Best Practice: 4-Layer Defense-in-Depth for Agent Tool Adoption",
+        "date": "2026-02-11",
+        "problem_type": "best_practice",
+        "severity": "high",
+        "tags": [
+          "defense-in-depth",
+          "layered-enforcement",
+          "plugin-architecture",
+          "presets",
+          "hooks",
+          "skills"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/best-practices/parallel-agents-miss-cross-cutting-schema-bugs.md",
+        "module": "tldr-swinton",
+        "title": "Parallel agents miss cross-cutting schema bugs",
+        "date": "2026-02-12",
+        "problem_type": "best-practices",
+        "severity": "medium",
+        "tags": [
+          "multi-agent",
+          "quality-gates",
+          "schema-consistency",
+          "code-review"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/build-errors/lfs-submodule-blocks-plugin-install.md",
+        "module": "tldr-swinton",
+        "title": "Git LFS Submodule Blocks Claude Code Plugin Install",
+        "date": "",
+        "problem_type": "build-errors",
+        "severity": "high",
+        "tags": [
+          "git",
+          "lfs",
+          "submodule",
+          "plugin-install",
+          "claude-code",
+          "gitmodules"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/build-errors/plugin-version-drift-breaks-loading.md",
+        "module": "tldr-swinton",
+        "title": "Plugin Version Drift Between Repo and Marketplace Breaks Loading",
+        "date": "",
+        "problem_type": "build-errors",
+        "severity": "high",
+        "tags": [
+          "plugin",
+          "version",
+          "marketplace",
+          "cache",
+          "claude-code",
+          "publishing"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/build-errors/stale-plugin-cache-ghost-entries.md",
+        "module": "tldr-swinton",
+        "title": "Stale Plugin Cache Creates Ghost Entries and Load Failures",
+        "date": "",
+        "problem_type": "build-errors",
+        "severity": "medium",
+        "tags": [
+          "plugin",
+          "cache",
+          "claude-code",
+          "ghost",
+          "cleanup",
+          "installation"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/integration-issues/claude-code-hook-stdin-api.md",
+        "module": "tldr-swinton",
+        "title": "Claude Code Hook Scripts Use stdin JSON, Not Environment Variables",
+        "date": "",
+        "problem_type": "integration-issues",
+        "severity": "medium",
+        "tags": [
+          "claude-code",
+          "hooks",
+          "PreToolUse",
+          "stdin",
+          "json",
+          "plugin",
+          "bash"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/integration-issues/cli-plugin-low-agent-adoption-vs-mcp-20260211.md",
+        "module": "tldr-swinton",
+        "title": "Integration Pattern: CLI+Plugin vs MCP for Agent Tool Adoption",
+        "date": "2026-02-11",
+        "problem_type": "integration_issue",
+        "severity": "high",
+        "tags": [
+          "mcp",
+          "agent-adoption",
+          "token-savings",
+          "cli-vs-mcp",
+          "tool-descriptions",
+          "qmd"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/integration-issues/codex-dispatch-background-mode-failure.md",
+        "module": "tldr-swinton",
+        "title": "Codex dispatch.sh Fails in Bash Tool Background Mode",
+        "date": "",
+        "problem_type": "integration-issues",
+        "severity": "medium",
+        "tags": [
+          "codex",
+          "dispatch",
+          "interclode",
+          "background",
+          "bash-tool",
+          "argument-parsing",
+          "shell-quoting"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/performance-issues/duplicated-index-builds-projectindex-20260211.md",
+        "module": "tldr-swinton",
+        "title": "Troubleshooting: Duplicated ProjectIndex Builds Across Engine Calls",
+        "date": "2026-02-11",
+        "problem_type": "performance_issue",
+        "severity": "medium",
+        "tags": [
+          "project-index",
+          "shared-state",
+          "deduplication",
+          "call-chain-threading",
+          "performance"
+        ]
+      },
+      {
+        "path": "plugins/tldr-swinton/docs/solutions/workflow-issues/bd-commands-hang-stale-startlock-20260213.md",
+        "module": "tldr-swinton",
+        "title": "Troubleshooting: Beads `bd` Commands Hang Indefinitely Due to Stale Startlock",
+        "date": "2026-02-13",
+        "problem_type": "workflow_issue",
+        "severity": "high",
+        "tags": [
+          "beads",
+          "daemon",
+          "stale-lock",
+          "hang",
+          "bd-cli",
+          "unix-socket",
+          "ipc"
+        ]
+      }
+    ],
+    "tool-time": [
+      {
+        "path": "plugins/tool-time/docs/solutions/best-practices/event-type-contract-analyze-20260214.md",
+        "module": "tool-time",
+        "title": "Best Practice: Event Type Contract for Hook-Based Analytics",
+        "date": "2026-02-14",
+        "problem_type": "best_practice",
+        "severity": "high",
+        "tags": [
+          "event-types",
+          "hook-events",
+          "double-counting",
+          "pre-post-pairs",
+          "analytics",
+          "tool-chains"
+        ]
+      }
+    ],
+    "tuivision": [
+      {
+        "path": "plugins/tuivision/docs/solutions/patterns/critical-patterns.md",
+        "module": "tuivision",
+        "title": "tuivision Critical Patterns",
+        "date": "",
+        "problem_type": "patterns",
+        "severity": "",
+        "tags": []
+      },
+      {
+        "path": "plugins/tuivision/docs/solutions/ui-bugs/rgb-color-rendering-TerminalRenderer-20260126.md",
+        "module": "tuivision",
+        "title": "RGB Color Rendering Incorrect in TUI Screenshots",
+        "date": "2026-01-26",
+        "problem_type": "ui_bug",
+        "severity": "high",
+        "tags": [
+          "xterm-js",
+          "rgb-colors",
+          "true-color",
+          "terminal-rendering"
+        ]
+      }
+    ]
+  }
+}

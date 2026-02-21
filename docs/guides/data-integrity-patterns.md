@@ -88,7 +88,23 @@ if (context) { validate(input, context); }
 
 Fix: flip to `if (!context) { abort; }` then validate unconditionally.
 
+## Silent JSON Errors in Go
+
+Never use `_ = json.Marshal/Unmarshal`. Write paths: fail hard (return error). Read paths: log warning with entity ID, continue with zero value. Grep for `_ = json.` as a CI check. Wrap multi-table materializations in transactions.
+
+```go
+// WRONG: silent data corruption
+_ = json.Unmarshal(row, &entity)
+
+// RIGHT: fail on writes, log on reads
+if err := json.Unmarshal(row, &entity); err != nil {
+    log.Printf("warning: corrupt JSON for entity %s: %v", id, err)
+    // continue with zero value on reads; return err on writes
+}
+```
+
 ## Detailed Solution Docs
 
 - `docs/solutions/patterns/wal-protocol-completeness-20260216.md`
 - `docs/solutions/patterns/guard-fallthrough-null-validation-20260216.md`
+- `services/intermute/docs/solutions/database-issues/silent-json-errors-sqlite-storage-20260211.md`

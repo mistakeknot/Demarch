@@ -151,6 +151,17 @@ Use `/interpub:release <version>` or `scripts/bump-version.sh <version>` to upda
 
 MCP servers that depend on external services (e.g., interlock depends on intermute) fail silently if the service isn't running. Document required services and add health checks to plugin SessionStart hooks.
 
+## Ghost Plugin Entries
+
+Renamed plugins leave ghost entries in `enabledPlugins` (settings.json) and cache dirs. Worst case: old name in settings.json causes failed-to-load every session.
+
+**Fix:**
+1. Remove stale key from `~/.claude/settings.json` → `enabledPlugins`
+2. Delete cache dir: `rm -rf ~/.claude/plugins/cache/interagency-marketplace/<old-name>`
+3. Reinstall under new name: `claude plugins install <new-name>@interagency-marketplace`
+
+**Detection:** If `/plugin` shows error counts at session start and you recently renamed a plugin, check for ghost entries first.
+
 ## Detailed Solution Docs
 
 For full incident investigations and root cause analysis:

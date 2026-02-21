@@ -28,6 +28,7 @@ plugins/              → companion plugins (all lowercase)
   intercheck/         → code quality guards + session health monitoring
   interleave/         → deterministic skeleton + LLM islands pattern (spec + library)
   interject/          → ambient discovery + research engine (MCP)
+  interlearn/         → cross-repo institutional knowledge index
   interserve/         → Codex spark classifier + context compression (MCP)
   interstat/          → token efficiency benchmarking
   intersynth/         → multi-agent synthesis engine (verdict aggregation)
@@ -65,6 +66,14 @@ For plugin development and release workflow (including publish gates and require
 - `## Publishing`
 - `## Plugin Dev/Publish Gate`
 - `## Version Bumping (interbump)`
+
+## Critical Patterns
+
+Before creating plugins with compiled MCP servers or hooks, read `docs/solutions/patterns/critical-patterns.md` — launcher script pattern, hooks.json format, orphaned_at cleanup.
+
+## Plugin Design Principle
+
+Hooks handle per-file automatic enforcement (zero cooperation needed). Skills handle session-level strategic decisions. Never duplicate the same behavior in both — single enforcement point per concern.
 
 ## Design Decisions (Do Not Re-Ask)
 
