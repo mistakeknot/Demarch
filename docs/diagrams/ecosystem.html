@@ -282,7 +282,7 @@ body {
 <script>
 // DATA_PLACEHOLDER is replaced by the generator with scanned JSON
 const data = {
-  "generated": "2026-02-21T04:25:57.667Z",
+  "generated": "2026-02-21T04:40:34.904Z",
   "stats": {
     "nodes": 121,
     "edges": 181,
@@ -317,7 +317,7 @@ const data = {
       "label": "intercheck",
       "description": "Code quality guards and session health monitoring",
       "meta": {
-        "version": "0.1.7",
+        "version": "0.1.8",
         "path": "plugins/intercheck",
         "repoUrl": "https://github.com/mistakeknot/intercheck"
       }
@@ -1015,7 +1015,7 @@ const data = {
       "label": "intermem",
       "description": "Memory synthesis — graduates stable auto-memory facts to AGENTS.md/CLAUDE.md",
       "meta": {
-        "version": "0.2.1",
+        "version": "0.2.2",
         "path": "plugins/intermem",
         "repoUrl": "https://github.com/mistakeknot/intermem"
       }
@@ -1160,7 +1160,7 @@ const data = {
       "label": "interserve",
       "description": "Interserve — Codex spark classifier and context compression via MCP",
       "meta": {
-        "version": "0.1.2",
+        "version": "0.1.3",
         "path": "plugins/interserve",
         "repoUrl": "https://github.com/mistakeknot/interserve"
       }
@@ -1205,7 +1205,7 @@ const data = {
       "label": "interstat",
       "description": "Token efficiency benchmarking for agent workflows",
       "meta": {
-        "version": "0.2.4",
+        "version": "0.2.5",
         "path": "plugins/interstat",
         "repoUrl": "https://github.com/mistakeknot/interstat"
       }
@@ -1236,7 +1236,7 @@ const data = {
       "label": "intersynth",
       "description": "Multi-agent synthesis engine — collects findings from parallel review/research agents, deduplicates, writes verdicts, produces compact summaries. Keeps agent output out of the host context.",
       "meta": {
-        "version": "0.1.2",
+        "version": "0.1.3",
         "path": "plugins/intersynth",
         "repoUrl": "https://github.com/mistakeknot/intersynth"
       }
@@ -1414,7 +1414,7 @@ const data = {
       "label": "clavain",
       "description": "Self-improving agent rig — codifies product and engineering discipline into composable workflows from brainstorm to ship. Compounds knowledge, generates domain agents, and monitors its own docs. Orchestrates Claude, Codex, and GPT-5.2 Pro through 15 skills, 4 agents, 52 commands, 12 hooks. Companions: interphase, interline, interflux, interpath, interwatch, interslack, interform, intercraft, interdev, interpeer, intertest.",
       "meta": {
-        "version": "0.6.56",
+        "version": "0.6.57",
         "path": "hub/clavain",
         "repoUrl": "https://github.com/mistakeknot/Clavain"
       }
@@ -3182,9 +3182,7 @@ const activeFilters = new Set(Object.keys(TYPE_COLORS));
 let selectedNode = null;
 let searchQuery = '';
 
-// Stats
-document.getElementById('stats').textContent =
-  data.stats.nodes + ' nodes \u00b7 ' + data.stats.edges + ' edges \u00b7 ' + domainNames.length + ' domains \u00b7 Generated ' + new Date(data.generated).toLocaleDateString();
+// Stats (updated after domain extraction below)
 
 // Build filter buttons into sidebar
 const filterList = document.getElementById('filter-list');
@@ -3217,24 +3215,6 @@ for (const [type, color] of Object.entries(TYPE_COLORS)) {
   item.appendChild(document.createTextNode(TYPE_LABELS[type]));
   legend.appendChild(item);
 }
-
-// Build domain toggle buttons
-var domainList = document.getElementById('domain-list');
-domainNames.forEach(function(domain) {
-  var btn = document.createElement('button');
-  btn.className = 'filter-btn active';
-  var color = DOMAIN_COLORS[domain];
-  btn.style.setProperty('--type-color', color);
-  var dot = document.createElement('span');
-  dot.className = 'dot';
-  dot.style.background = color;
-  btn.appendChild(dot);
-  var count = domainMembers[domain].size;
-  btn.appendChild(document.createTextNode(DOMAIN_LABELS[domain] + ' (' + count + ')'));
-  btn.dataset.domain = domain;
-  btn.onclick = function() { toggleDomain(domain, btn); };
-  domainList.appendChild(btn);
-});
 
 // D3 Setup
 const sidebarWidth = 180;
@@ -3287,6 +3267,28 @@ domainNames.forEach(function(name) {
 });
 
 const activeDomains = new Set(domainNames);
+
+// Stats
+document.getElementById('stats').textContent =
+  data.stats.nodes + ' nodes \u00b7 ' + data.stats.edges + ' edges \u00b7 ' + domainNames.length + ' domains \u00b7 Generated ' + new Date(data.generated).toLocaleDateString();
+
+// Build domain toggle buttons
+var domainList = document.getElementById('domain-list');
+domainNames.forEach(function(domain) {
+  var btn = document.createElement('button');
+  btn.className = 'filter-btn active';
+  var color = DOMAIN_COLORS[domain];
+  btn.style.setProperty('--type-color', color);
+  var dot = document.createElement('span');
+  dot.className = 'dot';
+  dot.style.background = color;
+  btn.appendChild(dot);
+  var count = domainMembers[domain].size;
+  btn.appendChild(document.createTextNode(DOMAIN_LABELS[domain] + ' (' + count + ')'));
+  btn.dataset.domain = domain;
+  btn.onclick = function() { toggleDomain(domain, btn); };
+  domainList.appendChild(btn);
+});
 
 // Force simulation
 const simulation = d3.forceSimulation(graphNodes)

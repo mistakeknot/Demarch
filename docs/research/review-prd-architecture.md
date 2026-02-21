@@ -1,426 +1,200 @@
-# Architecture Review: interfluence Code-Switching PRD
+# Architecture Review: Static Routing Table PRD (B1)
 
-**Reviewed:** 2026-02-18
-**Document:** `docs/prds/2026-02-18-interfluence-code-switching.md`
-**Reviewer:** Flux Architecture & Design (Sonnet 4.5)
+**Reviewed:** 2026-02-21
+**Document:** `docs/prds/2026-02-21-static-routing-table.md`
+**Reviewer:** Flux-drive Architecture & Design Reviewer (Sonnet 4.6)
 **Focus Areas:** Module boundaries, coupling, design patterns, anti-patterns, unnecessary complexity
 
 ---
 
-## Executive Summary
+## Summary
 
-**Overall Assessment:** STRUCTURALLY SOUND with one critical coupling risk and two simplification opportunities.
-
-The PRD proposes a clean delta-over-base voice profile architecture with file-path-based resolution. The core design is architecturally coherent: base voice as invariants, context voices as deltas, merge at apply time. The storage model is simple and the MCP tool surface is minimal.
-
-**Key Findings:**
-1. **Critical:** Hook-to-config coupling creates a fragile bash glob-matching layer that bypasses the MCP abstraction (F5)
-2. **Opportunity:** Delta merge logic is duplicated across skill and agent contexts without a shared contract
-3. **Opportunity:** Config schema extension risks breaking existing `config_save` merge semantics
+The PRD addresses a real and legitimate pain point: two independent routing systems with hardcoded policy. The core direction — declarative config, shell library, backward-compatible integration — is sound. However, the PRD carries one significant structural conflict, one unnecessary scope creep item, and one under-specified integration that will create debugging confusion at implementation time. These are fixable before work begins.
 
 ---
 
 ## 1. Boundaries & Coupling
 
-### 1.1 MCP Tool Boundary (CLEAN)
+### Finding 1 — CRITICAL: routing.yaml and tiers.yaml Govern Different Namespaces, But the PRD Conflates Their Output Types
 
-**F1 (Voice-Aware Profile Storage)** correctly extends the MCP tool surface without breaking the existing abstraction:
+**Location:** F1 schema, F3 dispatch integration, dependency statement ("routing.yaml extends but does not replace this")
 
-- `profile_get(projectDir, voice?)` — optional param preserves backward compatibility
-- `profile_save(projectDir, content, voice?)` — optional param, creates `voices/` dir lazily
-- `profile_list(projectDir)` — new tool, no dependencies on existing tools
+`tiers.yaml` maps symbolic **tier names** (`fast`, `deep`, `fast-clavain`, `deep-clavain`) to **concrete Codex model strings** (`gpt-5.3-codex-spark`). The tier names are stable abstractions that insulate callers from model churn. This is a Codex CLI concern.
 
-**Verified:** `utils/paths.ts` currently has no voice awareness; `getVoiceProfilePath(projectDir)` hardcodes `voice-profile.md`. The PRD proposes a clean extension: `getVoiceProfilePath(projectDir, voice?)` that conditionally returns `voices/${voice}.md` when `voice` is provided. This is single-responsibility path resolution with no leakage into corpus or config tools.
+The PRD's `routing.yaml` maps phases and categories to values described with Claude model aliases (e.g., `brainstorm: opus`, `execute: sonnet`). These are Claude subagent model names, not Codex tier names. The two files operate in different namespaces for different runtimes.
 
-**Risk:** NONE. This is a textbook façade extension.
+This is structurally fine if the two systems stay separate. The problem is F3, which states that `dispatch.sh` should "consult routing.yaml for phase-aware tier selection." This means `lib-routing.sh` must return something that tiers.yaml and `dispatch.sh` understand — a Codex tier name (`fast`, `deep`) — not a Claude alias (`opus`, `sonnet`). But F4 applies the same `routing.yaml` to Claude subagent frontmatter, where the correct values are Claude model names, not Codex tier names.
 
----
+Under the single-file design, `routing.yaml` must either:
+- (A) Use Claude model names (`opus`, `sonnet`, `haiku`) — then F3 dispatch integration requires an implicit translation to Codex tiers, which is underdefined and error-prone, or
+- (B) Use Codex tier names (`fast`, `deep`) — then F4 subagent integration must translate back to Claude model names, and the translation table lives nowhere specified.
 
-### 1.2 Config Schema Coupling (MODERATE RISK)
+The PRD says the config "extends but does not replace" tiers.yaml but does not define what values `routing.yaml`'s `phases:` section actually contains or how `lib-routing.sh` maps its output to each caller's requirement. "Extends but does not replace" is a design gesture, not a specification.
 
-**F2 (Config Schema Extension)** adds a `voices` mapping to `config.yaml`:
+**What to fix.**
+
+Split `routing.yaml` into two explicitly namespaced sections with documented value types:
 
 ```yaml
-voices:
-  blog:
-    applyTo: ["posts/**", "blog/**"]
-  docs:
-    applyTo: ["docs/**", "README.md"]
+# config/routing.yaml
+
+# For Claude subagents — values are Claude model aliases (haiku, sonnet, opus, inherit)
+subagents:
+  phases:
+    brainstorm: opus
+    execute: sonnet
+  categories:
+    research: haiku
+    review: sonnet
+  overrides:
+    fd-safety: opus
+
+# For Codex dispatch — values are tier names from config/dispatch/tiers.yaml
+dispatch:
+  phases:
+    brainstorm: deep
+    execute: fast
+    review: fast
 ```
 
-**Current config structure:**
+`lib-routing.sh` exposes two distinct resolver functions:
+- `routing_resolve_subagent_model <phase> <category> [agent]` — returns a Claude model name consumed by `/model-routing`
+- `routing_resolve_dispatch_tier <phase>` — returns a Codex tier name consumed by `dispatch.sh`
 
-```typescript
-export interface interfluenceConfig {
-  mode: "auto" | "manual";
-  autoApplyTo: string[];
-  exclude: string[];
-  learnFromEdits: boolean;
-}
-```
-
-**Problem:** The PRD says "`config_save` accepts voices mapping (merge semantics — partial update)" but the current `config_save` tool uses **per-field optional params**, not a generic object merge:
-
-```typescript
-server.tool(
-  "config_save",
-  {
-    mode: z.enum(["auto", "manual"]).optional(),
-    autoApplyTo: z.array(z.string()).optional(),
-    exclude: z.array(z.string()).optional(),
-    learnFromEdits: z.boolean().optional(),
-  },
-  async ({ projectDir, mode, autoApplyTo, exclude, learnFromEdits }) => {
-    // per-field assignment
-  }
-);
-```
-
-Adding `voices` requires either:
-
-**Option A (Type-Safe):** Add a new typed parameter:
-
-```typescript
-voices: z.record(z.object({
-  applyTo: z.array(z.string())
-})).optional()
-```
-
-**Option B (Generic):** Accept a raw config object and merge it — **this breaks the existing tool contract** and loses zod validation.
-
-**Recommendation:** Option A. The PRD should explicitly state that `config_save` gets a new `voices` parameter with a zod schema for the nested structure. This maintains the existing pattern and prevents schema drift.
-
-**Impact:** If not specified, implementers may reach for Option B (generic merge) and lose type safety.
+This makes the namespace boundary explicit, eliminates translation ambiguity, and preserves each caller's existing vocabulary.
 
 ---
 
-### 1.3 Hook-to-Config Coupling (HIGH RISK — ANTI-PATTERN)
+### Finding 2 — MODERATE: Interserve-Mode Tier Remapping Creates Invisible Context-Dependence in routing.yaml Outputs
 
-**F5 (Learning Hook — Context Tagging)** proposes that the bash hook (`hooks/learn-from-edits.sh`) reads the `voices` config and performs glob matching to tag learning log entries with context.
+**Location:** F3 acceptance criteria — "resolves model from routing.yaml before falling back to `--tier`"
 
-**Current hook behavior:** Reads `config.yaml` with grep to check `learnFromEdits` boolean and `exclude` patterns.
+`dispatch.sh` already has a silent post-resolution remapping step: when `CLAVAIN_DISPATCH_PROFILE=interserve`, it translates `fast` → `fast-clavain` and `deep` → `deep-clavain` inside `resolve_tier_model`. This remapping is invisible to callers.
 
-```bash
-LEARN_ENABLED=$(grep -E "^learnFromEdits:" "$CONFIG_FILE" | awk '{print $2}')
-if echo "$RELATIVE_PATH" | grep -qE "^(CLAUDE\.md|AGENTS\.md|\.interfluence/)"; then
-  exit 0
-fi
-```
+Under the proposed flow, `dispatch.sh --phase brainstorm` would resolve `brainstorm` → `deep` (from `routing.yaml`), pass `deep` to `resolve_tier_model`, which silently remaps it to `deep-clavain` in interserve mode. A `routing.yaml` author writing `brainstorm: deep` cannot know whether "deep" will be the actual tier or a remapped variant at execution time. `routing.yaml` is supposed to be a declarative single source of truth, but its effective output becomes context-dependent on an environment variable.
 
-**Proposed behavior:** Parse the `voices` config (nested YAML object with array values) and match `$FILE_PATH` against glob patterns in bash.
+**What to fix.**
 
-**Architectural problems:**
+Document the layer boundary explicitly in both `routing.yaml`'s inline comments and `lib-routing.sh`'s header: `routing.yaml` declares base tier names (`fast`, `deep`); interserve-mode remapping is a post-resolution step inside `dispatch.sh` and is not routing.yaml's concern. This is already how the current system works. The PRD must state this separation clearly so implementers don't accidentally route around it.
 
-1. **Glob matching in bash is fragile:** The PRD proposes `applyTo: ["posts/**", "blog/**"]` — bash globbing doesn't natively handle `**` (recursive glob). You'd need `shopt -s globstar` and careful escaping, or shelling out to a Python/Node script, which breaks the "silent fast hook" contract.
-
-2. **Duplicates resolution logic:** The apply skill will already have voice resolution logic (file path → voice name). The hook would reimplement this in bash, creating two parallel resolution paths that can diverge.
-
-3. **Bypasses the MCP abstraction:** The hook directly parses `config.yaml` instead of calling an MCP tool. This is acceptable for a boolean flag (`learnFromEdits`) but problematic for structured resolution logic.
-
-4. **YAGNI risk:** The PRD's open question #1 asks "Should the learning hook infer context?" This suggests uncertainty. If context tagging in the hook isn't strictly required for F5's acceptance criteria, it's premature complexity.
-
-**Alternative (Simple):** Tag learnings as `CONTEXT:unknown` in the hook, defer resolution to the refine skill:
-
-```bash
-# Hook (unchanged except tag format)
-cat >> "$LOG_FILE" << ENTRY
-
---- ${TIMESTAMP} | ${RELATIVE_PATH} | CONTEXT:unknown ---
-OLD: ${OLD_STRING}
-NEW: ${NEW_STRING}
-ENTRY
-```
-
-Then during `/interfluence refine`, Claude resolves the context from the file path using the `config_get` tool and updates the profile accordingly.
-
-**Recommendation:** Remove context inference from F5. Keep the hook simple and stateless. Let the refine skill (which already has access to the full MCP toolset and voice resolution logic) handle context classification at review time.
-
-**Impact:** Prevents bash glob-matching fragility and eliminates a duplicated resolution path.
+For B2/B3, if `routing.yaml` needs to express interserve-specific overrides, that can be added as a separate `dispatch.interserve_overrides:` section. Mark it out of scope for B1.
 
 ---
 
-### 1.4 Skill-to-MCP Boundary (CLEAN)
+### Finding 3 — LOW: dispatch.sh's YAML Parser Is a Load-Bearing Implementation Detail That lib-routing.sh Must Replicate Exactly
 
-**F4 (Apply Skill — Voice Resolution)** correctly uses MCP tools for all data access:
+**Location:** F2 — "Uses line-by-line YAML parsing consistent with dispatch.sh pattern"
 
-1. Read `config_get` to retrieve the `voices` mapping
-2. Match file path against patterns (in TypeScript skill context, not bash)
-3. Call `profile_get(projectDir, "base")` to load base
-4. Call `profile_get(projectDir, "blog")` to load delta
-5. Merge and apply
+The existing parser in `resolve_tier_model` handles three specific structural patterns in `tiers.yaml`: a top-level `tiers:` section, two-space-indented tier keys, and four-space-indented `model:` values within each tier block. It detects section exit by watching for a line that starts with a lowercase letter at column 0.
 
-**Risk:** NONE. This is the correct layer for voice resolution logic.
+`routing.yaml` will have a more complex nested structure (`subagents:` → `phases:` → key-value pairs, `categories:` → key-value pairs, `overrides:` → key-value pairs). The existing parser's section-exit heuristic (any top-level lowercase letter terminates the current section) works because `tiers.yaml` has only two top-level sections. With `routing.yaml`'s deeper nesting, the same heuristic becomes ambiguous — `phases:` under `subagents:` looks like a top-level key to a regex that examines indentation level.
+
+**What to fix.**
+
+Before writing `lib-routing.sh`, write down the exact YAML shape that the file will have — including indent depths and the nesting structure — and verify that the planned parsing logic correctly handles it. Add this to the acceptance criteria: "Parsing is verified against a sample routing.yaml with all four sections populated (phases, categories, overrides, and the dispatch section)." The "consistent with dispatch.sh pattern" criterion is underspecified because `routing.yaml` is structurally more complex than `tiers.yaml`.
 
 ---
 
 ## 2. Pattern Analysis
 
-### 2.1 Delta Merge Pattern (DESIGN RISK — NO SHARED CONTRACT)
+### Finding 4 — MODERATE: lib-routing.sh Placed in `hooks/` Is a Layer Signal Violation
 
-**The PRD specifies merge semantics in prose:**
+**Location:** F2 — "Shell library (`hooks/lib-routing.sh`)"
 
-> "Merged profile = base sections + delta override sections (delta wins per-section)"
+The existing `hooks/lib-*.sh` files are support libraries for hook execution context: `lib-sprint.sh` manages sprint state for hooks, `lib-gates.sh` provides gate checks within hooks, `lib-intercore.sh` wraps `ic` CLI calls invoked by hooks. They all exist to serve hooks (PostToolUse, SessionStart, etc.) running inside Claude Code's event model.
 
-But there's no schema or interface that enforces what a "section" is. Voice profiles are freeform markdown. The current format (from AGENTS.md) is:
+`lib-routing.sh` would be called by two callers that are not hooks:
+1. `scripts/dispatch.sh` — a standalone shell script invoked by Codex CLI agents
+2. `commands/model-routing.md` — a Claude command, not a hook
 
-```
-## Overview
-[prose]
+Placing `lib-routing.sh` in `hooks/` makes `dispatch.sh` depend on a path that signals "hook internals." Any future developer reading `dispatch.sh` will find `source "$SCRIPT_DIR/../hooks/lib-routing.sh"` and reasonably wonder whether this is intentional. The `hooks/` directory communicates lifecycle ownership; a shared config reader library does not belong there.
 
-## Sentence Structure
-[prose]
+**What to fix.**
 
-## Vocabulary & Diction
-[prose]
+Place `lib-routing.sh` in `scripts/` alongside `dispatch.sh`. Both F3 and F4 callers can source it from there. If a hook later needs routing resolution (plausible in B2, e.g., a session-start hook that auto-applies a profile), the hook sources from `scripts/` — that direction is less surprising than the reverse.
 
-## Tone & Voice
-[prose]
-```
-
-**How does the delta override work?**
-
-**Option A (Heading-based merge):** Parse both profiles as markdown, identify H2 sections, delta sections replace base sections with the same heading.
-
-**Option B (Full replacement):** Delta profile replaces the entire base (no merge). This contradicts the "delta" concept.
-
-**Option C (Append-only):** Delta sections are appended to base sections. This doesn't match "delta wins."
-
-**Problem:** The PRD doesn't specify the merge algorithm, and there's no code reference for it. This is a **hidden complexity point** — markdown section merging is nontrivial (requires parsing, heading normalization, handling missing sections).
-
-**Where is the merge implemented?**
-
-- **F3 (Voice Analyzer)** generates deltas: "Per-context deltas contain only sections that differ from the base"
-- **F4 (Apply Skill)** consumes the merged profile: "Merged profile = base sections + delta override sections"
-
-So the analyzer generates deltas, but the apply skill performs the merge. Neither has a shared specification.
-
-**Recommendation:**
-
-1. **Define the merge contract explicitly in the PRD:** "A section is defined as a markdown H2 heading and all content until the next H2. Delta sections with matching headings replace base sections. Delta sections with new headings are appended. Base sections not in the delta are preserved."
-
-2. **Specify where the merge happens:** Should the `profile_get` tool perform the merge server-side (when `voice` is provided, return the merged content)? Or should the apply skill call `profile_get("base")` and `profile_get("blog")` separately and merge in the skill prompt? The PRD says "load the merged (base + delta) profile" but doesn't specify the implementation boundary.
-
-3. **Prevent drift between analyzer and apply:** If the analyzer generates deltas using heading-based sections, but the apply skill merges using a different rule, they'll diverge. Codify the section definition in the voice-analyzer agent prompt.
-
-**Impact:** Without a shared merge contract, the analyzer may generate deltas that the apply skill can't correctly merge, leading to broken voice application.
+Do not introduce a new `lib/` top-level directory for a single file. The overhead of a new directory for one library exceeds the clarity benefit; use `scripts/` for B1.
 
 ---
 
-### 2.2 First-Match-Wins Resolution (CLEAN PATTERN)
+### Finding 5 — LOW: "Caches parsed config for the duration of a single function call" Is Not Caching
 
-**F2** specifies "first-match-wins" for voice resolution. This is a standard pattern (Nginx location blocks, iptables rules, etc.) and has clear semantics: order matters, first match terminates search.
+**Location:** F2 — "Caches parsed config for the duration of a single function call (no redundant file reads within one resolution)"
 
-**Risk:** NONE. The pattern is well-understood.
+Any function that reads a file once to resolve a value performs no redundant reads "within one resolution" by definition. This describes normal function behavior, not caching. True caching means storing parsed state between multiple calls within the same shell process.
 
-**Implementation note:** The PRD doesn't specify whether the `voices` config is an array (preserving insertion order) or an object (YAML object key order is preserved in js-yaml, but not guaranteed in all parsers). Recommendation: Use a YAML array of objects to make order explicit:
+In practice, `dispatch.sh` calls model resolution exactly once per invocation, so multi-call caching is irrelevant for B1. The criterion as written is not testable.
 
-```yaml
-voices:
-  - name: blog
-    applyTo: ["posts/**", "blog/**"]
-  - name: docs
-    applyTo: ["docs/**", "README.md"]
-```
+**What to fix.**
 
-Or rely on YAML 1.2 ordered maps and document that key order matters.
+Replace with a concrete criterion: "`routing_resolve_subagent_model` and `routing_resolve_dispatch_tier` read `routing.yaml` at most once per shell process by storing the parsed sections in shell variables on first call and skipping re-reads on subsequent calls within the same process." This is implementable with a standard variable-guard pattern and is the correct specification if interoperability with a future B2 hook (which calls resolution multiple times in a session) is intended.
 
 ---
 
-### 2.3 Lazy Directory Creation (ANTI-PATTERN RISK)
+## 3. Simplicity and YAGNI
 
-**F1** says "creating `voices/` dir if needed" when `profile_save` is called with a voice name.
+### Finding 6 — MODERATE: The `profiles:` Concept Adds a State-Tracking Problem That B1 Does Not Solve
 
-**Current pattern in `utils/paths.ts`:**
+**Location:** F1 — "Supports `profiles:` section defining named routing profiles", F2 — `routing_active_profile`, F4 — `/model-routing economy|quality|<custom-profile>`
 
-```typescript
-export function getCorpusDir(projectDir: string): string {
-  const dir = join(getinterfluenceDir(projectDir), "corpus");
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-}
-```
+The profiles feature requires answering a question the PRD does not address: **how is the active profile persisted between invocations?**
 
-This is lazy directory creation — fine for `corpus/` (populated by user action), but risky for `voices/`.
+The current `/model-routing economy` command works by physically editing agent frontmatter files with `sed`. After the command runs, the frontmatter is the state. There is no separate "active profile" concept — the files are the source of truth.
 
-**Problem:** If `profile_get(projectDir, "blog")` is called but `voices/blog.md` doesn't exist, the current code returns "No voice profile exists yet" (see `profile_get` implementation, line 36-44). But if `voices/` dir doesn't exist, should the tool create it?
+If `routing.yaml` adds a `profiles:` section and `routing_active_profile` must report the currently active profile, that selection must be stored somewhere between command invocations. The options are:
 
-**Recommendation:** `profile_save` creates `voices/` dir lazily (as stated). `profile_get` does NOT create dirs. `profile_list` creates `voices/` dir only when listing (so an empty list means "no voices," not "directory doesn't exist").
+1. Written to a state file (e.g., `.clavain/routing-profile`) on each `/model-routing <profile>` call — adds a new state file with stale-on-manual-edit behavior.
+2. Inferred by reading all agent frontmatter and pattern-matching against profile definitions — expensive, fragile when models are mixed.
+3. Not persisted — `routing_active_profile` always returns "unknown" — making it nearly useless.
 
-**Impact:** Clarifies when filesystem state changes occur.
+None of these are specified in the PRD. None are resolved by B1's static-config-only scope.
 
----
+The profiles concept itself — named mapping sets in `routing.yaml` — is correct and should stay. Named profiles in the config file are pure data. What is premature is `routing_active_profile` (a function that queries runtime state) and the profile-name display in `/model-routing status`.
 
-### 2.4 Backward Compatibility (CLEAN PATTERN)
+**What to fix.**
 
-**F1** correctly preserves backward compatibility:
-
-- `profile_get(projectDir)` returns `voice-profile.md` (base)
-- Existing projects with no `voices/` dir work unchanged
-
-**F2** correctly handles missing `voices` config:
-
-- "Old configs without `voices` key load without error (default: no voices = base only)"
-
-**Risk:** NONE. This follows the standard optional-field-with-default pattern.
+Remove `routing_active_profile` from F2's acceptance criteria. Remove the "active profile name" display from the F2 `routing_list_mappings` function and from F4's status output. The `/model-routing status` command can continue to show which model each agent currently has (the existing grep behavior), without needing to name the profile that produced it. Profile-activation tracking is a natural B2 addition when the system gains complexity-aware routing and needs to explain its current selection. Add it to the non-goals section.
 
 ---
 
-## 3. Simplicity & YAGNI
+### Finding 7 — LOW: Fallthrough Behavior When routing.yaml Exists But a Phase Is Missing Is Not Specified
 
-### 3.1 Premature Abstraction: `defaultVoice` Config (YAGNI)
+**Location:** F2 — "Returns empty string (not error) when routing.yaml doesn't exist"
 
-**The brainstorm mentions `defaultVoice` in the storage table:**
+The PRD specifies graceful degradation when the file is entirely absent. It does not specify behavior when the file exists but the requested phase or category key is absent — which is the common partial-population case during initial adoption.
 
-> "config.yaml schema | Add `voices` mapping, `defaultVoice`"
+If `routing_resolve_dispatch_tier "shipping"` is called and `shipping` is not in the `dispatch.phases:` section, does the function return empty string, return the category default, or return the fallback tier? The stated resolution order (per-agent > phase > category > fallback) implies a missing phase should fall through to category, then to fallback. But this needs an explicit criterion, not an implicit reading of a priority diagram.
 
-But the PRD doesn't specify what `defaultVoice` does. The resolution logic is:
+**What to fix.**
 
-1. Match file path against `voices` mapping → return voice name
-2. No match → return `null` (base fallback)
-
-**When would `defaultVoice` be used?**
-
-- If you want a non-base fallback? But the entire design assumes base = invariants = correct fallback.
-- If you want to override the fallback for specific projects? But why not just add a catch-all pattern to `voices`?
-
-**Recommendation:** Remove `defaultVoice` from the PRD unless there's a concrete use case. The current "no match = base" rule is simple and sufficient.
-
-**Impact:** Reduces config surface area and prevents confusion about fallback precedence.
+Add one acceptance criterion: "When the requested phase is not present in `routing.yaml`, resolution falls through to category default, then to the configured fallback value, then to empty string. A missing phase is not an error and does not log a warning."
 
 ---
 
-### 3.2 Unnecessary Tool: `profile_list` (BORDERLINE YAGNI)
+## Pattern Observations (Non-Blocking)
 
-**F1** adds `profile_list(projectDir)` to return `["base", "blog", "docs"]`.
+**The line-by-line YAML parser replication is the right call for B1.** Introducing an external YAML library (`yq`, `python yaml`) adds a dependency to a shell plugin system that explicitly avoids them. The existing pattern in `resolve_tier_model` is already proven and understood by the codebase. Replicating it in `lib-routing.sh` is the correct consistency choice; see Finding 3 for the caveat about `routing.yaml`'s more complex nesting requiring the parser to handle deeper structure.
 
-**Who uses this?**
+**The `--phase` flag addition to dispatch.sh is a clean, additive change.** Existing callers that do not pass `--phase` get identical behavior. This is the lowest-risk integration surface possible and the PRD correctly enforces that invariant.
 
-- The apply skill doesn't need it (it resolves voice from file path or `--voice` flag)
-- The analyze skill doesn't need it (it generates voices, not lists them)
-- The compare skill *might* use it to show match scores against all voices (PRD open question #3)
+**The sed-based frontmatter editing in `/model-routing` is not an architecture concern for B1.** It works, it is implicitly validated by usage, and the PRD does not propose changing the mechanism — only the source of truth for which values to apply. That is the correct scope.
 
-**Alternatives:**
-
-- The compare skill can call `profile_get` for each known voice (base + voices from config)
-- A `/interfluence status` command can show available voices by reading the config, not listing files
-
-**Recommendation:** Keep `profile_list` if compare skill (#F6) needs it. Otherwise, defer until there's a concrete consumer.
-
-**Impact:** Small. `profile_list` is ~10 LOC and doesn't add coupling. Not worth blocking the PRD, but worth questioning during implementation.
+**The B1 → B2 → B3 evolution path is coherent.** With the two-section `routing.yaml` structure (Finding 1), complexity-aware routing in B2 can add a resolver that reads runtime signals without changing the config schema. Adaptive routing in B3 can write back to a state file that `lib-routing.sh` consults on load. The config shape proposed in F1 does not foreclose either evolution.
 
 ---
 
-### 3.3 Comparative Analysis vs. Classification (COMPLEXITY RISK)
+## Verdict by Finding
 
-**F3 (Voice Analyzer — Comparative Analysis)** proposes:
+| # | Severity | Finding | Required Action |
+|---|----------|---------|-----------------|
+| 1 | CRITICAL | routing.yaml value namespace conflicts: Claude model aliases vs. Codex tier names used by dispatch.sh | Split routing.yaml into `subagents:` and `dispatch:` sections; expose two resolver functions in lib-routing.sh |
+| 2 | MODERATE | Interserve-mode tier remapping is a silent post-resolution step invisible to routing.yaml authors | Document the layer boundary explicitly; lib-routing.sh returns base tiers only; interserve remapping stays in dispatch.sh |
+| 3 | LOW | routing.yaml's nested structure is more complex than tiers.yaml; the existing parsing heuristic may not generalize | Validate parser against full sample routing.yaml before implementation; add sample-validation criterion to F2 |
+| 4 | MODERATE | lib-routing.sh in `hooks/` misrepresents ownership; dispatch.sh is not a hook | Move lib-routing.sh to `scripts/`; hooks source from scripts if needed in B2 |
+| 5 | LOW | "Caches parsed config for the duration of a single function call" is not a testable criterion | Rewrite as a variable-guard criterion with a concrete process-scoped caching contract |
+| 6 | MODERATE | `routing_active_profile` and active-profile status display require state persistence that B1 does not define | Remove active-profile tracking from B1 acceptance criteria; defer to B2 non-goals |
+| 7 | LOW | Fallthrough behavior when a phase key is absent but the file exists is unspecified | Add one explicit acceptance criterion for partial-file fallthrough |
 
-1. Classify untagged corpus samples into contexts (blog, docs, unclassified)
-2. Extract cross-context invariants as the base
-3. Generate per-context deltas
+**Must-fix before implementation:** Findings 1 and 6. Finding 1 is a design decision that shapes the API surface of `lib-routing.sh` — resolving it after code is written costs significantly more than doing so now. Finding 6 removes a state-tracking problem that has no solution in B1's scope.
 
-**Step 1 is a classification task.** The PRD says "Analyzer classifies untagged corpus samples" but doesn't specify the classification mechanism:
-
-- **Supervised:** User pre-tags samples, analyzer uses tags as ground truth
-- **Unsupervised:** Analyzer clusters samples by similarity, infers context labels
-- **Heuristic:** Analyzer matches samples against known corpus sources (e.g., "posts/" → blog, "docs/" → docs)
-
-**Step 2 is a set subtraction task:** What's shared across all contexts?
-
-**Step 3 is a diff task:** For each context, what differs from the invariants?
-
-**Problem:** This is a multi-stage analysis pipeline with fuzzy boundaries. If the analyzer misclassifies a sample (tags a blog post as "docs"), the base profile will be polluted with blog-specific patterns, and the blog delta will be incomplete.
-
-**Fallback cases (F3 acceptance criteria):**
-
-- "With only one context's samples, generates base + that one delta (graceful degradation)"
-- "With no context diversity, generates a single base profile (current behavior)"
-
-**These imply the analyzer infers contexts automatically.** But classification accuracy isn't in the acceptance criteria. What if the analyzer can't confidently classify 50% of the corpus? Does it tag them as "unclassified" and exclude them from base extraction? Or force them into a context and risk polluting the base?
-
-**Recommendation:**
-
-1. **Make classification opt-in for MVP:** Require users to manually tag samples during ingest (add a `--context=blog` flag to the ingest skill). The analyzer then uses these tags as ground truth. Defer auto-classification to post-MVP.
-
-2. **OR: Specify classification heuristics explicitly:** "Analyzer classifies samples by matching `corpus-index.yaml`'s `sourcePath` field against the `voices` config's `applyTo` patterns. Samples that don't match any pattern are tagged `unclassified` and excluded from delta generation."
-
-3. **Add acceptance criteria for classification accuracy:** "Analyzer reports classification confidence per sample. If fewer than 3 samples per context, warns user and skips delta generation for that context."
-
-**Impact:** Prevents silent misclassification from degrading voice quality.
-
----
-
-## 4. Missing Specifications
-
-### 4.1 Migration Path for Existing Profiles
-
-**Open question #2:** "Existing users have a single `voice-profile.md`. Treat it as the base profile automatically (no migration command needed)?"
-
-**Answer:** YES, but the PRD should specify what happens to samples in existing projects:
-
-- Existing `corpus-index.yaml` has samples with `tags: []` (no context)
-- When `/interfluence analyze` is run post-upgrade, those samples need classification
-
-**Recommendation:** Add to F3 acceptance criteria: "Analyzer classifies samples with no context tag. Existing samples in upgraded projects are classified on first analyze."
-
----
-
-### 4.2 Error Handling for Missing Voices
-
-**Scenario:** User runs `/interfluence apply --voice=blog` but `voices/blog.md` doesn't exist.
-
-**What happens?**
-
-- Does `profile_get(projectDir, "blog")` return an error?
-- Does the apply skill fall back to base?
-- Does it warn the user and ask them to run analyze first?
-
-**Recommendation:** Add to F4 acceptance criteria: "If `--voice=X` is provided but `voices/X.md` doesn't exist, report error: 'Voice "X" not found. Available voices: [list]. Run /interfluence analyze to generate missing voices.'"
-
----
-
-### 4.3 Refine Skill Integration
-
-**F5** says "Refine skill can filter learnings by context" but the refine skill isn't mentioned in F6 (Skill & Command Updates).
-
-**Question:** Does the refine skill need voice awareness? If learnings are tagged with context, should refining the blog voice only show blog learnings?
-
-**Recommendation:** Add to F6: "`/interfluence refine --voice=blog` filters learnings to blog context and updates `voices/blog.md` only."
-
----
-
-## 5. Summary of Recommendations
-
-### Must Fix (Blocks Architecture Coherence)
-
-1. **F2:** Specify that `config_save` gets a new `voices` parameter with a zod schema (not a generic merge).
-2. **F4:** Define the markdown section merge algorithm explicitly (heading-based merge with replacement semantics).
-3. **F5:** Remove context inference from the learning hook. Tag as `CONTEXT:unknown`, resolve in refine skill.
-
-### Should Fix (Prevents Implementation Drift)
-
-4. **F3:** Specify classification mechanism (manual tags vs. heuristic vs. unsupervised) and add accuracy/confidence criteria.
-5. **F4:** Add error handling for missing voices when `--voice=X` is provided.
-6. **F6:** Specify refine skill voice-filtering behavior.
-
-### Consider (Simplification Opportunities)
-
-7. **F2:** Remove `defaultVoice` config field unless there's a concrete use case.
-8. **F3:** Simplify comparative analysis to use manual tags for MVP, defer auto-classification.
-
----
-
-## 6. Final Assessment
-
-**Structurally sound design with one critical coupling issue and two opportunities for simplification.**
-
-The delta-over-base architecture is correct. The MCP tool boundary is clean. The first-match-wins resolution pattern is standard.
-
-**The primary risk is F5's hook-to-config coupling**, which creates a bash glob-matching layer that duplicates resolution logic and bypasses the MCP abstraction. Removing context inference from the hook eliminates this fragility.
-
-**The secondary risk is F4's undefined merge contract**, which could lead to drift between the analyzer (delta generator) and apply skill (delta consumer). Codifying the section definition and merge algorithm prevents this.
-
-**The tertiary risk is F3's unspecified classification mechanism**, which could silently degrade voice quality if samples are misclassified. Requiring manual tags for MVP or specifying heuristics addresses this.
-
-With these fixes, the PRD is ready for implementation.
+**Can be fixed during implementation:** Findings 2, 3, 4, 5, 7. These are clarifications that reduce implementation confusion but do not change the API shape.

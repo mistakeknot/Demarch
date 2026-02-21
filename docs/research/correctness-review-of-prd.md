@@ -1,3 +1,49 @@
+# Correctness Review: PRD B1 — Static Routing Table (2026-02-20)
+
+> Note: This file was previously used for a different PRD review (reflect-phase-sprint-integration).
+> That content is superseded by this B1 routing table review.
+
+**Source PRD:** `/root/projects/Interverse/hub/clavain/docs/prds/2026-02-20-static-routing-table.md`
+**Brainstorm:** `/root/projects/Interverse/hub/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
+**Verdict file:** `/root/projects/Interverse/hub/clavain/.clavain/verdicts/fd-correctness.md`
+**Reviewer:** fd-correctness (Julik, Flux-drive Correctness Reviewer)
+**Date:** 2026-02-20
+
+---
+
+See full analysis in the verdict file above. Summary of findings:
+
+## Invariants Under Review
+
+1. **Resolution determinism** — Same (phase, category, agent) inputs must always return the same model.
+2. **Fail-closed on bad config** — Missing or malformed `routing.yaml` must not silently produce a wrong model.
+3. **`inherit` is not a model name** — The sentinel must be intercepted before reaching external dispatch APIs.
+4. **YAML parser correctness** — The awk/sed parser must not silently misparse legal YAML.
+5. **No TOCTOU on the config file** — Concurrent writes by model-routing and reads by resolve_model must not produce partial reads.
+6. **Migration atomicity** — Deleting `tiers.yaml` must not occur before `lib-routing.sh` is verified working.
+7. **Companion routing is explicit** — Removing companion agent frontmatter without a replacement mechanism must not silently drop model selection.
+
+## Summary Table
+
+| # | Finding | Severity | Invariant Broken |
+|---|---------|----------|-----------------|
+| 1 | Phase with `categories` block, caller omits `--category` — undefined behavior | HIGH | Resolution determinism |
+| 2 | `inherit` sentinel not intercepted; quality mode overrides only defaults.model | CRITICAL | `inherit` is not a model name |
+| 3 | Comment stripping absent; regex metachar injection; multi-level parse unspecified | HIGH | YAML parser correctness |
+| 4 | Silent fallback on valid-but-wrong YAML indistinguishable from key-not-found | MEDIUM | Fail-closed on bad config |
+| 5 | Concurrent read/write of routing.yaml — partial read window | MEDIUM | No TOCTOU on config file |
+| 6 | Companion agents lose model selection with no replacement mechanism | HIGH | Companion routing is explicit |
+| 7 | `--agent` without `--phase` has ambiguous fallthrough | MEDIUM | Resolution determinism |
+| 8 | Dispatch fallback chain implementation not specified | LOW-MEDIUM | Migration atomicity |
+
+---
+
+## Previous Review (archived below — Reflect Phase Sprint Integration)
+
+The following content is the previous review of PRD iv-8jpf. Kept for reference.
+
+---
+
 # Correctness Review: PRD iv-8jpf — Reflect Phase Sprint Integration
 
 **Reviewed:** 2026-02-20

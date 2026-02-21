@@ -1,8 +1,8 @@
 {
   "project": "Interverse",
   "kind": "interverse-monorepo-roadmap",
-  "generated_at": "2026-02-20T22:49:01+00:00",
-  "module_count": 35,
+  "generated_at": "2026-02-21T04:39:17+00:00",
+  "module_count": 36,
   "open_beads": 177,
   "blocked": 45,
   "modules": [
@@ -10,24 +10,33 @@
       "module": "autarch",
       "location": "hub/autarch",
       "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
-      "module": "clavain",
-      "location": "hub/clavain",
-      "version": "0.6.51",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 0,
       "status": "active"
     },
     {
+      "module": "clavain",
+      "location": "hub/clavain",
+      "version": "0.6.57",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "interchart",
+      "location": "plugins/interchart",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "intercheck",
       "location": "plugins/intercheck",
-      "version": "0.1.4",
+      "version": "0.1.8",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -63,7 +72,7 @@
     {
       "module": "interfluence",
       "location": "plugins/interfluence",
-      "version": "0.2.3",
+      "version": "0.2.5",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -72,7 +81,7 @@
     {
       "module": "interflux",
       "location": "plugins/interflux",
-      "version": "0.2.17",
+      "version": "0.2.19",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 19,
@@ -99,7 +108,7 @@
     {
       "module": "interkasten",
       "location": "plugins/interkasten",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 12,
@@ -109,10 +118,10 @@
       "module": "interleave",
       "location": "plugins/interleave",
       "version": "0.1.1",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "interlens",
@@ -126,7 +135,7 @@
     {
       "module": "interline",
       "location": "plugins/interline",
-      "version": "0.2.4",
+      "version": "0.2.6",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -145,19 +154,19 @@
       "module": "intermap",
       "location": "plugins/intermap",
       "version": "0.1.3",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intermem",
       "location": "plugins/intermem",
-      "version": "0.2.1",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "version": "0.2.2",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intermux",
@@ -190,10 +199,10 @@
       "module": "interpeer",
       "location": "plugins/interpeer",
       "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "interphase",
@@ -225,7 +234,7 @@
     {
       "module": "interserve",
       "location": "plugins/interserve",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -243,7 +252,7 @@
     {
       "module": "interstat",
       "location": "plugins/interstat",
-      "version": "0.2.2",
+      "version": "0.2.5",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -252,20 +261,20 @@
     {
       "module": "intersynth",
       "location": "plugins/intersynth",
-      "version": "0.1.2",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "version": "0.1.3",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intertest",
       "location": "plugins/intertest",
       "version": "0.1.1",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "interwatch",
@@ -288,7 +297,7 @@
     {
       "module": "tool-time",
       "location": "plugins/tool-time",
-      "version": "0.3.2",
+      "version": "0.3.5",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 12,
@@ -327,24 +336,33 @@
       "module": "autarch",
       "location": "hub/autarch",
       "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
-      "module": "clavain",
-      "location": "hub/clavain",
-      "version": "0.6.51",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 0,
       "status": "active"
     },
     {
+      "module": "clavain",
+      "location": "hub/clavain",
+      "version": "0.6.57",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "interchart",
+      "location": "plugins/interchart",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "intercheck",
       "location": "plugins/intercheck",
-      "version": "0.1.4",
+      "version": "0.1.8",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -380,7 +398,7 @@
     {
       "module": "interfluence",
       "location": "plugins/interfluence",
-      "version": "0.2.3",
+      "version": "0.2.5",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -389,7 +407,7 @@
     {
       "module": "interflux",
       "location": "plugins/interflux",
-      "version": "0.2.17",
+      "version": "0.2.19",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 19,
@@ -416,7 +434,7 @@
     {
       "module": "interkasten",
       "location": "plugins/interkasten",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 12,
@@ -426,10 +444,10 @@
       "module": "interleave",
       "location": "plugins/interleave",
       "version": "0.1.1",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "interlens",
@@ -443,7 +461,7 @@
     {
       "module": "interline",
       "location": "plugins/interline",
-      "version": "0.2.4",
+      "version": "0.2.6",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -462,19 +480,19 @@
       "module": "intermap",
       "location": "plugins/intermap",
       "version": "0.1.3",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intermem",
       "location": "plugins/intermem",
-      "version": "0.2.1",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "version": "0.2.2",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intermux",
@@ -507,10 +525,10 @@
       "module": "interpeer",
       "location": "plugins/interpeer",
       "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "interphase",
@@ -542,7 +560,7 @@
     {
       "module": "interserve",
       "location": "plugins/interserve",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -560,7 +578,7 @@
     {
       "module": "interstat",
       "location": "plugins/interstat",
-      "version": "0.2.2",
+      "version": "0.2.5",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -569,20 +587,20 @@
     {
       "module": "intersynth",
       "location": "plugins/intersynth",
-      "version": "0.1.2",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "version": "0.1.3",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intertest",
       "location": "plugins/intertest",
       "version": "0.1.1",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "interwatch",
@@ -605,7 +623,7 @@
     {
       "module": "tool-time",
       "location": "plugins/tool-time",
-      "version": "0.3.2",
+      "version": "0.3.5",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 12,
@@ -709,7 +727,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Findings Index hardening"
       },
@@ -721,7 +739,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Convergence math cleanup"
       },
@@ -733,7 +751,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Completion signal hardening"
       },
@@ -745,7 +763,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Confidence rubric calibration"
       },
@@ -757,7 +775,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Query scope controls"
       },
@@ -769,7 +787,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Source dedupe"
       },
@@ -781,7 +799,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Bead bridge verification"
       },
@@ -793,7 +811,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [
           "Finding-to-ticket"
         ],
@@ -975,7 +993,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [],
         "notes": "Feature roadmap reset for token bands — add `--project`, `--global`, and `--days` CLI slices."
       },
@@ -999,7 +1017,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Startup diagnostics and migration verification — add richer startup output and migration checks."
       },
@@ -1011,7 +1029,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Retry and backoff hardening — tighten circuit breaker telemetry on storage path failures."
       },
@@ -1023,7 +1041,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "DB retention controls — operational tooling for bounded event/message growth."
       },
@@ -1035,7 +1053,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Metrics and structured logs — expose queue/ack/read latency and conflict telemetry."
       },
@@ -1047,7 +1065,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "disaster-recovery"
         ],
@@ -1061,7 +1079,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Observability policies — document logging and incident guidance for production operators."
       },
@@ -1073,7 +1091,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "machine-readable"
         ],
@@ -1087,7 +1105,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Read/write policy options — expose explicit lock classes and conflict precedence."
       },
@@ -1099,7 +1117,7 @@
         "priority": "P1",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Reservation check UX — improve endpoint output for CI and agent tooling."
       },
@@ -1111,7 +1129,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercheck — Standardize pre-tool quality policy gates for high-risk file operations across hooks."
       },
@@ -1123,7 +1141,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercraft — Stabilize architectural lint checks and make pattern annotations machine-readable."
       },
@@ -1135,7 +1153,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdev — Reduce friction for MCP tool discovery when tool metadata drifts."
       },
@@ -1147,7 +1165,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdoc — Harden recursive AGENTS.md generation for nested module boundaries."
       },
@@ -1159,7 +1177,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interfluence — Improve voice-profile feature stability on short profile sample sets."
       },
@@ -1171,7 +1189,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Findings Index hardening"
       },
@@ -1183,7 +1201,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Convergence math cleanup"
       },
@@ -1195,7 +1213,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Completion signal hardening"
       },
@@ -1207,7 +1225,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Confidence rubric calibration"
       },
@@ -1219,7 +1237,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Query scope controls"
       },
@@ -1231,7 +1249,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Source dedupe"
       },
@@ -1243,7 +1261,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Bead bridge verification"
       },
@@ -1255,7 +1273,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Finding-to-ticket dedupe"
       },
@@ -1267,7 +1285,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interform — Stabilize design validation hooks for generated interface specs."
       },
@@ -1279,7 +1297,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interject — Increase discovery relevance for high-signal sources and reduce noisy suggestions."
       },
@@ -1291,7 +1309,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlens — Stabilize lens execution contracts and quality labels for automated synthesis."
       },
@@ -1303,7 +1321,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interline — Make statusline updates resilient to high-frequency session transitions."
       },
@@ -1315,7 +1333,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermux — Stabilize session visibility feeds under intermittent tmux/disconnect conditions."
       },
@@ -1327,7 +1345,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: internext — Improve prioritization explainability and confidence thresholds for recommendations."
       },
@@ -1339,7 +1357,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpath — Harden monorepo artifact synthesis for mixed module discovery states."
       },
@@ -1351,7 +1369,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interphase — Increase phase transition determinism and resilience across long sessions."
       },
@@ -1363,7 +1381,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpub — Reduce publish risk with pre-flight dependency graph checks."
       },
@@ -1375,7 +1393,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intersearch — Increase recall/precision quality on mixed-repo retrieval in low-token contexts."
       },
@@ -1387,7 +1405,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interserve — Improve classification confidence calibration for high-value tasks."
       },
@@ -1399,7 +1417,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interslack — Stabilize event delivery for gated actions and release notifications."
       },
@@ -1411,7 +1429,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interstat — Finalize baseline token metric schema aligned to interphase and Clavain decisions."
       },
@@ -1423,7 +1441,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interwatch — Improve drift scoring for mixed-format source files and generated artifacts."
       },
@@ -1435,7 +1453,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Feature roadmap reset for token bands — add `--project`, `--global`, and `--days` CLI slices."
       },
@@ -1447,7 +1465,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tuivision — Stabilize deterministic replay for complex interactive terminal sessions."
       },
@@ -1459,7 +1477,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Startup diagnostics and migration verification — add richer startup output and migration checks."
       },
@@ -1471,7 +1489,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Retry and backoff hardening — tighten circuit breaker telemetry on storage path failures."
       },
@@ -1483,7 +1501,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — DB retention controls — operational tooling for bounded event/message growth."
       },
@@ -1495,7 +1513,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Metrics and structured logs — expose queue/ack/read latency and conflict telemetry."
       },
@@ -1507,7 +1525,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Operations runbooks — codify key rotation, backup, and disaster-recovery workflows."
       },
@@ -1519,7 +1537,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Observability policies — document logging and incident guidance for production operators."
       },
@@ -1531,7 +1549,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Canonical conflict responses — include machine-readable conflict metadata in reservation responses."
       },
@@ -1543,7 +1561,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Read/write policy options — expose explicit lock classes and conflict precedence."
       },
@@ -1555,7 +1573,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Reservation check UX — improve endpoint output for CI and agent tooling."
       }
@@ -1749,7 +1767,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Research Directives expansion"
       },
@@ -1761,7 +1779,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Agent spec refinement"
       },
@@ -1773,7 +1791,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap artifact completeness"
       },
@@ -1785,7 +1803,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Error messaging"
       },
@@ -1797,7 +1815,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Command discoverability"
       },
@@ -1809,7 +1827,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Spec reuse contracts"
       },
@@ -1821,7 +1839,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Upstream compatibility checks"
       },
@@ -1833,7 +1851,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Agent topology tuning"
       },
@@ -1845,7 +1863,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [
           "Context-budget"
         ],
@@ -1859,7 +1877,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Independent confirmation audits"
       },
@@ -1871,7 +1889,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interflux/docs/roadmap.md",
+        "source_file": "plugins/interflux/docs/interflux-roadmap.md",
         "blocked_by": [],
         "notes": "Archive discipline"
       },
@@ -1955,7 +1973,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [],
         "notes": "Webhook receiver + queueing — Add a persistent webhook receiver with a systemd service + SQLite event queue."
       },
@@ -1967,7 +1985,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [
           "near-real-time"
         ],
@@ -1981,7 +1999,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [
           "safety-net"
         ],
@@ -1995,7 +2013,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [
           "Cross-session"
         ],
@@ -2009,7 +2027,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [],
         "notes": "ConflictResolver extraction — Refactor sync engine to reduce command dispatch complexity."
       },
@@ -2021,7 +2039,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [],
         "notes": "Async beads bridge — Replace synchronous calls with async patterns for CLI integration."
       },
@@ -2033,7 +2051,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [],
         "notes": "Configuration schema validation — Validate conflict and polling settings before startup and sync loops."
       },
@@ -2045,7 +2063,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [
           "Conflict-file",
           "watcher-side"
@@ -2060,7 +2078,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [
           "Multi-user",
           "project-specific"
@@ -2075,7 +2093,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [],
         "notes": "Drift and retry observability — Expand instrumentation for sync failures and retry quality."
       },
@@ -2087,7 +2105,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [],
         "notes": "Safer bulk workflows — Improve selection UX and defaults for project/scoped operations."
       },
@@ -2099,7 +2117,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interkasten/docs/roadmap.md",
+        "source_file": "plugins/interkasten/docs/interkasten-roadmap.md",
         "blocked_by": [
           "Auto-routing",
           "agent-triggered"
@@ -2186,7 +2204,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [
           "Auto-join"
         ],
@@ -2200,7 +2218,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [
           "pre-flight"
         ],
@@ -2214,7 +2232,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [
           "Bead-agent"
         ],
@@ -2228,7 +2246,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [
           "Post-commit"
         ],
@@ -2242,7 +2260,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [],
         "notes": "Interline reservation visibility — show live agent and hold state in statusline."
       },
@@ -2254,7 +2272,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [
           "auto-merge"
         ],
@@ -2268,7 +2286,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [],
         "notes": "Agent Teams bridge — evaluate external team handoff compatibility."
       },
@@ -2280,7 +2298,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [],
         "notes": "Coordination telemetry — export conflict rates and resolution latency for diagnostics."
       },
@@ -2292,7 +2310,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [
           "per-pattern"
         ],
@@ -2306,7 +2324,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/interlock/docs/roadmap.md",
+        "source_file": "plugins/interlock/docs/interlock-roadmap.md",
         "blocked_by": [],
         "notes": "Onboarding diagnostics — run deterministic health checks for misconfigured environments."
       },
@@ -2678,7 +2696,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "code-reading-heavy",
           "low-cost",
@@ -2694,7 +2712,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [],
         "notes": "Clavain stage integration map — add explicit entrypoint guidance for diff review and edits."
       },
@@ -2706,7 +2724,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [],
         "notes": "Context handoff metadata — capture and expose retrieval mode and rationale."
       },
@@ -2718,7 +2736,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [],
         "notes": "Integration validation — validate Clavain workflows against P2.1 success criteria."
       },
@@ -2730,7 +2748,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Symbol-boundary"
         ],
@@ -2744,7 +2762,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "edit-focused"
         ],
@@ -2758,7 +2776,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Source-aware"
         ],
@@ -2772,7 +2790,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Cache-friendly"
         ],
@@ -2786,7 +2804,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [],
         "notes": "Adoption friction reduction — clarify escalation ladders and cost hints in tool text."
       },
@@ -2798,7 +2816,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "first-party"
         ],
@@ -2812,7 +2830,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Bug-class"
         ],
@@ -2826,7 +2844,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Long-context"
         ],
@@ -2840,7 +2858,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Mixed-mode"
         ],
@@ -2854,7 +2872,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Architecture-risk",
           "multi-file"
@@ -2869,7 +2887,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tldr-swinton/docs/roadmap.md",
+        "source_file": "plugins/tldr-swinton/docs/tldr-swinton-roadmap.md",
         "blocked_by": [
           "Latency-control",
           "high-frequency"
@@ -2884,7 +2902,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [],
         "notes": "Segmented query slices — add `--project`, `--global`, `--days` CLI filters."
       },
@@ -2896,7 +2914,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "previous-period"
         ],
@@ -2946,7 +2964,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "API versioning strategy — publish endpoint and payload migration policy."
       },
@@ -2958,7 +2976,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Pagination consistency — standardize envelopes and metadata across handlers."
       },
@@ -2970,7 +2988,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "SDK-ready"
         ],
@@ -2984,7 +3002,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Versioned client generation — publish Go client artifacts with endpoint examples."
       },
@@ -2996,7 +3014,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Developer test fixtures — create smoke and compatibility fixture suite."
       },
@@ -3008,7 +3026,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "multi-service"
         ],
@@ -3022,7 +3040,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "single-file"
         ],
@@ -3036,7 +3054,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "High-concurrency",
           "multi-project"
@@ -3051,7 +3069,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Saturation controls — add bounded queueing behavior under pressure."
       },
@@ -3063,7 +3081,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "Read-replica",
           "replica-based"
@@ -3078,7 +3096,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "Namespace-aware",
           "high-cardinality"
@@ -3093,7 +3111,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "lock-intent",
           "path-scoped"
@@ -3108,7 +3126,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Preflight conflict prediction — expose endpoints to validate plans before execution."
       },
@@ -3120,7 +3138,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "project-scoped"
         ],
@@ -3134,7 +3152,7 @@
         "priority": "P2",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Signed operation metadata — improve provenance for sensitive mutation requests."
       },
@@ -3146,7 +3164,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercheck — Add Codex/Clavain-aware quality profiles and policy drift alerts."
       },
@@ -3158,7 +3176,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercheck — Publish shared quality presets and rollout playbooks for teams."
       },
@@ -3170,7 +3188,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercheck — Build a rule-pack market for reusable quality configurations."
       },
@@ -3182,7 +3200,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercraft — Ship reusable design contracts for Codex/Clavain handoff quality."
       },
@@ -3194,7 +3212,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercraft — Publish inter-module architecture decision templates."
       },
@@ -3206,7 +3224,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intercraft — Add long-horizon architecture risk scoring to each scaffolded pattern."
       },
@@ -3218,7 +3236,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdev — Improve command suggestion relevance using Clavain action tags and module context."
       },
@@ -3230,7 +3248,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdev — Add Codex-friendly bootstrap recipes for local developer toolchains."
       },
@@ -3242,7 +3260,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdev — Create self-healing tooling profiles for common environment breakages."
       },
@@ -3254,7 +3272,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdoc — Add cross-language AGENTS.md drift detection and repair actions."
       },
@@ -3266,7 +3284,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdoc — Publish diff-aware review suggestions for governance updates."
       },
@@ -3278,7 +3296,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interdoc — Support policy inheritance presets for experimental and experimental-free modes."
       },
@@ -3290,7 +3308,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interfluence — Enable profile export/import for per-repo or per-team style governance."
       },
@@ -3302,7 +3320,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interfluence — Add confidence metrics for style adaptation suggestions."
       },
@@ -3314,7 +3332,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interfluence — Introduce style-aware output gating inside interphase workflow."
       },
@@ -3326,7 +3344,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Research Directives expansion"
       },
@@ -3338,7 +3356,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Agent spec refinement"
       },
@@ -3350,7 +3368,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Roadmap artifact completeness"
       },
@@ -3362,7 +3380,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Error messaging"
       },
@@ -3374,7 +3392,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Command discoverability"
       },
@@ -3386,7 +3404,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Spec reuse contracts"
       },
@@ -3398,7 +3416,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Upstream compatibility checks"
       },
@@ -3410,7 +3428,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Agent topology tuning"
       },
@@ -3422,7 +3440,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Context-budget controls"
       },
@@ -3434,7 +3452,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Independent confirmation audits"
       },
@@ -3446,7 +3464,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interflux — Archive discipline"
       },
@@ -3458,7 +3476,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interform — Add Clavain-readable UI quality templates to standard workflows."
       },
@@ -3470,7 +3488,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interform — Integrate layout and accessibility checks into review artifacts."
       },
@@ -3482,7 +3500,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interform — Create a reusable visual style registry with versioned contracts."
       },
@@ -3494,7 +3512,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interject — Align ranking signals with Clavain sprint phases and gate requirements."
       },
@@ -3506,7 +3524,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interject — Publish structured evidence provenance for each injected research result."
       },
@@ -3518,7 +3536,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interject — Add adaptive query templates by domain profile and decision type."
       },
@@ -3530,7 +3548,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Webhook receiver + queueing — Add a persistent webhook receiver with a systemd service + SQLite event queue."
       },
@@ -3542,7 +3560,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Cloudflare edge fanout — Introduce Cloudflared tunnel path for near-real-time Notion event push."
       },
@@ -3554,7 +3572,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Safe polling fallback — Demote polling to safety-net behavior when webhook transport drops."
       },
@@ -3566,7 +3584,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Cross-session receiver pipeline — Process queued events on startup so sync can continue across sessions."
       },
@@ -3578,7 +3596,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — ConflictResolver extraction — Refactor sync engine to reduce command dispatch complexity."
       },
@@ -3590,7 +3608,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Async beads bridge — Replace synchronous calls with async patterns for CLI integration."
       },
@@ -3602,7 +3620,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Configuration schema validation — Validate conflict and polling settings before startup and sync loops."
       },
@@ -3614,7 +3632,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Conflict-file hygiene — Prevent watcher-side `.conflict` accumulation in long sessions."
       },
@@ -3626,7 +3644,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Multi-user conflict resolution — Add named project-specific merge strategies for coordinated editing."
       },
@@ -3638,7 +3656,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Drift and retry observability — Expand instrumentation for sync failures and retry quality."
       },
@@ -3650,7 +3668,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Safer bulk workflows — Improve selection UX and defaults for project/scoped operations."
       },
@@ -3662,7 +3680,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interkasten — Auto-routing taxonomies — Formalize sync error classes to improve agent-triggered recovery routing."
       },
@@ -3674,7 +3692,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlens — Align lens outputs with interflux finding schema and Clavain artifact stages."
       },
@@ -3686,7 +3704,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlens — Ship lens governance for provenance and confidence scoring."
       },
@@ -3698,7 +3716,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlens — Expose a community catalog of reusable cognitive lenses."
       },
@@ -3710,7 +3728,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interline — Add intermute-backed file-reservation visibility in the live HUD."
       },
@@ -3722,7 +3740,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interline — Ship lightweight dashboard mode for long-running Codex parallel tasks."
       },
@@ -3734,7 +3752,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interline — Create configurable theme and role-specific statusline layouts."
       },
@@ -3746,7 +3764,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Auto-join on startup — enable session onboarding without manual `/interlock:join`."
       },
@@ -3758,7 +3776,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Sprint visibility pre-flight — surface active agents, reservations, and dirty tree state before work."
       },
@@ -3770,7 +3788,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Bead-agent binding — prevent two sessions from claiming the same issue."
       },
@@ -3782,7 +3800,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Post-commit broadcast — trigger session rebase guidance in active sessions after commit."
       },
@@ -3794,7 +3812,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Interline reservation visibility — show live agent and hold state in statusline."
       },
@@ -3806,7 +3824,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Automated conflict resolution — add auto-merge → message → escalation path."
       },
@@ -3818,7 +3836,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Agent Teams bridge — evaluate external team handoff compatibility."
       },
@@ -3830,7 +3848,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Coordination telemetry — export conflict rates and resolution latency for diagnostics."
       },
@@ -3842,7 +3860,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Status reason transparency — include per-pattern hold reasons and holder names."
       },
@@ -3854,7 +3872,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interlock — Onboarding diagnostics — run deterministic health checks for misconfigured environments."
       },
@@ -3866,7 +3884,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermux — Add cross-node metrics export for long-horizon orchestration health."
       },
@@ -3878,7 +3896,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermux — Integrate agent load and queue metrics with interphase readiness checks."
       },
@@ -3890,7 +3908,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermux — Introduce anomaly detection for stalled agents and resource contention."
       },
@@ -3902,7 +3920,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: internext — Tie prioritization output to open bead state and blocker context."
       },
@@ -3914,7 +3932,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: internext — Add scenario-based tradeoff simulation for high-cost roadmap shifts."
       },
@@ -3926,7 +3944,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: internext — Build governance presets for automated portfolio-level planning policies."
       },
@@ -3938,7 +3956,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpath — Standardize inter-breed output contracts between roadmap and vision artifacts."
       },
@@ -3950,7 +3968,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpath — Publish traceable generation metadata for every artifact run."
       },
@@ -3962,7 +3980,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpath — Add artifact quality tests and artifact regression baselines."
       },
@@ -3974,7 +3992,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interphase — Improve gate diagnostics for partial artifacts and stale state recovery."
       },
@@ -3986,7 +4004,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interphase — Add deeper inter-module phase telemetry to Clavain sprint orchestration."
       },
@@ -3998,7 +4016,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interphase — Prototype adaptive phase sequencing for non-linear execution paths."
       },
@@ -4010,7 +4028,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpub — Add rollback and dry-run visibility for multi-repo release dependencies."
       },
@@ -4022,7 +4040,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpub — Expose publish telemetry and gating evidence to Clavain quality dashboards."
       },
@@ -4034,7 +4052,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interpub — Automate release candidate validation for plugin bundles."
       },
@@ -4046,7 +4064,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intersearch — Add index freshness controls and fallback behavior for degraded providers."
       },
@@ -4058,7 +4076,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intersearch — Document query optimization patterns for flux-drive and intersearch clients."
       },
@@ -4070,7 +4088,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intersearch — Add retrieval quality benchmarking and adaptive ranking feedback loops."
       },
@@ -4082,7 +4100,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interserve — Expose explainability hooks for routing decisions and fallback choices."
       },
@@ -4094,7 +4112,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interserve — Tighten interlock between interserve scores and sprint auto-routing."
       },
@@ -4106,7 +4124,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interserve — Build self-supervising context-compression benchmarks and quality guardrails."
       },
@@ -4118,7 +4136,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interslack — Add digest mode for milestone and quality-gate changes."
       },
@@ -4130,7 +4148,7 @@
         "priority": "P1",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interslack — Add secure token management and tenant-aware channel routing."
       },
@@ -4142,7 +4160,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interslack — Create richer interaction patterns with context summaries and action links."
       },
@@ -4154,7 +4172,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interstat — Enable workload-level attribution for high-cost sub-agents."
       },
@@ -4166,7 +4184,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interstat — Export dashboards for trend-based routing optimization pilots."
       },
@@ -4178,7 +4196,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interstat — Add model-provider normalization and cross-run comparability."
       },
@@ -4190,7 +4208,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interwatch — Add actionable auto-refinement suggestions and safe repair paths."
       },
@@ -4202,7 +4220,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interwatch — Integrate freshness signals into Clavain discovery and sprint summaries."
       },
@@ -4214,7 +4232,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: interwatch — Create policy-driven escalation for critical or high-impact stale content."
       },
@@ -4226,7 +4244,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Default low-cost code context source — wire tldr-swinton into code-reading-heavy Clavain stages."
       },
@@ -4238,7 +4256,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Clavain stage integration map — add explicit entrypoint guidance for diff review and edits."
       },
@@ -4250,7 +4268,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Context handoff metadata — capture and expose retrieval mode and rationale."
       },
@@ -4262,7 +4280,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Integration validation — validate Clavain workflows against P2.1 success criteria."
       },
@@ -4274,7 +4292,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Symbol-boundary truncation safety — make truncation defaults preserve symbol boundaries."
       },
@@ -4286,7 +4304,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — `ultracompact` body depth control — add `--depth=body` option for edit-focused summaries."
       },
@@ -4298,7 +4316,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Source-aware slice mode — include optional source snippets and better range summaries."
       },
@@ -4310,7 +4328,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Cache-friendly run format — add serialized outputs for repeated session reuse."
       },
@@ -4322,7 +4340,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Adoption friction reduction — clarify escalation ladders and cost hints in tool text."
       },
@@ -4334,7 +4352,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — MCP usage telemetry — expand usage checks for first-party agent loops."
       },
@@ -4346,7 +4364,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Bug-class mitigation loop — keep solutions docs feedback in sync with releases."
       },
@@ -4358,7 +4376,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Long-context persistence — persist + rehydrate context across iterative sessions."
       },
@@ -4370,7 +4388,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Mixed-mode planner — improve query routing between semantic and structural paths."
       },
@@ -4382,7 +4400,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Architecture-risk benchmarks — expand multi-file benchmarks beyond refactor workflows."
       },
@@ -4394,7 +4412,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tldr-swinton — Latency-control envelopes — guard against regressions under high-frequency loops."
       },
@@ -4406,7 +4424,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Segmented query slices — add `--project`, `--global`, `--days` CLI filters."
       },
@@ -4418,7 +4436,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Trend comparison — support previous-period comparisons for session analytics."
       },
@@ -4430,7 +4448,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tuivision — Improve diff quality for flaky rendering and animation-heavy outputs."
       },
@@ -4442,7 +4460,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tuivision — Expose richer result contracts for Clavain QA and acceptance gates."
       },
@@ -4454,7 +4472,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tuivision — Add cross-device runner support for varied terminal backends."
       },
@@ -4466,7 +4484,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — API versioning strategy — publish endpoint and payload migration policy."
       },
@@ -4478,7 +4496,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Pagination consistency — standardize envelopes and metadata across handlers."
       },
@@ -4490,7 +4508,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — SDK-ready contracts — ship a stable contract artifact for client generation."
       },
@@ -4502,7 +4520,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Versioned client generation — publish Go client artifacts with endpoint examples."
       },
@@ -4514,7 +4532,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Developer test fixtures — create smoke and compatibility fixture suite."
       },
@@ -4526,7 +4544,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Deployment topology guidance — document recommended multi-service layouts."
       },
@@ -4538,7 +4556,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Pluggable storage research — evaluate backends beyond single-file SQLite."
       },
@@ -4550,7 +4568,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — High-concurrency checks — validate behavior under multi-project contention."
       },
@@ -4562,7 +4580,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Saturation controls — add bounded queueing behavior under pressure."
       },
@@ -4574,7 +4592,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Read-replica planning — assess partitioned persistence and replica-based scale."
       },
@@ -4586,7 +4604,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Namespace-aware shippers — design shippers for large, high-cardinality estates."
       },
@@ -4598,7 +4616,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Hierarchical locking — add path-scoped locks and lock-intent semantics."
       },
@@ -4610,7 +4628,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Preflight conflict prediction — expose endpoints to validate plans before execution."
       },
@@ -4622,7 +4640,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Mutation access audit — expand traceability for project-scoped operations."
       },
@@ -4634,7 +4652,7 @@
         "priority": "P2",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Signed operation metadata — improve provenance for sensitive mutation requests."
       }
@@ -4642,99 +4660,111 @@
     "later": [
       {
         "module": "autarch",
-        "id": "PL-autarch-NO-RM",
-        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "hub/autarch/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
-      },
-      {
-        "module": "clavain",
-        "id": "PL-clavain-EMPTY-RM",
-        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "id": "PL-autarch-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/autarch-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
         "source": "empty-module-roadmap",
-        "source_file": "hub/clavain/docs/roadmap.md",
+        "source_file": "hub/autarch/docs/autarch-roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/autarch-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
+      },
+      {
+        "module": "clavain",
+        "id": "PL-clavain-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/clavain-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "hub/clavain/docs/clavain-roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/clavain-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
+      },
+      {
+        "module": "interchart",
+        "id": "PL-interchart-NO-RM",
+        "title": "Roadmap artifact missing in this module; create docs/interchart-roadmap.md or docs/roadmap.md to define module priorities.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "plugins/interchart/docs/interchart-roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; create docs/interchart-roadmap.md or docs/roadmap.md to define module priorities."
       },
       {
         "module": "interleave",
-        "id": "PL-interleave-NO-RM",
-        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "id": "PL-interleave-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/interleave-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "plugins/interleave/docs/roadmap.md",
+        "source": "empty-module-roadmap",
+        "source_file": "plugins/interleave/docs/interleave-roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/interleave-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
       },
       {
         "module": "intermap",
-        "id": "PL-intermap-NO-RM",
-        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "id": "PL-intermap-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intermap-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "plugins/intermap/docs/roadmap.md",
+        "source": "empty-module-roadmap",
+        "source_file": "plugins/intermap/docs/intermap-roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intermap-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
       },
       {
         "module": "intermem",
-        "id": "PL-intermem-NO-RM",
-        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "id": "PL-intermem-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intermem-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "plugins/intermem/docs/roadmap.md",
+        "source": "empty-module-roadmap",
+        "source_file": "plugins/intermem/docs/intermem-roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intermem-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
       },
       {
         "module": "interpeer",
-        "id": "PL-interpeer-NO-RM",
-        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "id": "PL-interpeer-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/interpeer-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "plugins/interpeer/docs/roadmap.md",
+        "source": "empty-module-roadmap",
+        "source_file": "plugins/interpeer/docs/interpeer-roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/interpeer-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
       },
       {
         "module": "intersynth",
-        "id": "PL-intersynth-NO-RM",
-        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "id": "PL-intersynth-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intersynth-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "plugins/intersynth/docs/roadmap.md",
+        "source": "empty-module-roadmap",
+        "source_file": "plugins/intersynth/docs/intersynth-roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intersynth-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
       },
       {
         "module": "intertest",
-        "id": "PL-intertest-NO-RM",
-        "title": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities.",
+        "id": "PL-intertest-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intertest-roadmap.md, docs/roadmap.md, or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "plugins/intertest/docs/roadmap.md",
+        "source": "empty-module-roadmap",
+        "source_file": "plugins/intertest/docs/intertest-roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; create docs/roadmap.md to define module priorities."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/intertest-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
       },
       {
         "module": "tool-time",
@@ -4744,7 +4774,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "available-vs-used"
         ],
@@ -4758,7 +4788,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "tool-time"
         ],
@@ -4772,7 +4802,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [],
         "notes": "Incremental transcript parsing — process deltas to avoid full reingest costs."
       },
@@ -4784,7 +4814,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "Per-project"
         ],
@@ -4798,7 +4828,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [],
         "notes": "Retention controls — add configurable retention and summarization windows."
       },
@@ -4810,7 +4840,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "ML-based",
           "high-signal"
@@ -4825,7 +4855,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "Cross-project"
         ],
@@ -4839,7 +4869,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "Auto-apply",
           "high-confidence"
@@ -4854,7 +4884,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "plugins/tool-time/docs/roadmap.md",
+        "source_file": "plugins/tool-time/docs/tool-time-roadmap.md",
         "blocked_by": [
           "opt-in"
         ],
@@ -4868,7 +4898,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "REST v3 governance package — publish OpenAPI v3 and generated documentation portal."
       },
@@ -4880,7 +4910,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Reservations dashboard — add visualization for threads and locks in real time."
       },
@@ -4892,7 +4922,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "Fine-grained",
           "per-capability"
@@ -4907,7 +4937,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [],
         "notes": "Event retention policy control — configurable compaction, archive, and deletion policies."
       },
@@ -4919,7 +4949,7 @@
         "priority": "P3",
         "status": "open",
         "source": "module-roadmap-md",
-        "source_file": "services/intermute/docs/roadmap.md",
+        "source_file": "services/intermute/docs/intermute-roadmap.md",
         "blocked_by": [
           "High-contention"
         ],
@@ -4933,7 +4963,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Installed skills usage matrix — surface available-vs-used tool/skill mismatch."
       },
@@ -4945,7 +4975,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — MCP resource endpoint — expose `tool-time://stats` as a runtime resource."
       },
@@ -4957,7 +4987,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Incremental transcript parsing — process deltas to avoid full reingest costs."
       },
@@ -4969,7 +4999,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Per-project storage — isolate analytics by project namespace."
       },
@@ -4981,7 +5011,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Retention controls — add configurable retention and summarization windows."
       },
@@ -4993,7 +5023,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — ML-based pattern mining — if months of data reveal stable high-signal classes."
       },
@@ -5005,7 +5035,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Cross-project insights — once data across projects supports comparative learning."
       },
@@ -5017,7 +5047,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Auto-apply policy patches — allow automated CLAUDE.md updates only after high-confidence suggestions."
       },
@@ -5029,7 +5059,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: tool-time — Tool output logging — enable only with explicit opt-in to preserve defaults."
       },
@@ -5041,7 +5071,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — REST v3 governance package — publish OpenAPI v3 and generated documentation portal."
       },
@@ -5053,7 +5083,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Reservations dashboard — add visualization for threads and locks in real time."
       },
@@ -5065,7 +5095,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Fine-grained authorization — per-capability RBAC and scoped keys."
       },
@@ -5077,7 +5107,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — Event retention policy control — configurable compaction, archive, and deletion policies."
       },
@@ -5089,7 +5119,7 @@
         "priority": "P3",
         "status": "planned",
         "source": "interverse-rollup",
-        "source_file": "/home/mk/projects/Interverse/docs/roadmap.json",
+        "source_file": "/root/projects/Interverse/docs/roadmap.json",
         "blocked_by": [],
         "notes": "Platform: intermute — High-contention benchmark harness — dedicated load tests for conflicting reservation races."
       }
@@ -5226,46 +5256,10 @@
   "cross_module_dependencies": [],
   "modules_without_roadmaps": [
     {
-      "module": "autarch",
-      "location": "hub/autarch",
+      "module": "interchart",
+      "location": "plugins/interchart",
       "version": "0.1.0",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "interleave",
-      "location": "plugins/interleave",
-      "version": "0.1.1",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "intermap",
-      "location": "plugins/intermap",
-      "version": "0.1.3",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "intermem",
-      "location": "plugins/intermem",
-      "version": "0.2.1",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "interpeer",
-      "location": "plugins/interpeer",
-      "version": "0.1.0",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "intersynth",
-      "location": "plugins/intersynth",
-      "version": "0.1.2",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "intertest",
-      "location": "plugins/intertest",
-      "version": "0.1.1",
-      "notes": "No docs/roadmap.md"
+      "notes": "No docs/interchart-roadmap.md"
     }
   ],
   "dependency_graph": []
