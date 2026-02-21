@@ -1,8 +1,213 @@
-# Architecture Review: Dual-Mode Plugin Architecture Implementation Plan
-
+# Architecture Review: Plugin Synergy Interop Implementation Plan
+**Plan file:** `docs/plans/2026-02-20-plugin-synergy-interop.md`
+**Review date:** 2026-02-20
 **Reviewer:** Flux-drive Architecture & Design Reviewer
-**Date:** 2026-02-20
-**Plan:** `/root/projects/Interverse/docs/plans/2026-02-20-dual-mode-plugin-architecture.md`
+
+---
+
+## Executive Summary
+
+The plan is coherent at the protocol level and its interband-as-coordination-layer choice is sound. Most tasks are well-scoped. However there are five structural issues that will be expensive to fix after implementation starts: a signal-schema mismatch between Task 2 and every consumer; a hidden mutation race in the interband.sh upgrade sequence; Task 6's batch shape creating unnecessary rollback granularity; an unresolvable dedup strategy in Task 9; and Task 10 introducing a direct inter-plugin call path that bypasses the interband contract. Task 7 is the only item where the "static vs generated" question is genuine but low-priority.
+
+---
+
+## 1. Boundaries and Coupling
+
+### 1.1 interband.sh is a shared mutable file touched by four separate tasks — must-fix sequencing risk
+
+Tasks 1, 2, and 10 each modify `infra/interband/lib/interband.sh` in separate commits across separate git repositories. The plan commits each interband change immediately after the plugin change that requires it (Tasks 1 and 2 each end with two commits, Task 10 adds a third interband commit). Because interband is its own git repo with its own version line, this means:
+
+- Three separate commits land in `infra/interband` across the lifetime of the plan.
+- Each task's implementer reads a stale version of interband.sh if Tasks 1 and 2 are done in different sessions without a pull.
+- The case blocks in `interband_validate_payload()`, `interband_default_retention_secs()`, and `interband_default_max_files()` are modified three times at the same logical location in the file.
+
+The plan does not specify that the interband repo must be pulled before starting each subsequent task that modifies it, nor does it prescribe a single consolidated interband commit. This is a merge-conflict waiting to happen, but the deeper issue is testability: the contract between publisher and consumer is split across three commits, making it impossible to verify the full schema in one test run.
+
+**Minimum fix:** Consolidate all three interband.sh additions into a single Task 1 step. Register all three `namespace:channel` pairs (`intercheck:pressure`, `intercheck:checkpoint`, `interstat:budget`) and their retention/max-files defaults in one commit. Tasks 2 and 10 then only touch plugin files. This eliminates the interband coordination risk entirely.
+
+### 1.2 Task 10 creates a direct inter-plugin call path — boundary violation
+
+Task 10 adds interband signal emission inside the `orange` case of `context-monitor.sh`. The code checks `[[ -n "${_ic_interband_lib:-}" ]]` — this variable is set only if the Task 1 interband sourcing block already ran in the same process. That sourcing block lives in the interband write path added by Task 1, meaning Task 10 implicitly depends on Task 1's code to have already executed in the same bash process.
+
+More seriously, Task 10 also emits `intercheck:checkpoint_needed` and includes this message in the hook output:
+
+```
+Consider running /intermem:synthesize to preserve learnings.
+```
+
+This is a direct plugin-to-plugin coupling by name: intercheck's hook output now contains a command string specific to intermem's public interface. If intermem renames its skill, intercheck breaks silently (the message becomes stale but the code never fails). The interband protocol was designed explicitly to avoid this — publishers write signals, consumers act on them. The correct pattern is for intermem to consume `intercheck:checkpoint_needed` on session-start or via its own hook, not for intercheck to hardcode intermem's skill name in its output.
+
+**Minimum fix:** Remove the hardcoded `/intermem:synthesize` string from the intercheck output message. Replace it with a generic message such as "Consider synthesizing session memory before continuing." The checkpoint signal over interband is already sufficient for any consumer to act.
+
+### 1.3 Task 8 replaces interflux session-start contents entirely — regression risk
+
+The plan says "Replace the contents of `plugins/interflux/hooks/session-start.sh`". The current file contains two substantive lines: `source "$HOOK_DIR/interbase-stub.sh"` and `ib_session_status`. The plan's replacement preserves both lines and adds budget-reading logic, which is correct. However "replace the contents" as an instruction to an implementer is dangerous — it will cause the existing interbase adoption to appear absent in a code review, making it harder to verify the Task 4/8 dependency.
+
+**Minimum fix:** Rephrase Task 8 Step 1 as "Append the following block after line 9" rather than "Replace the contents." Diff-based verification becomes trivial.
+
+---
+
+## 2. Signal Schema Analysis
+
+### 2.1 Task 2 channel name vs. type name diverges from Task 1 — not a bug, but creates confusion
+
+In Task 2, `interband_validate_payload()` registers the type as `interstat:budget_alert`, but the retention and max-files cases use `interstat:budget`. The path generation calls `interband_path "interstat" "budget" "$session_id"`, producing `~/.interband/interstat/budget/<session_id>.json`. Task 3 (interline) and Task 8 (interflux) both read from this path — consistent.
+
+The interband library correctly uses `namespace:channel` as the key for retention/max-files and `namespace:type` as the key for payload validation. These are different concepts and the code handles them correctly. However the channel (`budget`) and type (`budget_alert`) diverge in name, while Task 1 keeps them parallel (`pressure` channel, `context_pressure` type, consistent with the interphase pattern `bead` channel, `bead_phase` type).
+
+**Recommendation:** Rename the Task 2 channel to `budget_alert` for stylistic consistency with Task 1, or document the channel-vs-type naming convention in the interband AGENTS.md. Without documentation, the next developer adding a signal will make an arbitrary choice and the inconsistency compounds.
+
+### 2.2 Task 2: budget_alert emission fires on every hook call above 50% — unbounded writes
+
+The emission logic in Task 2 has no threshold-crossing gate:
+
+```bash
+if [[ "$_is_pct_int" -ge 50 ]]; then
+    # emit unconditionally
+fi
+```
+
+The comment says "Only emit at threshold crossings: 50%, 80%, 95%" but the code does not implement threshold crossings. It emits on every PostToolUse:Task call once percentage exceeds 50. Since each agent dispatch triggers the hook, a session that has consumed 60% of its budget will emit a new interband file on every single Task tool call for the rest of the session.
+
+The atomic-write design means each write is individually safe, but the write frequency is unnecessary: the signal changes slowly (percentage changes by single digits per dispatch) but the file is overwritten on every dispatch above the threshold.
+
+**Minimum fix:** Track last-emitted percentage bucket in a session-scoped file (e.g., `/tmp/interstat-budget-last-${session_id}`) and only write when the integer bucket (50, 80, 95) changes. This implements the stated intent and reduces writes by an order of magnitude.
+
+### 2.3 Task 1 pressure level thresholds duplicate context-monitor.sh logic
+
+The threshold computation in Task 1's interband write block recomputes `_ic_pressure_level` from `$PRESSURE` and `$EST_TOKENS` using the same awk/integer comparisons as lines 67-73 of the existing `context-monitor.sh`. The existing file already computes `LEVEL` (green/yellow/orange/red) at line 67, but the interband write is inserted before the `case "$LEVEL"` block — before `$LEVEL` is available — requiring the duplication.
+
+This creates a divergence risk: if the thresholds are ever adjusted, there are two places to update. The existing file has the authoritative thresholds; the interband block has a copy.
+
+**Minimum fix:** Restructure so `$LEVEL` is computed before `_ic_write_state`, then use `$LEVEL` directly in the interband write block. Alternatively, move the interband write inside the existing `case "$LEVEL"` block, where the level is already known. Either approach eliminates the threshold duplication.
+
+---
+
+## 3. Task 6: Batch Shape
+
+### 3.1 Four-plugin batch is too coarse — wrong rollback granularity
+
+Task 6 batches intermem, intertest, internext, and tool-time into one task with a shared for-loop commit. The plan's own `integration.json` contents confirm these four plugins have different companions, different standalone features, and different nudge logic. The rationale for batching appears to be "the steps are identical," but identical steps with different payloads are exactly what per-task commits are for.
+
+The concrete failure mode: if the for-loop commit step fails for one plugin (e.g., intertest already has a session-start.sh), the loop continues silently (the `|| echo "$p: FAIL"` only echoes, does not abort). An implementer following this plan may produce a partial commit covering only 2 of 4 plugins, making task state ambiguous.
+
+The plan also says "Check if each plugin already has a `hooks/hooks.json`. If so, merge the SessionStart entry." This conditional logic buried in a bulk step is the most likely source of execution errors: the implementer must make per-plugin decisions mid-loop.
+
+The architectural risk is not coupling between the four plugins — they remain independent. The risk is that a single task unit with four distinct failure modes makes rollback impossible at per-plugin granularity, and makes progress-tracking via beads or IC runs inaccurate.
+
+**Minimum fix:** Split Task 6 into four tasks (6a–6d). Each is: copy stub, create integration.json, create session-start.sh, check and create/merge hooks.json, commit. Four small tasks with clear per-plugin scope.
+
+**Note:** `intermem` does not have a standard plugin structure at `/root/projects/Interverse/plugins/intermem/` — only docs, brainstorms, and a `.venv` directory are present. Task 6 must verify intermem plugin structure before attempting SDK adoption. This is the highest-risk of the four plugins in this batch.
+
+---
+
+## 4. Task 7: companion-graph.json Static vs. Generated
+
+### 4.1 Static graph is appropriate now, but needs a consistency gate
+
+The plan creates `companion-graph.json` as a hand-authored static file. The concern is whether it stays synchronized with the `integration.json` files added by Tasks 4–6. A generated approach would ensure consistency but requires a build step.
+
+Static is correct for the current state: 12 edges covering a small, known graph that changes infrequently. The real risk is silent divergence: the plan's validation script (Step 2) only checks that plugin names exist as directories — it does not cross-validate edges against `integration.json` companions declarations.
+
+**Minimum fix:** Extend the Step 2 validation script to read each plugin's `integration.json` and assert that every declared companion relationship appears in `companion-graph.json`. This is a trivial addition to the existing python3 validation block. Without it, the graph will begin diverging within the first post-plan plugin addition.
+
+On the static vs. generated question: keep it static until the graph exceeds ~30 edges or a CI gate requires it. The current state does not justify the tooling investment.
+
+---
+
+## 5. Task 9: Verdict-to-Bead Deduplication
+
+### 5.1 String-match dedup is not robust — produces both false positives and false negatives
+
+The dedup check in `verdict_auto_create_beads()`:
+
+```bash
+existing=$(bd list --json --quiet 2>/dev/null | jq -r ".[].title" 2>/dev/null | grep -Fc "${summary:0:30}" || echo "0")
+[[ "$existing" -eq 0 ]] || continue
+```
+
+**False positives (suppression):** A verdict summary starting with "No issues found in authentication" will match any existing bead whose title contains the same 30-character prefix — including unrelated beads from different reviews. The first 30 characters of natural-language summaries are rarely unique identifiers. Common review phrasing ("Missing validation on", "Performance issue in") will suppress legitimate new beads.
+
+**False negatives (duplicates):** Two verdict summaries for the same underlying finding phrased differently (e.g., "Missing input validation on user endpoint" vs. "User endpoint lacks input validation") produce zero match and both become beads. Since `verdict_auto_create_beads` iterates all verdict files on every call and verdict files are only cleaned at sprint start, repeated calls create duplicate beads for the same verdict.
+
+The deeper problem is that summary text is not a stable identifier. Verdict files have no stable ID field; their stable identity is the agent name (the filename without `.json`).
+
+**Minimum fix:** Use the agent name as the dedup key. Maintain a session-scoped map file (e.g., `/tmp/intersynth-bead-map-${CLAUDE_SESSION_ID}.json`) keyed on agent name, recording which bead ID was created for each verdict. Before creating a bead, check this map. After creating, record the new ID. This is session-accurate, O(1) per check, and requires no `bd list` call. At sprint start the map is implicitly reset because `CLAUDE_SESSION_ID` changes.
+
+If cross-session dedup is needed (to prevent re-creating a bead already in the backlog from a previous session), record the agent-name-to-bead-id mapping in a persistent file and check `bd show <id>` to verify the bead still exists before skipping creation.
+
+---
+
+## 6. Pattern Consistency and YAGNI
+
+### 6.1 SessionStart hooks for plugins with no active integrated features — premature
+
+Tasks 4, 5, and 6 add SessionStart hooks that call `ib_session_status` and optionally `ib_nudge_companion`. For plugins like intertest, internext, and tool-time, the hook has no functional effect beyond emitting ecosystem status to stderr. The `integration.json` files for these three plugins list `integrated_features` that do not exist in this plan — they are aspirational.
+
+This adds four new hooks firing on every SessionStart across the ecosystem (each sources interbase-stub.sh, does `command -v` checks, runs `ib_session_status`, optionally runs `ib_nudge_companion` with its glob + file reads) for features that have not been built.
+
+Tasks 4 (interline) and 5 (intersynth) justify SessionStart hooks: interline's layers actively read interband signals from Tasks 1–2; intersynth's Task 9 bridges verdicts to beads. Those two plugins have concrete integrated features shipping in this same plan.
+
+**Recommendation:** For intertest, internext, and tool-time in Task 6: create `integration.json` files only (documentation artifacts). Do not create session-start.sh or hooks.json. Add those hooks when a concrete integrated feature exists in the same plan that uses them.
+
+### 6.2 interbase nudge plugin name is not validated against companion-graph.json
+
+The interbase stub's `ib_nudge_companion()` checks whether the companion is installed via `compgen -G "${HOME}/.claude/plugins/cache/*/${name}/*"`. This is correct. However the companion names passed in session-start hooks are bare plugin names (`"intercheck"`, `"interflux"`, `"interwatch"`) that must match the installed plugin directory name. If any of these plugins are installed under a different directory name (e.g., via a path alias), the nudge fires incorrectly. This is a pre-existing interbase behavior, not introduced by this plan, but the plan amplifies it by adding six new nudge registrations across four tasks.
+
+This is low-priority given the nudge is session-capped and dismissible.
+
+### 6.3 Task 10 intermem-dir check is unreliable
+
+The rate-limit gate in Task 10 checks `[[ -d "$(pwd)/.intermem" ]]`. The current working directory of `context-monitor.sh` is not guaranteed to be the project root across all invocations — it depends on how Claude Code sets CWD for PostToolUse hooks. If CWD is the session working directory rather than the project root, the `.intermem` check will always be false, and the interband checkpoint signal will never emit.
+
+**Minimum fix:** Remove the `.intermem` directory existence check. The checkpoint signal should fire based on pressure threshold alone. Consumers (intermem) decide whether to act based on their own state — this is the correct interband pattern.
+
+---
+
+## 7. Dependency Ordering
+
+The plan's task sequence is correct for the critical path:
+
+```
+Task 1 (intercheck publishes) → Task 3 (interline consumes intercheck)
+Task 2 (interstat publishes) → Task 3 (interline consumes interstat)
+Task 2 (interstat publishes) → Task 8 (interflux consumes interstat)
+Task 1/2 (interband.sh updated) → Task 10 (intercheck:checkpoint_needed)
+Task 5 (intersynth adopts interbase) → Task 9 (verdict-to-bead bridge)
+```
+
+One implicit dependency the plan does not state: Task 4 (interline interbase adoption) creates `hooks/hooks.json`. If interline gains any non-SessionStart hook between plan authoring and Task 4 execution, the plan's create-from-scratch instruction would overwrite it. The plan should include an explicit "check if hooks/hooks.json exists" guard, as Task 5 correctly does but Task 4 does not.
+
+---
+
+## Summary Table
+
+### Must-Fix Before Implementation Starts
+
+| ID | Task | Issue |
+|----|------|-------|
+| M1 | 1, 2, 10 | Three separate interband.sh commits across sessions create merge-conflict risk and split testability. Consolidate all interband.sh additions into Task 1. |
+| M2 | 9 | String-match dedup produces false positives (suppresses valid beads) and false negatives (creates duplicates). Replace with agent-name-keyed session map. |
+| M3 | 10 | Hardcoded `/intermem:synthesize` in intercheck output breaks the interband publisher/consumer boundary. Remove it. |
+| M4 | 2 | Budget alert emits on every call above threshold, not at crossing points. Add a last-emitted-bucket gate. |
+
+### Fix Before Completion (Not Blocking to Start)
+
+| ID | Task | Issue |
+|----|------|-------|
+| C1 | 6 | Four-plugin batch should be four separate tasks. Verify intermem plugin structure first. |
+| C2 | 1 | Pressure threshold duplication in context-monitor.sh — use existing `$LEVEL` variable. |
+| C3 | 7 | Extend validation script to cross-check edges against integration.json companions. |
+| C4 | 6 | intertest, internext, tool-time: create integration.json only, no session-start hooks yet. |
+| C5 | 8 | Change "Replace contents" to "Append block after line 9." |
+
+### Low-Priority Cleanup
+
+| ID | Task | Issue |
+|----|------|-------|
+| L1 | 1, 2 | Document channel vs. type naming convention in interband AGENTS.md. |
+| L2 | 4 | Add "check if hooks.json exists" guard matching Task 5's guard. |
+| L3 | 10 | Remove unreliable `$(pwd)/.intermem` existence check. |
 **PRD:** `/root/projects/Interverse/docs/prds/2026-02-20-dual-mode-plugin-architecture.md`
 **Prior art consulted:**
 - `docs/research/review-revised-dual-mode-architecture.md` (second-round architecture review of the brainstorm)
