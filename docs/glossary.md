@@ -1,6 +1,20 @@
-# Interverse Glossary
+# Demarch Glossary
 
-> Canonical terminology for the Interverse ecosystem. When terms are used differently across documents, this glossary defines the correct usage. See [architecture.md](architecture.md) for the 3-layer model diagram.
+> Canonical terminology for the Demarch platform. When terms are used differently across documents, this glossary defines the correct usage. See [architecture.md](architecture.md) for the 3-layer model diagram.
+
+## Pillars
+
+Demarch has five pillars — the major components that make up the platform:
+
+| Pillar | What it is | Layer |
+|--------|-----------|-------|
+| **Intercore** | Orchestration kernel — runs, phases, gates, dispatches, events. The durable system of record. | L1 (Kernel) |
+| **Clavain** | Agent OS — workflow policy, sprint lifecycle, model routing, agent dispatch. The reference agency. | L2 (OS) |
+| **Interverse** | 33+ companion plugins, each wrapping one capability. Independently installable. | L2 (Drivers) |
+| **Autarch** | Application layer — TUI tools (Bigend, Gurgeh, Coldwine, Pollard). | L3 (Apps) |
+| **Interspect** | Adaptive profiler — reads kernel events, proposes OS configuration changes. The learning loop. | Cross-cutting |
+
+"Pillar" is the organizational term for major components. "Layer" (L1/L2/L3) describes the architectural dependency hierarchy between them. Use "pillar" when listing what Demarch is made of; use "layer" when discussing how components interact, write-path contracts, or survival properties.
 
 ## Kernel (L1 — Intercore)
 
@@ -85,3 +99,5 @@ The OS (Clavain) and kernel (Intercore) both use 9-phase chains, but with differ
 | "interphase" (for new code) | `ic gate`, `ic run` | interphase is a legacy compatibility shim; new code should call intercore directly |
 | "workflow engine" | kernel, orchestration kernel | Intercore provides primitives, not a workflow DSL |
 | "API" (for intercore v1) | CLI surface | There is no Go library API in v1; the CLI is the contract |
+| "component" (for top-level) | pillar | Intercore, Clavain, Interverse, Autarch, and Interspect are pillars; "component" is vague |
+| "pillar" (for sub-modules) | driver, companion plugin, tool | Pillars are only the 5 top-level entries; interflux, interlock, etc. are drivers |

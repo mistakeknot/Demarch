@@ -56,8 +56,10 @@ docs/                 → shared documentation
 ## Naming Convention
 
 - All module names are **lowercase** — `interflux`, `intermute`, `interkasten`
-- Exception: **Clavain** (proper noun), **Interverse** (plugin ecosystem name), **Demarch** (project name)
+- Exception: **Clavain** (proper noun), **Interverse** (plugin ecosystem name), **Demarch** (project name), **Autarch** (proper noun), **Interspect** (proper noun), **Intercore** (proper noun)
 - GitHub repos match: `github.com/mistakeknot/interflux`
+- **Pillars** are the 5 top-level components: Intercore, Clavain, Interverse, Autarch, Interspect
+- **Layers** (L1/L2/L3) describe architectural dependency; pillars describe organizational structure
 
 ## Working in Subprojects
 
@@ -84,5 +86,5 @@ Hooks handle per-file automatic enforcement (zero cooperation needed). Skills ha
 
 - Physical monorepo, not symlinks — projects live here, old locations are symlinks back
 - Each subproject keeps its own `.git` — not a git monorepo
-- Clavain is the OS layer; interverse modules are the ecosystem
-- 3-layer architecture: apps (Layer 3) / os (Layer 2) / core (Layer 1)
+- 5 pillars: Intercore (kernel), Clavain (OS), Interverse (plugins), Autarch (apps), Interspect (profiler)
+- 3-layer architecture: apps (L3) / os (L2) / core (L1) — pillars map to layers, layers describe dependency

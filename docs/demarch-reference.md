@@ -4,11 +4,23 @@ Companion to [demarch-vision.md](./demarch-vision.md). Module inventory, model r
 
 ---
 
+## The Five Pillars
+
+Demarch's top-level organizational units. Each pillar has a clear owner and boundary. See [glossary.md](./glossary.md) for how pillars relate to the 3-layer architecture.
+
+| Pillar | Role | Layer |
+|--------|------|-------|
+| **Intercore** | Orchestration kernel — durable system of record | L1 (Kernel) |
+| **Clavain** | Agent OS — workflow policy, reference agency | L2 (OS) |
+| **Interverse** | 33+ companion plugins, each independently valuable | L2 (Drivers) |
+| **Autarch** | TUI surfaces — Bigend, Gurgeh, Coldwine, Pollard | L3 (Apps) |
+| **Interspect** | Adaptive profiler — the learning loop | Cross-cutting |
+
 ## The Constellation
 
-37 modules organized by architectural role.
+37 modules organized by architectural role within the pillars.
 
-### Infrastructure
+### Infrastructure (Intercore pillar)
 
 | Module | What It Does |
 |--------|-------------|
@@ -16,13 +28,13 @@ Companion to [demarch-vision.md](./demarch-vision.md). Module inventory, model r
 | **interspect** | Adaptive profiler — reads kernel events, proposes OS configuration changes |
 | **intermute** | Multi-agent coordination service (Go) — message routing between agents |
 
-### Operating System
+### Operating System (Clavain pillar)
 
 | Module | What It Does |
 |--------|-------------|
 | **clavain** | Autonomous software agency — the opinionated workflow, skills, hooks, routing |
 
-### Core Drivers
+### Core Drivers (Interverse pillar)
 
 | Module | Capability |
 |--------|-----------|
@@ -36,7 +48,7 @@ Companion to [demarch-vision.md](./demarch-vision.md). Module inventory, model r
 
 Additional drivers cover artifact generation (interpath), document freshness (interwatch), plugin publishing (interpub), cross-AI review (interpeer), Notion sync (interkasten), TUI testing (tuivision), cognitive lenses (interlens), voice adaptation (interfluence), and more. The full listing is in [CLAUDE.md](../CLAUDE.md).
 
-### Applications
+### Applications (Autarch pillar)
 
 | Module | What It Does |
 |--------|-------------|
@@ -56,16 +68,16 @@ Model routing operates at three stages, each building on the one below:
 
 ## Adoption Ladder
 
-Demarch is adoptable incrementally. Each step adds capability on top of the previous:
+Demarch is adoptable incrementally — one pillar at a time. Each step adds capability on top of the previous:
 
-**Step 1: One driver.** Install a single companion plugin (interflux for code review, tldr-swinton for code context). Works in vanilla Claude Code. No other Demarch modules required.
+**Step 1: Interverse (one driver).** Install a single companion plugin (interflux for code review, tldr-swinton for code context). Works in vanilla Claude Code. No other pillars required.
 
-**Step 2: Clavain (OS).** Install Clavain for the sprint workflow, quality gates, and brainstorm→ship lifecycle. Drivers are auto-discovered and integrated.
+**Step 2: Clavain (OS).** Install the OS pillar for the sprint workflow, quality gates, and brainstorm→ship lifecycle. Drivers are auto-discovered and integrated.
 
-**Step 3: Intercore (kernel).** Install the `ic` CLI for durable state. Runs, phases, gates, and events persist across sessions. Crash recovery. Audit trails.
+**Step 3: Intercore (kernel).** Install the kernel pillar for durable state. Runs, phases, gates, and events persist across sessions. Crash recovery. Audit trails.
 
-**Step 4: Interspect (profiler).** Enable the adaptive profiler. Agent routing improves based on outcome data. Gate rules tighten or relax based on evidence. The system starts learning.
+**Step 4: Interspect (profiler).** Enable the profiler pillar. Agent routing improves based on outcome data. Gate rules tighten or relax based on evidence. The system starts learning.
 
-**Step 5: Autarch (apps).** Install the TUI tools for interactive dashboards, PRD generation, and task orchestration.
+**Step 5: Autarch (apps).** Install the apps pillar for interactive dashboards, PRD generation, and task orchestration.
 
 Each step is optional. Step 1 is useful without Step 2. Step 2 is useful without Step 3. The stack rewards depth but doesn't demand it.

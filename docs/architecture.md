@@ -1,6 +1,20 @@
-# Interverse Architecture
+# Demarch Architecture
 
-> **Version:** 1.1 | **Last updated:** 2026-02-20
+> **Version:** 1.2 | **Last updated:** 2026-02-22
+
+## Five Pillars
+
+Demarch is built from five pillars — major components that together form the platform:
+
+| Pillar | Role |
+|--------|------|
+| **Intercore** | Orchestration kernel — the durable system of record |
+| **Clavain** | Agent OS — workflow policy and the reference agency |
+| **Interverse** | 33+ companion plugins, each independently valuable |
+| **Autarch** | Application layer — TUI surfaces for kernel state |
+| **Interspect** | Adaptive profiler — the learning loop |
+
+Pillars describe *what* makes up Demarch. The three-layer model below describes *how* they relate.
 
 ## The Three-Layer Model
 

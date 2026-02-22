@@ -28,7 +28,7 @@ The bet: if you build the right infrastructure beneath agents, they become capab
 
 ## The Stack
 
-Three layers, one cross-cutting profiler. Each has a clear owner, a clear boundary, and a clear survival property.
+Five pillars, organized in three layers plus one cross-cutting profiler. Each pillar has a clear owner, a clear boundary, and a clear survival property.
 
 ```
 Layer 3: Apps (Autarch)
@@ -222,7 +222,7 @@ Three concentric circles, in priority order:
 
 ## Open Source Strategy
 
-Everything is open source. The kernel (Intercore), the OS (Clavain), all 33+ companion plugins, the TUI tools (Autarch), and the profiler (Interspect).
+Everything is open source. All five pillars: the kernel (Intercore), the OS (Clavain), the companion plugins (Interverse), the TUI tools (Autarch), and the profiler (Interspect).
 
 The bet is on ecosystem effects. If the kernel is good enough, people will build their own agencies on top of it. If the reference agency is good enough, people will write their own companions. The value of the platform increases with every external contribution, and the learning loop (Interspect) benefits from a larger evidence base.
 
@@ -276,7 +276,7 @@ Track A (Kernel)      Track B (Routing)     Track C (Agency)
 
 Demarch (from Alastair Reynolds' Democratic Anarchists, reflecting the continuous polling and consensus-driven architecture of the system). Clavain is a protagonist from the same series. The inter-\* naming convention describes what each component does: the space *between* things. Interverse is the universe that contains them all.
 
-The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous agency with its own kernel, profiler, TUI suite, and ecosystem of 42 modules across 5 layers.
+The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous software development agency platform with five pillars and 42 modules.
 
 ---
 
