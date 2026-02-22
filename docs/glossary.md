@@ -59,21 +59,23 @@
 
 The OS (Clavain) and kernel (Intercore) both use 9-phase chains, but with different phase names. This table shows the canonical mapping.
 
-| # | OS Phase (`PHASES_JSON`) | Kernel Phase (`DefaultPhaseChain`) | Notes |
-|---|---|---|---|
-| 1 | `brainstorm` | `brainstorm` | Same |
-| 2 | `brainstorm-reviewed` | `brainstorm-reviewed` | Same |
-| 3 | `strategized` | `strategized` | Same |
-| 4 | `planned` | `planned` | Same |
-| 5 | `plan-reviewed` | *(no equivalent)* | OS-only — flux-drive plan review gate. Kernel has no `plan-reviewed` phase. |
-| 6 | `executing` | `executing` | Same |
-| 7 | `shipping` | `polish` | Historical divergence. OS rename deferred (see iv-52om). |
-| 8 | `reflect` | `reflect` | Same. Gate rule `CheckArtifactExists` fires for both chains. |
-| 9 | `done` | `done` | Same. Terminal phase — sets `status=completed`. |
+| # | OS Phase (`PHASES_JSON`) | Kernel Phase (`DefaultPhaseChain`) | Kernel Gate Fires? | Notes |
+|---|---|---|---|---|
+| 1 | `brainstorm` | `brainstorm` | Yes — `artifact_exists(brainstorm)` | Same name, gate fires |
+| 2 | `brainstorm-reviewed` | `brainstorm-reviewed` | Yes — `artifact_exists(brainstorm-reviewed)` | Same name, gate fires |
+| 3 | `strategized` | `strategized` | Yes — `artifact_exists(strategized)` | Same name, gate fires |
+| 4 | `planned` | `planned` | Yes — `artifact_exists(planned)` | Same name, gate fires |
+| 5 | `plan-reviewed` | *(no equivalent)* | No — OS-only | OS enforces via agency-spec gate (min 2 agents, max 3 P1 findings) |
+| 6 | `executing` | `executing` | No — from-phase mismatch | Kernel expects `planned→executing`; OS sends `plan-reviewed→executing` |
+| 7 | `shipping` | `polish` | No — name mismatch | Kernel expects `review→polish`; OS sends `executing→shipping` |
+| 8 | `reflect` | `reflect` | No — from-phase mismatch | Kernel expects `polish→reflect`; OS sends `shipping→reflect` |
+| 9 | `done` | `done` | Yes — `artifact_exists(reflect)` | Same from/to names, gate fires |
 
-**Kernel gate rule coverage:** Only `{reflect, done}: CheckArtifactExists` fires for OS-created sprints, because the OS uses different phase names for earlier phases. This is a known pre-existing condition.
+**Kernel gate rule coverage:** Kernel gates fire for 5 of 8 transitions in OS-created sprints (phases 1-4 and the final `reflect→done`). The middle transitions (5-8) bypass kernel gates because the OS phase names don't match the kernel's gate rules map keys. The OS compensates with its own gate enforcement via agency-spec.yaml, but this is OS-level policy enforcement, not kernel-enforced invariants.
 
-**Why divergent:** `plan-reviewed` exists in the OS because flux-drive plan review is an OS-level gate with no kernel equivalent. `shipping` was the original name for the quality-gates/ship step; renaming it to `polish` requires migration of all existing sprints (deferred to iv-52om).
+**Why divergent:** `plan-reviewed` exists in the OS because flux-drive plan review is an OS-level gate with no kernel equivalent. `shipping` was the original name for the quality-gates/ship step; renaming it to `polish` requires migration of all existing sprints (deferred to iv-52om). The `plan-reviewed` insertion shifts all subsequent from-phase values, causing cascade mismatches.
+
+**Resolution path:** Align the OS phase chain to use kernel phase names (replacing `plan-reviewed` with a gate on the `planned→executing` transition, and `shipping` with `polish`). This makes kernel gate enforcement cover the full chain. Tracked as iv-v5al.
 
 ## Terms to Avoid
 

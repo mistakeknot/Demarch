@@ -118,7 +118,7 @@ The human drives strategy (what to build, which tradeoffs to accept, when to shi
 
 Quality gates matter more than velocity. Agents without discipline ship slop. The system resolves all open questions before execution because ambiguity costs more during building than during planning. The review phases are not overhead; they are the product.
 
-Gates are kernel-enforced invariants, not prompt suggestions. An agent cannot bypass a gate regardless of what the LLM requests. This is the difference between "please check for a plan artifact" and "the system will not advance without a plan artifact."
+Gates are kernel-enforced invariants, not prompt suggestions. An agent cannot bypass a gate regardless of what the LLM requests. This is the difference between "please check for a plan artifact" and "the system will not advance without a plan artifact." The kernel enforces gates for transitions matching its gate rules map; the OS provides additional gates (via agency specs) for OS-specific phases. Both layers contribute to enforcement; neither alone covers the full chain.
 
 ### 7. Self-building as proof
 
