@@ -35,7 +35,7 @@ Interverse/                    ← root repo (skeleton only)
 ├── services/
 │   └── intermute/             ← own .git
 ├── Interforge/                ← untracked, own .git
-├── frankentui-research/       ← gitignored research
+├── research/frankentui/       ← gitignored research clones
 ├── scripts/                   ← tracked in root repo
 └── docs/                      ← tracked in root repo
 
@@ -67,7 +67,7 @@ Demarch/                       ← renamed root repo
 ├── sdk/                       # Shared libraries (unchanged)
 │   └── interbase/
 ├── Interforge/                # Stays at root (untracked)
-├── frankentui-research/       # Stays at root (gitignored research)
+├── research/frankentui/       # Gitignored research clones
 ├── scripts/
 └── docs/
 ```
@@ -78,7 +78,7 @@ Demarch/                       ← renamed root repo
 - Each subproject's internal `.git` and repo identity
 - Go module paths (they use their own repo names, not the monorepo path)
 - `Interforge/` stays at root (untracked, own repo)
-- `frankentui-research/` stays at root (gitignored)
+- `research/` directory at root (gitignored) holds research clones like frankentui
 
 **Removed from original plan:**
 - `interspect/` — does not exist as a standalone directory (lives under `intercore/docs`). Can be promoted later if/when it becomes its own module.
@@ -250,7 +250,7 @@ Claude Code plugins reference paths internally. Check and update:
 ```markdown
 # Demarch
 
-Monorepo for the Demarch autonomous software agency.
+Monorepo for the Demarch open-source autonomous software development agency platform.
 Interverse (`/interverse`) is the ecosystem of 33+ Claude Code companion plugins.
 ```
 

@@ -8,13 +8,13 @@
 
 ## The Pitch
 
-Demarch is an autonomous software agency that pushes the frontier on three axes simultaneously: state-of-the-art autonomy, uncompromising quality, and relentless token efficiency.
+Demarch is an open-source autonomous software development agency platform that pushes the frontier on three axes simultaneously: state-of-the-art autonomy, uncompromising quality, and relentless token efficiency.
 
 Most agent systems pick two. Full autonomy with quality? Expensive — you throw tokens at everything and hope the review fleet catches the mess. Autonomy with efficiency? Fast and cheap, but the output is slop. Quality with efficiency? Sure — just keep a human in the loop for every decision, defeating the point.
 
 Demarch refuses to choose. It orchestrates the full development lifecycle from problem discovery through shipped code, selecting the right model for each task with the discipline, durability, and accountability that shipping real software demands. And it gets cheaper and better every time it runs, because it learns from what happened last time.
 
-Not a coding assistant. Not an AI gateway. Not a framework for calling LLMs. An agency that builds software with discipline, at a cost that keeps declining.
+Not a coding assistant. Not an AI gateway. Not a framework for calling LLMs. A platform for autonomous software development agencies that build software with discipline, at a cost that keeps declining.
 
 The whole thing is open source.
 
@@ -210,11 +210,11 @@ The north star is economic because the platform play only works if other people 
 
 ## Audience
 
-Demarch is infrastructure for anyone building autonomous coding agents. Intercore is the kernel. Clavain is the reference OS. The personal rig is the highest-fidelity eval: built by using it to build itself.
+Demarch is an open-source platform for anyone building autonomous software development agencies. Intercore is the kernel. Clavain is the reference agency. The personal rig is the highest-fidelity eval: built by using it to build itself.
 
 Three concentric circles, in priority order:
 
-1. **Platform.** Open Intercore as infrastructure for anyone building autonomous coding agents. Open Clavain as the reference OS. The whole stack, open source, from launch.
+1. **Platform.** Open Intercore as infrastructure for anyone building autonomous software development agencies. Open Clavain as the reference agency. The whole stack, open source, from launch.
 
 2. **Proof by demonstration.** Build the system with the system. Every capability must survive contact with its own development process. A system that autonomously builds itself is a more convincing proof than any benchmark.
 
@@ -224,7 +224,7 @@ Three concentric circles, in priority order:
 
 Everything is open source. The kernel (Intercore), the OS (Clavain), all 33+ companion plugins, the TUI tools (Autarch), and the profiler (Interspect).
 
-The bet is on ecosystem effects. If the kernel is good enough, people will build their own OS layers on top of it. If the OS is good enough, people will write their own companions. The value of the platform increases with every external contribution, and the learning loop (Interspect) benefits from a larger evidence base.
+The bet is on ecosystem effects. If the kernel is good enough, people will build their own agencies on top of it. If the reference agency is good enough, people will write their own companions. The value of the platform increases with every external contribution, and the learning loop (Interspect) benefits from a larger evidence base.
 
 Revenue, when it matters, comes from managed hosting, enterprise support, and premium companions. Not from restricting access to the core infrastructure.
 
@@ -270,12 +270,13 @@ Track A (Kernel)      Track B (Routing)     Track C (Agency)
 - **Not a coding assistant.** It doesn't help you write code; it *builds software*. The coding is one phase of five.
 - **Not a no-code tool.** It's for people who build software with agents. Full stop.
 - **Not self-modifying.** Interspect can modify OS-level configuration. It cannot modify the kernel. This is a deliberate safety boundary.
+- **Not just an agency.** Demarch is the platform; Clavain is the reference agency built on it. The kernel and drivers are infrastructure anyone can use to build their own agency.
 
 ## Origins
 
 Demarch (from Alastair Reynolds' Democratic Anarchists, reflecting the continuous polling and consensus-driven architecture of the system). Clavain is a protagonist from the same series. The inter-\* naming convention describes what each component does: the space *between* things. Interverse is the universe that contains them all.
 
-The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous agency with its own kernel, profiler, TUI suite, and ecosystem of 37 modules.
+The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous agency with its own kernel, profiler, TUI suite, and ecosystem of 42 modules across 5 layers.
 
 ---
 

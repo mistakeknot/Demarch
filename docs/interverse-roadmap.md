@@ -10,43 +10,43 @@
 
 | Module | Location | Version | Status | Roadmap | Open Beads (context) |
 |--------|----------|---------|--------|---------|----------------------|
-| autarch | hub/autarch | 0.1.0 | active | yes | n/a |
-| clavain | hub/clavain | 0.6.60 | active | yes | n/a |
-| interchart | plugins/interchart | 0.1.0 | early | no | n/a |
-| intercheck | plugins/intercheck | 0.2.0 | active | yes | 4 |
-| intercraft | plugins/intercraft | 0.1.0 | active | yes | 4 |
-| interdev | plugins/interdev | 0.2.0 | active | yes | 4 |
-| interdoc | plugins/interdoc | 5.1.1 | active | yes | 4 |
-| interfluence | plugins/interfluence | 0.2.5 | active | yes | 4 |
-| interflux | plugins/interflux | 0.2.19 | active | yes | 19 |
-| interform | plugins/interform | 0.1.0 | active | yes | 4 |
-| interject | plugins/interject | 0.1.6 | active | yes | 4 |
-| interkasten | plugins/interkasten | 0.4.3 | active | yes | 12 |
-| interlearn | plugins/interlearn | 0.1.0 | early | no | n/a |
-| interleave | plugins/interleave | 0.1.1 | active | yes | n/a |
-| interlens | plugins/interlens | 2.2.4 | active | yes | 4 |
-| interline | plugins/interline | 0.2.6 | active | yes | 4 |
-| interlock | plugins/interlock | 0.2.1 | active | yes | 10 |
-| intermap | plugins/intermap | 0.1.3 | active | yes | n/a |
-| intermem | plugins/intermem | 0.2.2 | active | yes | n/a |
-| intermute | services/intermute | — | active | yes | 29 |
-| intermux | plugins/intermux | 0.1.1 | active | yes | 4 |
-| internext | plugins/internext | 0.1.2 | active | yes | 4 |
-| interpath | plugins/interpath | 0.2.2 | active | yes | 4 |
-| interpeer | plugins/interpeer | 0.1.0 | active | yes | n/a |
-| interphase | plugins/interphase | 0.3.3 | active | yes | 4 |
-| interpub | plugins/interpub | 0.1.3 | active | yes | 4 |
-| intersearch | plugins/intersearch | 0.1.1 | active | yes | 4 |
-| interserve | plugins/interserve | 0.1.4 | active | yes | 4 |
-| interslack | plugins/interslack | 0.1.0 | active | yes | 4 |
-| interstat | plugins/interstat | 0.2.5 | active | yes | 4 |
-| intersynth | plugins/intersynth | 0.1.3 | active | yes | n/a |
-| intertest | plugins/intertest | 0.1.1 | active | yes | n/a |
+| autarch | apps/autarch | 0.1.0 | active | yes | n/a |
+| clavain | os/clavain | 0.6.60 | active | yes | n/a |
+| interchart | interverse/interchart | 0.1.0 | early | no | n/a |
+| intercheck | interverse/intercheck | 0.2.0 | active | yes | 4 |
+| intercraft | interverse/intercraft | 0.1.0 | active | yes | 4 |
+| interdev | interverse/interdev | 0.2.0 | active | yes | 4 |
+| interdoc | interverse/interdoc | 5.1.1 | active | yes | 4 |
+| interfluence | interverse/interfluence | 0.2.5 | active | yes | 4 |
+| interflux | interverse/interflux | 0.2.19 | active | yes | 19 |
+| interform | interverse/interform | 0.1.0 | active | yes | 4 |
+| interject | interverse/interject | 0.1.6 | active | yes | 4 |
+| interkasten | interverse/interkasten | 0.4.3 | active | yes | 12 |
+| interlearn | interverse/interlearn | 0.1.0 | early | no | n/a |
+| interleave | interverse/interleave | 0.1.1 | active | yes | n/a |
+| interlens | interverse/interlens | 2.2.4 | active | yes | 4 |
+| interline | interverse/interline | 0.2.6 | active | yes | 4 |
+| interlock | interverse/interlock | 0.2.1 | active | yes | 10 |
+| intermap | interverse/intermap | 0.1.3 | active | yes | n/a |
+| intermem | interverse/intermem | 0.2.2 | active | yes | n/a |
+| intermute | core/intermute | — | active | yes | 29 |
+| intermux | interverse/intermux | 0.1.1 | active | yes | 4 |
+| internext | interverse/internext | 0.1.2 | active | yes | 4 |
+| interpath | interverse/interpath | 0.2.2 | active | yes | 4 |
+| interpeer | interverse/interpeer | 0.1.0 | active | yes | n/a |
+| interphase | interverse/interphase | 0.3.3 | active | yes | 4 |
+| interpub | interverse/interpub | 0.1.3 | active | yes | 4 |
+| intersearch | interverse/intersearch | 0.1.1 | active | yes | 4 |
+| interserve | interverse/interserve | 0.1.4 | active | yes | 4 |
+| interslack | interverse/interslack | 0.1.0 | active | yes | 4 |
+| interstat | interverse/interstat | 0.2.5 | active | yes | 4 |
+| intersynth | interverse/intersynth | 0.1.3 | active | yes | n/a |
+| intertest | interverse/intertest | 0.1.1 | active | yes | n/a |
 | interverse | root | — | active | yes | n/a |
-| interwatch | plugins/interwatch | 0.1.2 | active | yes | 4 |
-| tldr-swinton | plugins/tldr-swinton | 0.7.14 | active | yes | 15 |
-| tool-time | plugins/tool-time | 0.3.5 | active | yes | 12 |
-| tuivision | plugins/tuivision | 0.1.4 | active | yes | 4 |
+| interwatch | interverse/interwatch | 0.1.2 | active | yes | 4 |
+| tldr-swinton | interverse/tldr-swinton | 0.7.14 | active | yes | 15 |
+| tool-time | interverse/tool-time | 0.3.5 | active | yes | 12 |
+| tuivision | interverse/tuivision | 0.1.4 | active | yes | 4 |
 
 **Legend:** active = recent commits or active tracker items; early = manifest exists but roadmap maturity is limited. `n/a` means there is no module-local `.beads` database.
 
@@ -168,79 +168,79 @@ No P0-P1 items.
 
 ## Module Highlights
 
-### clavain (hub/clavain)
-Clavain is an autonomous software agency — 15 skills, 4 agents, 52 commands, 22 hooks, 1 MCP server. 31 companion plugins in the inter-* constellation. 1000 beads tracked, 660 closed, 339 open. Runs on its own TUI (Autarch), backed by Intercore kernel and Interspect profiler.
+### clavain (os/clavain)
+Clavain is an autonomous software agency — 16 skills, 4 agents, 53 commands, 22 hooks, 1 MCP server. 33 companion plugins in the inter-* constellation. 1419 beads tracked, 1098 closed, 321 open. Runs on its own TUI (Autarch), backed by Intercore kernel and Interspect profiler.
 
-### intercheck (plugins/intercheck)
+### intercheck (interverse/intercheck)
 Intercheck is the quality and session-health layer for Claude Code and Codex operations, focused on preventing unsafe edits before damage occurs.
 
-### intercraft (plugins/intercraft)
+### intercraft (interverse/intercraft)
 Intercraft captures architecture guidance and auditable agent-native design patterns for complex agent behavior.
 
-### interdev (plugins/interdev)
+### interdev (interverse/interdev)
 Interdev provides MCP and CLI-oriented developer workflows for discoverability, command execution, and environment tooling.
 
-### interdoc (plugins/interdoc)
+### interdoc (interverse/interdoc)
 Interdoc synchronizes AGENTS.md/CLAUDE.md governance and enables recursive documentation maintenance with review tooling.
 
-### interfluence (plugins/interfluence)
+### interfluence (interverse/interfluence)
 Interfluence provides voice and style adaptation by profile, giving outputs that fit project conventions.
 
-### interflux (plugins/interflux)
+### interflux (interverse/interflux)
 interflux is at stable feature-complete breadth (2 skills, 3 commands, 12 agents, 2 MCP servers) and now in a "quality and operations" phase: tightening edge-case behavior, improving observability, and codifying long-term scalability assumptions.
 
-### interform (plugins/interform)
+### interform (interverse/interform)
 Interform raises visual and interaction quality for user-facing artifacts and interface workflows.
 
-### interject (plugins/interject)
+### interject (interverse/interject)
 Interject provides ambient discovery and research execution services for agent workflows.
 
-### interlens (plugins/interlens)
+### interlens (interverse/interlens)
 Interlens is the cognitive-lens platform for structured reasoning and belief synthesis.
 
-### interline (plugins/interline)
+### interline (interverse/interline)
 Interline provides session state visibility with statusline signals for multi-agent and phase-aware workflows.
 
-### interlock (plugins/interlock)
+### interlock (interverse/interlock)
 Interlock has shipped Phase 1+2 of multi-session coordination: per-session git index isolation, commit serialization, blocking edit enforcement, and automatic file reservation. The system now provides a complete safety layer from first edit through commit.
 
-### intermux (plugins/intermux)
+### intermux (interverse/intermux)
 Intermux surfaces active agent sessions and task progress to support coordination and observability.
 
-### internext (plugins/internext)
+### internext (interverse/internext)
 Internext prioritizes work proposals and tradeoffs with explicit value-risk scoring.
 
-### interpath (plugins/interpath)
+### interpath (interverse/interpath)
 Interpath generates artifacts across roadmap, PRD, vision, changelog, and status from repository intelligence.
 
-### interphase (plugins/interphase)
+### interphase (interverse/interphase)
 Interphase manages phase tracking, gate enforcement, and work discovery within Clavain and bead-based workflows.
 
-### interpub (plugins/interpub)
+### interpub (interverse/interpub)
 Interpub provides safe version bumping, publishing, and release workflows for plugins and companion modules.
 
-### intersearch (plugins/intersearch)
+### intersearch (interverse/intersearch)
 Intersearch underpins semantic search and Exa-backed discovery shared across Interverse modules.
 
-### interserve (plugins/interserve)
+### interserve (interverse/interserve)
 Interserve supports Codex-side classification and context compression for dispatch efficiency.
 
-### interslack (plugins/interslack)
+### interslack (interverse/interslack)
 InterSlack connects workflow events to team communication channels with actionable context.
 
-### interstat (plugins/interstat)
+### interstat (interverse/interstat)
 Interstat measures token consumption, workflow efficiency, and decision cost across agent sessions.
 
-### interwatch (plugins/interwatch)
+### interwatch (interverse/interwatch)
 Interwatch monitors documentation freshness and confidence so stale artifacts are identified before they mislead decisions.
 
-### tldr-swinton (plugins/tldr-swinton)
+### tldr-swinton (interverse/tldr-swinton)
 tldr-swinton is the token-efficiency context layer for AI code workflows. The product has:
 
-### tuivision (plugins/tuivision)
+### tuivision (interverse/tuivision)
 Tuivision automates TUI and terminal UI testing through scriptable sessions and screenshot workflows.
 
-### interkasten (plugins/interkasten)
+### interkasten (interverse/interkasten)
 v0.4.3. Bidirectional sync between local filesystems and Notion with three-way merge conflict resolution and crash-safe WAL recovery. Exposes 21 MCP tools for hierarchy discovery, raw signal gathering, and sync control — delegating classification and tagging to agent skills rather than hardcoding behavior.
 
 ---
@@ -276,8 +276,8 @@ Major dependency chains spanning multiple modules:
 
 ## Modules Without Roadmaps
 
-- `plugins/interchart`
-- `plugins/interlearn`
+- `interverse/interchart`
+- `interverse/interlearn`
 
 ---
 

@@ -40,4 +40,4 @@ docs/docs
 .intermem/
 
 # ── Research clones (not part of monorepo) ──
-frankentui-research/
+research/

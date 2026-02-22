@@ -2,7 +2,7 @@
 
 ## Overview
 
-Demarch is the physical monorepo for the autonomous software agency. **Interverse** (`/interverse`) is the ecosystem of 33+ Claude Code companion plugins. The repo also contains the Clavain agency (`/os`), the Autarch TUI (`/apps`), and core infrastructure (`/core`). Each module keeps its own `.git` — this is not a git monorepo, but a directory layout with independent repos.
+Demarch is the physical monorepo for the open-source autonomous software development agency platform. **Interverse** (`/interverse`) is the ecosystem of 33+ Claude Code companion plugins. The repo also contains the Clavain agency (`/os`), the Autarch TUI (`/apps`), and core infrastructure (`/core`). Each module keeps its own `.git` — this is not a git monorepo, but a directory layout with independent repos.
 
 ## Instruction Loading Order
 
