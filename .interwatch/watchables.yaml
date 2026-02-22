@@ -1,0 +1,57 @@
+# Project-level watchables override for Demarch monorepo.
+# Paths follow CONVENTIONS.md namespaced convention:
+#   docs/<module>-roadmap.md, docs/<module>-vision.md
+# PRD uses docs/prds/*.md at monorepo level (no single PRD to watch).
+
+watchables:
+  - name: roadmap
+    path: docs/interverse-roadmap.md
+    generator: interpath:artifact-gen
+    generator_args: { type: roadmap }
+    signals:
+      - type: bead_closed
+        weight: 2
+        description: "Closed bead may affect roadmap phasing"
+      - type: bead_created
+        weight: 1
+        description: "New bead may need roadmap placement"
+      - type: version_bump
+        weight: 3
+        description: "Version bump likely means shipped work"
+      - type: brainstorm_created
+        weight: 1
+        description: "New brainstorm may inform research agenda"
+    staleness_days: 7
+
+  - name: vision
+    path: docs/interverse-vision.md
+    generator: interpath:artifact-gen
+    generator_args: { type: vision }
+    signals:
+      - type: companion_extracted
+        weight: 2
+        description: "New companion changes the constellation"
+      - type: research_completed
+        weight: 1
+        description: "Research may inform direction"
+    staleness_days: 30
+
+  - name: agents-md
+    path: AGENTS.md
+    generator: interdoc:interdoc
+    generator_args: {}
+    signals:
+      - type: file_renamed
+        weight: 3
+        description: "Renamed file may break documented paths"
+      - type: file_deleted
+        weight: 3
+        description: "Deleted file referenced in docs"
+      - type: file_created
+        weight: 2
+        description: "New file may need documentation"
+      - type: commits_since_update
+        weight: 1
+        description: "Accumulated changes may drift docs"
+        threshold: 20
+    staleness_days: 14

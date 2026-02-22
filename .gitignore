@@ -34,7 +34,9 @@ docs/docs
 .bv/
 
 # ── Interwatch drift state (runtime, not committed) ──
-.interwatch/
+# watchables.yaml is tracked (project config); drift/history state is not
+.interwatch/*
+!.interwatch/watchables.yaml
 
 # ── Intermem state (per-project, not committed) ──
 .intermem/
