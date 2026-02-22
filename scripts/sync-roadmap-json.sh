@@ -7,7 +7,6 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
 ROOT_ROADMAP_CANONICAL="$ROOT_DOCS_DIR/interverse-roadmap.md"
-ROOT_ROADMAP_LEGACY="$ROOT_DOCS_DIR/roadmap.md"
 EM_DASH="—"
 
 require() {
@@ -43,12 +42,9 @@ module_roadmap_file() {
     local module_dir="$1"
     local module="$2"
     local canonical="$module_dir/docs/${module}-roadmap.md"
-    local legacy="$module_dir/docs/roadmap.md"
 
     if [ -f "$canonical" ]; then
         echo "$canonical"
-    elif [ -f "$legacy" ]; then
-        echo "$legacy"
     else
         echo ""
     fi
@@ -57,8 +53,6 @@ module_roadmap_file() {
 root_roadmap_file() {
     if [ -f "$ROOT_ROADMAP_CANONICAL" ]; then
         echo "$ROOT_ROADMAP_CANONICAL"
-    elif [ -f "$ROOT_ROADMAP_LEGACY" ]; then
-        echo "$ROOT_ROADMAP_LEGACY"
     else
         echo ""
     fi
@@ -128,7 +122,7 @@ add_item() {
     title="$(trim "$title")"
     status="$(trim "$status")"
     [ -n "$status" ] || status="open"
-    [ -n "$source_file" ] || source_file="docs/roadmap.md"
+    [ -n "$source_file" ] || source_file="docs/${module}-roadmap.md"
 
     jq -c -n \
         --arg module "$module" \
@@ -492,21 +486,6 @@ append_cross_dependencies() {
     done < "$ITEMS_FILE"
 }
 
-parse_root_fallback() {
-    local source
-    source="$(root_roadmap_file)"
-    [ -f "$source" ] || return
-    local source_label="docs/roadmap.md"
-    if [ "$source" = "$ROOT_ROADMAP_CANONICAL" ]; then
-        source_label="docs/interverse-roadmap.md"
-    fi
-    while IFS= read -r line || [ -n "${line:-}" ]; do
-        if [[ "$line" =~ ^-[[:space:]]*\[([^]]+)\][[:space:]]+\*\*([^*]+)\*\* ]] && valid_item_id "${BASH_REMATCH[1]}"; then
-            add_item "interverse" next "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "root-roadmap-fallback" "$source_label" "[]" "open" "P2"
-        fi
-    done < "$source"
-}
-
 require jq
 
 TMP_DIR="$(mktemp -d)"
@@ -545,11 +524,7 @@ for base in "$ROOT_DIR/apps" "$ROOT_DIR/os" "$ROOT_DIR/core" "$ROOT_DIR/interver
         elif [ -f "$roadmap_md_source" ]; then
             roadmap_source="markdown"
             has_roadmap=1
-            if [ "$roadmap_md_source" = "$module_dir/docs/${module}-roadmap.md" ]; then
-                collect_markdown_items "$module" "$roadmap_md_source" "${module_location}/docs/${module}-roadmap.md" "$module_location"
-            else
-                collect_markdown_items "$module" "$roadmap_md_source" "${module_location}/docs/roadmap.md" "$module_location"
-            fi
+            collect_markdown_items "$module" "$roadmap_md_source" "${module_location}/docs/${module}-roadmap.md" "$module_location"
         fi
 
         if (( has_roadmap == 1 )); then
@@ -563,7 +538,7 @@ for base in "$ROOT_DIR/apps" "$ROOT_DIR/os" "$ROOT_DIR/core" "$ROOT_DIR/interver
                     "${module}-EMPTY-RM" \
                     "later" \
                     "$module" \
-                    "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/${module}-roadmap.md, docs/roadmap.md, or docs/roadmap.json." \
+                    "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/${module}-roadmap.md or docs/roadmap.json." \
                     "$module_location/docs/${module}-roadmap.md" \
                     "empty-module-roadmap" \
                     "planned" \
@@ -582,7 +557,7 @@ for base in "$ROOT_DIR/apps" "$ROOT_DIR/os" "$ROOT_DIR/core" "$ROOT_DIR/interver
                 "${module}-NO-RM" \
                 "later" \
                 "$module" \
-                "Roadmap artifact missing in this module; create docs/${module}-roadmap.md or docs/roadmap.md to define module priorities." \
+                "Roadmap artifact missing in this module; create docs/${module}-roadmap.md to define module priorities." \
                 "$module_location/docs/${module}-roadmap.md" \
                 "missing-module-roadmap" \
                 "planned" \
@@ -608,10 +583,6 @@ module_count="$(jq -s 'length' "$MODULES_FILE")"
 if [ "$module_count" -eq 0 ]; then
     echo "No modules discovered under apps/, os/, core/, or interverse/" >&2
     exit 1
-fi
-
-if [ ! -s "$ITEMS_FILE" ]; then
-    parse_root_fallback
 fi
 
 append_cross_dependencies

@@ -86,6 +86,8 @@ Use nearest, task-scoped instruction loading instead of reading every instructio
 | `docs/` | — | **Platform-level** documentation only (cross-cutting brainstorms, research, solutions) |
 
 > **Docs convention:** `Demarch/docs/` is for platform-level work only. Each subproject keeps its own docs at `Demarch/{core|os|interverse|apps|sdk}/<subproject>/docs/` (e.g., `interverse/interlock/docs/`, `core/intercore/docs/`).
+>
+> **Artifact naming convention:** See [`CONVENTIONS.md`](CONVENTIONS.md) for strict canonical roadmap/vision/PRD paths. Compatibility filenames are not part of the active convention.
 
 ## Module Relationships
 
@@ -135,7 +137,7 @@ All work is tracked at the **Demarch root level** using the monorepo `.beads/` d
 
 ### Roadmap
 
-The ecosystem roadmap is at [`docs/roadmap.md`](docs/roadmap.md) with machine-readable canonical output in [`docs/roadmap.json`](docs/roadmap.json). Regenerate both with `/interpath:roadmap` from the Interverse root. Propagate items to sub-module roadmaps with `/interpath:propagate`.
+The ecosystem roadmap is at [`docs/interverse-roadmap.md`](docs/interverse-roadmap.md) with machine-readable canonical output in [`docs/roadmap.json`](docs/roadmap.json). Regenerate both with `/interpath:roadmap` from the Interverse root. Propagate items to sub-module roadmaps with `/interpath:propagate`.
 
 `scripts/sync-roadmap-json.sh` also generates the canonical JSON rollup across `apps/`, `os/`, `core/`, and `interverse/` roadmaps and cross-module dependencies.
 
@@ -361,4 +363,3 @@ Symlinks at `/root/projects/<name>` point into this monorepo for backward compat
 ## Operational Notes & Research
 
 Operational lessons (Oracle CLI, git credentials, tmux, SQLite gotchas, plugin publishing) and research references (search improvements, code compression, key papers) are in [docs/guides/agents-operational-notes.md](docs/guides/agents-operational-notes.md).
-
