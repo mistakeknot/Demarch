@@ -4,6 +4,14 @@
 
 Demarch is the physical monorepo for the open-source autonomous software development agency platform. It contains five pillars: **Intercore** (`/core`) the orchestration kernel, **Clavain** (`/os`) the agent OS and reference agency, **Interverse** (`/interverse`) 33+ companion plugins, **Autarch** (`/apps`) the TUI surfaces, and **Interspect** (cross-cutting profiler, currently housed in Clavain). Plus `sdk/` for shared libraries (interbase). Each module keeps its own `.git` as a nested independent repo. The root `Demarch/` also has a `.git` for the monorepo skeleton (scripts, docs, CLAUDE.md). Git operations apply to the nearest `.git`; verify with `git rev-parse --show-toplevel`.
 
+## Agent Quickstart
+
+1. Read this file (root `AGENTS.md`) — you're doing it now.
+2. Run `bd ready` to see available work.
+3. Before editing any module, read its local `AGENTS.md` (or `CLAUDE.md` as fallback).
+4. Verify which repo you're in: `git rev-parse --show-toplevel`.
+5. When done: `bd close <id>`, commit, `bd sync`, push.
+
 ## Instruction Loading Order
 
 Use nearest, task-scoped instruction loading instead of reading every instruction file in the repo.
@@ -346,66 +354,11 @@ Symlinks at `/root/projects/<name>` point into this monorepo for backward compat
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
+- External contributors: push to your fork and open a PR instead
 
 <!-- bv-agent-instructions-v1: beads commands and workflow covered in "Bead Tracking" section above -->
 
-## Cross-Cutting Lessons (not covered by any single guide)
-- Never use `> file` redirect — use `--write-output <path>` (browser mode uses console.log) <!-- intermem:69657f61 -->
-- Never wrap with external `timeout` — use `--timeout <seconds>` flag <!-- intermem:aea8907b -->
-- Requires: `DISPLAY=:99 CHROME_PATH=/usr/local/bin/google-chrome-wrapper`
+## Operational Notes & Research
 
-### Git Credential Lock <!-- intermem:8ed6945e -->
-- **Root cause (mk user)**: Shared `server/.gitconfig` had `credential.helper = store --file /root/.claude/git-credentials` — mk can't access `/root/`, so `O_CREAT|O_EXCL` on lock file fails with ENOENT <!-- intermem:6d774d12 -->
-- **Fix**: Removed credential helper from shared config (`dotfiles-sync/server/.gitconfig`); each user has own credential config in their `.gitconfig` <!-- intermem:d5211b36 -->
-- **TODO (root)**: Replace root's `.gitconfig` symlink → real file with `[include] path=.../server/.gitconfig` + `[credential] helper = store --file /root/.claude/git-credentials` <!-- intermem:7f56c5c7 -->
-- **Diagnosis trick**: `strace -e trace=openat,rename -f git push 2>&1 | grep "credential\|lock"` reveals which credential paths are attempted <!-- intermem:d543cc33 -->
-- See `docs/solutions/environment-issues/git-credential-lock-multi-user-20260216.md`
+Operational lessons (Oracle CLI, git credentials, tmux, SQLite gotchas, plugin publishing) and research references (search improvements, code compression, key papers) are in [docs/guides/agents-operational-notes.md](docs/guides/agents-operational-notes.md).
 
-### Tmux Cross-User Access (intermux) <!-- intermem:3bd3d012 -->
-- tmux needs 3 layers: directory perms (`711`), socket perms (`777`), and `server-access` ACL <!-- intermem:255e8dbe -->
-- Fix: `chmod 711 /tmp/tmux-0 && chmod 777 /tmp/tmux-0/default && tmux server-access -a claude-user` <!-- intermem:3a24c33e -->
-- Intermux uses `TMUX_SOCKET` env var → `-S` flag on all tmux commands
-
-### Plugin Publishing (all plugins) <!-- intermem:601991fb -->
-- **BUG**: A hook auto-runs `interbump.sh` on every `git push` from plugin repos, auto-incrementing in a loop. Use `bash scripts/bump-version.sh <version>` once and accept the version it produces. <!-- intermem:553367b0 -->
-- `claude plugins install` runs `--recurse-submodules` — set `update = none` in `.gitmodules` for data-only submodules
-
-### Beads Tracker (Interverse) <!-- intermem:b6828079 -->
-- **Migrated from SQLite to Dolt** — storage at `.beads/dolt`, DB name `beads_iv` <!-- intermem:cb5736f3 -->
-- Use `bd` from `~/.local/bin/bd` (v0.52.0), NOT the old `/usr/local/bin/bd` <!-- intermem:28c38916 -->
-- `bd sync --from-main` and `bd sync --status` are **obsolete** — use plain `bd sync` only
-
-### Agent Dispatch <!-- intermem:bce0aa55 -->
-- New agent `.md` files created mid-session NOT available as `subagent_type` until restart <!-- intermem:4a3ea505 -->
-- Workaround: `subagent_type: general-purpose` + paste full agent prompt <!-- intermem:67045609 -->
-- Background agents from previous sessions survive context exhaustion
-
-### modernc.org/sqlite (pure Go, no CGO) <!-- intermem:9e965d66 -->
-- **CTE + UPDATE RETURNING not supported** — `WITH claim AS (UPDATE ... RETURNING 1) SELECT ...` fails with syntax error. Use direct `UPDATE ... RETURNING` with row counting (`rows.Next()`) instead. <!-- intermem:b93bf498 -->
-- DSN `_pragma` unreliable — always set PRAGMAs explicitly after `sql.Open` <!-- intermem:830d796b -->
-- `SetMaxOpenConns(1)` mandatory for WAL correctness in CLI tools <!-- intermem:216a2865 -->
-- Concurrent `sql.Open` from goroutines: first connection claims lock, others get SQLITE_BUSY before `busy_timeout` is set (PRAGMA hasn't run). Don't test concurrent migration from goroutines; test sequentially. <!-- intermem:3061b862 -->
-
-## Research References
-- `new-modules-research.md` — embedding model comparisons and papers <!-- intermem:b9d81bf4 -->
-
-## Search Improvements
-- BM25 via `rank-bm25`: pure Python, complements vector search for identifiers <!-- intermem:b18c0a7d -->
-- RRF (Reciprocal Rank Fusion): ~20 lines to merge dense + sparse results <!-- intermem:c9fa2603 -->
-- Cross-encoder reranking: post-retrieval precision boost <!-- intermem:724a46d5 -->
-- ast-grep: structural code search (tree-sitter based, 15k stars) <!-- intermem:00ceb26d -->
-
-## Code Compression
-- LongCodeZip (ASE 2025): 5.6x compression, training-free, two-stage <!-- intermem:90802e3a -->
-- DAST (ACL 2025): AST-aware compression using node information density <!-- intermem:776e7987 -->
-- ContextEvolve (Feb 2026 arxiv): multi-agent compression, 33% improvement + 29% token reduction <!-- intermem:5c2290f6 -->
-
-## Key Papers
-- nomic-embed-code: ICLR 2025 (CoRNStack) <!-- intermem:5a5b0b08 -->
-- CodeXEmbed: COLM 2025 <!-- intermem:bda89db4 -->
-- LoRACode: ICLR 2025 <!-- intermem:ba1c1b85 -->
-- LongCodeZip: ASE 2025 <!-- intermem:c38b5039 -->
-- DAST: ACL 2025 <!-- intermem:11f20db0 -->
-- Prompt Compression Survey: NAACL 2025 Oral <!-- intermem:1adb62b6 -->
-- ContextEvolve: arxiv 2602.02597 (Feb 2026) <!-- intermem:7e1f3e30 -->
-- Kimi-Dev: SWE-Agent skill priors (60.4% SWE-bench Verified) <!-- intermem:60e16ee9 -->
