@@ -34,7 +34,7 @@ Demarch advances three axes (autonomy, quality, token efficiency) connected by a
 - Gate relaxation where a check always passes → **faster**
 - Context overlays that reduce false positives for a specific codebase → **more signal**
 
-Each optimization simultaneously increases autonomy (less human calibration needed), improves quality (resources reallocated to where they matter), and reduces cost (less waste). The system that ships the most sprints learns the fastest, and the system that learns the fastest ships the cheapest.
+Each optimization simultaneously increases autonomy (less human calibration needed), improves quality (resources reallocated to where they matter), and reduces cost (less waste). More sprints produce more evidence. More evidence produces better routing. Better routing lowers cost. The flywheel spins.
 
 ## The Signal Taxonomy
 
@@ -123,7 +123,7 @@ Meta-rules are human-owned. The counting rules, canary thresholds, protected pat
 
 ### Measure what matters, not what's easy
 
-Override rate alone is a trap (Goodhart's Law). Three metrics cross-check each other: override rate, false positive rate, and finding density. Galiana's defect escape rate provides an independent recall signal. When metrics conflict, conservatism wins.
+Override rate alone is a trap (Goodhart's Law). Three metrics cross-check each other: override rate, false positive rate, and finding density. An independent defect escape rate metric provides a recall signal. When metrics conflict, conservatism wins.
 
 ### Evidence compounds; assumptions don't
 
