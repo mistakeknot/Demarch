@@ -2,7 +2,7 @@
 
 ## Overview
 
-Demarch is the physical monorepo for the open-source autonomous software development agency platform. It contains five pillars: **Intercore** (`/core`) the orchestration kernel, **Clavain** (`/os`) the agent OS and reference agency, **Interverse** (`/interverse`) 33+ companion plugins, **Autarch** (`/apps`) the TUI surfaces, and **Interspect** (cross-cutting profiler, currently inside Clavain). Each module keeps its own `.git` — this is not a git monorepo, but a directory layout with independent repos.
+Demarch is the physical monorepo for the open-source autonomous software development agency platform. It contains five pillars: **Intercore** (`/core`) the orchestration kernel, **Clavain** (`/os`) the agent OS and reference agency, **Interverse** (`/interverse`) 33+ companion plugins, **Autarch** (`/apps`) the TUI surfaces, and **Interspect** (cross-cutting profiler, currently housed in Clavain). Plus `sdk/` for shared libraries (interbase). Each module keeps its own `.git` as a nested independent repo. The root `Demarch/` also has a `.git` for the monorepo skeleton (scripts, docs, CLAUDE.md). Git operations apply to the nearest `.git`; verify with `git rev-parse --show-toplevel`.
 
 ## Instruction Loading Order
 
@@ -33,11 +33,11 @@ Use nearest, task-scoped instruction loading instead of reading every instructio
 |------|--------|-------------|
 | `apps/autarch/` | Autarch | Swappable TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
 | `os/clavain/` | Clavain | Autonomous software agency — brainstorm to ship |
-| *(inside clavain)* | Interspect | Adaptive profiler — evidence collection, pattern detection, routing overlays. Cross-cutting pillar, currently lives inside Clavain. |
+| *(housed in `os/clavain/`)* | Interspect | Adaptive profiler — evidence collection, pattern detection, routing overlays. Cross-cutting pillar; code is in Clavain's hooks/scripts, not a separate repo. |
 | `core/intercore/` | Intercore | Orchestration kernel (Go) |
 | `core/intermute/` | Intercore | Multi-agent coordination service (Go, SQLite) |
 | `core/marketplace/` | Intercore | interagency plugin marketplace registry |
-| `core/interbench/` | Intercore | Eval harness for tldr-swinton capabilities (Go CLI) |
+| `core/interbench/` | — | Eval harness for driver capabilities (Go CLI; tooling, not kernel) |
 | `core/agent-rig/` | Intercore | Agent configuration |
 | `core/interband/` | Intercore | Sideband protocol |
 | `interverse/intercraft/` | Interverse | Agent-native architecture patterns and audit |
@@ -77,23 +77,19 @@ Use nearest, task-scoped instruction loading instead of reading every instructio
 | `scripts/` | — | Cross-project scripts (interbump.sh) |
 | `docs/` | — | **Platform-level** documentation only (cross-cutting brainstorms, research, solutions) |
 
-> **Docs convention:** `Demarch/docs/` is for platform-level work only. Each subproject keeps its own docs at `Demarch/<layer>/<subproject>/docs/` (e.g., `interverse/interlock/docs/`, `core/intercore/docs/`).
+> **Docs convention:** `Demarch/docs/` is for platform-level work only. Each subproject keeps its own docs at `Demarch/{core|os|interverse|apps|sdk}/<subproject>/docs/` (e.g., `interverse/interlock/docs/`, `core/intercore/docs/`).
 
 ## Module Relationships
 
 ```
-clavain (OS pillar)
-├── interphase  (phase tracking, gates, work discovery)
-├── interline   (statusline rendering)
-├── interflux   (multi-agent review + research)
-├── interpath   (product artifact generation)
-├── interwatch  (doc freshness monitoring)
-├── interlock   (multi-agent file coordination)
-├── intercraft  (agent-native architecture patterns)
-├── interdev    (MCP CLI developer tooling)
-├── interform   (design patterns + visual quality)
-├── internext   (work prioritization + tradeoff analysis)
-└── interslack  (Slack integration)
+Clavain (L2 OS) uses these Interverse drivers:
+  interphase, interline, interflux, interpath, interwatch,
+  interlock, intercraft, interdev, interform, internext, interslack
+
+Dependency chains:
+  Clavain → interlock → intermute (L1 service)
+  Clavain → interflux → intersearch (shared lib)
+  interject → intersearch (shared lib)
 
 interject (MCP)    ← ambient discovery engine, uses intersearch for embeddings + Exa
 intersearch (lib)  ← shared embedding client + Exa search (used by interject, interflux)
@@ -116,6 +112,7 @@ interserve         ← Codex spark classifier + context compression MCP
 interchart         ← ecosystem diagram generator
 tool-time          ← standalone usage analytics
 tuivision          ← standalone TUI testing MCP
+interbase (sdk)    ← shared integration SDK for dual-mode drivers
 marketplace        ← registry for all published plugins
 ```
 
@@ -164,8 +161,8 @@ Required tools (all pre-installed on this server):
 Each subproject under `apps/`, `os/`, `core/`, `interverse/`, and `sdk/` is an independent git repo with its own `.git`. The root `Demarch/` directory also has a `.git` for the monorepo skeleton (`scripts/`, `docs/`, `.beads/`, `CLAUDE.md`, `AGENTS.md`). **Git commands operate on whichever `.git` is nearest** — always verify with `git rev-parse --show-toplevel` if unsure which repo you're in. To work on a specific module:
 
 ```bash
-cd /root/projects/Demarch/interverse/interflux
-# Each has its own CLAUDE.md, AGENTS.md, .git
+cd interverse/interflux  # from repo root
+# Each module has its own CLAUDE.md, AGENTS.md, .git
 ```
 
 ### Running and testing by module type
@@ -177,12 +174,21 @@ claude --plugin-dir /root/projects/Demarch/interverse/<name>
 cd interverse/<name> && uv run pytest tests/structural/ -v
 ```
 
-**MCP server plugins** (interkasten, interlock, interject, tldr-swinton, tuivision, interflux):
+**MCP server plugins** (interkasten, interlock, interject, tldr-swinton, tuivision, interflux, intermux, intermap, interfluence):
 ```bash
-# Build/install the server first, then test via Claude Code:
+# Build/install the server first, then test via Claude Code.
+# Entrypoints vary — check each module's local AGENTS.md. Examples:
 cd interverse/interkasten/server && npm install && npm run build && npm test
 cd interverse/interlock && bash scripts/build.sh && go test ./...
 cd interverse/tldr-swinton && uv tool install -e .  # installs `tldrs` CLI
+```
+
+**Kernel** (intercore):
+```bash
+cd core/intercore
+go build -o ic ./cmd/ic   # produces the `ic` CLI binary
+go test ./...              # run all tests
+./ic --help                # verify
 ```
 
 **Service** (intermute):
@@ -229,7 +235,7 @@ Before claiming a plugin release is complete:
 3. Do not hand-edit version files or marketplace versions for normal releases; `scripts/interbump.sh` is the source of truth.
 4. Release is complete only when both pushes succeed:
    - plugin repo push
-   - `infra/marketplace` push
+   - `core/marketplace` push
 5. If the plugin includes hooks, preserve the post-bump/cache-bridge behavior from `interbump` (do not bypass with ad-hoc scripts).
 6. After publish, restart Claude Code sessions so the new plugin version is picked up.
 
@@ -238,7 +244,7 @@ Before claiming a plugin release is complete:
 After any change that adds, removes, or renames a plugin, skill, agent, MCP server, or hook, regenerate the live ecosystem diagram:
 
 ```bash
-bash /root/projects/Demarch/interverse/interchart/scripts/regenerate-and-deploy.sh
+bash interverse/interchart/scripts/regenerate-and-deploy.sh  # from repo root
 ```
 
 This scans the monorepo, rebuilds the HTML, and pushes to GitHub Pages. No manual intervention needed — just run the command as a final step.
@@ -254,7 +260,7 @@ When a change spans multiple repos (e.g., adding an MCP tool to interlock that r
 
 ## Version Bumping (interbump)
 
-All plugins and the hub share a single version bump engine at `scripts/interbump.sh`. Each module's `scripts/bump-version.sh` is a thin wrapper that delegates to it.
+All plugins and Clavain share a single version bump engine at `scripts/interbump.sh`. Each module's `scripts/bump-version.sh` is a thin wrapper that delegates to it.
 
 ### How it works
 
@@ -271,7 +277,7 @@ All plugins and the hub share a single version bump engine at `scripts/interbump
 
 Modules with extra work needed between version edits and git commit use `scripts/post-bump.sh`:
 
-| Interverse | Post-bump action |
+| Module | Post-bump action |
 |--------|-----------------|
 | `os/clavain/` | Runs `gen-catalog.py` to refresh skill/agent/command counts |
 | `interverse/tldr-swinton/` | Reinstalls CLI via `uv tool install`, checks interbench sync |
@@ -341,68 +347,7 @@ Symlinks at `/root/projects/<name>` point into this monorepo for backward compat
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
 
-<!-- bv-agent-instructions-v1 -->
-
----
-
-## Beads Workflow Integration
-
-This project uses [beads_viewer](https://github.com/Dicklesworthstone/beads_viewer) for issue tracking. Issues are stored in `.beads/` and tracked in git.
-
-### Essential Commands
-
-```bash
-# View issues (launches TUI - avoid in automated sessions)
-bv
-
-# CLI commands for agents (use these instead)
-bd ready              # Show issues ready to work (no blockers)
-bd list --status=open # All open issues
-bd show <id>          # Full issue details with dependencies
-bd create --title="..." --type=task --priority=2
-bd update <id> --status=in_progress
-bd close <id> --reason="Completed"
-bd close <id1> <id2>  # Close multiple issues at once
-bd sync               # Compatibility sync step (0.50.x syncs, 0.51+ no-op)
-```
-
-### Workflow Pattern
-
-1. **Start**: Run `bd ready` to find actionable work
-2. **Claim**: Use `bd update <id> --status=in_progress`
-3. **Work**: Implement the task
-4. **Complete**: Use `bd close <id>`
-5. **Sync**: Run `bd sync` at session end (no-op on beads 0.51+)
-
-### Key Concepts
-
-- **Dependencies**: Issues can block other issues. `bd ready` shows only unblocked work.
-- **Priority**: P0=critical, P1=high, P2=medium, P3=low, P4=backlog (use numbers, not words)
-- **Types**: task, bug, feature, epic, decision, question, docs
-- **Blocking**: `bd dep add <issue> <depends-on>` to add dependencies
-
-### Session Protocol
-
-**Before ending any session, run this checklist:**
-
-```bash
-git status              # Check what changed
-git add <files>         # Stage code changes
-bd sync                 # Compatibility sync step (0.50.x syncs, 0.51+ no-op)
-git commit -m "..."     # Commit code
-bd sync                 # Optional second pass in legacy git-portable setups
-git push                # Push to remote
-```
-
-### Best Practices
-
-- Check `bd ready` at session start to find available work
-- Update status as you work (in_progress → closed)
-- Create new issues with `bd create` when you discover tasks
-- Use descriptive titles and set appropriate priority/type
-- Always run `bd sync` before ending session (no-op on beads 0.51+)
-
-<!-- end-bv-agent-instructions -->
+<!-- bv-agent-instructions-v1: beads commands and workflow covered in "Bead Tracking" section above -->
 
 ## Cross-Cutting Lessons (not covered by any single guide)
 - Never use `> file` redirect — use `--write-output <path>` (browser mode uses console.log) <!-- intermem:69657f61 -->
