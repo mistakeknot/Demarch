@@ -153,7 +153,7 @@ No explicit "T10 validation task" was discovered. The validation checks in AGENT
 ## Verification
 
 ```bash
-cd /root/projects/Interverse/hub/clavain
+cd /root/projects/Interverse/os/clavain
 find commands -name "*.md" | wc -l          # 38
 find skills -name "SKILL.md" | wc -l        # 23
 find agents -name "*.md" | wc -l            # 4

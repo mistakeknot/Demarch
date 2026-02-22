@@ -11,7 +11,7 @@ Wire the existing `lib-verdict.sh` infrastructure into all multi-subagent proces
 ## Tasks
 
 ### Task 1: Update quality-gates.md to use file-based output
-**File:** `hub/clavain/commands/quality-gates.md`
+**File:** `os/clavain/commands/quality-gates.md`
 **Changes:**
 1. Add OUTPUT_DIR definition: `.clavain/quality-gates/` (cleaned at start of each run, gitignored)
 2. Phase 3 (Gather Context): Write diff to `/tmp/qg-diff-{TS}.txt` (already partially done)
@@ -27,7 +27,7 @@ Wire the existing `lib-verdict.sh` infrastructure into all multi-subagent proces
 **Risk:** Low — follows established flux-drive pattern
 
 ### Task 2: Update review.md to use file-based output
-**File:** `hub/clavain/commands/review.md`
+**File:** `os/clavain/commands/review.md`
 **Changes:**
 1. Add OUTPUT_DIR definition: `.clavain/reviews/{target}/` where target is PR number, branch, or "current"
 2. Phase 2: Update agent prompts to write findings to `{OUTPUT_DIR}/{agent-name}.md` with the output contract
@@ -44,7 +44,7 @@ Wire the existing `lib-verdict.sh` infrastructure into all multi-subagent proces
 1. Step 3.2: Enforce the existing instruction "read Findings Index first (~30 lines)" by making it the PRIMARY collection method, not a suggestion
 2. Step 3.2: After reading each agent's index, call `verdict_write()`:
    ```bash
-   source "${CLAUDE_PLUGIN_ROOT}/../../../hub/clavain/hooks/lib-verdict.sh"
+   source "${CLAUDE_PLUGIN_ROOT}/../../../os/clavain/hooks/lib-verdict.sh"
    verdict_write "{agent-name}" "verdict" "{status}" "{model}" "{1-line summary}"
    ```
    Note: The orchestrator agent calls this — agents themselves don't call verdict_write

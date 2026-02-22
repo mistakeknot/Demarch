@@ -105,7 +105,7 @@ Build a interserve MCP server (stdio mode, launched on-demand) that classifies d
 - `gpt-5.3-codex-spark` model available via Codex CLI
 - Go toolchain for MCP server build
 - interflux plugin source (`plugins/interflux/`)
-- Clavain dispatch infrastructure (`hub/clavain/scripts/dispatch.sh`, `config/dispatch/tiers.yaml`)
+- Clavain dispatch infrastructure (`os/clavain/scripts/dispatch.sh`, `config/dispatch/tiers.yaml`)
 
 ## Resolved Questions
 

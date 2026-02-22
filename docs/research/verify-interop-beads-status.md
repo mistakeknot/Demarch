@@ -159,7 +159,7 @@ Graph file exists and is properly structured with semantic relationships and ben
 
 ### Evidence
 
-**Signal Production:** `/root/projects/Interverse/hub/clavain/commands/sprint.md`
+**Signal Production:** `/root/projects/Interverse/os/clavain/commands/sprint.md`
 - Lines show budget calculation and export:
   ```bash
   remaining=$(sprint_budget_remaining "$CLAVAIN_BEAD_ID")

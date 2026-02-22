@@ -16,7 +16,7 @@ This plan migrates Clavain's 6 hooks from `/tmp/clavain-*` temp files to interco
 
 ### P1: Naming Consistency
 
-**Finding 1.1:** The plan uses `intercore_sentinel_check_or_legacy` but describes copying `lib-intercore.sh` to Clavain hooks. This creates TWO versions of the library: the source in `infra/intercore/lib-intercore.sh` (extended with new functions) and the copy in `hub/clavain/hooks/lib-intercore.sh`. The plan doesn't specify how to keep them in sync.
+**Finding 1.1:** The plan uses `intercore_sentinel_check_or_legacy` but describes copying `lib-intercore.sh` to Clavain hooks. This creates TWO versions of the library: the source in `infra/intercore/lib-intercore.sh` (extended with new functions) and the copy in `os/clavain/hooks/lib-intercore.sh`. The plan doesn't specify how to keep them in sync.
 
 **Impact:** When new wrappers are added to the intercore library (Task 7 adds `intercore_sentinel_reset_all`), the Clavain copy diverges unless manually re-copied. This is a maintenance hazard.
 
@@ -97,20 +97,20 @@ The function will ALWAYS exist (it's in the local file), and `intercore_availabl
 
 ### P2: File Organization
 
-**Finding 3.1:** Task 1 extends `infra/intercore/lib-intercore.sh` with three new functions, then Task 2 copies the file to `hub/clavain/hooks/lib-intercore.sh`. Task 7 adds ANOTHER function (`intercore_sentinel_reset_all`) to `infra/intercore/lib-intercore.sh`.
+**Finding 3.1:** Task 1 extends `infra/intercore/lib-intercore.sh` with three new functions, then Task 2 copies the file to `os/clavain/hooks/lib-intercore.sh`. Task 7 adds ANOTHER function (`intercore_sentinel_reset_all`) to `infra/intercore/lib-intercore.sh`.
 
 The plan has Task 7 committing changes to **both** files:
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh infra/intercore/lib-intercore.sh
+git add os/clavain/hooks/lib-sprint.sh infra/intercore/lib-intercore.sh
 ```
 
 But it doesn't show re-copying the extended lib-intercore.sh to the Clavain hooks directory. **This is a task ordering bug.**
 
-**Impact:** After Task 7, `infra/intercore/lib-intercore.sh` has 4 new functions (from Task 1) + 1 more (from Task 7) = 5 total. But `hub/clavain/hooks/lib-intercore.sh` (copied in Task 2) only has the first 4. The hooks in Tasks 3-6 call `intercore_sentinel_check_or_legacy` (defined in Task 1, present in the copy), so they work. But `lib-sprint.sh` (Task 7) calls `intercore_sentinel_reset_all` (added in Task 7), which is **not yet in the Clavain copy**.
+**Impact:** After Task 7, `infra/intercore/lib-intercore.sh` has 4 new functions (from Task 1) + 1 more (from Task 7) = 5 total. But `os/clavain/hooks/lib-intercore.sh` (copied in Task 2) only has the first 4. The hooks in Tasks 3-6 call `intercore_sentinel_check_or_legacy` (defined in Task 1, present in the copy), so they work. But `lib-sprint.sh` (Task 7) calls `intercore_sentinel_reset_all` (added in Task 7), which is **not yet in the Clavain copy**.
 
 **Fix:** Task 7 Step 1 should read:
 ```
-Step 1: Add intercore_sentinel_reset_all to infra/intercore/lib-intercore.sh, then re-copy to hub/clavain/hooks/lib-intercore.sh
+Step 1: Add intercore_sentinel_reset_all to infra/intercore/lib-intercore.sh, then re-copy to os/clavain/hooks/lib-intercore.sh
 ```
 
 Alternatively, move Task 7's function addition to Task 1, so the initial copy includes all 4 functions. Then Task 7 just uses it.
@@ -147,8 +147,8 @@ This exercises the temp-file codepath.
 **Recommendation:** Add a smoke test that sources each hook script and calls any exported functions with dummy inputs. For example:
 ```bash
 # Smoke test catalog-reminder.sh
-source hub/clavain/hooks/lib-intercore.sh
-INTERCORE_BIN="" CLAUDE_SESSION_ID="test-smoke" bash hub/clavain/hooks/catalog-reminder.sh <<< '{"tool_input":{"file_path":"commands/test.md"}}'
+source os/clavain/hooks/lib-intercore.sh
+INTERCORE_BIN="" CLAUDE_SESSION_ID="test-smoke" bash os/clavain/hooks/catalog-reminder.sh <<< '{"tool_input":{"file_path":"commands/test.md"}}'
 # Should exit 0 (success) and create a sentinel
 ```
 

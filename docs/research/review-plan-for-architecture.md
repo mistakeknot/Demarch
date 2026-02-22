@@ -11,7 +11,7 @@
 This review evaluates an implementation plan that wires the kernel's existing `PhaseReflect` into the Clavain OS sprint flow. The three-layer model is:
 
 - **Layer 1 (kernel):** `infra/intercore` — `ic` binary, Go, SQLite-backed phase state machine. `PhaseReflect`, `CheckArtifactExists` gate rule, `DefaultPhaseChain`, and `ic run artifact add` already exist.
-- **Layer 2 (OS):** `hub/clavain` — Bash (`lib-sprint.sh`, `commands/sprint.md`, `commands/reflect.md`). The sprint command orchestrates steps; `/reflect` is the command that produces learning artifacts.
+- **Layer 2 (OS):** `os/clavain` — Bash (`lib-sprint.sh`, `commands/sprint.md`, `commands/reflect.md`). The sprint command orchestrates steps; `/reflect` is the command that produces learning artifacts.
 - **Layer 3 (apps):** Autarch — not touched.
 
 The plan's 14 tasks cover: verification of existing transitions (Tasks 1-2), updates to `/reflect` command (Tasks 3-6), updates to sprint command (Tasks 7-10), and documentation (Tasks 11-14). The PRD explicitly accepts OS-kernel phase name divergence (`shipping` vs `polish`, `plan-reviewed` has no kernel equivalent) and defers the rename to a separate bead.
@@ -114,7 +114,7 @@ Task 4, Step 1 adds an idempotency check using:
 existing=$(sprint_get_artifact "<sprint_id>" "reflect" 2>/dev/null) || existing=""
 ```
 
-`sprint_get_artifact` is not defined in `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`. A search across the file finds no match for this function name. The existing API provides `sprint_set_artifact` for writing and `sprint_read_state` for reading all artifact state via JSON.
+`sprint_get_artifact` is not defined in `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`. A search across the file finds no match for this function name. The existing API provides `sprint_set_artifact` for writing and `sprint_read_state` for reading all artifact state via JSON.
 
 The correct way to check for an existing reflect artifact using current APIs is to parse the output of `sprint_read_state`:
 
@@ -241,9 +241,9 @@ And the transition table at lines 573-580 already has `shipping → reflect → 
 
 - Plan under review: `/root/projects/Interverse/docs/plans/2026-02-20-reflect-phase-sprint-integration.md`
 - PRD: `/root/projects/Interverse/docs/prds/2026-02-20-reflect-phase-sprint-integration.md`
-- Sprint command: `/root/projects/Interverse/hub/clavain/commands/sprint.md`
-- Reflect command: `/root/projects/Interverse/hub/clavain/commands/reflect.md`
-- Sprint state library: `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`
-- Gate shim (no-op stubs): `/root/projects/Interverse/hub/clavain/hooks/lib-gates.sh`
+- Sprint command: `/root/projects/Interverse/os/clavain/commands/sprint.md`
+- Reflect command: `/root/projects/Interverse/os/clavain/commands/reflect.md`
+- Sprint state library: `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`
+- Gate shim (no-op stubs): `/root/projects/Interverse/os/clavain/hooks/lib-gates.sh`
 - Kernel phase definition: `/root/projects/Interverse/infra/intercore/internal/phase/phase.go`
 - Intercore docs: `/root/projects/Interverse/infra/intercore/AGENTS.md`

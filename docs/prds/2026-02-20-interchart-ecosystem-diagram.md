@@ -17,7 +17,7 @@ A Claude Code plugin (`interchart`) that scans the monorepo structure and genera
 - [ ] Scans all `plugins/*/plugin.json` and extracts: name, version, skills list, MCP server config, hooks
 - [ ] Scans `plugins/*/skills/` and extracts skill names + descriptions from SKILL.md files
 - [ ] Scans `plugins/*/hooks/hooks.json` and extracts hook events + handler types
-- [ ] Includes Clavain hub (`hub/clavain/`) — skills, commands, dispatch targets
+- [ ] Includes Clavain hub (`os/clavain/`) — skills, commands, dispatch targets
 - [ ] Includes Intercore (`infra/intercore/`) — kernel capabilities
 - [ ] Includes Autarch (`Interforge/` or external ref) — TUI component
 - [ ] Includes services (`services/intermute/`) and SDK (`sdk/interbase/`)

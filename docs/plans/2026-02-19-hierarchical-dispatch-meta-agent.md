@@ -4,7 +4,7 @@
 **Date:** 2026-02-19
 
 ## Inputs
-- Brainstorm: `hub/clavain/docs/brainstorms/2026-02-14-agent-dispatch-context-optimization.md`
+- Brainstorm: `os/clavain/docs/brainstorms/2026-02-14-agent-dispatch-context-optimization.md`
 - Decision-gate context: `docs/prds/2026-02-16-interstat-token-benchmarking.md`
 
 ## Goal

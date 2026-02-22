@@ -148,7 +148,7 @@ That is 2-4 python3 invocations per tool call, purely for context tracking that 
 #### P0-3: Three plugins independently write CLAUDE_SESSION_ID to env file
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 21-26)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 21-26)
 - `/root/projects/Interverse/plugins/interlock/hooks/session-start.sh` (lines 18-19)
 - (intercheck reads session_id from hook JSON directly, but the env var is written twice)
 
@@ -161,7 +161,7 @@ That is 2-4 python3 invocations per tool call, purely for context tracking that 
 #### P0-4: Clavain and interlock both query Intermute for agents/reservations at session start
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 100-132)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 100-132)
 - `/root/projects/Interverse/plugins/interlock/hooks/session-start.sh` (lines 37-38, delegates to interlock-register.sh)
 
 **Problem:** Clavain's session-start.sh makes 3 HTTP calls to Intermute (health check, agents list, reservations list) and caches them in shell variables. Interlock's session-start.sh also calls Intermute to register the agent (which returns agent count). These run in parallel (both are async) but fetch overlapping data. The clavain hook even caches `_INTERMUTE_AGENTS_CACHE` and `_INTERMUTE_RESERVATIONS_CACHE`, but these shell variables are not shared across process boundaries -- they only exist within clavain's session-start.sh process.
@@ -221,7 +221,7 @@ Furthermore, `session-start.sh` sources `interbase-stub.sh` which calls `ib_sess
 #### P1-1: Clavain session-start.sh is 325 lines and does too much
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh`
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh`
 
 **Problem:** This single script handles:
 1. Plugin cache cleanup (lines 32-48)
@@ -247,7 +247,7 @@ Any failure in an early section could cascade. The script is hard to maintain, t
 #### P1-2: Two hooks fire on Edit/Write/NotebookEdit with overlapping path inspection
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/interserve-audit.sh` (matcher: `Edit|Write|MultiEdit|NotebookEdit`)
+- `/root/projects/Interverse/os/clavain/hooks/interserve-audit.sh` (matcher: `Edit|Write|MultiEdit|NotebookEdit`)
 - `/root/projects/Interverse/plugins/intercheck/hooks/syntax-check.sh` (matcher: `Edit|Write|NotebookEdit`)
 
 **Problem:** Both hooks fire on every Edit/Write/NotebookEdit. Both extract the file path from the same JSON input. interserve-audit.sh checks if the file is a code file and logs violations; syntax-check.sh checks the file extension to determine language. They independently parse the hook JSON, extract file_path, and inspect the file extension.
@@ -261,8 +261,8 @@ Any failure in an early section could cascade. The script is hard to maintain, t
 #### P1-3: Clavain auto-compound and auto-drift-check duplicate transcript analysis
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/auto-compound.sh`
-- `/root/projects/Interverse/hub/clavain/hooks/auto-drift-check.sh`
+- `/root/projects/Interverse/os/clavain/hooks/auto-compound.sh`
+- `/root/projects/Interverse/os/clavain/hooks/auto-drift-check.sh`
 
 **Problem:** Both Stop hooks:
 1. Read the same hook JSON from stdin
@@ -290,7 +290,7 @@ However, they use a **shared stop sentinel** (`INTERCORE_STOP_DEDUP_SENTINEL`), 
 #### P1-4: interspect-evidence.sh and interstat post-task.sh both fire on PostToolUse:Task
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/interspect-evidence.sh` (matcher: `Task`)
+- `/root/projects/Interverse/os/clavain/hooks/interspect-evidence.sh` (matcher: `Task`)
 - `/root/projects/Interverse/plugins/interstat/hooks/interstat/hooks/post-task.sh` (matcher: `Task`)
 
 **Problem:** Both hooks fire on every Task tool call. Both extract `session_id`, `subagent_type`, and `description` from the same JSON input. Both write to SQLite databases (interspect DB and interstat metrics DB respectively). They independently parse the same hook JSON.
@@ -306,8 +306,8 @@ However, they use a **shared stop sentinel** (`INTERCORE_STOP_DEDUP_SENTINEL`), 
 #### P1-5: session-handoff.sh checks git status, session-end-handoff.sh also checks git status
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-handoff.sh` (Stop hook, lines 55-60)
-- `/root/projects/Interverse/hub/clavain/hooks/session-end-handoff.sh` (SessionEnd hook, lines 59-63)
+- `/root/projects/Interverse/os/clavain/hooks/session-handoff.sh` (Stop hook, lines 55-60)
+- `/root/projects/Interverse/os/clavain/hooks/session-end-handoff.sh` (SessionEnd hook, lines 59-63)
 
 **Problem:** Both hooks check `git status --porcelain` / `git diff --stat` to detect uncommitted changes. session-end-handoff.sh is a safety net that only runs if session-handoff.sh didn't fire. However, the sentinel detection (lines 28-42 of session-end-handoff.sh) is complex and has multiple fallback paths (temp file check, IC sentinel check, sentinel reset). This belt-and-suspenders pattern adds code complexity.
 
@@ -359,7 +359,7 @@ The redirect modifies `updatedInput` to rewrite agent prompts -- this is a signi
 #### P2-1: Redundant fast-exit guards in bead-agent-bind.sh
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/bead-agent-bind.sh`
+- `/root/projects/Interverse/os/clavain/hooks/bead-agent-bind.sh`
 
 **Problem:** The hook has a Bash matcher filtering for `Bash` tool calls. Then inside the script, it does a case-match on the command string for `bd update`/`bd claim` patterns (lines 22-28). This double-filtering is correct but the matcher could be more specific (though Claude Code matchers don't support command-level filtering, so the script-level check is necessary).
 
@@ -384,7 +384,7 @@ The real issue is lines 10-11: `INTERMUTE_AGENT_ID` is checked before reading st
 #### P2-3: Catalog-reminder uses `intercore_check_or_die` for one-per-session behavior
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/catalog-reminder.sh`
+- `/root/projects/Interverse/os/clavain/hooks/catalog-reminder.sh`
 
 **Problem:** catalog-reminder.sh sources lib-intercore.sh and uses sentinel logic just to ensure it fires once per session. It matches on `Edit|Write|MultiEdit` (every edit) to check if a "component file" was modified. The matcher cannot be narrowed further because Claude Code matchers operate on tool names, not file paths.
 

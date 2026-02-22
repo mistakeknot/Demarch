@@ -58,8 +58,8 @@ Tier 3: Host Agent                     → reads ~10-line compact return + synth
 
 ## Files Changed
 
-- `hub/clavain/commands/quality-gates.md` — added OUTPUT_DIR, file-based output contract, intersynth delegation
-- `hub/clavain/commands/review.md` — same pattern
+- `os/clavain/commands/quality-gates.md` — added OUTPUT_DIR, file-based output contract, intersynth delegation
+- `os/clavain/commands/review.md` — same pattern
 - `plugins/interflux/skills/flux-drive/phases/synthesize.md` — replaced inline collection with intersynth
 - `plugins/interflux/skills/flux-research/SKILL.md` — replaced inline synthesis with intersynth
 - `plugins/intersynth/` — new plugin (2 agents, lib-verdict.sh, CLAUDE.md)

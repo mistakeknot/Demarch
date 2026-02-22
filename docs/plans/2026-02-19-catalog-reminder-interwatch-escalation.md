@@ -4,7 +4,7 @@
 **Date:** 2026-02-19
 
 ## Inputs
-- Brainstorm: `hub/clavain/docs/brainstorms/2026-02-14-auto-drift-check-brainstorm.md`
+- Brainstorm: `os/clavain/docs/brainstorms/2026-02-14-auto-drift-check-brainstorm.md`
 - Interwatch signal model: `plugins/interwatch/config/watchables.yaml`
 - Interwatch detection pipeline: `plugins/interwatch/scripts/interwatch-scan.py`
 
@@ -22,7 +22,7 @@ When `catalog-reminder.sh` detects component-shape changes, emit an Interwatch-c
 Define payload shape, write location, dedupe semantics, and expiration policy for `component_count_changed` handoff.
 
 2. Hook emission
-Update `hub/clavain/hooks/catalog-reminder.sh` to emit the signal only on relevant component add/remove/change paths.
+Update `os/clavain/hooks/catalog-reminder.sh` to emit the signal only on relevant component add/remove/change paths.
 
 3. Interwatch ingestion path
 Update Interwatch scan/evaluation flow to read the hook-emitted signal and apply the configured weight.

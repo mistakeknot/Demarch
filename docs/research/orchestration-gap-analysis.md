@@ -27,7 +27,7 @@ When a Claude Code session crashes mid-edit (context exhaustion, network drop, O
    - The agent registration in intermute persists with a stale `last_seen` timestamp
    - Temp files (`/tmp/interlock-agent-*.json`, `/tmp/interlock-connected-*`) linger
 
-2. **Clavain session-handoff never fires.** The `session-handoff.sh` hook (at `/root/projects/Interverse/hub/clavain/hooks/session-handoff.sh`) only runs on Stop events. A crash means no `HANDOFF.md` is written, no beads are updated, and no in-flight agent manifest is recorded.
+2. **Clavain session-handoff never fires.** The `session-handoff.sh` hook (at `/root/projects/Interverse/os/clavain/hooks/session-handoff.sh`) only runs on Stop events. A crash means no `HANDOFF.md` is written, no beads are updated, and no in-flight agent manifest is recorded.
 
 3. **Intermute sweeper handles reservations but not agents.** The sweeper (at `/root/projects/Interverse/services/intermute/internal/storage/sqlite/sweeper.go`) cleans up expired reservations with a heartbeat grace period (5 minutes, per `core.SessionStaleThreshold`). But the agent registration itself is never cleaned up -- the agents table accumulates stale entries. The `SessionStaleThreshold` in `/root/projects/Interverse/services/intermute/internal/core/domain.go` allows session_id reuse after 5 minutes, which is a partial mitigation, but stale agents still appear in `sprint_check_coordination()` output.
 
@@ -201,7 +201,7 @@ Agent errors are currently surfaced through several disconnected channels:
 
 2. **Subagent errors are in JSONL files.** When a Task-dispatched agent fails, the error appears in the agent's `.jsonl` output file. The parent session sees the error in the Task tool response, but there is no aggregation across sessions or agents.
 
-3. **Interspect evidence collection records dispatch events but not failures.** The `interspect-evidence.sh` hook (at `/root/projects/Interverse/hub/clavain/hooks/interspect-evidence.sh`) records `agent_dispatch` events but does not record agent failures or error patterns.
+3. **Interspect evidence collection records dispatch events but not failures.** The `interspect-evidence.sh` hook (at `/root/projects/Interverse/os/clavain/hooks/interspect-evidence.sh`) records `agent_dispatch` events but does not record agent failures or error patterns.
 
 4. **tool-time tracks tool usage but not error rates.** The `summarize.py` script counts tool calls and edit-without-read violations, but does not track tool failure rates, timeout rates, or hook error rates.
 
@@ -348,16 +348,16 @@ This is best implemented as an extension to the interspect roadmap (Phase 3: Aut
 | `/root/projects/Interverse/plugins/interlock/scripts/interlock-cleanup.sh` | Reservation release + temp file cleanup |
 | `/root/projects/Interverse/plugins/interlock/scripts/interlock-register.sh` | Agent registration (capabilities field unused) |
 | `/root/projects/Interverse/plugins/interlock/hooks/lib.sh` | Intermute curl wrappers, path helpers |
-| `/root/projects/Interverse/hub/clavain/hooks/session-handoff.sh` | Crash-affected: handoff file generation |
-| `/root/projects/Interverse/hub/clavain/hooks/sprint-scan.sh` | Coordination check (shows stale agents as online) |
-| `/root/projects/Interverse/hub/clavain/hooks/auto-compound.sh` | Signal-based knowledge compounding |
-| `/root/projects/Interverse/hub/clavain/hooks/lib.sh` | Plugin discovery, in-flight agent detection |
-| `/root/projects/Interverse/hub/clavain/hooks/interspect-evidence.sh` | Agent dispatch tracking (no failure tracking) |
-| `/root/projects/Interverse/hub/clavain/hooks/hooks.json` | Hook registration manifest |
+| `/root/projects/Interverse/os/clavain/hooks/session-handoff.sh` | Crash-affected: handoff file generation |
+| `/root/projects/Interverse/os/clavain/hooks/sprint-scan.sh` | Coordination check (shows stale agents as online) |
+| `/root/projects/Interverse/os/clavain/hooks/auto-compound.sh` | Signal-based knowledge compounding |
+| `/root/projects/Interverse/os/clavain/hooks/lib.sh` | Plugin discovery, in-flight agent detection |
+| `/root/projects/Interverse/os/clavain/hooks/interspect-evidence.sh` | Agent dispatch tracking (no failure tracking) |
+| `/root/projects/Interverse/os/clavain/hooks/hooks.json` | Hook registration manifest |
 | `/root/projects/Interverse/services/intermute/internal/storage/sqlite/sweeper.go` | Reservation sweeper (no agent reaping) |
 | `/root/projects/Interverse/services/intermute/internal/core/domain.go` | SessionStaleThreshold (5 minutes) |
 | `/root/projects/Interverse/services/intermute/internal/core/models.go` | Agent model with unused capabilities field |
 | `/root/projects/Interverse/plugins/interflux/CLAUDE.md` | Flux-drive agent roster (static, not discoverable) |
 | `/root/projects/Interverse/plugins/tool-time/CLAUDE.md` | Usage analytics (no cost tracking) |
-| `/root/projects/Interverse/hub/clavain/galiana/lib-galiana.sh` | Signal weight tracking for auto-compound |
+| `/root/projects/Interverse/os/clavain/galiana/lib-galiana.sh` | Signal weight tracking for auto-compound |
 | `/root/projects/Interverse/docs/product/interspect-roadmap.md` | Interspect phases (trust metrics not yet planned) |

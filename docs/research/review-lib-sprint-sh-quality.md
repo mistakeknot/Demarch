@@ -1,6 +1,6 @@
 # Quality Review: lib-sprint.sh Phase 2 Additions
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`
+**File:** `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`
 **Reviewer:** flux-drive (quality & style)
 **Date:** 2026-02-15
 **Scope:** Phase 2 functions (lines 385-615) and jq stub updates (lines 32-36)

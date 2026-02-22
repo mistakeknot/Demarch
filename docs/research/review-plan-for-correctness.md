@@ -182,7 +182,7 @@ After renumbering, Ship becomes Step 10. If the session checkpointing code refer
 
 **The proposed snippet:**
 ```bash
-source hub/clavain/hooks/lib-sprint.sh
+source os/clavain/hooks/lib-sprint.sh
 existing=$(sprint_get_artifact "<sprint_id>" "reflect" 2>/dev/null) || existing=""
 ```
 
@@ -258,7 +258,7 @@ The `2>/dev/null || true` on the `ic` command means this failure is completely s
 
 "F3 must ship before F1 because the sprint step invokes `/reflect`."
 
-But Task 6, Step 2 commits reflect.md changes, and Task 10, Step 2 commits sprint.md changes in a later commit. The commits are on the same repo (`hub/clavain`). If both commits land in the same push, the ordering is fine. If they land separately (e.g., Task 3-6 commit is merged, then the implementor is interrupted before Task 7-10), there is a window where reflect.md accepts only `reflect` phase but sprint.md still shows `shipping` → Ship (no reflect step). In this window, sprints proceed from quality-gates directly to ship with no reflect. The reflect gate is "not skippable" per the goal, but during the deployment window it is effectively absent.
+But Task 6, Step 2 commits reflect.md changes, and Task 10, Step 2 commits sprint.md changes in a later commit. The commits are on the same repo (`os/clavain`). If both commits land in the same push, the ordering is fine. If they land separately (e.g., Task 3-6 commit is merged, then the implementor is interrupted before Task 7-10), there is a window where reflect.md accepts only `reflect` phase but sprint.md still shows `shipping` → Ship (no reflect step). In this window, sprints proceed from quality-gates directly to ship with no reflect. The reflect gate is "not skippable" per the goal, but during the deployment window it is effectively absent.
 
 **Correct fix:** Document this deployment constraint explicitly: "Commits from Task 3-6 and Task 7-10 must be deployed atomically. Do not merge the reflect.md commit without immediately following with the sprint.md commit in the same session."
 

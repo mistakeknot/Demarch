@@ -3,7 +3,7 @@
 **Reviewer:** Julik (Flux-drive Correctness Reviewer)
 **Date:** 2026-02-16
 **Plan:** `/root/projects/Interverse/docs/plans/2026-02-16-interspect-canary-monitoring.md`
-**Codebase:** `/root/projects/Interverse/hub/clavain/`
+**Codebase:** `/root/projects/Interverse/os/clavain/`
 
 ---
 

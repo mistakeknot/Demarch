@@ -16,7 +16,7 @@ The plan is architecturally sound overall with clear separation of concerns and 
 
 **Location:** Task 3 (sprint.md), Step 5 (Execute), lines 119-125 in plan
 
-**Issue:** The plan references `enforce_gate()` but lib-gates.sh (both the shim at `/root/projects/Interverse/hub/clavain/hooks/lib-gates.sh` and the expected interphase implementation) does NOT export this function.
+**Issue:** The plan references `enforce_gate()` but lib-gates.sh (both the shim at `/root/projects/Interverse/os/clavain/hooks/lib-gates.sh` and the expected interphase implementation) does NOT export this function.
 
 **Evidence:**
 - lib-gates.sh shim exports: `is_valid_transition`, `check_phase_gate`, `advance_phase`, `phase_get_with_fallback`, `phase_set`, `phase_get`, `phase_infer_bead`

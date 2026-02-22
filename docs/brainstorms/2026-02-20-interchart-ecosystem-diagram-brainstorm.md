@@ -52,7 +52,7 @@ The diagram is a D3.js force-directed graph where:
 | `plugins/*/plugin.json` | Plugin name, version, skills list, MCP server config, hooks |
 | `plugins/*/skills/` | Skill names and descriptions (from SKILL.md frontmatter) |
 | `plugins/*/hooks/hooks.json` | Hook events and their handlers |
-| `hub/clavain/` | Clavain skills, dispatch targets, command definitions |
+| `os/clavain/` | Clavain skills, dispatch targets, command definitions |
 | `infra/intercore/` | Kernel capabilities (phases, gates, runs, dispatches) |
 | `services/intermute/` | Multi-agent coordination service |
 | `sdk/interbase/` | Shared SDK functions |

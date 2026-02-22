@@ -49,7 +49,7 @@ Migrate all sprint runtime state to intercore's `ic` CLI, which provides atomic 
 **Acceptance criteria:**
 - [ ] `on-phase-advance` receives Event JSON on stdin, logs phase transition to stderr
 - [ ] `on-dispatch-change` receives Event JSON on stdin, logs dispatch status change to stderr
-- [ ] Both are executable shell scripts in hub/clavain/.clavain/hooks/
+- [ ] Both are executable shell scripts in os/clavain/.clavain/hooks/
 - [ ] Neither drives workflow logic — purely informational
 - [ ] Intercore's HookHandler discovers and fires them automatically on events
 - [ ] Scripts handle malformed input gracefully (no crash on bad JSON)

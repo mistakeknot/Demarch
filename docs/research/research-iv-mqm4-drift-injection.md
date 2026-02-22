@@ -28,7 +28,7 @@
 
 ## 2. Session-Start Hook Structure
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 1-327)
+**File:** `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 1-327)
 
 ### Context Injection Architecture
 
@@ -110,7 +110,7 @@ Literal `\n` sequences in bash variables become newlines when rendered in the fi
 ### File Locations
 
 - **Interverse root:** `/root/projects/Interverse/.interwatch/drift.json` (current example)
-- **Clavain root:** `/root/projects/Interverse/hub/clavain/.interwatch/drift.json` (dated example)
+- **Clavain root:** `/root/projects/Interverse/os/clavain/.interwatch/drift.json` (dated example)
 
 ### Complete Schema (From Real Data)
 
@@ -268,7 +268,7 @@ drift_score = sum(signal_weight × signal_count for each signal)
 
 ## 6. Brainstorm & Related Context
 
-**File:** `/root/projects/Interverse/hub/clavain/docs/brainstorms/2026-02-14-auto-drift-check-brainstorm.md` (lines 1-101)
+**File:** `/root/projects/Interverse/os/clavain/docs/brainstorms/2026-02-14-auto-drift-check-brainstorm.md` (lines 1-101)
 
 ### Architecture Context
 
@@ -297,7 +297,7 @@ Standard signals used across Clavain hooks:
 
 ## 7. Helper Functions Available
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/lib.sh` (extracted lines, per codex_query)
+**File:** `/root/projects/Interverse/os/clavain/hooks/lib.sh` (extracted lines, per codex_query)
 
 ### Plugin Discovery Functions
 
@@ -461,12 +461,12 @@ fi
 | File | Purpose | Lines | Status |
 |------|---------|-------|--------|
 | `docs/plans/2026-02-19-session-start-drift-summary-injection.md` | Primary plan | 1-47 | ✓ Read |
-| `hub/clavain/hooks/session-start.sh` | Target hook (edit after companion_context) | 1-327 | ✓ Read |
+| `os/clavain/hooks/session-start.sh` | Target hook (edit after companion_context) | 1-327 | ✓ Read |
 | `plugins/interwatch/config/watchables.yaml` | Watchable definitions | 1-69 | ✓ Read |
 | `.interwatch/drift.json` (and examples) | Output schema to parse | — | ✓ Examined |
 | `plugins/interwatch/skills/doc-watch/phases/assess.md` | Confidence tier logic | 1-54 | ✓ Read |
 | `plugins/interwatch/skills/doc-watch/phases/detect.md` | Signal detection patterns | 1-80 | ✓ Read |
-| `hub/clavain/hooks/lib.sh` | Helper functions (_discover_*, escape_for_json) | 1-262 | ✓ Extracted |
+| `os/clavain/hooks/lib.sh` | Helper functions (_discover_*, escape_for_json) | 1-262 | ✓ Extracted |
 
 ### Data Contract
 

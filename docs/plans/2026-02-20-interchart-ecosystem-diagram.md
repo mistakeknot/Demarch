@@ -52,8 +52,8 @@ Node.js script that walks the monorepo and outputs a JSON graph to stdout.
 **Scanning logic:**
 1. Read all `plugins/*/.claude-plugin/plugin.json` files — extract: name, version, description, skills (array of paths), commands (array of paths), agents (array of paths), mcpServers (object keys), hooks path
 2. For each plugin's skills paths, read `SKILL.md` frontmatter (name, description) — use simple regex, no YAML parser needed
-3. Read `hub/clavain/.claude-plugin/plugin.json` — same extraction
-4. Read Clavain skills from `hub/clavain/skills/*/SKILL.md`
+3. Read `os/clavain/.claude-plugin/plugin.json` — same extraction
+4. Read Clavain skills from `os/clavain/skills/*/SKILL.md`
 5. Add fixed nodes for: Intercore (`infra/intercore/`), Intermute (`services/intermute/`), Interbase (`sdk/interbase/`), Autarch/Interforge (`Interforge/`), Interverse (root)
 6. Read `plugins/*/hooks/hooks.json` where it exists — extract event names (SessionStart, PreToolUse, etc.)
 

@@ -3,9 +3,9 @@
 > Note: This file was previously used for a different PRD review (reflect-phase-sprint-integration).
 > That content is superseded by this B1 routing table review.
 
-**Source PRD:** `/root/projects/Interverse/hub/clavain/docs/prds/2026-02-20-static-routing-table.md`
-**Brainstorm:** `/root/projects/Interverse/hub/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
-**Verdict file:** `/root/projects/Interverse/hub/clavain/.clavain/verdicts/fd-correctness.md`
+**Source PRD:** `/root/projects/Interverse/os/clavain/docs/prds/2026-02-20-static-routing-table.md`
+**Brainstorm:** `/root/projects/Interverse/os/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
+**Verdict file:** `/root/projects/Interverse/os/clavain/.clavain/verdicts/fd-correctness.md`
 **Reviewer:** fd-correctness (Julik, Flux-drive Correctness Reviewer)
 **Date:** 2026-02-20
 
@@ -236,7 +236,7 @@ After rename: the `ship` step maps to quality-gates, but `sprint_next_step` now 
 ```
 After rename: `shipping` in the whitelist is never matched by a phase named `polish`. A sprint at `polish` would be skipped by `sprint_should_skip`, and `sprint_next_required_phase` would walk past it to `reflect`.
 
-**`lib-gates.sh` fallback stubs (`hub/clavain/hooks/lib-gates.sh` line 25):**
+**`lib-gates.sh` fallback stubs (`os/clavain/hooks/lib-gates.sh` line 25):**
 ```bash
 CLAVAIN_PHASES=(brainstorm brainstorm-reviewed strategized planned plan-reviewed executing shipping reflect done)
 ```
@@ -250,7 +250,7 @@ Still has `shipping`. If this is not updated, the fallback gate path treats `pol
 ```
 All use `shipping`. After rename these are dead entries; `polish` transitions would hit the rejection path.
 
-**Migration script** `/root/projects/Interverse/hub/clavain/scripts/migrate-sprints-to-ic.sh` line 29:
+**Migration script** `/root/projects/Interverse/os/clavain/scripts/migrate-sprints-to-ic.sh` line 29:
 ```bash
 PHASES_JSON='["brainstorm","brainstorm-reviewed","strategized","planned","plan-reviewed","executing","shipping","done"]'
 ```
@@ -307,7 +307,7 @@ The accept criterion for F2 must include: "`commands/sprint.md` advance_phase ca
 
 ## Finding 5 (MEDIUM): `reflect.md` Accepts Sprint in `shipping` Phase — After OS Rename This Path Silently Breaks
 
-`/root/projects/Interverse/hub/clavain/commands/reflect.md` line 18:
+`/root/projects/Interverse/os/clavain/commands/reflect.md` line 18:
 
 ```
 1. **Identify the active sprint.** Use `sprint_find_active` (sourced from lib-sprint.sh) to find the current sprint and confirm it is in the `shipping` or `reflect` phase.
@@ -388,11 +388,11 @@ These are blocking, not advisory:
 |------|-------|
 | `/root/projects/Interverse/infra/intercore/internal/phase/phase.go` | Go comment says "10-phase", slice has 9 entries |
 | `/root/projects/Interverse/infra/intercore/AGENTS.md` | Says "10-phase", lists 9 phases |
-| `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh` line 78 | OS chain has `plan-reviewed` + `shipping`; no `review` or `polish` |
-| `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh` lines 563-577 | Transition table uses `shipping`, not `polish` |
-| `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh` lines 908-911 | Phase whitelist uses `shipping`, not `polish` |
-| `/root/projects/Interverse/hub/clavain/hooks/lib-gates.sh` line 25 | Fallback `CLAVAIN_PHASES` still has `shipping` |
+| `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh` line 78 | OS chain has `plan-reviewed` + `shipping`; no `review` or `polish` |
+| `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh` lines 563-577 | Transition table uses `shipping`, not `polish` |
+| `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh` lines 908-911 | Phase whitelist uses `shipping`, not `polish` |
+| `/root/projects/Interverse/os/clavain/hooks/lib-gates.sh` line 25 | Fallback `CLAVAIN_PHASES` still has `shipping` |
 | `/root/projects/Interverse/plugins/interphase/hooks/lib-gates.sh` lines 50-74 | `VALID_TRANSITIONS` has `shipping`; missing `review`, `polish` |
-| `/root/projects/Interverse/hub/clavain/commands/sprint.md` line 324 | Still writes `advance_phase ... "shipping"` |
-| `/root/projects/Interverse/hub/clavain/commands/reflect.md` line 18 | Precondition checks for `shipping` phase, not `polish` |
-| `/root/projects/Interverse/hub/clavain/scripts/migrate-sprints-to-ic.sh` line 29 | Old chain without `reflect`; doubly stale |
+| `/root/projects/Interverse/os/clavain/commands/sprint.md` line 324 | Still writes `advance_phase ... "shipping"` |
+| `/root/projects/Interverse/os/clavain/commands/reflect.md` line 18 | Precondition checks for `shipping` phase, not `polish` |
+| `/root/projects/Interverse/os/clavain/scripts/migrate-sprints-to-ic.sh` line 29 | Old chain without `reflect`; doubly stale |

@@ -333,8 +333,8 @@ _reservations_json=$(_intermute_fetch "api/reservations" "..." 2) || _reservatio
 **Action:** Refactor sprint_check_coordination to accept cached JSON responses as optional parameters.
 
 **Files affected:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 100–171)
-- `/root/projects/Interverse/hub/clavain/hooks/sprint-scan.sh` (lines 215–286)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 100–171)
+- `/root/projects/Interverse/os/clavain/hooks/sprint-scan.sh` (lines 215–286)
 
 **Expected impact:**
 - Reduce session-start latency by ~4 seconds (2 fewer curl calls × 2s timeout)

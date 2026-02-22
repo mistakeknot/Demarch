@@ -111,7 +111,7 @@ All PostToolUse hooks in Clavain follow the **stdin JSON** pattern. Examples:
 
 #### Hook 1: `auto-drift-check.sh` (PostToolUse on Stop event)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/auto-drift-check.sh`, Lines 14-30
+**File:** `/root/projects/Interverse/os/clavain/hooks/auto-drift-check.sh`, Lines 14-30
 
 ```bash
 # Input: Hook JSON on stdin (session_id, transcript_path, stop_hook_active)
@@ -128,7 +128,7 @@ STOP_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false')
 
 #### Hook 2: `interserve-audit.sh` (PostToolUse on Edit|Write|NotebookEdit)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/interserve-audit.sh`, Lines 4-18
+**File:** `/root/projects/Interverse/os/clavain/hooks/interserve-audit.sh`, Lines 4-18
 
 ```bash
 # Line 13: Read hook input
@@ -146,7 +146,7 @@ file_path="$(jq -r '(.tool_input.file_path // .tool_input.notebook_path // empty
 
 #### Hook 3: `catalog-reminder.sh` (PostToolUse on Edit|Write|MultiEdit)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/catalog-reminder.sh`, Lines 6-8
+**File:** `/root/projects/Interverse/os/clavain/hooks/catalog-reminder.sh`, Lines 6-8
 
 ```bash
 # Line 6: Read hook input
@@ -162,7 +162,7 @@ FILE_PATH="$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.edits[0
 
 #### Hook 4: `bead-agent-bind.sh` (PostToolUse on Bash)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/bead-agent-bind.sh`, Lines 15-18
+**File:** `/root/projects/Interverse/os/clavain/hooks/bead-agent-bind.sh`, Lines 15-18
 
 ```bash
 # Line 15: Read hook input
@@ -178,7 +178,7 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || e
 
 #### Hook 5: `auto-publish.sh` (PostToolUse on Bash)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/auto-publish.sh`, Lines 25-34
+**File:** `/root/projects/Interverse/os/clavain/hooks/auto-publish.sh`, Lines 25-34
 
 ```bash
 # Line 27: Read hook input
@@ -260,7 +260,7 @@ NEW_STRING="$(echo "$INPUT" | jq -r '.tool_input.new_string // empty')"
 - Official hook API: `code.claude.com/docs/en/hooks` (researched in detail at `/root/projects/Interverse/services/intermute/docs/research/research-claude-code-hook-api.md`)
 - PostToolUse spec: Lines 202-233 of hook API research
 - Edit tool input schema: Line 119-125 of hook API research
-- All Clavain PostToolUse hooks: `/root/projects/Interverse/hub/clavain/hooks/*.sh`
+- All Clavain PostToolUse hooks: `/root/projects/Interverse/os/clavain/hooks/*.sh`
 
 ---
 

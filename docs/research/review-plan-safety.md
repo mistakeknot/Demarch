@@ -116,7 +116,7 @@ The stderr message is written, but the calling sprint functions suppress stderr 
 4. `sprint_find_active()` returns `[]` (ic path skipped, beads fallback runs, finds beads with `sprint=true` but no `ic_run_id` since they were not migrated on this clone — so fallback works for unmigrated beads).
 5. For migrated beads (those with `ic_run_id` set): `sprint_read_state()` falls to beads path, which has stale phase data.
 
-The fresh-clone case is recoverable only if the developer runs `ic init && bash hub/clavain/scripts/migrate-sprints-to-ic.sh`. This is not documented in the plan.
+The fresh-clone case is recoverable only if the developer runs `ic init && bash os/clavain/scripts/migrate-sprints-to-ic.sh`. This is not documented in the plan.
 
 **Required mitigations:**
 
@@ -127,7 +127,7 @@ if [[ -n "$run_id" ]] && ! intercore_available; then
 fi
 ```
 
-b. Add an explicit setup requirement to `hub/clavain/AGENTS.md` and `hub/clavain/CLAUDE.md`: "After initial clone or after E3 cutover, run `ic init && bash hub/clavain/scripts/migrate-sprints-to-ic.sh`."
+b. Add an explicit setup requirement to `os/clavain/AGENTS.md` and `os/clavain/CLAUDE.md`: "After initial clone or after E3 cutover, run `ic init && bash os/clavain/scripts/migrate-sprints-to-ic.sh`."
 
 c. Consider adding a health gate in `session-start.sh` that checks `intercore_available()` and, if sprints with `ic_run_id` are found but `ic` is unavailable, emits a session-start warning rather than a silent hint with stale phase data.
 
@@ -266,11 +266,11 @@ Task 12 (lib-gates.sh deprecation) — safe at any point
 
 ```
 [ ] ic binary is installed and on PATH for all hook execution environments
-[ ] ic health passes in hub/clavain/ directory
+[ ] ic health passes in os/clavain/ directory
 [ ] ic init has been run (or health check confirms DB initialized)
 [ ] No active sprint sessions are running (ideally coordinate deployment with session boundaries)
 [ ] bd list --status=in_progress | grep sprint returns a known set of sprints (document count)
-[ ] Dry-run migration: bash hub/clavain/scripts/migrate-sprints-to-ic.sh --dry-run (zero errors expected)
+[ ] Dry-run migration: bash os/clavain/scripts/migrate-sprints-to-ic.sh --dry-run (zero errors expected)
 ```
 
 **Post-deploy verification (missing from plan, must be added):**
@@ -448,15 +448,15 @@ The plan lacks a safe deployment order. The following sequence minimizes breakag
 1. Deploy Task 1 (lib-intercore.sh wrappers) — additive, no behavior change
 2. Deploy Task 8 (event reactor hooks) — new files, no existing code changed
 3. Deploy Task 12 (lib-gates.sh deprecation comment) — documentation only
-4. Verify ic binary and DB health: `ic health` passes in hub/clavain/
+4. Verify ic binary and DB health: `ic health` passes in os/clavain/
 
 **Phase 2 — Core cutover (deploy atomically or in rapid sequence):**
 5. Deploy Tasks 2, 3, 4, 5, 9 (lib-sprint.sh rewrites) — fallback paths still work for unmigrated beads
 6. Deploy Task 7 (session-start.sh) — now calls rewritten sprint_find_active
 
 **Phase 3 — Migration (run once, verify before proceeding):**
-7. Run `bash hub/clavain/scripts/migrate-sprints-to-ic.sh --dry-run` — verify zero errors
-8. Run `bash hub/clavain/scripts/migrate-sprints-to-ic.sh` — run live migration
+7. Run `bash os/clavain/scripts/migrate-sprints-to-ic.sh --dry-run` — verify zero errors
+8. Run `bash os/clavain/scripts/migrate-sprints-to-ic.sh` — run live migration
 9. Verify: `ic run list --active | wc -l` matches `bd list --status=in_progress --json | jq '[.[] | select(.state.sprint == "true")] | length'`
 10. Restart all active Claude Code sessions (so session-start.sh re-sources lib-sprint.sh and picks up ic-backed sprint_find_active)
 

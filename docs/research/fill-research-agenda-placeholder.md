@@ -120,7 +120,7 @@ The Interverse ecosystem has grown to 25+ plugins but agent-rig.json lists only 
 **Sources:** interbus-central-integration-mesh (brainstorm), cross-module-integration-opportunities (plan), interband-sideband-hardening (plan), catalog-reminder-interwatch-escalation (plan), session-start-drift-summary-injection (plan)
 
 These cluster around making inter-module communication structured and observable rather than implicit:
-- Interbus: lightweight integration mesh with intent envelope schema (event_id, intent, context_id, artifact_path, severity, producer/consumers). First implementation as a bash shim in hub/clavain/hooks; Go/Python backend only if volume warrants. Core intents: discover_work, start_sprint, phase_transition, review_pass.
+- Interbus: lightweight integration mesh with intent envelope schema (event_id, intent, context_id, artifact_path, severity, producer/consumers). First implementation as a bash shim in os/clavain/hooks; Go/Python backend only if volume warrants. Core intents: discover_work, start_sprint, phase_transition, review_pass.
 - Interband sideband hardening: protocol validation for known message types; multi-path loader discovery; fail-open behavior when interband is unavailable.
 - Catalog-reminder → Interwatch: catalog-reminder.sh emits component_count_changed signal when component shape changes; Interwatch consumes it without waiting for a full manual watch cycle.
 - Session-start drift injection: session-start.sh reads .interwatch/drift.json and injects a compact summary into session context when severity is Medium+.

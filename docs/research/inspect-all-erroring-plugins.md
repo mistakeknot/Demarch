@@ -94,7 +94,7 @@ All 10 erroring plugins share a combination of two root causes:
       "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh",
       "args": [],
       "env": {
-        "INTERSERVE_DISPATCH_PATH": "/root/projects/Interverse/hub/clavain/scripts/dispatch.sh"
+        "INTERSERVE_DISPATCH_PATH": "/root/projects/Interverse/os/clavain/scripts/dispatch.sh"
       }
     }
   }

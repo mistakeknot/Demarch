@@ -94,10 +94,10 @@ brainstorm → brainstorm-reviewed → strategized → planned → plan-reviewed
 
 **Acceptance criteria:**
 - [ ] `docs/glossary.md` macro-stage table includes Reflect with sub-phase mapping
-- [ ] `hub/clavain/AGENTS.md` sprint lifecycle references updated
+- [ ] `os/clavain/AGENTS.md` sprint lifecycle references updated
 - [ ] `infra/intercore/AGENTS.md` — fix Go comment "10-phase" → "9-phase"; fix AGENTS.md phase count
 - [ ] `infra/intercore/internal/phase/phase.go` line 64 — fix comment "10-phase" → "9-phase"
-- [ ] `hub/clavain/docs/clavain-vision.md` lifecycle description matches
+- [ ] `os/clavain/docs/clavain-vision.md` lifecycle description matches
 - [ ] No remaining references to "8 phases" or "4 macro-stages" in active docs
 
 ### F5: Sprint-to-Kernel Phase Mapping Table

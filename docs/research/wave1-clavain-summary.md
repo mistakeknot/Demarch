@@ -1,6 +1,6 @@
 # Wave 1: Clavain Solution Docs Classification Summary
 
-Reviewed 19 solution docs from `hub/clavain/docs/solutions/`. Cross-referenced against root CLAUDE.md, hub/clavain/CLAUDE.md, hub/clavain/AGENTS.md, and Interverse MEMORY.md.
+Reviewed 19 solution docs from `os/clavain/docs/solutions/`. Cross-referenced against root CLAUDE.md, os/clavain/CLAUDE.md, os/clavain/AGENTS.md, and Interverse MEMORY.md.
 
 ## Findings
 
@@ -14,7 +14,7 @@ Reviewed 19 solution docs from `hub/clavain/docs/solutions/`. Cross-referenced a
 
 1. Update root `~/.claude/CLAUDE.md` Oracle section with --write-output and --timeout rules (high impact, prevents data loss).
 2. Add 8 plugin schema / cross-cutting lessons to Interverse MEMORY.md (prevents re-discovery).
-3. Add agent rename/delete checklist to `hub/clavain/AGENTS.md` (prevents stale reference bugs).
+3. Add agent rename/delete checklist to `os/clavain/AGENTS.md` (prevents stale reference bugs).
 4. Mark 3 docs as superseded/already-propagated to prevent future redundant propagation work.
 
 ## Cross-Cutting Lessons (apply beyond clavain)

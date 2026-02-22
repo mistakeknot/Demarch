@@ -118,7 +118,7 @@ From brainstorm/design docs:
 
 ## 2. Clavain Hooks (Workflow Signal Detection)
 
-**Location**: `/root/projects/Interverse/hub/clavain/hooks/`  
+**Location**: `/root/projects/Interverse/os/clavain/hooks/`  
 **Status**: Production, 13 hook scripts
 
 ### Hook Inventory
@@ -444,7 +444,7 @@ To build a "truth engine" that measures agent workflow quality, the following ga
 - Skill: `skills/tool-time/SKILL.md`
 
 **Clavain hooks**:
-- Hooks: `/root/projects/Interverse/hub/clavain/hooks/`
+- Hooks: `/root/projects/Interverse/os/clavain/hooks/`
 - Signal detection: `lib-signals.sh`
 - Session context: `.clavain/scratch/handoff.md` (per-project)
 

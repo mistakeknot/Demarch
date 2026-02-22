@@ -24,15 +24,15 @@ F2a is a verification pass. F3 must ship before F1 because the sprint step invok
 ### Task 1: Verify lib-sprint.sh Transition Table and Phase Whitelists (F2a)
 
 **Files:**
-- Verify: `hub/clavain/hooks/lib-sprint.sh:569-580` (transition table)
-- Verify: `hub/clavain/hooks/lib-sprint.sh:593-605` (sprint_next_step)
-- Verify: `hub/clavain/hooks/lib-sprint.sh:910-917` (sprint_phase_whitelist)
-- Verify: `hub/clavain/hooks/lib-sprint.sh:78` (PHASES_JSON)
-- Verify: `hub/clavain/hooks/lib-gates.sh:25` (CLAVAIN_PHASES fallback)
+- Verify: `os/clavain/hooks/lib-sprint.sh:569-580` (transition table)
+- Verify: `os/clavain/hooks/lib-sprint.sh:593-605` (sprint_next_step)
+- Verify: `os/clavain/hooks/lib-sprint.sh:910-917` (sprint_phase_whitelist)
+- Verify: `os/clavain/hooks/lib-sprint.sh:78` (PHASES_JSON)
+- Verify: `os/clavain/hooks/lib-gates.sh:25` (CLAVAIN_PHASES fallback)
 
 **Step 1: Verify transition table has shipping→reflect→done**
 
-Read `hub/clavain/hooks/lib-sprint.sh` lines 569-580 and confirm:
+Read `os/clavain/hooks/lib-sprint.sh` lines 569-580 and confirm:
 - `shipping)  echo "reflect" ;;` exists
 - `reflect)   echo "done" ;;` exists
 
@@ -74,19 +74,19 @@ Expected: Already present.
 
 **Step 6: Run syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && bash -n hub/clavain/hooks/lib-gates.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && bash -n os/clavain/hooks/lib-gates.sh && echo "OK"`
 Expected: OK (no syntax errors)
 
 **Step 7: Verify sprint-scan.sh includes reflect**
 
-Run: `grep -c 'reflect' hub/clavain/hooks/sprint-scan.sh`
+Run: `grep -c 'reflect' os/clavain/hooks/sprint-scan.sh`
 Expected: 0 or more — sprint-scan.sh may not reference individual phases. If it has a phase array, confirm reflect is included. If no phase array, this is a no-op.
 
 **Step 8: Commit (if any fixes were needed)**
 
 If all verifications pass with no changes needed, skip this step.
 ```bash
-cd /root/projects/Interverse/hub/clavain
+cd os/clavain
 git add hooks/lib-sprint.sh hooks/lib-gates.sh
 git commit -m "fix: ensure reflect phase in transition table and whitelists (F2a)"
 ```
@@ -96,11 +96,11 @@ git commit -m "fix: ensure reflect phase in transition table and whitelists (F2a
 ### Task 2: Verify sprint-scan.sh Phase Coverage (F2a)
 
 **Files:**
-- Verify: `hub/clavain/hooks/sprint-scan.sh`
+- Verify: `os/clavain/hooks/sprint-scan.sh`
 
 **Step 1: Search for any hardcoded phase lists**
 
-Run: `grep -n 'phase\|PHASE\|shipping\|polish\|done' hub/clavain/hooks/sprint-scan.sh | head -20`
+Run: `grep -n 'phase\|PHASE\|shipping\|polish\|done' os/clavain/hooks/sprint-scan.sh | head -20`
 
 Check if sprint-scan.sh has its own phase array or hardcoded phase names that would need `reflect` added. Based on the PRD, confirm coverage.
 
@@ -115,11 +115,11 @@ Document which files passed verification. No commit needed if nothing changed.
 ### Task 3: Update /reflect Precondition — Accept `reflect` Phase Only (F3)
 
 **Files:**
-- Modify: `hub/clavain/commands/reflect.md:18`
+- Modify: `os/clavain/commands/reflect.md:18`
 
 **Step 1: Read the current reflect command**
 
-Read: `hub/clavain/commands/reflect.md`
+Read: `os/clavain/commands/reflect.md`
 
 Current line 18 says:
 ```
@@ -142,7 +142,7 @@ New:
 
 **Step 3: Run syntax check on the parent hooks**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && echo "OK"`
 Expected: OK (reflect.md is a markdown command, not bash — the syntax check validates lib-sprint.sh which it sources)
 
 ---
@@ -150,7 +150,7 @@ Expected: OK (reflect.md is a markdown command, not bash — the syntax check va
 ### Task 4: Add Idempotency Check to /reflect (F3)
 
 **Files:**
-- Modify: `hub/clavain/commands/reflect.md`
+- Modify: `os/clavain/commands/reflect.md`
 
 **Step 1: Add idempotency check before step 2**
 
@@ -161,7 +161,7 @@ After step 1, insert:
 ```
 1b. **Check for existing reflect artifact.** Before invoking engineering-docs, check if a reflect artifact is already registered:
    ```bash
-   source hub/clavain/hooks/lib-sprint.sh
+   source os/clavain/hooks/lib-sprint.sh
    existing=$(sprint_get_artifact "<sprint_id>" "reflect" 2>/dev/null) || existing=""
    ```
    If `existing` is non-empty, report "Reflect artifact already registered: <existing>. Skipping to advance." and jump to step 4 (advance).
@@ -172,7 +172,7 @@ After step 1, insert:
 ### Task 5: Add C1 Lightweight Path to /reflect (F3)
 
 **Files:**
-- Modify: `hub/clavain/commands/reflect.md`
+- Modify: `os/clavain/commands/reflect.md`
 
 **Step 1: Add complexity-aware branching to step 2**
 
@@ -191,7 +191,7 @@ New step 2:
 
    Check sprint complexity:
    ```bash
-   source hub/clavain/hooks/lib-sprint.sh
+   source os/clavain/hooks/lib-sprint.sh
    complexity=$(bd state "<sprint_id>" complexity 2>/dev/null) || complexity="3"
    ```
 
@@ -207,7 +207,7 @@ New step 2:
 ### Task 6: Add Intercore Artifact Registration to /reflect (F3)
 
 **Files:**
-- Modify: `hub/clavain/commands/reflect.md`
+- Modify: `os/clavain/commands/reflect.md`
 
 **Step 1: Update step 3 to register with both intercore and beads**
 
@@ -215,7 +215,7 @@ Old step 3:
 ```
 3. **Register the artifact.** After the engineering doc is written, register it as a reflect-phase artifact:
    ```bash
-   source hub/clavain/hooks/lib-sprint.sh
+   source os/clavain/hooks/lib-sprint.sh
    sprint_set_artifact "<sprint_id>" "reflect" "<path_to_doc>"
    ```
 ```
@@ -224,7 +224,7 @@ New step 3:
 ```
 3. **Register the artifact.** After the learning artifact is written, register it with both intercore (kernel) and beads (OS):
    ```bash
-   source hub/clavain/hooks/lib-sprint.sh
+   source os/clavain/hooks/lib-sprint.sh
 
    # Kernel path: ic run artifact add (enables gate check)
    run_id=$(bd state "<sprint_id>" run_id 2>/dev/null) || run_id=""
@@ -240,7 +240,7 @@ New step 3:
 **Step 2: Commit the full reflect.md changes (Tasks 3-6)**
 
 ```bash
-cd /root/projects/Interverse/hub/clavain
+cd os/clavain
 git add commands/reflect.md
 git commit -m "feat: update /reflect — precondition, idempotency, C1 path, ic artifact (F3)"
 ```
@@ -250,11 +250,11 @@ git commit -m "feat: update /reflect — precondition, idempotency, C1 path, ic 
 ### Task 7: Add Step 9 (Reflect) to Sprint Command (F1)
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Read current Steps 7-9**
 
-Read: `hub/clavain/commands/sprint.md` lines 301-341
+Read: `os/clavain/commands/sprint.md` lines 301-341
 
 Current Step 8 is "Resolve Issues" and Step 9 is "Ship".
 
@@ -288,7 +288,7 @@ Change `## Step 9: Ship` to `## Step 10: Ship`.
 ### Task 8: Update Sprint Summary and Error Recovery Step Count (F1)
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Update Sprint Summary step count**
 
@@ -331,7 +331,7 @@ Change to:
 ### Task 9: Update Sprint Resume Routing for Reflect (F1)
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Verify sprint resume routing handles reflect**
 
@@ -363,20 +363,20 @@ The routing already has `- `done` → tell user "Sprint is complete"` — this i
 ### Task 10: Commit Sprint Command Changes (F1)
 
 **Files:**
-- Commit: `hub/clavain/commands/sprint.md`
+- Commit: `os/clavain/commands/sprint.md`
 
 **Step 1: Run a quick validation**
 
 Verify no broken markdown:
 ```bash
-grep -c '## Step' hub/clavain/commands/sprint.md
+grep -c '## Step' os/clavain/commands/sprint.md
 ```
 Expected: 10 (Steps 1-10, plus possible sub-steps) — at least count Pre-Step + Steps 1-10.
 
 **Step 2: Commit**
 
 ```bash
-cd /root/projects/Interverse/hub/clavain
+cd os/clavain
 git add commands/sprint.md
 git commit -m "feat: add Step 9 Reflect to sprint command, renumber Ship to Step 10 (F1)"
 ```
@@ -435,10 +435,10 @@ git commit -m "fix: correct DefaultPhaseChain comment from 10-phase to 9-phase (
 ### Task 12: Update Clavain Vision Doc — Macro-Stages (F4)
 
 **Files:**
-- Modify: `hub/clavain/docs/clavain-vision.md:169-171`
-- Modify: `hub/clavain/docs/clavain-vision.md:298`
-- Modify: `hub/clavain/docs/clavain-vision.md:300-304`
-- Modify: `hub/clavain/docs/clavain-vision.md:536`
+- Modify: `os/clavain/docs/clavain-vision.md:169-171`
+- Modify: `os/clavain/docs/clavain-vision.md:298`
+- Modify: `os/clavain/docs/clavain-vision.md:300-304`
+- Modify: `os/clavain/docs/clavain-vision.md:536`
 
 **Step 1: Fix "four macro-stages" → "five macro-stages"**
 
@@ -492,7 +492,7 @@ New: `The coding is one phase of five.`
 **Step 6: Commit**
 
 ```bash
-cd /root/projects/Interverse/hub/clavain
+cd os/clavain
 git add docs/clavain-vision.md
 git commit -m "docs: update vision doc from 4 to 5 macro-stages, add Reflect (F4)"
 ```
@@ -503,7 +503,7 @@ git commit -m "docs: update vision doc from 4 to 5 macro-stages, add Reflect (F4
 
 **Files:**
 - Modify: `docs/glossary.md:25-27`
-- Modify: `hub/clavain/AGENTS.md`
+- Modify: `os/clavain/AGENTS.md`
 
 **Step 1: Update glossary Sprint definition**
 
@@ -521,9 +521,9 @@ This already lists 5 macro-stages including Reflect — verify it's correct.
 
 **Step 2: Update AGENTS.md sprint lifecycle references**
 
-Search `hub/clavain/AGENTS.md` for any references to "4 macro-stages" or outdated phase counts and fix them.
+Search `os/clavain/AGENTS.md` for any references to "4 macro-stages" or outdated phase counts and fix them.
 
-Run: `grep -n 'macro.stage\|4.*stage\|four.*stage\|8.*phase\|step.*9\|9.*step' hub/clavain/AGENTS.md`
+Run: `grep -n 'macro.stage\|4.*stage\|four.*stage\|8.*phase\|step.*9\|9.*step' os/clavain/AGENTS.md`
 
 Fix any stale references found.
 
@@ -534,7 +534,7 @@ cd /root/projects/Interverse
 git add docs/glossary.md
 git commit -m "docs: verify glossary reflects 5 macro-stages (F4)"
 
-cd /root/projects/Interverse/hub/clavain
+cd os/clavain
 git add AGENTS.md
 git commit -m "docs: update AGENTS.md sprint lifecycle references (F4)"
 ```
@@ -586,11 +586,11 @@ git commit -m "docs: add Sprint-to-Kernel phase mapping table (F5)"
 
 After all tasks are complete:
 
-1. `bash -n hub/clavain/hooks/lib-sprint.sh` — passes
-2. `bash -n hub/clavain/hooks/lib-gates.sh` — passes
+1. `bash -n os/clavain/hooks/lib-sprint.sh` — passes
+2. `bash -n os/clavain/hooks/lib-gates.sh` — passes
 3. `cd infra/intercore && go test ./internal/phase/ -short` — passes
-4. `grep -c 'reflect' hub/clavain/commands/sprint.md` — at least 5 occurrences
-5. `grep -c 'reflect' hub/clavain/commands/reflect.md` — at least 8 occurrences
+4. `grep -c 'reflect' os/clavain/commands/sprint.md` — at least 5 occurrences
+5. `grep -c 'reflect' os/clavain/commands/reflect.md` — at least 8 occurrences
 6. `grep -c '10-phase' infra/intercore/internal/phase/phase.go` — 0 (all fixed to 9-phase)
 7. `grep -c '10-phase' infra/intercore/AGENTS.md` — 0 (all fixed to 9-phase)
-8. `grep 'four macro' hub/clavain/docs/clavain-vision.md` — 0 matches (all fixed to five)
+8. `grep 'four macro' os/clavain/docs/clavain-vision.md` — 0 matches (all fixed to five)

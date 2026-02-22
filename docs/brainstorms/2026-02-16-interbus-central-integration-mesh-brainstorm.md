@@ -87,7 +87,7 @@ Core Clavain changes:
 - `quality-gates` publishes gate results and emits a completion signal consumed by future commands.
 - `sprint-status` can subscribe and display recent interbus activity.
 
-Interbus first ships as a `bash` shim in `hub/clavain/hooks` for zero-friction adoption, with a Go/Python backend moved out later only if volume warrants.
+Interbus first ships as a `bash` shim in `os/clavain/hooks` for zero-friction adoption, with a Go/Python backend moved out later only if volume warrants.
 
 ## Open Questions
 

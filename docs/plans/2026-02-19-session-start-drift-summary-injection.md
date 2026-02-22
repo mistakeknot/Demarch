@@ -4,7 +4,7 @@
 **Date:** 2026-02-19
 
 ## Inputs
-- Brainstorm: `hub/clavain/docs/brainstorms/2026-02-14-auto-drift-check-brainstorm.md`
+- Brainstorm: `os/clavain/docs/brainstorms/2026-02-14-auto-drift-check-brainstorm.md`
 - Interwatch outputs: `.interwatch/drift.json` contract
 
 ## Goal
@@ -21,7 +21,7 @@ Expose drift risk early by injecting a compact Interwatch summary into session-s
 Define accepted `drift.json` schema subset and severity filter (`Medium+`).
 
 2. Hook implementation
-Add parser and summarizer to `hub/clavain/hooks/session-start.sh` with bounded output formatting.
+Add parser and summarizer to `os/clavain/hooks/session-start.sh` with bounded output formatting.
 
 3. UX guardrails
 Limit number of surfaced watchables and ensure message stays high-signal.

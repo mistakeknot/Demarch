@@ -252,7 +252,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
+      "path": "os/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
       "module": "clavain",
       "title": "Extract SKILL.md Inline Logic into Testable Library Functions",
       "date": "2026-02-19",
@@ -267,7 +267,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
+      "path": "os/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
       "module": "clavain",
       "title": "Best Practice: Agent Consolidation with Complete Reference Sweep",
       "date": "2026-02-10",
@@ -282,7 +282,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+      "path": "os/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
       "module": "clavain",
       "title": "Best Practice: Provenance Tracking Breaks Compounding Feedback Loops",
       "date": "2026-02-10",
@@ -298,7 +298,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
+      "path": "os/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
       "module": "clavain",
       "title": "Best Practice: Smoke Test Agent Prompts Must Override the Task Tool Write-First Wrapper",
       "date": "2026-02-10",
@@ -313,7 +313,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
+      "path": "os/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
       "module": "clavain",
       "title": "Best Practice: Template System Has Multiple Independent Consumers",
       "date": "2026-02-11",
@@ -328,7 +328,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
+      "path": "os/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
       "module": "clavain",
       "title": "Unify Content-Assembly Abstractions Before Adding Variants",
       "date": "2026-02-11",
@@ -344,7 +344,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
+      "path": "os/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
       "module": "clavain",
       "title": "Troubleshooting: Codex CLI Deprecated Flags Cause Agent Dispatch Failures",
       "date": "2026-02-11",
@@ -360,7 +360,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
+      "path": "os/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
       "module": "clavain",
       "title": "Troubleshooting: Glob Pattern Misses Subproject Files in Monorepo",
       "date": "2026-02-15",
@@ -375,7 +375,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+      "path": "os/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
       "module": "clavain",
       "title": "Troubleshooting: MCP Plugin Cache Missing node_modules",
       "date": "2026-02-10",
@@ -391,7 +391,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+      "path": "os/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
       "module": "clavain",
       "title": "New Agent Files Not Available as subagent_type Until Session Restart",
       "date": "2026-02-10",
@@ -406,7 +406,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
+      "path": "os/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
       "module": "clavain",
       "title": "Troubleshooting: Oracle Browser Mode Output Lost in Flux-Drive Reviews",
       "date": "2026-02-11",
@@ -422,7 +422,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+      "path": "os/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
       "module": "clavain",
       "title": "Stop Hooks Break After Mid-Session Plugin Publish",
       "date": "2026-02-12",
@@ -439,7 +439,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+      "path": "os/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
       "module": "clavain",
       "title": "Hierarchical Config Resolution with Sentinel Values",
       "date": "2026-02-20",
@@ -453,7 +453,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
+      "path": "os/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
       "module": "clavain",
       "title": "Troubleshooting: Cannot Import Functions from conftest.py in Pytest",
       "date": "2026-02-10",
@@ -468,7 +468,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
+      "path": "os/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
       "module": "clavain",
       "title": "Troubleshooting: Beads Pre-Commit Hook Blocks Git Commits Due to JSONL Permission Mask",
       "date": "2026-02-10",
@@ -484,7 +484,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+      "path": "os/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
       "module": "clavain",
       "title": "Troubleshooting: disable-model-invocation Blocks All Command Chaining in /lfg Pipeline",
       "date": "2026-02-11",
@@ -500,7 +500,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+      "path": "os/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
       "module": "clavain",
       "title": "Troubleshooting: Duplicate MCP Server Registration Wastes Context Budget",
       "date": "2026-02-10",
@@ -515,7 +515,7 @@
       ]
     },
     {
-      "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+      "path": "os/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
       "module": "clavain",
       "title": "Troubleshooting: Settings Permission Bloat from Heredoc Bash Commands",
       "date": "2026-02-10",
@@ -1401,7 +1401,7 @@
     ],
     "clavain": [
       {
-        "path": "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
+        "path": "os/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
         "module": "clavain",
         "title": "Extract SKILL.md Inline Logic into Testable Library Functions",
         "date": "2026-02-19",
@@ -1416,7 +1416,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
+        "path": "os/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
         "module": "clavain",
         "title": "Best Practice: Agent Consolidation with Complete Reference Sweep",
         "date": "2026-02-10",
@@ -1431,7 +1431,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+        "path": "os/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
         "module": "clavain",
         "title": "Best Practice: Provenance Tracking Breaks Compounding Feedback Loops",
         "date": "2026-02-10",
@@ -1447,7 +1447,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
+        "path": "os/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
         "module": "clavain",
         "title": "Best Practice: Smoke Test Agent Prompts Must Override the Task Tool Write-First Wrapper",
         "date": "2026-02-10",
@@ -1462,7 +1462,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
+        "path": "os/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
         "module": "clavain",
         "title": "Best Practice: Template System Has Multiple Independent Consumers",
         "date": "2026-02-11",
@@ -1477,7 +1477,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
+        "path": "os/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
         "module": "clavain",
         "title": "Unify Content-Assembly Abstractions Before Adding Variants",
         "date": "2026-02-11",
@@ -1493,7 +1493,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
+        "path": "os/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
         "module": "clavain",
         "title": "Troubleshooting: Codex CLI Deprecated Flags Cause Agent Dispatch Failures",
         "date": "2026-02-11",
@@ -1509,7 +1509,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
+        "path": "os/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
         "module": "clavain",
         "title": "Troubleshooting: Glob Pattern Misses Subproject Files in Monorepo",
         "date": "2026-02-15",
@@ -1524,7 +1524,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+        "path": "os/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
         "module": "clavain",
         "title": "Troubleshooting: MCP Plugin Cache Missing node_modules",
         "date": "2026-02-10",
@@ -1540,7 +1540,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+        "path": "os/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
         "module": "clavain",
         "title": "New Agent Files Not Available as subagent_type Until Session Restart",
         "date": "2026-02-10",
@@ -1555,7 +1555,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
+        "path": "os/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
         "module": "clavain",
         "title": "Troubleshooting: Oracle Browser Mode Output Lost in Flux-Drive Reviews",
         "date": "2026-02-11",
@@ -1571,7 +1571,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+        "path": "os/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
         "module": "clavain",
         "title": "Stop Hooks Break After Mid-Session Plugin Publish",
         "date": "2026-02-12",
@@ -1588,7 +1588,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+        "path": "os/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
         "module": "clavain",
         "title": "Hierarchical Config Resolution with Sentinel Values",
         "date": "2026-02-20",
@@ -1602,7 +1602,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
+        "path": "os/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
         "module": "clavain",
         "title": "Troubleshooting: Cannot Import Functions from conftest.py in Pytest",
         "date": "2026-02-10",
@@ -1617,7 +1617,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
+        "path": "os/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
         "module": "clavain",
         "title": "Troubleshooting: Beads Pre-Commit Hook Blocks Git Commits Due to JSONL Permission Mask",
         "date": "2026-02-10",
@@ -1633,7 +1633,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+        "path": "os/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
         "module": "clavain",
         "title": "Troubleshooting: disable-model-invocation Blocks All Command Chaining in /lfg Pipeline",
         "date": "2026-02-11",
@@ -1649,7 +1649,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+        "path": "os/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
         "module": "clavain",
         "title": "Troubleshooting: Duplicate MCP Server Registration Wastes Context Budget",
         "date": "2026-02-10",
@@ -1664,7 +1664,7 @@
         ]
       },
       {
-        "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+        "path": "os/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
         "module": "clavain",
         "title": "Troubleshooting: Settings Permission Bloat from Heredoc Bash Commands",
         "date": "2026-02-10",

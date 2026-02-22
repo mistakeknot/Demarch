@@ -108,7 +108,7 @@ mv hub/autarch apps/autarch
 
 **1.4 Move the OS Layer (Layer 2):**
 ```bash
-mv hub/clavain os/clavain
+mv os/clavain os/clavain
 ```
 
 **1.5 Move Core Infrastructure (Layer 1):**
@@ -153,11 +153,11 @@ sdk/*
 ```
 
 **2.2 Update `CLAUDE.md`:**
-Change the structure listing from `hub/clavain/`, `plugins/`, `services/`, `infra/` to `os/clavain/`, `interverse/`, `core/`, `apps/autarch/`. Update the naming to clarify Demarch vs Interverse.
+Change the structure listing from `os/clavain/`, `plugins/`, `services/`, `infra/` to `os/clavain/`, `interverse/`, `core/`, `apps/autarch/`. Update the naming to clarify Demarch vs Interverse.
 
 **2.3 Update `AGENTS.md`:**
 The module table (lines 33-64) references all old paths. Update every row:
-- `hub/clavain/` → `os/clavain/`
+- `os/clavain/` → `os/clavain/`
 - `plugins/<name>/` → `interverse/<name>/`
 - `services/intermute/` → `core/intermute/`
 - `infra/<name>/` → `core/<name>/`
@@ -167,7 +167,7 @@ Also update the docs convention note and roadmap script reference.
 **2.4 Update scripts:**
 
 `scripts/consolidate-module-docs.sh` — hardcoded path map:
-- `hub/clavain/docs` → `os/clavain/docs`
+- `os/clavain/docs` → `os/clavain/docs`
 - `infra/intercore/docs` → `core/intercore/docs`
 - `plugins/<name>/docs` → `interverse/<name>/docs`
 - `plugins/interlens/docs/` → `interverse/interlens/docs/`

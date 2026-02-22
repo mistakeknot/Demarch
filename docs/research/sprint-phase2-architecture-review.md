@@ -22,7 +22,7 @@ The auto-advance design is sound. Complexity classification is appropriately sim
 
 ### ✅ Module Ownership (Correct)
 
-The plan correctly places all new sprint-specific functions in `hub/clavain/hooks/lib-sprint.sh`:
+The plan correctly places all new sprint-specific functions in `os/clavain/hooks/lib-sprint.sh`:
 - `_sprint_transition_table()` — phase sequencing logic
 - `sprint_should_pause()` — pause trigger detection
 - `sprint_advance()` — phase transition orchestration
@@ -507,8 +507,8 @@ The plan's 9 tasks are sequenced correctly, but add these pre-flight checks:
 - Implement high-priority fixes #1 and #3 from refactoring recommendations (state validation)
 
 **After Task 7 (Write tests):**
-- Run tests in isolation: `bats hub/clavain/tests/shell/test_lib_sprint.bats --filter "auto-advance"`
-- Run full Clavain test suite to detect integration breaks: `bats hub/clavain/tests/shell/`
+- Run tests in isolation: `bats os/clavain/tests/shell/test_lib_sprint.bats --filter "auto-advance"`
+- Run full Clavain test suite to detect integration breaks: `bats os/clavain/tests/shell/`
 
 ### Incremental Validation
 

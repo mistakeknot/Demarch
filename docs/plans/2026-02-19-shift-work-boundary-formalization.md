@@ -4,7 +4,7 @@
 **Date:** 2026-02-19
 
 ## Inputs
-- Design reference: `hub/clavain/docs/research/shift-work-boundary.md`
+- Design reference: `os/clavain/docs/research/shift-work-boundary.md`
 - Flux-drive review notes on boundary and safety constraints (bead notes)
 
 ## Goal

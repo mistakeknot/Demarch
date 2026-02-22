@@ -139,7 +139,7 @@ ib_emit_event()      { return 0; }  # no-op
 
 **Why this pattern works (proven by interband):**
 
-The `_load_interband_lib` pattern in `hub/clavain/scripts/dispatch.sh` already demonstrates this exact approach:
+The `_load_interband_lib` pattern in `os/clavain/scripts/dispatch.sh` already demonstrates this exact approach:
 1. Check env override (`INTERBAND_LIB`)
 2. Try monorepo-relative paths
 3. Fall back to `~/.local/share/interband/lib/interband.sh`

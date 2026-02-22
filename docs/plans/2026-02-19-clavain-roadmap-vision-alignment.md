@@ -5,7 +5,7 @@
 **Bead:** iv-yeka
 **Phase:** executing (as of 2026-02-19T19:27:47Z)
 
-**Goal:** Rewrite `hub/clavain/docs/roadmap.md` to replace the old Phase-based roadmap (Now/Next/Later with CV-N* items) with three parallel tracks (A: Kernel Integration, B: Model Routing, C: Agency Architecture) aligned to the new vision.md.
+**Goal:** Rewrite `os/clavain/docs/roadmap.md` to replace the old Phase-based roadmap (Now/Next/Later with CV-N* items) with three parallel tracks (A: Kernel Integration, B: Model Routing, C: Agency Architecture) aligned to the new vision.md.
 
 **Architecture:** Single-file documentation rewrite. The vision.md already contains the canonical roadmap structure (three tracks, convergence diagram, research agenda, companion constellation). The task is to translate that into a roadmap-format document with current bead counts, accurate companion versions, and concrete status markers.
 
@@ -16,7 +16,7 @@
 ### Task 1: Rewrite roadmap header and "Where We Are" section
 
 **Files:**
-- Modify: `hub/clavain/docs/roadmap.md:1-36`
+- Modify: `os/clavain/docs/roadmap.md:1-36`
 
 **Step 1: Write the new header and "Where We Are"**
 
@@ -68,13 +68,13 @@ Clavain is an autonomous software agency — 15 skills, 4 agents, 52 commands, 2
 
 **Step 2: Verify the header renders correctly**
 
-Run: `head -40 hub/clavain/docs/roadmap.md`
+Run: `head -40 os/clavain/docs/roadmap.md`
 Expected: New header with updated version, date, and identity
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/docs/roadmap.md
+git add os/clavain/docs/roadmap.md
 git commit -m "docs(clavain): update roadmap header for vision alignment"
 ```
 
@@ -83,7 +83,7 @@ git commit -m "docs(clavain): update roadmap header for vision alignment"
 ### Task 2: Replace old Now/Next/Later roadmap with three parallel tracks
 
 **Files:**
-- Modify: `hub/clavain/docs/roadmap.md` (replace "Roadmap" section)
+- Modify: `os/clavain/docs/roadmap.md` (replace "Roadmap" section)
 
 **Step 1: Write the three parallel tracks section**
 
@@ -180,13 +180,13 @@ These Intercore epics are prerequisites for the tracks above:
 
 **Step 2: Verify track tables render correctly**
 
-Run: `grep -c "^|" hub/clavain/docs/roadmap.md`
+Run: `grep -c "^|" os/clavain/docs/roadmap.md`
 Expected: Table row count matching the plan
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/docs/roadmap.md
+git add os/clavain/docs/roadmap.md
 git commit -m "docs(clavain): replace Now/Next/Later with three parallel tracks"
 ```
 
@@ -195,7 +195,7 @@ git commit -m "docs(clavain): replace Now/Next/Later with three parallel tracks"
 ### Task 3: Update Research Agenda to align with vision.md
 
 **Files:**
-- Modify: `hub/clavain/docs/roadmap.md` (replace "Research Agenda" section)
+- Modify: `os/clavain/docs/roadmap.md` (replace "Research Agenda" section)
 
 **Step 1: Write the aligned research agenda**
 
@@ -250,7 +250,7 @@ Research areas organized by proximity to current capabilities and aligned with t
 **Step 2: Commit**
 
 ```bash
-git add hub/clavain/docs/roadmap.md
+git add os/clavain/docs/roadmap.md
 git commit -m "docs(clavain): align research agenda with vision frontier compass"
 ```
 
@@ -259,7 +259,7 @@ git commit -m "docs(clavain): align research agenda with vision frontier compass
 ### Task 4: Update Companion Constellation table
 
 **Files:**
-- Modify: `hub/clavain/docs/roadmap.md` (replace "Companion Constellation" section)
+- Modify: `os/clavain/docs/roadmap.md` (replace "Companion Constellation" section)
 
 **Step 1: Write the updated companion constellation**
 
@@ -312,7 +312,7 @@ Update with all 31 current companions, accurate versions, and proper "crystalliz
 **Step 2: Commit**
 
 ```bash
-git add hub/clavain/docs/roadmap.md
+git add os/clavain/docs/roadmap.md
 git commit -m "docs(clavain): update companion constellation (31 shipped)"
 ```
 
@@ -321,7 +321,7 @@ git commit -m "docs(clavain): update companion constellation (31 shipped)"
 ### Task 5: Update bead summary and footer
 
 **Files:**
-- Modify: `hub/clavain/docs/roadmap.md` (replace bead summary + footer sections)
+- Modify: `os/clavain/docs/roadmap.md` (replace bead summary + footer sections)
 
 **Step 1: Write the updated bead summary and footer**
 
@@ -373,13 +373,13 @@ Items from the [Interverse roadmap](../../../docs/roadmap.json) that involve thi
 
 **Step 2: Run a final verification**
 
-Run: `wc -l hub/clavain/docs/roadmap.md`
+Run: `wc -l os/clavain/docs/roadmap.md`
 Expected: ~200-250 lines (down from 183, but more information-dense)
 
 **Step 3: Commit all remaining changes**
 
 ```bash
-git add hub/clavain/docs/roadmap.md
+git add os/clavain/docs/roadmap.md
 git commit -m "docs(clavain): complete roadmap vision alignment (iv-yeka)"
 ```
 
@@ -388,12 +388,12 @@ git commit -m "docs(clavain): complete roadmap vision alignment (iv-yeka)"
 ### Task 6: Validate cross-references and mark bead complete
 
 **Files:**
-- Verify: `hub/clavain/docs/roadmap.md` (all internal links)
-- Verify: `hub/clavain/docs/vision.md` (referenced from roadmap)
+- Verify: `os/clavain/docs/roadmap.md` (all internal links)
+- Verify: `os/clavain/docs/vision.md` (referenced from roadmap)
 
 **Step 1: Verify all links resolve**
 
-Run: `grep -o '\[.*\](.*\.md)' hub/clavain/docs/roadmap.md`
+Run: `grep -o '\[.*\](.*\.md)' os/clavain/docs/roadmap.md`
 Expected: Links to vision.md and PRD.md that exist
 
 **Step 2: Verify track content matches vision.md**

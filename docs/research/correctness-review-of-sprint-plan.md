@@ -135,7 +135,7 @@ sprint_id=$(bd create ... | sed -n 's/.*\([A-Za-z]\{1,\}-[a-z0-9]\{1,\}\).*/\1/p
    sprint_id=$(bd create --title="$title" --type=epic --priority=2 2>/dev/null \
        | awk 'match($0, /[A-Za-z]+-[a-z0-9]+/) { print substr($0, RSTART, RLENGTH); exit }')
    ```
-2. **Document GNU grep dependency** if keeping `-P`: Add to `hub/clavain/AGENTS.md` → Runtime Requirements section.
+2. **Document GNU grep dependency** if keeping `-P`: Add to `os/clavain/AGENTS.md` → Runtime Requirements section.
 
 ---
 

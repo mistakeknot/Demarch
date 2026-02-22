@@ -1,7 +1,7 @@
 # User/Product Review: B1 Static Routing Table PRD
 
-**Source PRD:** `hub/clavain/docs/prds/2026-02-20-static-routing-table.md`
-**Verdict file:** `hub/clavain/.clavain/verdicts/fd-user-product.md`
+**Source PRD:** `os/clavain/docs/prds/2026-02-20-static-routing-table.md`
+**Verdict file:** `os/clavain/.clavain/verdicts/fd-user-product.md`
 **Bead:** iv-dd9q
 **Track:** B (Model Routing) — Step 1 of 3
 **Reviewer:** fd-user-product

@@ -137,7 +137,7 @@ adjacency:
 
 ### Topology 1: quality-gates (5 agents max)
 
-**File:** `hub/clavain/commands/quality-gates.md`
+**File:** `os/clavain/commands/quality-gates.md`
 
 **Always run:**
 - `interflux:review:fd-architecture` — structural review
@@ -174,7 +174,7 @@ adjacency:
 
 ### Topology 3: interpeer (2 agents)
 
-**File:** `hub/clavain/commands/interpeer.md`
+**File:** `os/clavain/commands/interpeer.md`
 
 **Agents:**
 - Host agent (e.g., Claude Opus 4.6)
@@ -190,7 +190,7 @@ adjacency:
 
 ### Topology 4: Parallel dispatch (variable, interserve mode)
 
-**File:** `hub/clavain/commands/sprint.md` (lines 131-133)
+**File:** `os/clavain/commands/sprint.md` (lines 131-133)
 
 **Pattern:** When interserve mode is active and plan has independent modules, dispatch them in parallel using `dispatching-parallel-agents` skill. Agent count is **plan-driven** (one agent per independent module).
 
@@ -209,7 +209,7 @@ adjacency:
 
 ## 3. What the Brainstorm Doc Says About Topology Experiments
 
-**File:** `hub/clavain/docs/brainstorms/2026-02-14-clavain-vision-philosophy-brainstorm.md`
+**File:** `os/clavain/docs/brainstorms/2026-02-14-clavain-vision-philosophy-brainstorm.md`
 
 ### Oracle's #1 Priority: Outcome-Based Agent Analytics v1
 
@@ -293,7 +293,7 @@ iv-705b ("Design agent evals as CI harness") mentions the same 5 task types as t
 
 ## 5. How Galiana Measures Agent Performance
 
-**File:** `hub/clavain/galiana/analyze.py`
+**File:** `os/clavain/galiana/analyze.py`
 
 ### 5 Clavain Discipline KPIs
 

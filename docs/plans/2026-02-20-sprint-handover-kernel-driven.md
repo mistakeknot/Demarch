@@ -20,7 +20,7 @@
 
 ### Amendment A: Add Task 0 — Create missing intercore wrapper functions
 
-**Prerequisite for ALL other tasks.** Add 6 missing wrappers to `hub/clavain/hooks/lib-intercore.sh`:
+**Prerequisite for ALL other tasks.** Add 6 missing wrappers to `os/clavain/hooks/lib-intercore.sh`:
 - `intercore_run_create()` — wraps `ic run create --project= --goal= --phases= --scope-id= --complexity= --token-budget= --json`
 - `intercore_run_list()` — wraps `ic run list "$@" --json`
 - `intercore_run_status()` — wraps `ic run status "$id" --json`
@@ -98,7 +98,7 @@ Move sprint.md cleanup of `sprint_finalize_init` call to same commit as function
 ### Task 1: Add ic guard and run ID cache infrastructure (F1: iv-s80p)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh:1-23` (top of file, after guards)
+- Modify: `os/clavain/hooks/lib-sprint.sh:1-23` (top of file, after guards)
 
 **Step 1: Add sprint_require_ic() guard and _sprint_resolve_run_id() cache**
 
@@ -146,13 +146,13 @@ _sprint_resolve_run_id() {
 
 **Step 2: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output (clean syntax)
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): add sprint_require_ic guard and run ID cache (A2/F1)"
 ```
 
@@ -161,7 +161,7 @@ git commit -m "feat(sprint): add sprint_require_ic guard and run ID cache (A2/F1
 ### Task 2: Rewrite sprint_create — ic-only, bead non-fatal (F1 + F2: iv-s80p, iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh:58-143` (sprint_create + sprint_finalize_init)
+- Modify: `os/clavain/hooks/lib-sprint.sh:58-143` (sprint_create + sprint_finalize_init)
 
 **Step 1: Replace sprint_create and delete sprint_finalize_init**
 
@@ -239,13 +239,13 @@ sprint_create() {
 
 **Step 2: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): rewrite sprint_create for ic-only, delete sprint_finalize_init (A2/F2)"
 ```
 
@@ -254,7 +254,7 @@ git commit -m "feat(sprint): rewrite sprint_create for ic-only, delete sprint_fi
 ### Task 3: Rewrite sprint_find_active — remove beads fallback (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (sprint_find_active function, lines 145-237)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (sprint_find_active function, lines 145-237)
 
 **Step 1: Replace sprint_find_active**
 
@@ -302,13 +302,13 @@ sprint_find_active() {
 
 **Step 2: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): sprint_find_active ic-only, remove beads N+1 fallback (A2/F2)"
 ```
 
@@ -317,7 +317,7 @@ git commit -m "feat(sprint): sprint_find_active ic-only, remove beads N+1 fallba
 ### Task 4: Rewrite sprint_read_state, sprint_set_artifact, sprint_record_phase_completion — remove fallback (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 239-401)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 239-401)
 
 **Step 1: Replace sprint_read_state (remove beads fallback at lines 317-341)**
 
@@ -424,13 +424,13 @@ sprint_record_phase_completion() {
 
 **Step 4: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 5: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): ic-only sprint_read_state, sprint_set_artifact, sprint_record_phase_completion (A2/F2)"
 ```
 
@@ -439,7 +439,7 @@ git commit -m "feat(sprint): ic-only sprint_read_state, sprint_set_artifact, spr
 ### Task 5: Rewrite sprint_record_phase_tokens — remove beads dual-write (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 422-498, sprint_record_phase_tokens + sprint_budget_remaining)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 422-498, sprint_record_phase_tokens + sprint_budget_remaining)
 
 **Step 1: Replace sprint_record_phase_tokens (remove beads-only path lines 430-439, remove beads dual-write lines 473-478)**
 
@@ -487,13 +487,13 @@ sprint_record_phase_tokens() {
 
 **Step 3: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 4: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): sprint_record_phase_tokens ic-only, remove beads dual-write (A2/F2)"
 ```
 
@@ -502,7 +502,7 @@ git commit -m "feat(sprint): sprint_record_phase_tokens ic-only, remove beads du
 ### Task 6: Rewrite sprint_claim + sprint_release — remove beads fallback (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 500-627)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 500-627)
 
 **Step 1: Replace sprint_claim (remove beads fallback lines 562-600, use cached run ID)**
 
@@ -582,13 +582,13 @@ sprint_release() {
 
 **Step 2: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): sprint_claim/release ic-only, remove beads fallback (A2/F2)"
 ```
 
@@ -597,7 +597,7 @@ git commit -m "feat(sprint): sprint_claim/release ic-only, remove beads fallback
 ### Task 7: Rewrite enforce_gate, sprint_should_pause, sprint_track_agent — remove fallback (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 629-785)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 629-785)
 
 **Step 1: Replace sprint_track_agent (remove empty fallback)**
 
@@ -650,13 +650,13 @@ sprint_should_pause() {
 
 **Step 4: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 5: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): enforce_gate/sprint_should_pause/sprint_track_agent ic-only (A2/F2)"
 ```
 
@@ -665,7 +665,7 @@ git commit -m "feat(sprint): enforce_gate/sprint_should_pause/sprint_track_agent
 ### Task 8: Rewrite sprint_advance — remove beads state machine (F2 + F3: iv-smqm, iv-sl2z)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 787-894, sprint_advance)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 787-894, sprint_advance)
 
 **Step 1: Replace sprint_advance (remove beads fallback lines 858-893)**
 
@@ -735,13 +735,13 @@ sprint_advance() {
 
 **Step 2: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): sprint_advance ic-only, remove beads state machine (A2/F2)"
 ```
 
@@ -750,7 +750,7 @@ git commit -m "feat(sprint): sprint_advance ic-only, remove beads state machine 
 ### Task 9: Delete transition table + rewrite sprint_next_step to read chain from ic (F3: iv-sl2z)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 696-745 for transition table + sprint_next_step, lines 1059-1121 for phase skipping)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 696-745 for transition table + sprint_next_step, lines 1059-1121 for phase skipping)
 
 **Step 1: Delete _sprint_transition_table, sprint_phase_whitelist, sprint_should_skip, sprint_next_required_phase**
 
@@ -783,13 +783,13 @@ sprint_next_step() {
 
 **Step 3: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 4: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): delete transition table + phase skipping, simplify sprint_next_step (A2/F3)"
 ```
 
@@ -798,7 +798,7 @@ git commit -m "feat(sprint): delete transition table + phase skipping, simplify 
 ### Task 10: Rewrite checkpointing — remove file-based fallback (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 1123-1264)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 1123-1264)
 
 **Step 1: Replace checkpoint_write (remove file-based fallback lines 1168-1187)**
 
@@ -886,13 +886,13 @@ Remove the line: `CHECKPOINT_FILE="${CLAVAIN_CHECKPOINT_FILE:-.clavain/checkpoin
 
 **Step 4: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 5: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): checkpointing ic-only, remove file-based fallback (A2/F2)"
 ```
 
@@ -901,7 +901,7 @@ git commit -m "feat(sprint): checkpointing ic-only, remove file-based fallback (
 ### Task 11: Rewrite sprint_classify_complexity — use cached run ID (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (lines 909-929, complexity override section)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (lines 909-929, complexity override section)
 
 **Step 1: Replace the override lookup**
 
@@ -929,13 +929,13 @@ This is nearly identical but uses `_sprint_resolve_run_id` instead of inline `bd
 
 **Step 2: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): sprint_classify_complexity uses cached run ID (A2/F2)"
 ```
 
@@ -944,7 +944,7 @@ git commit -m "feat(sprint): sprint_classify_complexity uses cached run ID (A2/F
 ### Task 12: Update jq stub section to match new function signatures (F2: iv-smqm)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh:24-41` (jq check stubs)
+- Modify: `os/clavain/hooks/lib-sprint.sh:24-41` (jq check stubs)
 
 **Step 1: Remove sprint_finalize_init stub, add sprint_require_ic stub**
 
@@ -973,13 +973,13 @@ Note: `sprint_classify_complexity` returns `"3"` (integer) instead of `"medium"`
 
 **Step 2: Verify syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): update jq stubs for A2 function signatures"
 ```
 
@@ -988,7 +988,7 @@ git commit -m "feat(sprint): update jq stubs for A2 function signatures"
 ### Task 13: Update commands/sprint.md — remove lib-gates.sh and dead calls (F4: iv-o1qz)
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Remove all lib-gates.sh sourcing and advance_phase calls**
 
@@ -1004,19 +1004,19 @@ Search for and remove/replace these patterns in sprint.md:
 
 **Step 2: Verify the sprint skill only sources lib-sprint.sh**
 
-Run: `grep -c 'lib-gates' hub/clavain/commands/sprint.md`
+Run: `grep -c 'lib-gates' os/clavain/commands/sprint.md`
 Expected: `0`
 
-Run: `grep -c 'advance_phase' hub/clavain/commands/sprint.md`
+Run: `grep -c 'advance_phase' os/clavain/commands/sprint.md`
 Expected: `0`
 
-Run: `grep -c 'sprint_finalize_init' hub/clavain/commands/sprint.md`
+Run: `grep -c 'sprint_finalize_init' os/clavain/commands/sprint.md`
 Expected: `0`
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/commands/sprint.md
+git add os/clavain/commands/sprint.md
 git commit -m "feat(sprint): sprint skill no longer sources lib-gates.sh (A2/F4)"
 ```
 
@@ -1025,7 +1025,7 @@ git commit -m "feat(sprint): sprint skill no longer sources lib-gates.sh (A2/F4)
 ### Task 14: Update bats-core tests for ic-only sprint path (F5: iv-pfe5)
 
 **Files:**
-- Modify: `hub/clavain/tests/shell/test_lib_sprint.bats`
+- Modify: `os/clavain/tests/shell/test_lib_sprint.bats`
 
 **Step 1: Delete tests for removed functions**
 
@@ -1120,18 +1120,18 @@ Example rewrite for Test 4 (`sprint_find_active returns only initialized sprint 
 
 **Step 5: Run full test suite**
 
-Run: `cd hub/clavain && bats tests/shell/test_lib_sprint.bats`
+Run: `cd os/clavain && bats tests/shell/test_lib_sprint.bats`
 Expected: All tests pass
 
 **Step 6: Verify syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 7: Commit**
 
 ```bash
-git add hub/clavain/tests/shell/test_lib_sprint.bats
+git add os/clavain/tests/shell/test_lib_sprint.bats
 git commit -m "test(sprint): update bats tests for ic-only sprint path (A2/F5)"
 ```
 
@@ -1141,33 +1141,33 @@ git commit -m "test(sprint): update bats tests for ic-only sprint path (A2/F5)"
 
 **Step 1: Verify no bd set-state calls remain for sprint state**
 
-Run: `grep -n 'bd set-state' hub/clavain/hooks/lib-sprint.sh`
+Run: `grep -n 'bd set-state' os/clavain/hooks/lib-sprint.sh`
 Expected: Only calls for `sprint=true`, `ic_run_id=`, and `token_budget=` in `sprint_create` (bead metadata, not sprint state). Zero calls for `phase=`, `sprint_artifacts=`, `active_session=`, `claim_timestamp=`, `tokens_spent=`, `sprint_initialized=`, `phase_history=`.
 
 **Step 2: Verify no lib-gates.sh in sprint skill**
 
-Run: `grep -c 'lib-gates' hub/clavain/commands/sprint.md`
+Run: `grep -c 'lib-gates' os/clavain/commands/sprint.md`
 Expected: `0`
 
 **Step 3: Line count audit**
 
-Run: `wc -l hub/clavain/hooks/lib-sprint.sh`
+Run: `wc -l os/clavain/hooks/lib-sprint.sh`
 Expected: ~650-750 lines (down from 1276)
 
 **Step 4: Full syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && bash -n hub/clavain/hooks/lib-gates.sh && bash -n hub/clavain/hooks/session-start.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && bash -n os/clavain/hooks/lib-gates.sh && bash -n os/clavain/hooks/session-start.sh`
 Expected: No output from any
 
 **Step 5: Run full test suite**
 
-Run: `cd hub/clavain && bats tests/shell/test_lib_sprint.bats`
+Run: `cd os/clavain && bats tests/shell/test_lib_sprint.bats`
 Expected: All tests pass
 
 **Step 6: Final commit**
 
 ```bash
-git add -A hub/clavain/hooks/lib-sprint.sh hub/clavain/commands/sprint.md hub/clavain/tests/
+git add -A os/clavain/hooks/lib-sprint.sh os/clavain/commands/sprint.md os/clavain/tests/
 git commit -m "feat(sprint): A2 sprint handover complete — kernel-driven, ~600 lines removed
 
 Sprint skill now fully kernel-driven (ic-only):

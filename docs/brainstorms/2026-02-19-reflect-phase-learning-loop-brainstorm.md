@@ -136,7 +136,7 @@ Option (b) is simpler and arguably correct — if we believe reflect is always r
 - `docs/interverse-vision.md`: Update references to "four phases" or "four macro-stages"
 - `docs/roadmap.md`: Add this feature to the roadmap
 - `infra/intercore/AGENTS.md`: Update default chain documentation from 8 to 10 phases
-- `hub/clavain/AGENTS.md`: Update sprint lifecycle references
+- `os/clavain/AGENTS.md`: Update sprint lifecycle references
 
 ## Risks and Mitigations
 

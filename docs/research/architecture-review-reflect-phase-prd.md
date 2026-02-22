@@ -15,7 +15,7 @@ This review evaluates the PRD for wiring the reflect phase end-to-end across the
 - **F4:** Documentation Alignment — update glossary, vision doc, and AGENTS files to the 5-stage, 10-phase model
 - **F5:** Sprint-to-Kernel Phase Mapping — document and resolve the naming divergence between OS phases (`shipping`, `plan-reviewed`) and kernel phases (`polish`, `review`)
 
-The review is grounded in the project's documented architecture: intercore is Layer 1 (mechanism, not policy), Clavain is Layer 2 (OS), companion plugins are L2 extensions. This layering is documented in `infra/intercore/AGENTS.md`, `hub/clavain/CLAUDE.md`, and `docs/glossary.md`.
+The review is grounded in the project's documented architecture: intercore is Layer 1 (mechanism, not policy), Clavain is Layer 2 (OS), companion plugins are L2 extensions. This layering is documented in `infra/intercore/AGENTS.md`, `os/clavain/CLAUDE.md`, and `docs/glossary.md`.
 
 ---
 
@@ -45,7 +45,7 @@ This is 9 phases. The kernel does NOT include `plan-reviewed` or `shipping`. Bot
 
 ### OS's Custom Chain (current — lib-sprint.sh sprint_create)
 
-From `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh` line 78:
+From `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh` line 78:
 
 ```bash
 local phases_json='["brainstorm","brainstorm-reviewed","strategized","planned","plan-reviewed","executing","shipping","reflect","done"]'
@@ -55,7 +55,7 @@ This is also 9 phases. The custom chain passes `plan-reviewed` and `shipping` as
 
 ### lib-gates.sh Fallback Array
 
-From `/root/projects/Interverse/hub/clavain/hooks/lib-gates.sh` line 25:
+From `/root/projects/Interverse/os/clavain/hooks/lib-gates.sh` line 25:
 
 ```bash
 CLAVAIN_PHASES=(brainstorm brainstorm-reviewed strategized planned plan-reviewed executing shipping reflect done)
@@ -218,7 +218,7 @@ These are correctness requirements, not documentation cleanup. A sprint that res
 
 ### 2b. The `/reflect` command's phase precondition check creates a double-advance hazard
 
-`hub/clavain/commands/reflect.md` Step 1 says: "confirm it is in the `shipping` or `reflect` phase."
+`os/clavain/commands/reflect.md` Step 1 says: "confirm it is in the `shipping` or `reflect` phase."
 
 The command then calls `sprint_advance "<sprint_id>" "reflect"` at Step 4. This call advances FROM reflect (not TO reflect). In the `sprint_advance` bash implementation, `current_phase` must equal the sprint's recorded phase for the advance to succeed. If the sprint is at `shipping`, `sprint_advance "<sprint_id>" "reflect"` will:
 
@@ -381,10 +381,10 @@ The critical path is F1 — it is the user-visible change that makes reflection 
 ## 7. Key File Locations
 
 - PRD under review: `/root/projects/Interverse/docs/prds/2026-02-20-reflect-phase-sprint-integration.md`
-- Sprint state library: `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`
-- Sprint command: `/root/projects/Interverse/hub/clavain/commands/sprint.md`
-- Reflect command: `/root/projects/Interverse/hub/clavain/commands/reflect.md`
-- Gate shim (fallback CLAVAIN_PHASES): `/root/projects/Interverse/hub/clavain/hooks/lib-gates.sh`
+- Sprint state library: `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`
+- Sprint command: `/root/projects/Interverse/os/clavain/commands/sprint.md`
+- Reflect command: `/root/projects/Interverse/os/clavain/commands/reflect.md`
+- Gate shim (fallback CLAVAIN_PHASES): `/root/projects/Interverse/os/clavain/hooks/lib-gates.sh`
 - Kernel phase constants and DefaultPhaseChain: `/root/projects/Interverse/infra/intercore/internal/phase/phase.go`
 - Kernel gate rules (reflect→done): `/root/projects/Interverse/infra/intercore/internal/phase/gate.go`
 - Intercore kernel docs: `/root/projects/Interverse/infra/intercore/AGENTS.md`

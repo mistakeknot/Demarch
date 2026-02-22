@@ -140,7 +140,7 @@ Server responds correctly with protocol version `2024-11-05`, tool capabilities 
 
 2. **Intermute client integration** -- `main.go` initializes a `client.Client` from `INTERMUTE_URL` and passes it to `tools.RegisterAll`. The `agent_map` tool uses this to fetch agent and reservation data. When intermute is unavailable, it degrades gracefully returning just the project count.
 
-3. **Two-level scan depth** -- `Scan()` looks for `root/<group>/<project>/.git` matching the Interverse monorepo structure (`plugins/interlock`, `services/intermute`, `hub/clavain`). Also checks if root itself is a git project.
+3. **Two-level scan depth** -- `Scan()` looks for `root/<group>/<project>/.git` matching the Interverse monorepo structure (`plugins/interlock`, `services/intermute`, `os/clavain`). Also checks if root itself is a git project.
 
 4. **Mtime-hash cache** -- Rather than re-scanning on every call, the cache stores results keyed by root path. The `MtimeHash` function provides source-file-aware invalidation for future use by more expensive operations (call graphs, architecture analysis).
 

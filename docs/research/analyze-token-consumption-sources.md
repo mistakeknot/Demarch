@@ -22,7 +22,7 @@ Four hooks fire at session start:
 
 | Hook | Location | What it does | Context injected |
 |------|----------|-------------|-----------------|
-| `session-start.sh` | `hub/clavain/hooks/` | Injects using-clavain skill, sprint state, handoff context, companion alerts | Up to 6,000 chars |
+| `session-start.sh` | `os/clavain/hooks/` | Injects using-clavain skill, sprint state, handoff context, companion alerts | Up to 6,000 chars |
 | `session-start.sh` | `plugins/interlock/hooks/` | Registers agent with Intermute, sets up git index isolation | ~180 chars |
 | `session-start.sh` | `plugins/interject/hooks/` | Checks inbox for high-relevance discoveries | 0–200 chars if items exist, else silent |
 | `session-start.sh` | `plugins/intermux/hooks/` | Writes /tmp mapping file | 0 chars (no injection) |
@@ -54,7 +54,7 @@ These are loaded automatically by Claude Code as persistent system prompt:
 | Root CLAUDE.md | `/root/CLAUDE.md` | 566 | 141 |
 | Projects CLAUDE.md | `/root/projects/CLAUDE.md` | 167 | 42 |
 | Interverse CLAUDE.md | `/root/projects/Interverse/CLAUDE.md` | 3,382 | 845 |
-| Clavain CLAUDE.md | `/root/projects/Interverse/hub/clavain/CLAUDE.md` | 3,349 | 837 |
+| Clavain CLAUDE.md | `/root/projects/Interverse/os/clavain/CLAUDE.md` | 3,349 | 837 |
 | Session hook injection | (capped at 6,000 chars) | 6,000 | 1,500 |
 | **Total baseline** | | **26,465** | **~6,616** |
 
@@ -70,21 +70,21 @@ Skills are loaded on-demand when the user invokes them (via the `Skill` tool). C
 
 | Skill | File | Bytes | Tokens |
 |-------|------|-------|--------|
-| engineering-docs | `hub/clavain/skills/engineering-docs/SKILL.md` | 11,968 | 2,992 |
-| subagent-driven-development | `hub/clavain/skills/subagent-driven-development/SKILL.md` | 10,044 | 2,511 |
-| dispatching-parallel-agents | `hub/clavain/skills/dispatching-parallel-agents/SKILL.md` | 8,444 | 2,111 |
-| interserve | `hub/clavain/skills/interserve/SKILL.md` | 7,923 | 1,981 |
-| file-todos | `hub/clavain/skills/file-todos/SKILL.md` | 7,626 | 1,907 |
-| writing-plans | `hub/clavain/skills/writing-plans/SKILL.md` | 6,378 | 1,595 |
-| upstream-sync | `hub/clavain/skills/upstream-sync/SKILL.md` | 6,049 | 1,512 |
-| code-review-discipline | `hub/clavain/skills/code-review-discipline/SKILL.md` | 5,485 | 1,371 |
-| using-tmux-for-interactive-commands | `hub/clavain/skills/using-tmux-for-interactive-commands/SKILL.md` | 5,074 | 1,269 |
-| landing-a-change | `hub/clavain/skills/landing-a-change/SKILL.md` | 4,557 | 1,139 |
-| executing-plans | `hub/clavain/skills/executing-plans/SKILL.md` | 4,428 | 1,107 |
-| refactor-safely | `hub/clavain/skills/refactor-safely/SKILL.md` | 3,826 | 957 |
-| galiana | `hub/clavain/skills/galiana/SKILL.md` | 3,727 | 932 |
-| brainstorming | `hub/clavain/skills/brainstorming/SKILL.md` | 2,488 | 622 |
-| using-clavain | `hub/clavain/skills/using-clavain/SKILL.md` | 1,492 | 373 |
+| engineering-docs | `os/clavain/skills/engineering-docs/SKILL.md` | 11,968 | 2,992 |
+| subagent-driven-development | `os/clavain/skills/subagent-driven-development/SKILL.md` | 10,044 | 2,511 |
+| dispatching-parallel-agents | `os/clavain/skills/dispatching-parallel-agents/SKILL.md` | 8,444 | 2,111 |
+| interserve | `os/clavain/skills/interserve/SKILL.md` | 7,923 | 1,981 |
+| file-todos | `os/clavain/skills/file-todos/SKILL.md` | 7,626 | 1,907 |
+| writing-plans | `os/clavain/skills/writing-plans/SKILL.md` | 6,378 | 1,595 |
+| upstream-sync | `os/clavain/skills/upstream-sync/SKILL.md` | 6,049 | 1,512 |
+| code-review-discipline | `os/clavain/skills/code-review-discipline/SKILL.md` | 5,485 | 1,371 |
+| using-tmux-for-interactive-commands | `os/clavain/skills/using-tmux-for-interactive-commands/SKILL.md` | 5,074 | 1,269 |
+| landing-a-change | `os/clavain/skills/landing-a-change/SKILL.md` | 4,557 | 1,139 |
+| executing-plans | `os/clavain/skills/executing-plans/SKILL.md` | 4,428 | 1,107 |
+| refactor-safely | `os/clavain/skills/refactor-safely/SKILL.md` | 3,826 | 957 |
+| galiana | `os/clavain/skills/galiana/SKILL.md` | 3,727 | 932 |
+| brainstorming | `os/clavain/skills/brainstorming/SKILL.md` | 2,488 | 622 |
+| using-clavain | `os/clavain/skills/using-clavain/SKILL.md` | 1,492 | 373 |
 | **Total (all 15)** | | **129,885** | **~32,471** |
 
 Note: `using-clavain` is injected at session start (small at 1,492 bytes). The other 14 are on-demand.
@@ -211,7 +211,7 @@ These are loaded by Claude Code automatically when you `cd` into a project direc
 
 | File | Bytes | Tokens |
 |------|-------|--------|
-| `hub/clavain/AGENTS.md` | 25,624 | 6,406 |
+| `os/clavain/AGENTS.md` | 25,624 | 6,406 |
 | `plugins/tldr-swinton/AGENTS.md` | 25,497 | 6,374 |
 | `AGENTS.md` (root Interverse) | 23,833 | 5,958 |
 | `infra/intercore/AGENTS.md` | 20,614 | 5,154 |
@@ -230,7 +230,7 @@ These are loaded by Claude Code automatically when you `cd` into a project direc
 
 | File | Bytes | Tokens |
 |------|-------|--------|
-| `hub/clavain/CLAUDE.md` | 3,349 | 837 |
+| `os/clavain/CLAUDE.md` | 3,349 | 837 |
 | `plugins/interkasten/CLAUDE.md` | 5,719 | 1,430 |
 | `plugins/tldr-swinton/CLAUDE.md` | 4,118 | 1,030 |
 | `plugins/intermem/CLAUDE.md` | 5,175 | 1,294 |
@@ -289,12 +289,12 @@ The top-5 AGENTS.md files (`clavain/`, `tldr-swinton/`, `Interverse/`, `intercor
 |------|------|-------|--------|
 | flux-drive SKILL.md | `/root/projects/Interverse/plugins/interflux/skills/flux-drive/SKILL.md` | 25,617 | 6,404 |
 | interdoc SKILL.md | `/root/projects/Interverse/plugins/interdoc/skills/interdoc/SKILL.md` | 48,821 | 12,205 |
-| quality-gates.md | `/root/projects/Interverse/hub/clavain/commands/quality-gates.md` | 6,287 | 1,572 |
-| review.md | `/root/projects/Interverse/hub/clavain/commands/review.md` | 4,573 | 1,143 |
-| sprint.md (largest command) | `/root/projects/Interverse/hub/clavain/commands/sprint.md` | 18,560 | 4,640 |
-| clavain session-start.sh | `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` | 16,225 | (script, not injected) |
+| quality-gates.md | `/root/projects/Interverse/os/clavain/commands/quality-gates.md` | 6,287 | 1,572 |
+| review.md | `/root/projects/Interverse/os/clavain/commands/review.md` | 4,573 | 1,143 |
+| sprint.md (largest command) | `/root/projects/Interverse/os/clavain/commands/sprint.md` | 18,560 | 4,640 |
+| clavain session-start.sh | `/root/projects/Interverse/os/clavain/hooks/session-start.sh` | 16,225 | (script, not injected) |
 | Global CLAUDE.md | `/home/mk/.claude/CLAUDE.md` | 13,001 | 3,250 |
-| Clavain AGENTS.md | `/root/projects/Interverse/hub/clavain/AGENTS.md` | 25,624 | 6,406 |
+| Clavain AGENTS.md | `/root/projects/Interverse/os/clavain/AGENTS.md` | 25,624 | 6,406 |
 | Interverse AGENTS.md | `/root/projects/Interverse/AGENTS.md` | 23,833 | 5,958 |
 | fd-perception.md (largest agent) | `/root/projects/Interverse/plugins/interflux/agents/review/fd-perception.md` | 9,852 | 2,463 |
 | interflux agents total | `/root/projects/Interverse/plugins/interflux/agents/` | 123,111 | 30,778 |

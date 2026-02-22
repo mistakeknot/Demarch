@@ -19,8 +19,8 @@ The first two are **production-ready** but **static** (no complexity-aware or ou
 ## 1. Dispatch Tier System (Codex CLI Agents)
 
 ### Location
-- **Config:** `/root/projects/Interverse/hub/clavain/config/dispatch/tiers.yaml`
-- **Implementation:** `/root/projects/Interverse/hub/clavain/scripts/dispatch.sh` (lines 161-259)
+- **Config:** `/root/projects/Interverse/os/clavain/config/dispatch/tiers.yaml`
+- **Implementation:** `/root/projects/Interverse/os/clavain/scripts/dispatch.sh` (lines 161-259)
 - **Skill:** `skills/interserve/SKILL.md`
 
 ### Current Tiers
@@ -72,7 +72,7 @@ CLAVAIN_DISPATCH_PROFILE=interserve bash "$DISPATCH" \
 ```
 
 ### Interserve Mode Toggle
-- **File:** `/root/projects/Interverse/hub/clavain/scripts/clodex-toggle.sh`
+- **File:** `/root/projects/Interverse/os/clavain/scripts/clodex-toggle.sh`
 - **Flag file:** `.claude/clodex-toggle.flag` in project root
 - **Effect:** When present, dispatch remaps models:
   - `fast` → `gpt-5.3-codex-spark-xhigh`
@@ -246,7 +246,7 @@ Task(fd-architecture, model="opus"): "Review this architecture..."
 ## 7. Existing `/clavain:model-routing` Skill
 
 ### Location
-`/root/projects/Interverse/hub/clavain/commands/model-routing.md`
+`/root/projects/Interverse/os/clavain/commands/model-routing.md`
 
 ### Capabilities
 1. **Status report** — Lists all agents with current model tier
@@ -267,7 +267,7 @@ No integration with:
 ## 8. Token Budget Tracking (lib-sprint.sh)
 
 ### Location
-`/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`, lines 86-97
+`/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`, lines 86-97
 
 ### Default Budgets by Complexity Tier
 ```bash

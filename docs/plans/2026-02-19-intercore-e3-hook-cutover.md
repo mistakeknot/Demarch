@@ -19,7 +19,7 @@
 **Bead:** iv-s6zo (F1)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-intercore.sh`
+- Modify: `os/clavain/hooks/lib-intercore.sh`
 - Test: manual via `bash -n` syntax check + integration
 
 This task adds the missing wrappers that lib-sprint.sh will call in Task 2. Some wrappers already exist (`intercore_run_current`, `intercore_run_phase`, etc.); we need a few more for the full cutover.
@@ -130,13 +130,13 @@ intercore_run_set() {
 
 **Step 6: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-intercore.sh`
+Run: `bash -n os/clavain/hooks/lib-intercore.sh`
 Expected: No output (clean parse)
 
 **Step 7: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-intercore.sh
+git add os/clavain/hooks/lib-intercore.sh
 git commit -m "feat(intercore): add ic run wrappers to lib-intercore.sh for E3 cutover"
 ```
 
@@ -147,7 +147,7 @@ git commit -m "feat(intercore): add ic run wrappers to lib-intercore.sh for E3 c
 **Bead:** iv-s6zo (F1)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh`
+- Modify: `os/clavain/hooks/lib-sprint.sh`
 
 The biggest change. We rewrite the 4 core CRUD functions to use `ic run` instead of `bd set-state`. Key design: `--scope-id=<bead_id>` links the ic run to the bead. Sprint discovery uses `ic run list --active --scope=<bead_id>` instead of iterating all beads.
 
@@ -426,13 +426,13 @@ sprint_read_state() {
 
 **Step 5: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output (clean parse)
 
 **Step 6: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): rewrite core CRUD to use ic run (create, find, read)"
 ```
 
@@ -443,7 +443,7 @@ git commit -m "feat(sprint): rewrite core CRUD to use ic run (create, find, read
 **Bead:** iv-s6zo (F1)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh`
+- Modify: `os/clavain/hooks/lib-sprint.sh`
 
 **Step 1: Rewrite sprint_set_artifact**
 
@@ -646,13 +646,13 @@ sprint_release() {
 
 **Step 4: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output (clean parse)
 
 **Step 5: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): rewrite state mutation to use ic run (artifacts, claims, releases)"
 ```
 
@@ -663,7 +663,7 @@ git commit -m "feat(sprint): rewrite state mutation to use ic run (artifacts, cl
 **Bead:** iv-s6zo (F1), iv-idc4 (F6)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh`
+- Modify: `os/clavain/hooks/lib-sprint.sh`
 
 **Step 1: Rewrite enforce_gate**
 
@@ -841,13 +841,13 @@ sprint_should_pause() {
 
 **Step 4: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 5: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): rewrite phase advancement to use ic run advance + ic gate check"
 ```
 
@@ -858,7 +858,7 @@ git commit -m "feat(sprint): rewrite phase advancement to use ic run advance + i
 **Bead:** iv-s6zo (F1)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh`
+- Modify: `os/clavain/hooks/lib-sprint.sh`
 
 **Step 1: Rewrite checkpoint functions to use ic state**
 
@@ -990,13 +990,13 @@ Only the override check needs updating (lines 520-527). Replace:
 
 **Step 3: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output
 
 **Step 4: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): migrate checkpoints to ic state, update complexity reads"
 ```
 
@@ -1007,7 +1007,7 @@ git commit -m "feat(sprint): migrate checkpoints to ic state, update complexity 
 **Bead:** iv-ca06 (F2)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-intercore.sh`
+- Modify: `os/clavain/hooks/lib-intercore.sh`
 
 **Step 1: Simplify intercore_sentinel_check_or_legacy**
 
@@ -1112,10 +1112,10 @@ INTERCORE_WRAPPER_VERSION="1.0.0"
 
 **Step 7: Syntax check and commit**
 
-Run: `bash -n hub/clavain/hooks/lib-intercore.sh`
+Run: `bash -n os/clavain/hooks/lib-intercore.sh`
 
 ```bash
-git add hub/clavain/hooks/lib-intercore.sh
+git add os/clavain/hooks/lib-intercore.sh
 git commit -m "feat(intercore): remove temp-file fallback from sentinels (v1.0.0)"
 ```
 
@@ -1126,7 +1126,7 @@ git commit -m "feat(intercore): remove temp-file fallback from sentinels (v1.0.0
 **Bead:** iv-2hos (F3)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/session-start.sh`
+- Modify: `os/clavain/hooks/session-start.sh`
 
 **Step 1: Update sprint detection block**
 
@@ -1151,13 +1151,13 @@ This is unchanged because `sprint_find_active` returns the same JSON shape (with
 
 **Step 2: Verify no direct bd state calls exist in session-start.sh for sprint detection**
 
-Run: `grep -n 'bd state.*sprint\|bd state.*phase\|bd set-state' hub/clavain/hooks/session-start.sh`
+Run: `grep -n 'bd state.*sprint\|bd state.*phase\|bd set-state' os/clavain/hooks/session-start.sh`
 Expected: No matches (all sprint state access goes through lib-sprint.sh functions)
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/session-start.sh
+git add os/clavain/hooks/session-start.sh
 git commit -m "docs(session): verify sprint detection uses ic-backed sprint_find_active"
 ```
 
@@ -1168,8 +1168,8 @@ git commit -m "docs(session): verify sprint detection uses ic-backed sprint_find
 **Bead:** iv-rmx0 (F4)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Create: `hub/clavain/.clavain/hooks/on-phase-advance`
-- Create: `hub/clavain/.clavain/hooks/on-dispatch-change`
+- Create: `os/clavain/.clavain/hooks/on-phase-advance`
+- Create: `os/clavain/.clavain/hooks/on-dispatch-change`
 
 Intercore's HookHandler fires these scripts when events occur. Both are observability-only.
 
@@ -1222,13 +1222,13 @@ exit 0
 **Step 3: Make executable**
 
 ```bash
-chmod +x hub/clavain/.clavain/hooks/on-phase-advance hub/clavain/.clavain/hooks/on-dispatch-change
+chmod +x os/clavain/.clavain/hooks/on-phase-advance os/clavain/.clavain/hooks/on-dispatch-change
 ```
 
 **Step 4: Commit**
 
 ```bash
-git add hub/clavain/.clavain/hooks/on-phase-advance hub/clavain/.clavain/hooks/on-dispatch-change
+git add os/clavain/.clavain/hooks/on-phase-advance os/clavain/.clavain/hooks/on-dispatch-change
 git commit -m "feat(intercore): add event reactor hooks for phase/dispatch observability"
 ```
 
@@ -1239,7 +1239,7 @@ git commit -m "feat(intercore): add event reactor hooks for phase/dispatch obser
 **Bead:** iv-pb68 (F5)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (add helper)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (add helper)
 
 Agent tracking needs a helper that skills can call when dispatching subagents. The actual `ic run agent add` wrapper already exists in lib-intercore.sh.
 
@@ -1289,10 +1289,10 @@ sprint_complete_agent() {
 
 **Step 2: Syntax check and commit**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(sprint): add agent tracking helpers (sprint_track_agent, sprint_complete_agent)"
 ```
 
@@ -1303,7 +1303,7 @@ git commit -m "feat(sprint): add agent tracking helpers (sprint_track_agent, spr
 **Bead:** iv-japn (F7)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Create: `hub/clavain/scripts/migrate-sprints-to-ic.sh`
+- Create: `os/clavain/scripts/migrate-sprints-to-ic.sh`
 
 One-time idempotent script to migrate existing in-progress sprint beads to ic runs.
 
@@ -1313,7 +1313,7 @@ One-time idempotent script to migrate existing in-progress sprint beads to ic ru
 #!/usr/bin/env bash
 # One-time migration: existing sprint beads → ic runs
 # Idempotent: skips beads that already have an ic_run_id.
-# Usage: bash hub/clavain/scripts/migrate-sprints-to-ic.sh [--dry-run]
+# Usage: bash os/clavain/scripts/migrate-sprints-to-ic.sh [--dry-run]
 set -euo pipefail
 
 DRY_RUN=false
@@ -1460,8 +1460,8 @@ fi
 **Step 2: Make executable and commit**
 
 ```bash
-chmod +x hub/clavain/scripts/migrate-sprints-to-ic.sh
-git add hub/clavain/scripts/migrate-sprints-to-ic.sh
+chmod +x os/clavain/scripts/migrate-sprints-to-ic.sh
+git add os/clavain/scripts/migrate-sprints-to-ic.sh
 git commit -m "feat(intercore): add one-time sprint migration script (beads → ic runs)"
 ```
 
@@ -1479,7 +1479,7 @@ git commit -m "feat(intercore): add one-time sprint migration script (beads → 
 ic init 2>/dev/null || true
 
 # Source the rewritten library
-source hub/clavain/hooks/lib-sprint.sh
+source os/clavain/hooks/lib-sprint.sh
 
 # Create a sprint
 export SPRINT_LIB_PROJECT_DIR="."
@@ -1529,12 +1529,12 @@ bd close "$SPRINT_ID" --reason="E3 integration test" 2>/dev/null || true
 **Step 2: Run syntax checks on all modified files**
 
 ```bash
-bash -n hub/clavain/hooks/lib-sprint.sh
-bash -n hub/clavain/hooks/lib-intercore.sh
-bash -n hub/clavain/hooks/session-start.sh
-bash -n hub/clavain/.clavain/hooks/on-phase-advance
-bash -n hub/clavain/.clavain/hooks/on-dispatch-change
-bash -n hub/clavain/scripts/migrate-sprints-to-ic.sh
+bash -n os/clavain/hooks/lib-sprint.sh
+bash -n os/clavain/hooks/lib-intercore.sh
+bash -n os/clavain/hooks/session-start.sh
+bash -n os/clavain/.clavain/hooks/on-phase-advance
+bash -n os/clavain/.clavain/hooks/on-dispatch-change
+bash -n os/clavain/scripts/migrate-sprints-to-ic.sh
 ```
 
 **Step 3: Commit integration test results**
@@ -1551,7 +1551,7 @@ git commit -m "feat(intercore): E3 hook cutover complete — sprint state on ic 
 **Bead:** iv-idc4 (F6)
 **Phase:** plan-reviewed (as of 2026-02-20T02:10:00Z)
 **Files:**
-- Modify: `hub/clavain/hooks/lib-gates.sh`
+- Modify: `os/clavain/hooks/lib-gates.sh`
 
 **Step 1: Add deprecation comment**
 
@@ -1576,7 +1576,7 @@ Remove the `source lib-gates.sh` line from lib-sprint.sh (line 22). The ic gate 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-gates.sh hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-gates.sh os/clavain/hooks/lib-sprint.sh
 git commit -m "chore(gates): deprecate lib-gates.sh shim, remove source from lib-sprint.sh"
 ```
 
@@ -1588,15 +1588,15 @@ git commit -m "chore(gates): deprecate lib-gates.sh shim, remove source from lib
 1. Deploy Task 1 (lib-intercore.sh wrappers) — additive, no behavior change
 2. Deploy Task 8 (event reactor hooks) — new files, no existing code changed
 3. Deploy Task 12 (lib-gates.sh deprecation) — documentation only
-4. Verify `ic` binary and DB health: `ic health` passes in `hub/clavain/`
+4. Verify `ic` binary and DB health: `ic health` passes in `os/clavain/`
 
 **Phase 2 — Core cutover (deploy atomically):**
 5. Deploy Tasks 2, 3, 4, 5, 9 (lib-sprint.sh rewrites) — fallback paths still work for unmigrated beads
 6. Deploy Task 7 (session-start.sh) — now calls rewritten sprint_find_active
 
 **Phase 3 — Migration (run once, verify before proceeding):**
-7. `bash hub/clavain/scripts/migrate-sprints-to-ic.sh --dry-run` — verify zero errors
-8. `bash hub/clavain/scripts/migrate-sprints-to-ic.sh` — run live migration
+7. `bash os/clavain/scripts/migrate-sprints-to-ic.sh --dry-run` — verify zero errors
+8. `bash os/clavain/scripts/migrate-sprints-to-ic.sh` — run live migration
 9. Verify: `ic run list --active` count matches `bd list --status=in_progress` sprint count
 10. Restart all active Claude Code sessions
 

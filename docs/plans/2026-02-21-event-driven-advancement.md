@@ -1143,13 +1143,13 @@ git commit -m "test(intercore): integration tests for phase actions lifecycle (i
 ### Task 6: Bash integration — sprint skill consumes kernel actions
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-intercore.sh` (add action wrappers)
-- Modify: `hub/clavain/hooks/lib-sprint.sh:547-610` (modify sprint_advance to read actions)
-- Modify: `hub/clavain/hooks/lib-sprint.sh:512-526` (modify sprint_next_step to read from kernel)
+- Modify: `os/clavain/hooks/lib-intercore.sh` (add action wrappers)
+- Modify: `os/clavain/hooks/lib-sprint.sh:547-610` (modify sprint_advance to read actions)
+- Modify: `os/clavain/hooks/lib-sprint.sh:512-526` (modify sprint_next_step to read from kernel)
 
 **Step 1: Add bash wrappers to lib-intercore.sh**
 
-Add to `hub/clavain/hooks/lib-intercore.sh`:
+Add to `os/clavain/hooks/lib-intercore.sh`:
 
 ```bash
 # ─── Phase Action Wrappers ────────────────────────────────────────
@@ -1172,7 +1172,7 @@ intercore_run_action_list() {
 
 **Step 2: Modify sprint_advance to parse actions from advance result**
 
-In `hub/clavain/hooks/lib-sprint.sh`, modify `sprint_advance()` (line 547+). After the successful advance path (line 602-609), add action extraction:
+In `os/clavain/hooks/lib-sprint.sh`, modify `sprint_advance()` (line 547+). After the successful advance path (line 602-609), add action extraction:
 
 After `to_phase=$(echo "$result" | jq -r '.to_phase // ""' 2>/dev/null) || to_phase=""`:
 
@@ -1202,7 +1202,7 @@ After `to_phase=$(echo "$result" | jq -r '.to_phase // ""' 2>/dev/null) || to_ph
 
 **Step 3: Modify sprint_next_step to query kernel first**
 
-In `hub/clavain/hooks/lib-sprint.sh`, modify `sprint_next_step()` (line 512). Add kernel lookup before the case statement fallback:
+In `os/clavain/hooks/lib-sprint.sh`, modify `sprint_next_step()` (line 512). Add kernel lookup before the case statement fallback:
 
 ```bash
 sprint_next_step() {
@@ -1241,13 +1241,13 @@ sprint_next_step() {
 
 **Step 4: Verify bash syntax**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && bash -n hub/clavain/hooks/lib-intercore.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && bash -n os/clavain/hooks/lib-intercore.sh && echo "OK"`
 Expected: OK (no syntax errors)
 
 **Step 5: Commit**
 
 ```bash
-cd hub/clavain && git add hooks/lib-intercore.sh hooks/lib-sprint.sh
+cd os/clavain && git add hooks/lib-intercore.sh hooks/lib-sprint.sh
 git commit -m "feat(clavain): sprint skill consumes kernel actions with fallback (iv-pipe)"
 ```
 

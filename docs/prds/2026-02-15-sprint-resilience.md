@@ -59,7 +59,7 @@ Phase tracking lives on the sprint bead:
 - [ ] `/strategy` inside a sprint adds feature beads to the sprint bead (no separate epic)
 - [ ] Session claim: `active_session` prevents concurrent resume (with 60-min TTL)
 - [ ] Legacy beads with phase state but no sprint parent get reparented under a new sprint bead (with existing-parent check)
-- [ ] Sprint-specific logic lives in `hub/clavain/hooks/lib-sprint.sh` (not interphase)
+- [ ] Sprint-specific logic lives in `os/clavain/hooks/lib-sprint.sh` (not interphase)
 
 #### F4: Session-Resilient Resume
 
@@ -121,7 +121,7 @@ Phase tracking lives on the sprint bead:
 
 ## Implementation Architecture
 
-### New: `hub/clavain/hooks/lib-sprint.sh`
+### New: `os/clavain/hooks/lib-sprint.sh`
 
 Sprint-specific library in Clavain (not interphase). Provides:
 
@@ -137,7 +137,7 @@ Sprint-specific library in Clavain (not interphase). Provides:
 
 Uses interphase primitives (`phase_set`, `phase_get`, `enforce_gate`, `advance_phase`) for generic phase tracking. Sprint-specific orchestration stays in Clavain.
 
-### Modified: `hub/clavain/commands/sprint.md`
+### Modified: `os/clavain/commands/sprint.md`
 
 - Top: sprint bead creation/resume (replaces CLAVAIN_BEAD_ID env var logic)
 - Discovery: check for active sprint first, then general discovery
@@ -145,13 +145,13 @@ Uses interphase primitives (`phase_set`, `phase_get`, `enforce_gate`, `advance_p
 - Phase 2: remove "what next?" prompts, add auto-advance
 - Phase 3: add complexity classification before brainstorm
 
-### Modified: `hub/clavain/commands/strategy.md`
+### Modified: `os/clavain/commands/strategy.md`
 
 - If inside a sprint: add feature beads to sprint bead (no separate epic)
 - If standalone: create epic as before (backward compat)
 - Remove Phase 5 "what next?" prompt (Phase 2)
 
-### Modified: `hub/clavain/commands/brainstorm.md`
+### Modified: `os/clavain/commands/brainstorm.md`
 
 - Phase 3: add complexity tier routing
 - Remove Phase 4 "what next?" prompt (Phase 2)

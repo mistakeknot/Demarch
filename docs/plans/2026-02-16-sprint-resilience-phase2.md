@@ -44,7 +44,7 @@
 ### Task 1: Add Auto-Advance Functions to lib-sprint.sh
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh`
+- Modify: `os/clavain/hooks/lib-sprint.sh`
 
 **Step 1: Add strict phase transition table**
 
@@ -214,14 +214,14 @@ In the `if ! command -v jq` block at the top, add stubs:
 
 **Step 5: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 
 ---
 
 ### Task 2: Add Tiered Brainstorming Classification to lib-sprint.sh
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh`
+- Modify: `os/clavain/hooks/lib-sprint.sh`
 
 **Step 1: Add `sprint_classify_complexity()`**
 
@@ -318,14 +318,14 @@ sprint_classify_complexity() {
 
 **Step 2: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 
 ---
 
 ### Task 3: Remove "What Next?" Prompts from brainstorm.md
 
 **Files:**
-- Modify: `hub/clavain/commands/brainstorm.md`
+- Modify: `os/clavain/commands/brainstorm.md`
 
 **Step 1: Remove Phase 4 handoff question**
 
@@ -369,7 +369,7 @@ Use **AskUserQuestion tool** to present next steps:
 ### Task 4: Remove "What Next?" Prompt from strategy.md
 
 **Files:**
-- Modify: `hub/clavain/commands/strategy.md`
+- Modify: `os/clavain/commands/strategy.md`
 
 **Step 1: Make Phase 5 sprint-aware**
 
@@ -400,7 +400,7 @@ Options:
 ### Task 5: Add Tiered Brainstorming to brainstorm.md
 
 **Files:**
-- Modify: `hub/clavain/commands/brainstorm.md`
+- Modify: `os/clavain/commands/brainstorm.md`
 
 **Step 1: Add complexity classification before Phase 1**
 
@@ -432,7 +432,7 @@ If NOT inside a sprint: skip classification, run all phases as normal (existing 
 ### Task 6: Update sprint.md Auto-Advance Integration
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Add auto-advance between steps**
 
@@ -488,7 +488,7 @@ Review each step boundary (Step 1→2, 2→3, etc.) and ensure there's no implic
 ### Task 7: Write Tests for Phase 2 Functions
 
 **Files:**
-- Modify: `hub/clavain/tests/shell/test_lib_sprint.bats`
+- Modify: `os/clavain/tests/shell/test_lib_sprint.bats`
 
 **Step 1: Add tests for new functions**
 
@@ -516,7 +516,7 @@ Mock `bd` as per existing test patterns. Use the same `_source_sprint_lib` helpe
 
 **Step 2: Run tests**
 
-Run: `bats hub/clavain/tests/shell/test_lib_sprint.bats`
+Run: `bats os/clavain/tests/shell/test_lib_sprint.bats`
 Expected: All 40 tests pass (23 existing + 17 new)
 
 ---
@@ -574,7 +574,7 @@ If any acceptance criteria are NOT met, note them. The only expected gap is the 
 **Step 1: Run all Clavain tests**
 
 ```bash
-bats hub/clavain/tests/shell/
+bats os/clavain/tests/shell/
 ```
 
 Expected: All tests pass (including the 17 new ones from Task 7).
@@ -582,13 +582,13 @@ Expected: All tests pass (including the 17 new ones from Task 7).
 **Step 2: Syntax check all modified files**
 
 ```bash
-bash -n hub/clavain/hooks/lib-sprint.sh
+bash -n os/clavain/hooks/lib-sprint.sh
 ```
 
 **Step 3: Run the full test suite**
 
 ```bash
-bats hub/clavain/tests/shell/test_lib_sprint.bats
+bats os/clavain/tests/shell/test_lib_sprint.bats
 ```
 
 Expected: 40 tests, 0 failures.
@@ -597,9 +597,9 @@ Expected: 40 tests, 0 failures.
 
 ### Verification Checklist
 
-- [ ] `bash -n hub/clavain/hooks/lib-sprint.sh` — clean parse
-- [ ] `bats hub/clavain/tests/shell/test_lib_sprint.bats` — 40 tests pass
-- [ ] `bats hub/clavain/tests/shell/` — all Clavain tests pass
+- [ ] `bash -n os/clavain/hooks/lib-sprint.sh` — clean parse
+- [ ] `bats os/clavain/tests/shell/test_lib_sprint.bats` — 40 tests pass
+- [ ] `bats os/clavain/tests/shell/` — all Clavain tests pass
 - [ ] brainstorm.md Phase 4 is sprint-aware (no prompt in sprint context)
 - [ ] strategy.md Phase 5 is sprint-aware (no prompt in sprint context)
 - [ ] brainstorm.md has complexity classification routing

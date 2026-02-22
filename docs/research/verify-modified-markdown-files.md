@@ -16,43 +16,43 @@ All four files have been verified for consistency and correctness. Two minor str
 
 ### 1. verdict_write/verdict_init References
 
-#### ✅ `/root/projects/Interverse/hub/clavain/commands/quality-gates.md`
+#### ✅ `/root/projects/Interverse/os/clavain/commands/quality-gates.md`
 - **References verdict functions**: Yes (lines 121-122)
 - **Sources lib-verdict.sh**: Yes, correctly
   ```bash
   source "${CLAUDE_PLUGIN_ROOT}/hooks/lib-verdict.sh"
   ```
-- **Path validation**: ✅ File exists at `/root/projects/Interverse/hub/clavain/hooks/lib-verdict.sh`
+- **Path validation**: ✅ File exists at `/root/projects/Interverse/os/clavain/hooks/lib-verdict.sh`
 - **Usage pattern**: Correct - calls `verdict_init` before `verdict_write`
 
-#### ✅ `/root/projects/Interverse/hub/clavain/commands/review.md`
+#### ✅ `/root/projects/Interverse/os/clavain/commands/review.md`
 - **References verdict functions**: Yes (lines 118-119)
 - **Sources lib-verdict.sh**: Yes, correctly
   ```bash
   source "${CLAUDE_PLUGIN_ROOT}/hooks/lib-verdict.sh"
   ```
-- **Path validation**: ✅ File exists at `/root/projects/Interverse/hub/clavain/hooks/lib-verdict.sh`
+- **Path validation**: ✅ File exists at `/root/projects/Interverse/os/clavain/hooks/lib-verdict.sh`
 - **Usage pattern**: Correct - calls `verdict_init` before `verdict_write`
 
 #### ✅ `/root/projects/Interverse/plugins/interflux/skills/flux-drive/phases/synthesize.md`
 - **References verdict functions**: Yes (lines 38-39)
 - **Sources lib-verdict.sh**: Yes, with fallback
   ```bash
-  source "${CLAUDE_PLUGIN_ROOT}/../../hub/clavain/hooks/lib-verdict.sh" 2>/dev/null || true
+  source "${CLAUDE_PLUGIN_ROOT}/../../os/clavain/hooks/lib-verdict.sh" 2>/dev/null || true
   ```
-- **Path validation**: ✅ Path is correct (interflux plugin → ../../hub/clavain/hooks/)
+- **Path validation**: ✅ Path is correct (interflux plugin → ../../os/clavain/hooks/)
 - **Usage pattern**: Correct - calls `verdict_init` before `verdict_write`, includes error suppression
 
 #### ✅ `/root/projects/Interverse/plugins/interflux/skills/flux-research/SKILL.md`
 - **References verdict functions**: Yes (lines 243-244)
 - **Sources lib-verdict.sh**: Yes, with fallback
   ```bash
-  source "${CLAUDE_PLUGIN_ROOT}/../../hub/clavain/hooks/lib-verdict.sh" 2>/dev/null || true
+  source "${CLAUDE_PLUGIN_ROOT}/../../os/clavain/hooks/lib-verdict.sh" 2>/dev/null || true
   ```
-- **Path validation**: ✅ Path is correct (interflux plugin → ../../hub/clavain/hooks/)
+- **Path validation**: ✅ Path is correct (interflux plugin → ../../os/clavain/hooks/)
 - **Usage pattern**: Correct - calls `verdict_init` before `verdict_write`, includes error suppression
 
-**Note**: The interflux files correctly use the relative path `../../hub/clavain/hooks/` because they're in the plugins/ directory and need to reach up to hub/clavain/. The error suppression (`2>/dev/null || true`) is appropriate for optional integration.
+**Note**: The interflux files correctly use the relative path `../../os/clavain/hooks/` because they're in the plugins/ directory and need to reach up to os/clavain/. The error suppression (`2>/dev/null || true`) is appropriate for optional integration.
 
 ---
 
@@ -178,7 +178,7 @@ All files that use verdict functions follow the correct pattern:
 2. Call `verdict_init` first
 3. Call `verdict_write` with proper parameters
 
-The clavain commands source directly from `${CLAUDE_PLUGIN_ROOT}/hooks/`, while interflux skills use the relative path `../../hub/clavain/hooks/` with error suppression. This is architecturally correct.
+The clavain commands source directly from `${CLAUDE_PLUGIN_ROOT}/hooks/`, while interflux skills use the relative path `../../os/clavain/hooks/` with error suppression. This is architecturally correct.
 
 ### Output Directory Patterns
 Three distinct patterns are used:
@@ -201,7 +201,7 @@ The flux-research skill correctly uses a different format appropriate for resear
 ## lib-verdict.sh Availability Check
 
 ### ✅ Clavain Hook Library
-- **Path**: `/root/projects/Interverse/hub/clavain/hooks/lib-verdict.sh`
+- **Path**: `/root/projects/Interverse/os/clavain/hooks/lib-verdict.sh`
 - **Status**: EXISTS
 - **Referenced by**: quality-gates.md, review.md
 
@@ -219,7 +219,7 @@ lib-verdict.sh        (4614 bytes)
 From interflux plugin location, the path resolves:
 ```
 ${CLAUDE_PLUGIN_ROOT}                    = /root/projects/Interverse/plugins/interflux
-../../hub/clavain/hooks/lib-verdict.sh   = /root/projects/Interverse/hub/clavain/hooks/lib-verdict.sh
+../../os/clavain/hooks/lib-verdict.sh   = /root/projects/Interverse/os/clavain/hooks/lib-verdict.sh
 ```
 
 No interflux hooks directory exists (intentional - interflux uses clavain's libraries).

@@ -74,7 +74,7 @@ The hook is well-designed for data collection (no output on Pre/Post/SessionStar
 
 ### P1-1: Duplicate sprint detection in clavain/session-start.sh
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 173-212)
+**File:** `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 173-212)
 
 The hook does sprint awareness in **two places**:
 1. Lines 173-180: `source sprint-scan.sh` then `sprint_brief_scan()` -- which internally calls `sprint_find_active()` and generates a sprint resume hint (lines 347-365 of sprint-scan.sh)
@@ -111,7 +111,7 @@ The clavain session-start already has a 6000-char cap, which is responsible. But
 
 ### P1-3: Handoff context can inject up to 40 lines uncapped
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 217-233)
+**File:** `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 217-233)
 
 The handoff file is read with `head -40`, which at ~80 chars/line is up to 3200 chars (~800 tokens). While the budget shedding system (lines 295-314) drops handoff_context when over budget, it only sheds at the _section_ level. If using_clavain_content (1492 bytes) + companion_context is small, the 3200-char handoff survives, consuming a large portion of the 6000-char budget.
 
@@ -164,7 +164,7 @@ PRESSURE=$(awk "BEGIN {p = $PRESSURE - $DECAY; if (p<0) p=0; printf \"%.2f\", p 
 
 ### P2-2: interserve-audit.sh silently logs but never injects context (by design, but note the bug)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/interserve-audit.sh`
+**File:** `/root/projects/Interverse/os/clavain/hooks/interserve-audit.sh`
 
 This hook fires on `Edit|Write|MultiEdit|NotebookEdit` and only writes to a log file. It produces NO additionalContext output, which means violations are logged but the agent never learns about them. The task description says "NO output, bug."
 
@@ -184,7 +184,7 @@ Fires on every `Read` tool call for code files >300 lines. The compact extract o
 
 ### P2-4: Sprint scan in session-start.sh sources lib-sprint.sh twice
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 175, 198)
+**File:** `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 175, 198)
 
 `lib-sprint.sh` is sourced at line 198. But `sprint-scan.sh` (sourced at line 175) also sources `lib-sprint.sh` at its own line 350. Both have `2>/dev/null || true` guards but no double-source protection. The script ends up defining `sprint_find_active` and other functions twice.
 
@@ -192,7 +192,7 @@ Fires on every `Read` tool call for code files >300 lines. The compact extract o
 
 ### P2-5: Five `find` calls in lib.sh companion discovery (~200ms each)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/lib.sh` (lines 13, 32, 52, 70, 89)
+**File:** `/root/projects/Interverse/os/clavain/hooks/lib.sh` (lines 13, 32, 52, 70, 89)
 
 Five `_discover_*_plugin` functions each run `find ~/.claude/plugins/cache -maxdepth 5`. On a system with many plugin versions cached, these can be slow (~200ms each). All five run during SessionStart.
 

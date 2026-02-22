@@ -68,7 +68,7 @@ func main() {
 
 	dispatchPath := os.Getenv("INTERSERVE_DISPATCH_PATH")
 	if dispatchPath == "" {
-		dispatchPath = "/root/projects/Interverse/hub/clavain/scripts/dispatch.sh"
+		dispatchPath = "os/clavain/scripts/dispatch.sh"
 	}
 
 	tools.RegisterAll(s, dispatchPath)
@@ -123,7 +123,7 @@ plugins/interserve/.claude-plugin/plugin.json
       "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh",
       "args": [],
       "env": {
-        "INTERSERVE_DISPATCH_PATH": "/root/projects/Interverse/hub/clavain/scripts/dispatch.sh"
+        "INTERSERVE_DISPATCH_PATH": "os/clavain/scripts/dispatch.sh"
       }
     }
   }

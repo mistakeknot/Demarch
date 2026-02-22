@@ -4,8 +4,8 @@
 **Date:** 2026-02-19
 **Plan file:** `/root/projects/Interverse/docs/plans/2026-02-19-intercore-e3-hook-cutover.md`
 **Source files examined:**
-- `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`
-- `/root/projects/Interverse/hub/clavain/hooks/lib-intercore.sh`
+- `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`
+- `/root/projects/Interverse/os/clavain/hooks/lib-intercore.sh`
 - `/root/projects/Interverse/infra/intercore/AGENTS.md`
 
 ---
@@ -540,7 +540,7 @@ echo "$checkpoint_json" | intercore_state_set "checkpoint" "$run_id" 2>/dev/null
 
 ### What the existing wrapper expects
 
-From `/root/projects/Interverse/hub/clavain/hooks/lib-intercore.sh` (line 36-40):
+From `/root/projects/Interverse/os/clavain/hooks/lib-intercore.sh` (line 36-40):
 
 ```bash
 intercore_state_set() {

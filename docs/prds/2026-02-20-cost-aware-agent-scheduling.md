@@ -38,7 +38,7 @@ We don't need real-time per-tool-call accuracy. Phase-granularity writeback give
 - Default budgets: C1=50K, C2=100K, C3=250K, C4=500K, C5=1M (calibratable)
 - Beads-only sprints (no ic run): budget stored in bead state, no enforcement
 
-**Files:** `hub/clavain/hooks/lib-sprint.sh`
+**Files:** `os/clavain/hooks/lib-sprint.sh`
 
 ### F2: Sprint Advance Budget Check (lib-sprint.sh)
 
@@ -52,7 +52,7 @@ We don't need real-time per-tool-call accuracy. Phase-granularity writeback give
 - User override: `CLAVAIN_SKIP_BUDGET='reason'` env var
 - Beads-only sprints: skip check (no ic run = no budget enforcement)
 
-**Files:** `hub/clavain/hooks/lib-sprint.sh`, `hub/clavain/commands/sprint.md`
+**Files:** `os/clavain/hooks/lib-sprint.sh`, `os/clavain/commands/sprint.md`
 
 ### F3: Flux-Drive Budget Integration (interflux)
 
@@ -65,7 +65,7 @@ We don't need real-time per-tool-call accuracy. Phase-granularity writeback give
 - If no env var, falls back to budget.yaml (backward compatible)
 - Triage summary line shows: `Budget: Xk / Yk (Z%) [sprint-constrained]` when sprint budget is tighter
 
-**Files:** `plugins/interflux/skills/flux-drive/SKILL-compact.md`, `hub/clavain/commands/sprint.md`
+**Files:** `plugins/interflux/skills/flux-drive/SKILL-compact.md`, `os/clavain/commands/sprint.md`
 
 ### F4: Post-Phase Token Writeback (lib-sprint.sh)
 
@@ -79,7 +79,7 @@ We don't need real-time per-tool-call accuracy. Phase-granularity writeback give
 - This feeds `ic run tokens` / `ic run budget` for subsequent phase budget checks
 - Creates synthetic dispatch records per phase if none exist
 
-**Files:** `hub/clavain/hooks/lib-sprint.sh`
+**Files:** `os/clavain/hooks/lib-sprint.sh`
 
 ### F5: Interspect Cost-Effectiveness Signal (stretch)
 
@@ -92,7 +92,7 @@ We don't need real-time per-tool-call accuracy. Phase-granularity writeback give
 - Write to interspect evidence: `source=<agent>, event=cost_effectiveness, context={effectiveness, tokens, findings}`
 - Interspect's routing eligibility check can factor in effectiveness alongside override rate
 
-**Files:** `hub/clavain/hooks/lib-interspect.sh`, `hub/clavain/hooks/interspect-evidence.sh`
+**Files:** `os/clavain/hooks/lib-interspect.sh`, `os/clavain/hooks/interspect-evidence.sh`
 
 ## Feature Dependencies
 

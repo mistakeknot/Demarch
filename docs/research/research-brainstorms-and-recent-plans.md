@@ -247,7 +247,7 @@ Currently v0.2.11, 19 open beads (most of any module except clavain). Phase: "qu
 
 ### Clavain as Orchestrator
 
-Clavain (hub/clavain, v0.6.30) is the orchestrator hub. 23 skills, 4 agents, 51 commands, 19 companions. 372 beads closed, 0 open locally (all work tracked at Interverse level).
+Clavain (os/clavain, v0.6.30) is the orchestrator hub. 23 skills, 4 agents, 51 commands, 19 companions. 372 beads closed, 0 open locally (all work tracked at Interverse level).
 
 Sprint workflow is the primary interface for multi-step work. Current focus: outcome measurement, interspect analytics activation, sprint workflow resilience.
 

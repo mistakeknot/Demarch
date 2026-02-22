@@ -3,7 +3,7 @@
 **Document under review:** `/root/projects/Interverse/docs/brainstorms/2026-02-20-dual-mode-plugin-architecture-brainstorm.md`
 **Reviewer:** Flux-drive Architecture & Design Reviewer
 **Date:** 2026-02-20
-**Mode:** Codebase-aware (CLAUDE.md, AGENTS.md, source code read across plugins/interphase, plugins/interlock, infra/interband, hub/clavain/hooks, scripts/interbump.sh)
+**Mode:** Codebase-aware (CLAUDE.md, AGENTS.md, source code read across plugins/interphase, plugins/interlock, infra/interband, os/clavain/hooks, scripts/interbump.sh)
 
 ---
 

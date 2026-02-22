@@ -38,7 +38,7 @@ Plugins currently managing their own state (e.g., via temp files, individual `.d
 ### 2. OS (Clavain) Synergy
 *   **Actionable Insight:** Preserve the outward extraction trajectory.
     *   **What THIS Means for Specific Plugins:**
-        *   `interflux`, `tldr-swinton`, `interdoc`, and all other mature plugins: Leave them as standalone plugins in the `plugins/` directory. They have earned their independence. Folding them back into `hub/clavain/skills` would create a massive, tightly-coupled monolith and ruin their cross-platform usefulness.
+        *   `interflux`, `tldr-swinton`, `interdoc`, and all other mature plugins: Leave them as standalone plugins in the `plugins/` directory. They have earned their independence. Folding them back into `os/clavain/skills` would create a massive, tightly-coupled monolith and ruin their cross-platform usefulness.
         *   When Clavain runs, its hooks must leverage `ic` for their state, and these independent plugins will tie into the same shared `ic` state boundary, creating a unified orchestration flow without merging codebases.
 
 ### 3. Apps (Autarch) Synergy

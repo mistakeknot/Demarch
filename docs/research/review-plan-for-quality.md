@@ -365,7 +365,7 @@ This is fine, but the project's existing tests (if any) should be checked for co
 
 **Impact:** Cosmetic — no functional issue.
 
-**Fix:** Audit existing bats tests in `hub/clavain/tests/shell/` and match the prevailing style.
+**Fix:** Audit existing bats tests in `os/clavain/tests/shell/` and match the prevailing style.
 
 ---
 

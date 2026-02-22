@@ -34,8 +34,8 @@ The PRD proposes building a new MCP server (`interserve`) that "invokes Interser
 
 **Evidence:**
 - PRD F0: "Invokes Interserve spark tier (`gpt-5.3-codex-spark`) for classification"
-- Existing: `hub/clavain/config/dispatch/tiers.yaml` defines `fast: gpt-5.3-codex-spark`
-- Existing: `hub/clavain/scripts/dispatch.sh` already handles tier resolution + Codex CLI execution
+- Existing: `os/clavain/config/dispatch/tiers.yaml` defines `fast: gpt-5.3-codex-spark`
+- Existing: `os/clavain/scripts/dispatch.sh` already handles tier resolution + Codex CLI execution
 
 **Structural concern:** This creates parallel tier-resolution paths. If a model name changes in `tiers.yaml` (which the file explicitly says callers should inherit), the interserve MCP server's hardcoded tier name won't update automatically. The dispatch layer exists to centralize this exact concern.
 

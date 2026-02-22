@@ -387,7 +387,7 @@ File: `/root/projects/Interverse/infra/intercore/internal/event/handlers.go`
 - Example: SpawnHandler (handler_spawn.go)
 
 ### If Extending Sprint Integration
-File: `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`
+File: `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`
 - Line 547-610: `sprint_advance()` function
 - Pre-register agents BEFORE calling `intercore_run_advance()`
 - OR: Create `.clavain/hooks/on-phase-advance` for phase-triggered spawning

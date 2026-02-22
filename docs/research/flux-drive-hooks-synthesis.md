@@ -163,7 +163,7 @@ Python startup: 30-50ms each. Over 200 calls = 800 Python starts, potentially 24
 **Convergence:** 2/3 agents (orchestration, performance)
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 21-26)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 21-26)
 - `/root/projects/Interverse/plugins/interlock/hooks/session-start.sh` (lines 18-19)
 
 **Problem:**
@@ -179,7 +179,7 @@ Designate clavain as canonical CLAUDE_SESSION_ID writer. Interlock should read f
 **Convergence:** 2/3 agents (orchestration, performance)
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 100-132)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 100-132)
 - `/root/projects/Interverse/plugins/interlock/hooks/session-start.sh` (lines 37-38)
 
 **Problem:**
@@ -252,7 +252,7 @@ Fix schema or remove the hook.
 **Convergence:** 3/3 agents (all approached from different angles)
 
 **File:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh`
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh`
 
 **Problem:**
 Single script handles:
@@ -282,8 +282,8 @@ Split into a dispatcher that runs independent checks in parallel subshells and a
 **Convergence:** 2/3 agents (orchestration, performance)
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 173-212)
-- `/root/projects/Interverse/hub/clavain/hooks/sprint-scan.sh` (line 354)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 173-212)
+- `/root/projects/Interverse/os/clavain/hooks/sprint-scan.sh` (line 354)
 
 **Problem:**
 `sprint_find_active` is called:
@@ -304,8 +304,8 @@ Remove lines 196-212 entirely. sprint_brief_scan output already includes the act
 **Convergence:** 2/3 agents (token, performance)
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 175, 198)
-- `/root/projects/Interverse/hub/clavain/hooks/sprint-scan.sh` (internal source)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 175, 198)
+- `/root/projects/Interverse/os/clavain/hooks/sprint-scan.sh` (internal source)
 
 **Problem:**
 `sprint-scan.sh` sources `lib-sprint.sh` at its own line 350. Then `session-start.sh` sources it again at line 198. Both have `2>/dev/null || true` guards but no double-source protection. Functions like `sprint_find_active` end up defined twice.
@@ -325,8 +325,8 @@ Consistent with pattern used by `sprint-scan.sh` (which has `_SPRINT_SCAN_LOADED
 **Convergence:** 1/3 agents (orchestration)
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/auto-compound.sh`
-- `/root/projects/Interverse/hub/clavain/hooks/auto-drift-check.sh`
+- `/root/projects/Interverse/os/clavain/hooks/auto-compound.sh`
+- `/root/projects/Interverse/os/clavain/hooks/auto-drift-check.sh`
 
 **Problem:**
 Both Stop hooks:
@@ -454,7 +454,7 @@ PRESSURE=$(awk "BEGIN {p = $PRESSURE - $DECAY; if (p<0) p=0; printf \"%.2f\", p 
 **Convergence:** 1/3 agents (token-economy)
 
 **File:**
-- `/root/projects/Interverse/hub/clavain/hooks/interserve-audit.sh`
+- `/root/projects/Interverse/os/clavain/hooks/interserve-audit.sh`
 
 **Problem:**
 Fires on Edit|Write|MultiEdit|NotebookEdit, only writes to log file. Produces NO additionalContext output. Violations are logged but agent never learns about them.
@@ -469,7 +469,7 @@ Either add additionalContext output for violations (agent can self-correct) or r
 **Convergence:** 2/3 agents (token, performance)
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 217-233)
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 217-233)
 
 **Problem:**
 Handoff file read with `head -40`: up to 3200 chars (~800 tokens). Budget shedding system drops handoff when over budget at section level. If other sections are small, 3200-char handoff survives, consuming large portion of 6000-char budget.
@@ -484,7 +484,7 @@ Reduce `head -40` to `head -20` (handoff instructions already say "10-20 lines")
 **Convergence:** 1/3 agents (orchestration)
 
 **File:**
-- `/root/projects/Interverse/hub/clavain/hooks/bead-agent-bind.sh`
+- `/root/projects/Interverse/os/clavain/hooks/bead-agent-bind.sh`
 
 **Problem:**
 Hook has Bash matcher filtering for `Bash` tool calls. Then inside, script does case-match on command string for `bd update`/`bd claim` patterns. Double-filtering correct but matcher could be more specific.
@@ -501,7 +501,7 @@ No change needed — pattern is correct and efficient.
 **Convergence:** 2/3 agents (token, performance)
 
 **File:**
-- `/root/projects/Interverse/hub/clavain/hooks/lib.sh` (lines 13, 32, 52, 70, 89)
+- `/root/projects/Interverse/os/clavain/hooks/lib.sh` (lines 13, 32, 52, 70, 89)
 
 **Problem:**
 Five `_discover_*_plugin` functions each run `find ~/.claude/plugins/cache -maxdepth 5`. On system with many plugin versions cached, can be slow (~200ms each). All five run during SessionStart.
@@ -589,7 +589,7 @@ Per-file flagging is good. Consider session-wide budget cap: stop injecting afte
 **Convergence:** 1/3 agents (performance)
 
 **File:**
-- `/root/projects/Interverse/hub/clavain/hooks/interspect-session.sh`
+- `/root/projects/Interverse/os/clavain/hooks/interspect-session.sh`
 
 **Problem:**
 Migration SQL runs on every startup even when DB exists:
@@ -716,7 +716,7 @@ These 7 items are already tracked as beads and should NOT be re-opened:
 - Files:
   - `/root/projects/Interverse/plugins/tool-time/hooks/hooks.json` (remove PreToolUse binding)
   - `/root/projects/Interverse/plugins/tool-time/hooks/hook.sh` (extract lines 90-151)
-  - `/root/projects/Interverse/hub/clavain/hooks/agent-output-redirect.sh` (new, clavain)
+  - `/root/projects/Interverse/os/clavain/hooks/agent-output-redirect.sh` (new, clavain)
 
 **2. Replace python3 arithmetic in context-monitor.sh with awk**
 - Priority: CRITICAL (4 spawns per tool call)
@@ -749,39 +749,39 @@ These 7 items are already tracked as beads and should NOT be re-opened:
 - Priority: HIGH (100 tokens + 200ms redundant calls)
 - Effort: ~30 minutes
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (remove lines 196-212)
+  - `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (remove lines 196-212)
 
 **7. Add double-source guard to lib-sprint.sh**
 - Priority: HIGH (prevents function redefinition)
 - Effort: ~15 minutes
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`
+  - `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`
 
 **8. Deduplicate CLAUDE_SESSION_ID env writes**
 - Priority: HIGH (eliminates race condition)
 - Effort: ~30 minutes
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (keep CLAUDE_SESSION_ID write)
+  - `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (keep CLAUDE_SESSION_ID write)
   - `/root/projects/Interverse/plugins/interlock/hooks/session-start.sh` (remove CLAUDE_SESSION_ID write)
 
 **9. Deduplicate Intermute queries at session start**
 - Priority: HIGH (4-6 redundant HTTP calls, 200-400ms)
 - Effort: ~1 hour
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (read from temp file)
+  - `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (read from temp file)
   - `/root/projects/Interverse/plugins/interlock/hooks/session-start.sh` (write temp file)
 
 **10. Cache companion plugin discovery**
 - Priority: HIGH (eliminates 5 find scans, ~1s per session start)
 - Effort: ~45 minutes
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/lib.sh` (add cache logic)
+  - `/root/projects/Interverse/os/clavain/hooks/lib.sh` (add cache logic)
 
 **11. Merge auto-compound.sh + auto-drift-check.sh**
 - Priority: HIGH (eliminates sentinel race, redundant signal detection)
 - Effort: ~1 hour
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/auto-stop-actions.sh` (new, merged)
+  - `/root/projects/Interverse/os/clavain/hooks/auto-stop-actions.sh` (new, merged)
   - Remove old: `auto-compound.sh`, `auto-drift-check.sh`
   - Update: `session-start.sh` (Stop hook array)
 
@@ -805,7 +805,7 @@ These 7 items are already tracked as beads and should NOT be re-opened:
 - Priority: MEDIUM (800 tokens → 400 tokens per session)
 - Effort: ~10 minutes
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 220-222)
+  - `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 220-222)
 
 **15. Verify interfluence env var API compatibility**
 - Priority: MEDIUM (silent feature breakage risk)
@@ -817,7 +817,7 @@ These 7 items are already tracked as beads and should NOT be re-opened:
 - Priority: MEDIUM (eliminates redundant migration SQL runs)
 - Effort: ~30 minutes
 - Files:
-  - `/root/projects/Interverse/hub/clavain/hooks/interspect-session.sh`
+  - `/root/projects/Interverse/os/clavain/hooks/interspect-session.sh`
 
 **17. Move md5sum after line count gate in post-read-extract.sh**
 - Priority: MEDIUM (minor efficiency gain)
@@ -920,10 +920,10 @@ These 7 items are already tracked as beads and should NOT be re-opened:
 4. `/root/projects/Interverse/plugins/intercheck/hooks/context-monitor.sh` (P0-2, P2-1)
 5. `/root/projects/Interverse/plugins/interserve/hooks/hooks.json` (P0-5)
 6. `/root/projects/Interverse/plugins/interflux/hooks/hooks.json` (P0-6)
-7. `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (P1-1, P1-2, P1-3, P2-3)
-8. `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh` (P1-3)
-9. `/root/projects/Interverse/hub/clavain/hooks/auto-compound.sh` (P1-4)
-10. `/root/projects/Interverse/hub/clavain/hooks/auto-drift-check.sh` (P1-4)
+7. `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (P1-1, P1-2, P1-3, P2-3)
+8. `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh` (P1-3)
+9. `/root/projects/Interverse/os/clavain/hooks/auto-compound.sh` (P1-4)
+10. `/root/projects/Interverse/os/clavain/hooks/auto-drift-check.sh` (P1-4)
 
 ---
 

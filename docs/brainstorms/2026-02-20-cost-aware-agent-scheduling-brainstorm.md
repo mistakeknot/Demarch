@@ -156,16 +156,16 @@ Component 5 (interspect) is a stretch goal — build it if Components 1-4 ship c
 
 | Component | Files | Type |
 |-----------|-------|------|
-| C1: Sprint budget | `hub/clavain/hooks/lib-sprint.sh` | Modify |
-| C2: Sprint advance | `hub/clavain/hooks/lib-sprint.sh` | Modify |
+| C1: Sprint budget | `os/clavain/hooks/lib-sprint.sh` | Modify |
+| C2: Sprint advance | `os/clavain/hooks/lib-sprint.sh` | Modify |
 | C3: Flux-drive integration | `plugins/interflux/skills/flux-drive/SKILL-compact.md` | Modify |
 | C3: Flux-drive integration | `plugins/interflux/skills/flux-drive/phases/synthesize.md` | Modify |
-| C4: Token writeback | `hub/clavain/hooks/lib-sprint.sh` | Modify |
-| C4: Token writeback | `hub/clavain/commands/sprint.md` | Modify |
-| C5: Interspect signal | `hub/clavain/hooks/lib-interspect.sh` | Modify |
-| C5: Interspect signal | `hub/clavain/hooks/interspect-evidence.sh` | Modify |
+| C4: Token writeback | `os/clavain/hooks/lib-sprint.sh` | Modify |
+| C4: Token writeback | `os/clavain/commands/sprint.md` | Modify |
+| C5: Interspect signal | `os/clavain/hooks/lib-interspect.sh` | Modify |
+| C5: Interspect signal | `os/clavain/hooks/interspect-evidence.sh` | Modify |
 | Docs | `docs/glossary.md` (token budget term) | Modify |
-| Docs | `hub/clavain/AGENTS.md` | Modify |
+| Docs | `os/clavain/AGENTS.md` | Modify |
 
 ## Open Questions
 

@@ -25,7 +25,7 @@ F1 is the foundation — sprint_read_state must surface budget before anything e
 ### Task 1: Add --token-budget to intercore_run_create (F1)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-intercore.sh:225-236`
+- Modify: `os/clavain/hooks/lib-intercore.sh:225-236`
 
 **Step 1: Add token_budget parameter to intercore_run_create**
 
@@ -53,14 +53,14 @@ intercore_run_create() {
 
 **Step 2: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-intercore.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-intercore.sh && echo "OK"`
 
 ---
 
 ### Task 2: Add budget defaults and pass budget to ic run create (F1)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (near sprint_create, around line 50)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (near sprint_create, around line 50)
 
 **Step 1: Add budget defaults lookup function**
 
@@ -112,14 +112,14 @@ After the `bd set-state "ic_run_id=$run_id"` line, add:
 
 **Step 4: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && echo "OK"`
 
 ---
 
 ### Task 3: Add budget fields to sprint_read_state (F1)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh:222-299` (sprint_read_state)
+- Modify: `os/clavain/hooks/lib-sprint.sh:222-299` (sprint_read_state)
 
 **Step 1: Add token_budget and tokens_spent to ic run path**
 
@@ -153,14 +153,14 @@ And add these to the jq output template.
 
 **Step 3: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && echo "OK"`
 
 ---
 
 ### Task 4: Add sprint_record_phase_tokens for post-phase writeback (F4)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (add new function after sprint_record_phase_completion)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (add new function after sprint_record_phase_completion)
 
 **Step 1: Add phase cost estimate lookup**
 
@@ -242,14 +242,14 @@ sprint_record_phase_tokens() {
 
 **Step 3: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && echo "OK"`
 
 ---
 
 ### Task 5: Wire sprint_record_phase_tokens into sprint_advance (F4)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh:650-739` (sprint_advance)
+- Modify: `os/clavain/hooks/lib-sprint.sh:650-739` (sprint_advance)
 
 **Step 1: Add token writeback call after successful advance**
 
@@ -266,14 +266,14 @@ In the beads fallback path, after the phase set (around line 735, after `sprint_
 
 **Step 2: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && echo "OK"`
 
 ---
 
 ### Task 6: Add budget check to sprint_advance (F2)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh:650-739` (sprint_advance)
+- Modify: `os/clavain/hooks/lib-sprint.sh:650-739` (sprint_advance)
 
 **Step 1: Add budget check before advancing (ic run path)**
 
@@ -299,7 +299,7 @@ In the ic run path, BEFORE the `intercore_run_advance` call (around line 663), i
 
 **Step 2: Add budget_exceeded handling to sprint.md auto-advance protocol**
 
-In `hub/clavain/commands/sprint.md`, find the auto-advance case statement (around line 164), and add:
+In `os/clavain/commands/sprint.md`, find the auto-advance case statement (around line 164), and add:
 ```
             budget_exceeded)
                 # AskUserQuestion: "Budget exceeded (<detail>). Options: Continue (override), Stop sprint, Adjust budget"
@@ -308,14 +308,14 @@ In `hub/clavain/commands/sprint.md`, find the auto-advance case statement (aroun
 
 **Step 3: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && echo "OK"`
 
 ---
 
 ### Task 7: Add sprint_budget_remaining helper (F2)
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (add after sprint_read_state)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (add after sprint_read_state)
 
 **Step 1: Add helper function**
 
@@ -342,14 +342,14 @@ sprint_budget_remaining() {
 
 **Step 2: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh && echo "OK"`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh && echo "OK"`
 
 ---
 
 ### Task 8: Pass remaining budget to flux-drive (F3)
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Add budget env var before flux-drive invocations**
 
@@ -395,7 +395,7 @@ This is a markdown instruction, not code — the LLM executing flux-drive reads 
 ### Task 10: Add sprint budget display to sprint summary (docs)
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Update sprint summary at Step 10 (Ship)**
 
@@ -412,7 +412,7 @@ After `- Steps completed: <n>/10`:
 
 **Files:**
 - Modify: `docs/glossary.md`
-- Modify: `hub/clavain/AGENTS.md`
+- Modify: `os/clavain/AGENTS.md`
 
 **Step 1: Add token budget term to glossary**
 
@@ -420,7 +420,7 @@ In the Kernel (L1) table, the "Token budget" entry already exists at line 19. Ve
 
 **Step 2: Update AGENTS.md with budget workflow**
 
-Search `hub/clavain/AGENTS.md` for sprint-related sections and add a brief note about token budgets:
+Search `os/clavain/AGENTS.md` for sprint-related sections and add a brief note about token budgets:
 - Default budgets by complexity tier
 - `sprint_budget_remaining()` helper
 - `FLUX_BUDGET_REMAINING` env var for flux-drive
@@ -431,11 +431,11 @@ Search `hub/clavain/AGENTS.md` for sprint-related sections and add a brief note 
 
 After all tasks are complete:
 
-1. `bash -n hub/clavain/hooks/lib-sprint.sh` — passes
-2. `bash -n hub/clavain/hooks/lib-intercore.sh` — passes
+1. `bash -n os/clavain/hooks/lib-sprint.sh` — passes
+2. `bash -n os/clavain/hooks/lib-intercore.sh` — passes
 3. `sprint_read_state` output includes `token_budget` and `tokens_spent` fields
 4. `_sprint_default_budget 3` returns `250000`
 5. `sprint_budget_remaining` returns integer for a sprint with budget
-6. `grep -c 'budget' hub/clavain/hooks/lib-sprint.sh` — at least 15 occurrences
-7. `grep -c 'FLUX_BUDGET_REMAINING' hub/clavain/commands/sprint.md` — at least 2
-8. `grep -c 'budget_exceeded' hub/clavain/hooks/lib-sprint.sh` — at least 1
+6. `grep -c 'budget' os/clavain/hooks/lib-sprint.sh` — at least 15 occurrences
+7. `grep -c 'FLUX_BUDGET_REMAINING' os/clavain/commands/sprint.md` — at least 2
+8. `grep -c 'budget_exceeded' os/clavain/hooks/lib-sprint.sh` — at least 1

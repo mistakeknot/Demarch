@@ -398,7 +398,7 @@ Session-start hook also calls **`sprint_brief_scan()`** which outputs lightweigh
 ## 7. Test Suite Status
 
 ### Location
-`/root/projects/Interverse/hub/clavain/tests/shell/test_lib_sprint.bats`
+`/root/projects/Interverse/os/clavain/tests/shell/test_lib_sprint.bats`
 
 ### Coverage
 - **23 tests** covering all core lib-sprint.sh functions
@@ -560,7 +560,7 @@ Uses `mkdir` atomicity (not `flock`) because:
 ## 12. File Structure Summary
 
 ```
-hub/clavain/
+os/clavain/
 ├── hooks/
 │   ├── lib-sprint.sh              # 350 LOC — Core state library
 │   ├── lib-gates.sh               # Shim → interphase gates

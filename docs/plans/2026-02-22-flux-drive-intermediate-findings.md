@@ -277,7 +277,7 @@ In `interverse/interflux/skills/flux-drive/phases/synthesize.md`, modify the syn
 Change the prompt from:
 ```
     OUTPUT_DIR={OUTPUT_DIR}
-    VERDICT_LIB={CLAUDE_PLUGIN_ROOT}/../../hub/clavain/hooks/lib-verdict.sh
+    VERDICT_LIB={CLAUDE_PLUGIN_ROOT}/../../os/clavain/hooks/lib-verdict.sh
     MODE=flux-drive
     CONTEXT="Reviewing {INPUT_TYPE}: {INPUT_STEM} ({N} agents, {early_stop_note})"
 ```
@@ -285,7 +285,7 @@ Change the prompt from:
 To:
 ```
     OUTPUT_DIR={OUTPUT_DIR}
-    VERDICT_LIB={CLAUDE_PLUGIN_ROOT}/../../hub/clavain/hooks/lib-verdict.sh
+    VERDICT_LIB={CLAUDE_PLUGIN_ROOT}/../../os/clavain/hooks/lib-verdict.sh
     MODE=flux-drive
     CONTEXT="Reviewing {INPUT_TYPE}: {INPUT_STEM} ({N} agents, {early_stop_note})"
     FINDINGS_TIMELINE={OUTPUT_DIR}/peer-findings.jsonl

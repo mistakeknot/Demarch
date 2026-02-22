@@ -515,8 +515,8 @@ These are part of the Autarch multi-agent TUI framework, not direct dispatch/mer
 - `/root/projects/Interverse/docs/plans/2026-02-19-hierarchical-dispatch-meta-agent.md` — Hierarchical dispatch
 
 ### Research
-- `/root/projects/Interverse/hub/clavain/docs/research/kernel-contract-verification.md` — Kernel contract verification
-- `/root/projects/Interverse/hub/clavain/.claude/agents/fd-kernel-contract.md` — Flux-drive kernel contract
+- `/root/projects/Interverse/os/clavain/docs/research/kernel-contract-verification.md` — Kernel contract verification
+- `/root/projects/Interverse/os/clavain/.claude/agents/fd-kernel-contract.md` — Flux-drive kernel contract
 
 ---
 
@@ -528,7 +528,7 @@ Key sections relevant to this search:
 - **Intercore CLI Gotchas** — `ic run create` accepts `--phases=`, schema v10 portfolio runs, DB path default, skip vs advance
 - **TOCTOU in check-then-insert** — Wrap in `BeginTx` transaction
 - **Terminal status exhaustiveness** — Exempt `StatusCompleted`, `StatusCancelled`, `StatusFailed`
-- **Monorepo Git structure** — Each subproject has own `.git`, all Clavain commits from `/root/projects/Interverse/hub/clavain/`
+- **Monorepo Git structure** — Each subproject has own `.git`, all Clavain commits from `/root/projects/Interverse/os/clavain/`
 - **Beads DB location** — `.beads/` at Interverse root
 
 ---

@@ -154,7 +154,7 @@ The monorepo root contains only documentation and configuration — no tradition
 **Location:** `/root/projects/Interverse/hub/`  
 **Contents:** 1 subdirectory
 
-### `hub/clavain/`
+### `os/clavain/`
 
 - **Role:** Core engineering discipline plugin (proper noun: Clavain)
 - **Scope:** Skills, agents, commands, hooks

@@ -1,7 +1,7 @@
 # Architecture Review: B1 Static Routing Table PRD
 
-**PRD:** `/root/projects/Interverse/hub/clavain/docs/prds/2026-02-20-static-routing-table.md`
-**Brainstorm:** `/root/projects/Interverse/hub/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
+**PRD:** `/root/projects/Interverse/os/clavain/docs/prds/2026-02-20-static-routing-table.md`
+**Brainstorm:** `/root/projects/Interverse/os/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
 **Date:** 2026-02-20
 **Reviewer:** fd-architecture (Flux-drive Architecture & Design Reviewer)
 **Full verdict:** `/root/projects/Interverse/.clavain/verdicts/fd-architecture.md`
@@ -11,18 +11,18 @@
 ## Methodology
 
 All four focus questions were evaluated against the live codebase, not just the PRD text. Files read:
-- `hub/clavain/docs/prds/2026-02-20-static-routing-table.md`
-- `hub/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
-- `hub/clavain/docs/clavain-vision.md`
-- `hub/clavain/docs/roadmap.md`
-- `hub/clavain/config/dispatch/tiers.yaml`
-- `hub/clavain/scripts/dispatch.sh` (resolve_tier_model, lines 161-234)
-- `hub/clavain/hooks/lib-interspect.sh` (routing override system, lines 490-750)
-- `hub/clavain/hooks/lib-sprint.sh` (phase chain, line 125)
-- `hub/clavain/commands/model-routing.md`
+- `os/clavain/docs/prds/2026-02-20-static-routing-table.md`
+- `os/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
+- `os/clavain/docs/clavain-vision.md`
+- `os/clavain/docs/roadmap.md`
+- `os/clavain/config/dispatch/tiers.yaml`
+- `os/clavain/scripts/dispatch.sh` (resolve_tier_model, lines 161-234)
+- `os/clavain/hooks/lib-interspect.sh` (routing override system, lines 490-750)
+- `os/clavain/hooks/lib-sprint.sh` (phase chain, line 125)
+- `os/clavain/commands/model-routing.md`
 - `plugins/interflux/agents/review/*.md` (12 agents with model frontmatter)
 - `plugins/intercraft/agents/review/*.md`, `plugins/intersynth/agents/*.md`
-- `hub/clavain/.claude/agents/` (Interspect routing override consumers)
+- `os/clavain/.claude/agents/` (Interspect routing override consumers)
 
 ---
 
@@ -102,7 +102,7 @@ This scenario is low probability at B1 scope. It becomes material only if Inters
 
 ### Edge Case A: Phase Name Mismatch (Must-Fix)
 
-The PRD schema uses phase keys `strategy`, `plan`, `execute`, `quality-gates`, `ship`. The actual ic phase chain in `hub/clavain/hooks/lib-sprint.sh:125` is:
+The PRD schema uses phase keys `strategy`, `plan`, `execute`, `quality-gates`, `ship`. The actual ic phase chain in `os/clavain/hooks/lib-sprint.sh:125` is:
 
 ```bash
 phases_json='["brainstorm","brainstorm-reviewed","strategized","planned","plan-reviewed","executing","shipping","reflect","done"]'
@@ -172,7 +172,7 @@ phases:
 
 Alternatively, define an explicit caller-provided mapping layer in F2 acceptance criteria that maps display aliases (`quality-gates`) to ic phase names (`executing`) before resolution. Either approach must be explicit in acceptance criteria and in the test suite.
 
-Files to amend: `hub/clavain/docs/prds/2026-02-20-static-routing-table.md` (F1 and F2 acceptance criteria), routing.yaml schema block in the brainstorm.
+Files to amend: `os/clavain/docs/prds/2026-02-20-static-routing-table.md` (F1 and F2 acceptance criteria), routing.yaml schema block in the brainstorm.
 
 ---
 
@@ -280,15 +280,15 @@ The PRD is implementable after addressing Must-Fix 1 and Must-Fix 2. The three f
 
 ## Files Referenced
 
-- `/root/projects/Interverse/hub/clavain/docs/prds/2026-02-20-static-routing-table.md`
-- `/root/projects/Interverse/hub/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
-- `/root/projects/Interverse/hub/clavain/docs/clavain-vision.md`
-- `/root/projects/Interverse/hub/clavain/docs/roadmap.md`
-- `/root/projects/Interverse/hub/clavain/config/dispatch/tiers.yaml`
-- `/root/projects/Interverse/hub/clavain/scripts/dispatch.sh` (lines 161-234)
-- `/root/projects/Interverse/hub/clavain/hooks/lib-interspect.sh` (lines 490-750)
-- `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh` (line 125)
-- `/root/projects/Interverse/hub/clavain/commands/model-routing.md`
+- `/root/projects/Interverse/os/clavain/docs/prds/2026-02-20-static-routing-table.md`
+- `/root/projects/Interverse/os/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
+- `/root/projects/Interverse/os/clavain/docs/clavain-vision.md`
+- `/root/projects/Interverse/os/clavain/docs/roadmap.md`
+- `/root/projects/Interverse/os/clavain/config/dispatch/tiers.yaml`
+- `/root/projects/Interverse/os/clavain/scripts/dispatch.sh` (lines 161-234)
+- `/root/projects/Interverse/os/clavain/hooks/lib-interspect.sh` (lines 490-750)
+- `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh` (line 125)
+- `/root/projects/Interverse/os/clavain/commands/model-routing.md`
 - `/root/projects/Interverse/plugins/interflux/agents/review/fd-architecture.md` (representative)
 - `/root/projects/Interverse/plugins/intercraft/agents/review/agent-native-reviewer.md`
 - `/root/projects/Interverse/plugins/intersynth/agents/synthesize-review.md`

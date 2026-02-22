@@ -9,12 +9,12 @@
 
 This review evaluates the implementation plan for migrating Clavain's sprint runtime state from beads (`bd set-state`) and temp files to intercore's `ic` CLI (Go binary + SQLite). The migration affects two primary files:
 
-- `hub/clavain/hooks/lib-sprint.sh` — 22-function sprint state library (835 lines)
-- `hub/clavain/hooks/lib-intercore.sh` — Bash wrappers for the `ic` binary (426 lines)
+- `os/clavain/hooks/lib-sprint.sh` — 22-function sprint state library (835 lines)
+- `os/clavain/hooks/lib-intercore.sh` — Bash wrappers for the `ic` binary (426 lines)
 
 Plus new files: two event reactor hooks, a migration script, and a lib-gates.sh deprecation notice.
 
-The review is grounded in the project's documented architecture: intercore is Layer 1 (kernel, mechanism not policy), Clavain is Layer 2 (OS), and companion plugins are Layer 3. This layering is documented in `infra/intercore/AGENTS.md` and `hub/clavain/CLAUDE.md`.
+The review is grounded in the project's documented architecture: intercore is Layer 1 (kernel, mechanism not policy), Clavain is Layer 2 (OS), and companion plugins are Layer 3. This layering is documented in `infra/intercore/AGENTS.md` and `os/clavain/CLAUDE.md`.
 
 ---
 
@@ -376,8 +376,8 @@ The plan's task order (1 through 12) is largely safe, but three ordering depende
 ## 8. Reference: Key File Locations
 
 - Plan under review: `/root/projects/Interverse/docs/plans/2026-02-19-intercore-e3-hook-cutover.md`
-- Sprint state library (current): `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh`
-- Intercore wrappers (current): `/root/projects/Interverse/hub/clavain/hooks/lib-intercore.sh`
-- Gate shim (to be deprecated): `/root/projects/Interverse/hub/clavain/hooks/lib-gates.sh`
+- Sprint state library (current): `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh`
+- Intercore wrappers (current): `/root/projects/Interverse/os/clavain/hooks/lib-intercore.sh`
+- Gate shim (to be deprecated): `/root/projects/Interverse/os/clavain/hooks/lib-gates.sh`
 - Intercore kernel docs: `/root/projects/Interverse/infra/intercore/AGENTS.md`
 - PRD: `/root/projects/Interverse/docs/prds/2026-02-19-intercore-e3-hook-cutover.md`

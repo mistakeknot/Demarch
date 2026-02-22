@@ -11,7 +11,7 @@
       {
         "priority": "P0",
         "source_docs": [
-          "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md"
+          "os/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md"
         ],
         "recommendation": "Add --write-output and --timeout rules to the Oracle section",
         "content_draft": "Always use `--write-output <path>` for Oracle browser mode — never redirect stdout (`> file`). Never wrap Oracle with external `timeout` — use `--timeout <seconds>` instead. Both cause silent output loss."
@@ -112,11 +112,11 @@
         "content_draft": "### Spec Phase Ordering\n\nCanonical order: Vision > Problem > Users > Features > CUJs > Requirements > Scope > Acceptance. Ordering must reflect information dependencies — later phases consume earlier phase outputs."
       }
     ],
-    "hub/clavain/AGENTS.md": [
+    "os/clavain/AGENTS.md": [
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md"
+          "os/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md"
         ],
         "recommendation": "Add Renaming/Deleting Agents subsection with grep sweep checklist",
         "content_draft": "### Renaming/Deleting Agents\n\nGrep sweep checklist (10 locations): agents/*.md, skills/*/SKILL.md, commands/*.md, hooks/*.sh, lib-*.sh, plugin.json, CLAUDE.md, AGENTS.md, dispatch templates, test fixtures. Do NOT update historical records (solution docs, sprint logs)."
@@ -134,7 +134,7 @@
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md"
+          "os/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md"
         ],
         "recommendation": "Add LLM compounding feedback loop / provenance tracking lesson",
         "content_draft": "- **LLM compounding feedback loop**: when injecting prior findings into agent context, track provenance (independent vs primed). Only independent re-confirmations update freshness. Primed confirmations are echoes, not evidence."
@@ -142,7 +142,7 @@
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md"
+          "os/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md"
         ],
         "recommendation": "Add monorepo glob depth warning",
         "content_draft": "- **Monorepo glob patterns**: always prefix with `**` to search at any depth. Never assume fixed depth between project root and target files. Applies to Python glob, shell find, and tool Glob patterns alike."
@@ -150,7 +150,7 @@
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md"
+          "os/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md"
         ],
         "recommendation": "Add MCP bootstrap wrapper pattern to plugin schema section",
         "content_draft": "- **MCP bootstrap wrapper**: Claude Code plugin cache does NOT run npm install. Node.js MCP servers need a `start.sh` wrapper that checks for `node_modules`, installs if missing, then `exec`'s into node. Output to stderr only (stdout is JSON-RPC)."
@@ -158,7 +158,7 @@
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md"
+          "os/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md"
         ],
         "recommendation": "Add agent registry session lifecycle note to plugin schema section",
         "content_draft": "- **Agent registry loaded at session start** — new agent `.md` files created mid-session are NOT available as `subagent_type`. Workaround: use `subagent_type: general-purpose` with full prompt. Proper fix: commit, publish, restart session."
@@ -166,7 +166,7 @@
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md"
+          "os/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md"
         ],
         "recommendation": "Add mid-session publish Stop hook breakage explanation",
         "content_draft": "- **Mid-session publish breaks Stop hooks**: Claude Code bakes hook paths at session start. When marketplace push triggers cache update, old version dir is deleted. `bump-version.sh` creates old->new symlink as mitigation."
@@ -174,7 +174,7 @@
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md"
+          "os/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md"
         ],
         "recommendation": "Add disable-model-invocation chaining rule to plugin schema section",
         "content_draft": "- **`disable-model-invocation: true` blocks Skill tool chaining** — if command A calls command B via Skill tool, B must have `disable-model-invocation: false`. Only use `true` for destructive operations (deploy, delete)."
@@ -182,7 +182,7 @@
       {
         "priority": "P1",
         "source_docs": [
-          "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md"
+          "os/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md"
         ],
         "recommendation": "Add duplicate MCP registration warning to plugin schema section",
         "content_draft": "- **Duplicate MCP registration**: an MCP server in both `plugin.json` AND `~/.claude/settings.json` creates two tool namespaces with doubled context cost (~12K tokens wasted). Check for duplicates with grep across settings. Run `claude doctor` periodically."
@@ -238,7 +238,7 @@
       {
         "priority": "P2",
         "source_docs": [
-          "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md"
+          "os/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md"
         ],
         "recommendation": "Add SKILL.md extraction pattern",
         "content_draft": "### Clavain Development Patterns\n\n- **SKILL.md inline logic extraction**: when a SKILL.md contains function definitions, raw SQL, or asymmetric apply/revert pairs, extract to `lib-*.sh` and have the SKILL.md call library functions."
@@ -303,17 +303,17 @@
   },
   "prune_candidates": [
     {
-      "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+      "path": "os/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
       "reason": "Key lessons are verbatim in MEMORY.md under 'Model Routing (B1 Sprint Learnings)' — resolution order, inherit sentinel, phase names all present",
       "verdict": "keep-as-historical"
     },
     {
-      "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-skill-tool-clavain-20260211.md",
+      "path": "os/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-skill-tool-clavain-20260211.md",
       "reason": "Superseded by disable-model-invocation-blocks-lfg-pipeline (broader fix, explicitly says it supersedes this doc)",
       "verdict": "delete"
     },
     {
-      "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+      "path": "os/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
       "reason": "Prevention rules already propagated verbatim to ~/.claude/CLAUDE.md under 'Settings Hygiene'",
       "verdict": "keep-as-historical"
     },
@@ -347,11 +347,11 @@
     {
       "theme": "Plugin lifecycle gotchas (cache, session, registry)",
       "docs": [
-        "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
-        "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
-        "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
-        "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
-        "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+        "os/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+        "os/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+        "os/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+        "os/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+        "os/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
         "plugins/interfluence/docs/solutions/marketplace-cached-clone-stale.md",
         "plugins/interkasten/docs/solutions/integration-issues/new-marketplace-plugin-not-installed-20260215.md",
         "plugins/tldr-swinton/docs/solutions/build-errors/stale-plugin-cache-ghost-entries.md"
@@ -382,7 +382,7 @@
     {
       "theme": "LLM output reliability (provenance, compounding, stale context)",
       "docs": [
-        "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+        "os/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
         "plugins/tldr-swinton/docs/solutions/best-practices/parallel-agents-miss-cross-cutting-schema-bugs.md"
       ],
       "lesson": "Two facets of the same problem: LLM agents operating on stale or primed context produce unreliable results. Provenance tracking distinguishes independent findings from echoes. Cross-cutting quality gates catch schema-level inconsistencies that no single parallel agent can detect."

@@ -9,7 +9,7 @@ This analysis examines where generated markers would be inserted in `setup.md` a
 ## File 1: setup.md
 
 ### File Path
-`/root/projects/Interverse/hub/clavain/commands/setup.md`
+`/root/projects/Interverse/os/clavain/commands/setup.md`
 
 ### High-Level Structure
 - **Lines 1-5**: YAML frontmatter (name, description, argument-hint)
@@ -95,7 +95,7 @@ Hardcoded conflicts:
 ## File 2: doctor.md
 
 ### File Path
-`/root/projects/Interverse/hub/clavain/commands/doctor.md`
+`/root/projects/Interverse/os/clavain/commands/doctor.md`
 
 ### High-Level Structure
 - **Lines 1-4**: YAML frontmatter
@@ -156,7 +156,7 @@ Each companion has nearly identical bash pattern:
 ## File 3: agent-rig.json
 
 ### File Path
-`/root/projects/Interverse/hub/clavain/agent-rig.json`
+`/root/projects/Interverse/os/clavain/agent-rig.json`
 
 ### Current Schema
 ```json
@@ -207,7 +207,7 @@ Each companion has nearly identical bash pattern:
 ## File 4: help.md
 
 ### File Path
-`/root/projects/Interverse/hub/clavain/commands/help.md`
+`/root/projects/Interverse/os/clavain/commands/help.md`
 
 **Finding:** No hardcoded plugin lists. This is a command reference file with:
 - Lines 8-23: Daily drivers table (command names, descriptions, examples)
@@ -220,7 +220,7 @@ Each companion has nearly identical bash pattern:
 ## File 5: upstream-sync.md
 
 ### File Path
-`/root/projects/Interverse/hub/clavain/commands/upstream-sync.md`
+`/root/projects/Interverse/os/clavain/commands/upstream-sync.md`
 
 **Finding:** No hardcoded plugin lists. This is a procedural guide for:
 - Lines 15-26: Automated pipeline explanation

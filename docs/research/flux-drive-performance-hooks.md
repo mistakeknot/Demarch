@@ -1,7 +1,7 @@
 # Hook Performance Review — Interverse Monorepo
 
 **Date:** 2026-02-20
-**Scope:** All Claude Code hook bindings across 11 plugins (hub/clavain + 10 companion plugins)
+**Scope:** All Claude Code hook bindings across 11 plugins (os/clavain + 10 companion plugins)
 **Reviewer:** fd-performance (Flux-drive Performance Reviewer)
 
 ---
@@ -118,7 +118,7 @@ This reads the full tool output JSON (potentially hundreds of KB for a Read or G
 
 ### Finding 2.1: clavain/session-start.sh — five find scans + two curl calls (HIGH)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/session-start.sh`
+**File:** `/root/projects/Interverse/os/clavain/hooks/session-start.sh`
 
 This script is synchronous (despite `"async": true` in hooks.json — async applies to the OS scheduling, not whether Claude waits for context injection; context injection via stdout is always synchronous to the session start). The script runs the following before delivering `additionalContext`:
 
@@ -180,7 +180,7 @@ fi
 
 ### Finding 2.2: sprint_brief_scan — O(N) grep per plan file on every session start (MEDIUM)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/sprint-scan.sh`
+**File:** `/root/projects/Interverse/os/clavain/hooks/sprint-scan.sh`
 
 `sprint_brief_scan()` is called synchronously inside `session-start.sh`. It runs:
 
@@ -201,7 +201,7 @@ fi
 
 `session-start.sh` itself also sources `lib-sprint.sh` **again** after `sprint-scan.sh` already sourced it, then calls `sprint_find_active` **again** — a duplicate `bd` call and a duplicate `jq` pipeline.
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` (lines 196-211)
+**File:** `/root/projects/Interverse/os/clavain/hooks/session-start.sh` (lines 196-211)
 ```bash
 source "${SCRIPT_DIR}/lib-sprint.sh" 2>/dev/null || true
 if type sprint_find_active &>/dev/null; then
@@ -218,7 +218,7 @@ And in `sprint-scan.sh`, `sprint_brief_scan()` also calls `sprint_find_active`. 
 
 ### Finding 2.3: interspect-session.sh — sqlite3 + `ic events tail` on every startup (MEDIUM)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/interspect-session.sh`
+**File:** `/root/projects/Interverse/os/clavain/hooks/interspect-session.sh`
 
 Runs async alongside session-start but does significant work:
 1. `sqlite3` — DB init check (runs migration SQL on every startup even when DB exists)
@@ -292,7 +292,7 @@ That is 5 hooks per Edit, potentially spawning 6-8 external processes (python3 �
 
 ### Finding 3.2: clavain/bead-agent-bind.sh — curl to Intermute on every bd claim (LOW)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/bead-agent-bind.sh`
+**File:** `/root/projects/Interverse/os/clavain/hooks/bead-agent-bind.sh`
 
 When an agent claims a bead (PostToolUse:Bash matching `bd update --status=in_progress` or `bd claim`), this script:
 1. Calls `bd show "$ISSUE_ID" --json` to read existing metadata
@@ -316,8 +316,8 @@ As noted in Finding 2.2, `sprint_find_active` (which calls `bd`) is invoked twic
 - Once directly in `session-start.sh` lines 201-212
 
 **Files:**
-- `/root/projects/Interverse/hub/clavain/hooks/session-start.sh` lines 176, 201
-- `/root/projects/Interverse/hub/clavain/hooks/sprint-scan.sh` line 354
+- `/root/projects/Interverse/os/clavain/hooks/session-start.sh` lines 176, 201
+- `/root/projects/Interverse/os/clavain/hooks/sprint-scan.sh` line 354
 
 The duplicate call produces no harm (idempotent read), but it is a wasted subprocess. The `bd` CLI may itself hit a SQLite database, making this a redundant disk read.
 
@@ -397,7 +397,7 @@ Also, `python3` is spawned for JSON encoding of the final output even when the h
 
 ### Finding 5.3: lib.sh companion discovery — no caching between session starts (MEDIUM)
 
-**File:** `/root/projects/Interverse/hub/clavain/hooks/lib.sh`
+**File:** `/root/projects/Interverse/os/clavain/hooks/lib.sh`
 
 All five `_discover_*_plugin` functions run `find` against the plugin cache every time they are called, with no caching. They check `INTERFLUX_ROOT`, `INTERLOCK_ROOT` etc. as env vars first (good), but in a typical session where these env vars are not pre-set, all five find scans run every SessionStart.
 

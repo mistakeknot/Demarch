@@ -3,7 +3,7 @@
 **Reviewed by:** Flux-drive Quality & Style Reviewer
 **Date:** 2026-02-21
 **Document:** `/root/projects/Interverse/docs/prds/2026-02-21-static-routing-table.md`
-**Brainstorm reference:** `/root/projects/Interverse/hub/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
+**Brainstorm reference:** `/root/projects/Interverse/os/clavain/docs/brainstorms/2026-02-20-static-routing-table-brainstorm.md`
 **Languages in scope:** Shell (Bash), YAML
 
 ---

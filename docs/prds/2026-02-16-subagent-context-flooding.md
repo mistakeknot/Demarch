@@ -24,14 +24,14 @@ Quality-gates currently receives agent results via TaskOutput inline. Change to:
 - Define OUTPUT_DIR: `.clavain/quality-gates/{timestamp}/`
 - Agent prompts tell agents to write to `{OUTPUT_DIR}/{agent-name}.md`
 - Synthesis reads verdict summaries instead of raw TaskOutput
-- Files: `hub/clavain/commands/quality-gates.md`
+- Files: `os/clavain/commands/quality-gates.md`
 
 ### F2: Review File Output (P0)
 Same pattern as quality-gates but for the review command:
 - Define OUTPUT_DIR: `.clavain/reviews/{pr-number or branch}/`
 - Agent prompts include file-based output contract
 - Synthesis reads from files
-- Files: `hub/clavain/commands/review.md`
+- Files: `os/clavain/commands/review.md`
 
 ### F3: Flux-Drive Verdict Integration (P1)
 Flux-drive already writes to files but reads everything fully in synthesis:
@@ -48,7 +48,7 @@ Same as F3 but for research:
 
 ### F5: Shared Output Contract (P1)
 Extract the common "write to file, not inline" prompt section into a reusable reference:
-- Create `hub/clavain/docs/output-contract.md` or equivalent
+- Create `os/clavain/docs/output-contract.md` or equivalent
 - Quality-gates, review, flux-drive, flux-research all reference it
 - Ensures consistency across all multi-agent processes
 

@@ -1,24 +1,24 @@
 [
   {
-    "path": "hub/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
+    "path": "os/clavain/docs/solutions/2026-02-19-extract-skillmd-inline-logic-to-library.md",
     "title": "Extract SKILL.md Inline Logic into Testable Library Functions",
     "action": "memory",
-    "target": "hub/clavain MEMORY.md or Interverse MEMORY.md",
+    "target": "os/clavain MEMORY.md or Interverse MEMORY.md",
     "recommendation": "Add a one-liner to MEMORY.md: 'SKILL.md inline logic extraction: when a SKILL.md contains function definitions, raw SQL, or asymmetric apply/revert pairs, extract to lib-*.sh and have the SKILL.md call library functions.' This is a reusable detection pattern for clavain development.",
     "already_covered": false,
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
+    "path": "os/clavain/docs/solutions/best-practices/agent-consolidation-stale-reference-sweep-20260210.md",
     "title": "Agent Consolidation with Complete Reference Sweep",
     "action": "agents_md",
-    "target": "hub/clavain/AGENTS.md",
+    "target": "os/clavain/AGENTS.md",
     "recommendation": "Add a 'Renaming/Deleting Agents' subsection under Component Conventions with the grep sweep checklist (10 locations to update) and the 'do NOT update historical records' rule. This is operational knowledge needed every time agents change.",
     "already_covered": false,
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
+    "path": "os/clavain/docs/solutions/best-practices/compounding-false-positive-feedback-loop-flux-drive-20260210.md",
     "title": "Provenance Tracking Breaks Compounding Feedback Loops",
     "action": "memory",
     "target": "Interverse MEMORY.md (cross-cutting section)",
@@ -27,7 +27,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
+    "path": "os/clavain/docs/solutions/best-practices/smoke-test-agent-instruction-conflict-20260210.md",
     "title": "Smoke Test Agent Prompts Must Override the Task Tool Write-First Wrapper",
     "action": "none",
     "target": "n/a",
@@ -36,7 +36,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
+    "path": "os/clavain/docs/solutions/best-practices/template-system-has-multiple-consumers-clodex-20260211.md",
     "title": "Template System Has Multiple Independent Consumers",
     "action": "none",
     "target": "n/a",
@@ -45,7 +45,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
+    "path": "os/clavain/docs/solutions/best-practices/unify-content-assembly-before-adding-variants-20260211.md",
     "title": "Unify Content-Assembly Abstractions Before Adding Variants",
     "action": "none",
     "target": "n/a",
@@ -54,7 +54,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
+    "path": "os/clavain/docs/solutions/integration-issues/codex-cli-deprecated-flags-clodex-20260211.md",
     "title": "Codex CLI Deprecated Flags Cause Agent Dispatch Failures",
     "action": "none",
     "target": "n/a",
@@ -63,7 +63,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
+    "path": "os/clavain/docs/solutions/integration-issues/glob-misses-subproject-files-galiana-20260215.md",
     "title": "Glob Pattern Misses Subproject Files in Monorepo",
     "action": "memory",
     "target": "Interverse MEMORY.md (cross-cutting section)",
@@ -72,7 +72,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
+    "path": "os/clavain/docs/solutions/integration-issues/mcp-plugin-missing-node-modules-20260210.md",
     "title": "MCP Plugin Cache Missing node_modules",
     "action": "memory",
     "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
@@ -81,7 +81,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
+    "path": "os/clavain/docs/solutions/integration-issues/new-agents-not-available-until-restart-20260210.md",
     "title": "New Agent Files Not Available as subagent_type Until Session Restart",
     "action": "memory",
     "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
@@ -90,7 +90,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
+    "path": "os/clavain/docs/solutions/integration-issues/oracle-browser-output-lost-flux-drive-20260211.md",
     "title": "Oracle Browser Mode Output Lost in Flux-Drive Reviews",
     "action": "claude_md",
     "target": "root ~/.claude/CLAUDE.md (Oracle section)",
@@ -99,7 +99,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
+    "path": "os/clavain/docs/solutions/integration-issues/stop-hooks-break-after-mid-session-publish-20260212.md",
     "title": "Stop Hooks Break After Mid-Session Plugin Publish",
     "action": "memory",
     "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
@@ -108,7 +108,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
+    "path": "os/clavain/docs/solutions/patterns/2026-02-20-hierarchical-config-resolution.md",
     "title": "Hierarchical Config Resolution with Sentinel Values",
     "action": "prune",
     "target": "n/a",
@@ -117,7 +117,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
+    "path": "os/clavain/docs/solutions/test-failures/pytest-conftest-import-error-20260210.md",
     "title": "Cannot Import Functions from conftest.py in Pytest",
     "action": "none",
     "target": "n/a",
@@ -126,7 +126,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
+    "path": "os/clavain/docs/solutions/workflow-issues/beads-precommit-hook-permission-denied-20260210.md",
     "title": "Beads Pre-Commit Hook Blocks Git Commits Due to JSONL Permission Mask",
     "action": "none",
     "target": "n/a",
@@ -135,7 +135,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
+    "path": "os/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-lfg-pipeline-clavain-20260211.md",
     "title": "disable-model-invocation Blocks All Command Chaining in /lfg Pipeline",
     "action": "memory",
     "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
@@ -144,7 +144,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-skill-tool-clavain-20260211.md",
+    "path": "os/clavain/docs/solutions/workflow-issues/disable-model-invocation-blocks-skill-tool-clavain-20260211.md",
     "title": "Plugin Command disable-model-invocation Blocks Programmatic Skill Tool Invocation",
     "action": "prune",
     "target": "n/a",
@@ -153,7 +153,7 @@
     "cross_cutting": false
   },
   {
-    "path": "hub/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
+    "path": "os/clavain/docs/solutions/workflow-issues/duplicate-mcp-server-context-bloat-20260210.md",
     "title": "Duplicate MCP Server Registration Wastes Context Budget",
     "action": "memory",
     "target": "Interverse MEMORY.md (Claude Code Plugin Schema section)",
@@ -162,7 +162,7 @@
     "cross_cutting": true
   },
   {
-    "path": "hub/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
+    "path": "os/clavain/docs/solutions/workflow-issues/settings-heredoc-permission-bloat-20260210.md",
     "title": "Settings Permission Bloat from Heredoc Bash Commands",
     "action": "prune",
     "target": "n/a",

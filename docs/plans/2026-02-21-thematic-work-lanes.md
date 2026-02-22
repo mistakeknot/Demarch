@@ -400,12 +400,12 @@ git commit -m "feat(discovery): DISCOVERY_LANE filter for lane-scoped work disco
 ### Task 7: Sprint integration — `--lane` flag
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (pass lane to discovery)
-- Modify: `hub/clavain/skills/sprint/sprint.md` (add `--lane` argument handling)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (pass lane to discovery)
+- Modify: `os/clavain/skills/sprint/sprint.md` (add `--lane` argument handling)
 
 **Step 1: Identify the integration points**
 
-Read `hub/clavain/skills/sprint/sprint.md` to find where discovery is invoked and where `--lane` argument parsing should go.
+Read `os/clavain/skills/sprint/sprint.md` to find where discovery is invoked and where `--lane` argument parsing should go.
 
 **Step 2: Add `--lane` argument parsing**
 
@@ -430,7 +430,7 @@ Run: `/clavain:sprint --lane=interop` — verify only interop-labeled beads appe
 **Step 5: Commit**
 
 ```bash
-cd hub/clavain && git add hooks/lib-sprint.sh skills/sprint/sprint.md
+cd os/clavain && git add hooks/lib-sprint.sh skills/sprint/sprint.md
 git commit -m "feat(sprint): --lane flag scopes discovery to a thematic lane"
 ```
 
@@ -439,9 +439,9 @@ git commit -m "feat(sprint): --lane flag scopes discovery to a thematic lane"
 ### Task 8: Auto-discovery — lane candidate proposal
 
 **Files:**
-- Create: `hub/clavain/skills/lane/SKILL.md`
-- Create: `hub/clavain/skills/lane/` directory
-- Modify: `hub/clavain/.claude-plugin/plugin.json` (register skill)
+- Create: `os/clavain/skills/lane/SKILL.md`
+- Create: `os/clavain/skills/lane/` directory
+- Modify: `os/clavain/.claude-plugin/plugin.json` (register skill)
 
 **Step 1: Design the `/clavain:lane` skill**
 
@@ -473,7 +473,7 @@ Run: `/clavain:lane discover` — verify it proposes reasonable lane groupings.
 **Step 5: Commit**
 
 ```bash
-cd hub/clavain && git add skills/lane/ .claude-plugin/plugin.json
+cd os/clavain && git add skills/lane/ .claude-plugin/plugin.json
 git commit -m "feat(clavain): /clavain:lane skill — discover, create, add, status"
 ```
 

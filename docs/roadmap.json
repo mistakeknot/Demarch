@@ -17,7 +17,7 @@
     },
     {
       "module": "clavain",
-      "location": "hub/clavain",
+      "location": "os/clavain",
       "version": "0.6.60",
       "has_roadmap": true,
       "roadmap_source": "markdown",
@@ -352,7 +352,7 @@
     },
     {
       "module": "clavain",
-      "location": "hub/clavain",
+      "location": "os/clavain",
       "version": "0.6.60",
       "has_roadmap": true,
       "roadmap_source": "markdown",
@@ -4696,7 +4696,7 @@
         "priority": "P4",
         "status": "planned",
         "source": "empty-module-roadmap",
-        "source_file": "hub/clavain/docs/clavain-roadmap.md",
+        "source_file": "os/clavain/docs/clavain-roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/clavain-roadmap.md, docs/roadmap.md, or docs/roadmap.json."
       },
@@ -5158,7 +5158,7 @@
   "module_highlights": [
     {
       "module": "clavain",
-      "location": "hub/clavain",
+      "location": "os/clavain",
       "summary": "Clavain is an autonomous software agency — 15 skills, 4 agents, 52 commands, 22 hooks, 1 MCP server. 31 companion plugins in the inter-* constellation. 1000 beads tracked, 660 closed, 339 open. Runs on its own TUI (Autarch), backed by Intercore kernel and Interspect profiler."
     },
     {

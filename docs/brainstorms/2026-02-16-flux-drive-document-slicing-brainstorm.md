@@ -101,6 +101,6 @@ Each fd-* agent currently receives the FULL document. For a 5-agent review of a 
 ## Prior Art
 
 - `plugins/interflux/skills/flux-drive/phases/slicing.md` — Complete spec (366 lines), never executed
-- `hub/clavain/docs/research/audit-flux-drive-token-flow.md` — Token flow audit identifying this as P0
+- `os/clavain/docs/research/audit-flux-drive-token-flow.md` — Token flow audit identifying this as P0
 - `/tmp/slicing-experiment/{a,b,c,d,e}/` — 5-variant experiment results
 - `docs/research/token-efficiency-agent-orchestration-2026.md` — Landscape analysis showing no other orchestrator does per-agent content slicing

@@ -8,7 +8,7 @@
 Interverse is a monorepo organizing 31 Claude Code plugins, the Clavain autonomous agent orchestrator (hub), auxiliary AI tools (Autarch), and three infrastructure layers:
 
 1. **Layer 1 (Kernel)**: `intercore` — SQLite-backed state machine for runs, phases, gates, dispatches, and tokens
-2. **Layer 2 (OS)**: `clavain` (hub/clavain/) — 15 skills, 52 commands, 12 hooks, orchestrates development lifecycle
+2. **Layer 2 (OS)**: `clavain` (os/clavain/) — 15 skills, 52 commands, 12 hooks, orchestrates development lifecycle
 3. **Layer 3 (Drivers)**: 31 companion plugins, each adding specialized capabilities
 
 All components follow lowercase naming (`interflux`, `interlock`, etc.), except proper nouns (Clavain, Autarch, Interverse).
@@ -225,9 +225,9 @@ python/ (Analysis engine)
 
 ---
 
-## 5. Clavain Skills — hub/clavain/skills/
+## 5. Clavain Skills — os/clavain/skills/
 
-**Location:** `/root/projects/Interverse/hub/clavain/skills/`  
+**Location:** `/root/projects/Interverse/os/clavain/skills/`  
 **Count:** 17 directories (15 SKILL.md + 2 utility libs)
 
 ### Skills Directory

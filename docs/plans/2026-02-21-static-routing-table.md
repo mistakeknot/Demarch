@@ -13,7 +13,7 @@ Implement a unified `config/routing.yaml` with two-section schema (subagents + d
 ### Task 1: Create `config/routing.yaml` (F1)
 **Bead:** iv-n4tt
 **Phase:** planned (as of 2026-02-21T04:15:56Z)
-**Files:** `hub/clavain/config/routing.yaml` (new)
+**Files:** `os/clavain/config/routing.yaml` (new)
 
 Create the routing config file with the schema from the PRD:
 - `subagents:` section with `defaults:` (model + categories), `phases:` (per-phase overrides), `overrides:` (per-agent pinning)
@@ -27,7 +27,7 @@ Create the routing config file with the schema from the PRD:
 ### Task 2: Write `scripts/lib-routing.sh` (F2)
 **Bead:** iv-yo9i
 **Phase:** planned (as of 2026-02-21T04:15:56Z)
-**Files:** `hub/clavain/scripts/lib-routing.sh` (new)
+**Files:** `os/clavain/scripts/lib-routing.sh` (new)
 **Depends on:** Task 1
 
 Implement the shell reader library with these functions:
@@ -103,7 +103,7 @@ Also test missing-file case: rename routing.yaml, verify all functions return em
 ### Task 3: Wire dispatch.sh to lib-routing.sh (F3)
 **Bead:** iv-re4l
 **Phase:** planned (as of 2026-02-21T04:15:56Z)
-**Files:** `hub/clavain/scripts/dispatch.sh` (modify)
+**Files:** `os/clavain/scripts/dispatch.sh` (modify)
 **Depends on:** Task 2
 
 Changes to dispatch.sh:
@@ -156,7 +156,7 @@ bash scripts/dispatch.sh --phase brainstorm --tier deep --help 2>&1 | grep "Phas
 ### Task 4: Update /model-routing command (F4)
 **Bead:** iv-pg8t
 **Phase:** planned (as of 2026-02-21T04:15:56Z)
-**Files:** `hub/clavain/commands/model-routing.md` (modify)
+**Files:** `os/clavain/commands/model-routing.md` (modify)
 **Depends on:** Task 2
 
 Rewrite the model-routing command to read/write routing.yaml:
@@ -184,7 +184,7 @@ The command still edits agent frontmatter as a secondary action (for backward co
 ### Task 5: Update interserve skill to pass `--phase` (F3 supplement)
 **Bead:** iv-re4l (same as Task 3)
 **Phase:** planned (as of 2026-02-21T04:15:56Z)
-**Files:** `hub/clavain/skills/interserve/SKILL.md` (modify), `hub/clavain/skills/interserve/references/cli-reference.md` (modify)
+**Files:** `os/clavain/skills/interserve/SKILL.md` (modify), `os/clavain/skills/interserve/references/cli-reference.md` (modify)
 **Depends on:** Task 3
 
 Update the interserve skill documentation to:

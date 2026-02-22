@@ -52,6 +52,6 @@ iv-dd9q (B1) → iv-lx00 (C2)
 
 - All beads created from `/root/projects/Interverse` (Interverse root beads DB at `.beads/`)
 - All titles prefixed with `[clavain]` for filtering
-- References to `hub/clavain/docs/roadmap.md` included in each description
+- References to `os/clavain/docs/roadmap.md` included in each description
 - The `beads.role` warning is cosmetic — beads were created successfully
 - Dependency wiring (`bd link`) not yet done — bead IDs are captured above for that step

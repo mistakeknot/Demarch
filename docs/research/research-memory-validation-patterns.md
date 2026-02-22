@@ -76,7 +76,7 @@ Three modules provide architectural precedents for intermem's metadata.db:
 
 Interspect databases exist in multiple projects:
 - `/root/projects/Interverse/.clavain/interspect/interspect.db`
-- `/root/projects/Interverse/hub/clavain/.clavain/interspect/interspect.db`
+- `/root/projects/Interverse/os/clavain/.clavain/interspect/interspect.db`
 - `/root/projects/Interverse/plugins/interkasten/.clavain/interspect/interspect.db`
 - `/root/projects/Interverse/plugins/intercheck/.clavain/interspect/interspect.db`
 - (and 6 more)

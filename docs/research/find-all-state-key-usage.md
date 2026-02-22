@@ -1,7 +1,7 @@
 # State Key Usage: `ic state set` and `intercore_state_set`
 
 **Date:** 2026-02-19
-**Scope:** All shell scripts in `hub/clavain/hooks/`, `infra/intercore/`, and supporting docs.
+**Scope:** All shell scripts in `os/clavain/hooks/`, `infra/intercore/`, and supporting docs.
 
 ---
 
@@ -15,7 +15,7 @@ Three state keys are currently in use in **live production shell code** (hooks a
 
 ### 1. `checkpoint`
 
-**Used in:** `hub/clavain/hooks/lib-sprint.sh`
+**Used in:** `os/clavain/hooks/lib-sprint.sh`
 
 Primary storage for sprint checkpoint data (bead ID, phase, step, plan path, git SHA, timestamps, completed steps, key decisions).
 
@@ -38,7 +38,7 @@ ckpt=$(intercore_state_get "checkpoint" "$run_id") || ckpt=""
 
 ### 2. `cursor`
 
-**Used in:** `hub/clavain/hooks/lib-intercore.sh` (the `intercore_events_cursor_set` wrapper function)
+**Used in:** `os/clavain/hooks/lib-intercore.sh` (the `intercore_events_cursor_set` wrapper function)
 
 Stores event bus consumer cursor positions. Written with `--ttl=24h`.
 
@@ -56,7 +56,7 @@ echo "{\"phase\":${phase_id},\"dispatch\":${dispatch_id}}" | \
 
 ### 3. `discovery_brief` (delete-only)
 
-**Used in:** `hub/clavain/hooks/lib-sprint.sh` (the `sprint_invalidate_discovery_cache` function)
+**Used in:** `os/clavain/hooks/lib-sprint.sh` (the `sprint_invalidate_discovery_cache` function)
 
 The key is **deleted** (all scopes) when sprint state changes, invalidating cached discovery briefs.
 
@@ -155,10 +155,10 @@ These appear in `docs/research/`, `docs/plans/`, or `docs/prds/` — they repres
 
 ## Source Files Searched
 
-- `/root/projects/Interverse/hub/clavain/hooks/lib-sprint.sh` — checkpoint r/w, discovery_brief delete
-- `/root/projects/Interverse/hub/clavain/hooks/lib-intercore.sh` — intercore_state_set wrapper def, cursor write
+- `/root/projects/Interverse/os/clavain/hooks/lib-sprint.sh` — checkpoint r/w, discovery_brief delete
+- `/root/projects/Interverse/os/clavain/hooks/lib-intercore.sh` — intercore_state_set wrapper def, cursor write
 - `/root/projects/Interverse/infra/intercore/lib-intercore.sh` — upstream source of lib-intercore.sh
 - `/root/projects/Interverse/infra/intercore/test-integration.sh` — integration tests (dispatch, ephemeral, bad)
-- All other `.sh` files in `hub/clavain/hooks/` — no additional `ic state set` calls found
-- All `.sh` files in `hub/clavain/scripts/` — no `ic state set` calls found
+- All other `.sh` files in `os/clavain/hooks/` — no additional `ic state set` calls found
+- All `.sh` files in `os/clavain/scripts/` — no `ic state set` calls found
 - Research and plan docs — used to identify aspirational keys vs live usage

@@ -4,8 +4,8 @@
 **Date:** 2026-02-19
 
 ## Inputs
-- Brainstorm context: `hub/clavain/docs/brainstorms/2026-02-14-clavain-vision-philosophy-brainstorm.md` (Research area #10)
-- Research basis: `hub/clavain/docs/research/research-product-management-ai-workflows.md`
+- Brainstorm context: `os/clavain/docs/brainstorms/2026-02-14-clavain-vision-philosophy-brainstorm.md` (Research area #10)
+- Research basis: `os/clavain/docs/research/research-product-management-ai-workflows.md`
 
 ## Goal
 Design a practical bias-check framework for Clavain product decisions so high-risk LLM judgment outputs are flagged for human escalation.

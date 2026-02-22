@@ -1479,14 +1479,14 @@ git commit -m "feat(wrapper): add rollback bash wrappers (v0.7.0)"
 ## Task 10: Sync Wrapper to Clavain + Update CLAUDE.md
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-intercore.sh` (copy from intercore)
+- Modify: `os/clavain/hooks/lib-intercore.sh` (copy from intercore)
 - Modify: `infra/intercore/CLAUDE.md` (add rollback quick ref)
 
 **Step 1: Copy updated wrapper to Clavain**
 
 ```bash
 cp /root/projects/Interverse/infra/intercore/lib-intercore.sh \
-   /root/projects/Interverse/hub/clavain/hooks/lib-intercore.sh
+   os/clavain/hooks/lib-intercore.sh
 ```
 
 **Step 2: Update CLAUDE.md with rollback quick reference**
@@ -1519,7 +1519,7 @@ git commit -m "docs: add rollback quick reference to CLAUDE.md"
 **Step 4: Commit Clavain wrapper sync**
 
 ```bash
-cd /root/projects/Interverse/hub/clavain
+cd os/clavain
 git add hooks/lib-intercore.sh
 git commit -m "sync: lib-intercore.sh v0.7.0 (rollback wrappers)"
 ```

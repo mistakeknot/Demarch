@@ -18,7 +18,7 @@
 ### Task 1: Create lib-sprint.sh — Sprint State Library
 
 **Files:**
-- Create: `hub/clavain/hooks/lib-sprint.sh`
+- Create: `os/clavain/hooks/lib-sprint.sh`
 
 **Step 1: Write the library**
 
@@ -434,13 +434,13 @@ sprint_invalidate_caches() {
 
 **Step 2: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/lib-sprint.sh`
+Run: `bash -n os/clavain/hooks/lib-sprint.sh`
 Expected: No output (clean parse)
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(clavain): add lib-sprint.sh — sprint state library"
 ```
 
@@ -449,7 +449,7 @@ git commit -m "feat(clavain): add lib-sprint.sh — sprint state library"
 ### Task 2: Write lib-sprint.sh Tests
 
 **Files:**
-- Create: `hub/clavain/tests/shell/test-lib-sprint.bats`
+- Create: `os/clavain/tests/shell/test-lib-sprint.bats`
 
 **Step 1: Write the test file**
 
@@ -483,13 +483,13 @@ Use mock `bd` functions (override in test setup) to avoid requiring a real beads
 
 **Step 2: Run tests**
 
-Run: `bats hub/clavain/tests/shell/test-lib-sprint.bats`
+Run: `bats os/clavain/tests/shell/test-lib-sprint.bats`
 Expected: All 16 tests pass
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/tests/shell/test-lib-sprint.bats
+git add os/clavain/tests/shell/test-lib-sprint.bats
 git commit -m "test(clavain): add lib-sprint.sh test suite"
 ```
 
@@ -498,7 +498,7 @@ git commit -m "test(clavain): add lib-sprint.sh test suite"
 ### Task 3: Modify sprint.md — Sprint Bead Resume
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint.md`
+- Modify: `os/clavain/commands/sprint.md`
 
 **Step 1: Rewrite the "Before Starting" section**
 
@@ -570,7 +570,7 @@ Read the modified sprint.md and verify all bash code blocks have matching ``` de
 **Step 5: Commit**
 
 ```bash
-git add hub/clavain/commands/sprint.md
+git add os/clavain/commands/sprint.md
 git commit -m "feat(clavain): rewrite sprint.md for bead-first resume"
 ```
 
@@ -579,7 +579,7 @@ git commit -m "feat(clavain): rewrite sprint.md for bead-first resume"
 ### Task 4: Modify strategy.md — Sprint-Aware Feature Beads
 
 **Files:**
-- Modify: `hub/clavain/commands/strategy.md`
+- Modify: `os/clavain/commands/strategy.md`
 
 **Step 1: Add sprint detection**
 
@@ -632,7 +632,7 @@ fi
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/commands/strategy.md
+git add os/clavain/commands/strategy.md
 git commit -m "feat(clavain): make strategy.md sprint-aware (use sprint bead as epic)"
 ```
 
@@ -641,7 +641,7 @@ git commit -m "feat(clavain): make strategy.md sprint-aware (use sprint bead as 
 ### Task 5: Modify session-start.sh — Sprint Resume Hint
 
 **Files:**
-- Modify: `hub/clavain/hooks/session-start.sh`
+- Modify: `os/clavain/hooks/session-start.sh`
 
 **Step 1: Add sprint detection after discovery scan**
 
@@ -677,13 +677,13 @@ Add `${sprint_resume_hint}` to the output JSON template, after `${discovery_cont
 
 **Step 3: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/session-start.sh`
+Run: `bash -n os/clavain/hooks/session-start.sh`
 Expected: No output (clean parse)
 
 **Step 4: Commit**
 
 ```bash
-git add hub/clavain/hooks/session-start.sh
+git add os/clavain/hooks/session-start.sh
 git commit -m "feat(clavain): add sprint resume hint to SessionStart hook"
 ```
 
@@ -692,7 +692,7 @@ git commit -m "feat(clavain): add sprint resume hint to SessionStart hook"
 ### Task 6: Modify sprint-scan.sh — Sprint Progress Section
 
 **Files:**
-- Modify: `hub/clavain/hooks/sprint-scan.sh`
+- Modify: `os/clavain/hooks/sprint-scan.sh`
 
 **Step 1: Add sprint progress to sprint_full_scan**
 
@@ -786,13 +786,13 @@ fi
 
 **Step 3: Syntax check**
 
-Run: `bash -n hub/clavain/hooks/sprint-scan.sh`
+Run: `bash -n os/clavain/hooks/sprint-scan.sh`
 Expected: Clean parse
 
 **Step 4: Commit**
 
 ```bash
-git add hub/clavain/hooks/sprint-scan.sh
+git add os/clavain/hooks/sprint-scan.sh
 git commit -m "feat(clavain): add sprint progress to sprint-scan.sh"
 ```
 
@@ -801,7 +801,7 @@ git commit -m "feat(clavain): add sprint progress to sprint-scan.sh"
 ### Task 7: Update sprint-status.md — Sprint-Aware Output
 
 **Files:**
-- Modify: `hub/clavain/commands/sprint-status.md`
+- Modify: `os/clavain/commands/sprint-status.md`
 
 **Step 1: Add sprint section reference**
 
@@ -817,7 +817,7 @@ Shows sprint beads in progress with progress bars, artifact links, and session c
 **Step 2: Commit**
 
 ```bash
-git add hub/clavain/commands/sprint-status.md
+git add os/clavain/commands/sprint-status.md
 git commit -m "docs(clavain): document Active Sprints section in sprint-status"
 ```
 
@@ -826,7 +826,7 @@ git commit -m "docs(clavain): document Active Sprints section in sprint-status"
 ### Task 8: Update CLAUDE.md — Add lib-sprint.sh to Quick Commands
 
 **Files:**
-- Modify: `hub/clavain/CLAUDE.md`
+- Modify: `os/clavain/CLAUDE.md`
 
 **Step 1: Add syntax check**
 
@@ -839,7 +839,7 @@ bash -n hooks/lib-sprint.sh             # Syntax check (sprint state library)
 **Step 2: Commit**
 
 ```bash
-git add hub/clavain/CLAUDE.md
+git add os/clavain/CLAUDE.md
 git commit -m "docs(clavain): add lib-sprint.sh to quick commands"
 ```
 
@@ -848,7 +848,7 @@ git commit -m "docs(clavain): add lib-sprint.sh to quick commands"
 ### Task 9: Integration Test — End-to-End Sprint Resume
 
 **Files:**
-- Create: `hub/clavain/tests/shell/test-sprint-resume.bats`
+- Create: `os/clavain/tests/shell/test-sprint-resume.bats`
 
 **Step 1: Write integration test**
 
@@ -869,13 +869,13 @@ Test the full flow:
 
 **Step 2: Run tests**
 
-Run: `bats hub/clavain/tests/shell/test-sprint-resume.bats`
+Run: `bats os/clavain/tests/shell/test-sprint-resume.bats`
 Expected: All pass
 
 **Step 3: Commit**
 
 ```bash
-git add hub/clavain/tests/shell/test-sprint-resume.bats
+git add os/clavain/tests/shell/test-sprint-resume.bats
 git commit -m "test(clavain): add sprint resume integration tests"
 ```
 
@@ -884,7 +884,7 @@ git commit -m "test(clavain): add sprint resume integration tests"
 ### Task 10: Interline Statusline Update
 
 **Files:**
-- Modify: `hub/clavain/hooks/lib-sprint.sh` (add statusline update)
+- Modify: `os/clavain/hooks/lib-sprint.sh` (add statusline update)
 
 **Step 1: Update statusline state on phase advance**
 
@@ -895,7 +895,7 @@ Verify that the existing interline statusline renderer reads the bead state file
 **Step 2: Commit (if changes needed)**
 
 ```bash
-git add hub/clavain/hooks/lib-sprint.sh
+git add os/clavain/hooks/lib-sprint.sh
 git commit -m "feat(clavain): ensure statusline updates on sprint phase changes"
 ```
 
@@ -905,10 +905,10 @@ git commit -m "feat(clavain): ensure statusline updates on sprint phase changes"
 
 After all tasks are complete:
 
-- [ ] `bash -n hub/clavain/hooks/lib-sprint.sh` — clean parse
-- [ ] `bash -n hub/clavain/hooks/session-start.sh` — clean parse
-- [ ] `bash -n hub/clavain/hooks/sprint-scan.sh` — clean parse
-- [ ] `bats hub/clavain/tests/shell/test-lib-sprint.bats` — all pass
-- [ ] `bats hub/clavain/tests/shell/test-sprint-resume.bats` — all pass
+- [ ] `bash -n os/clavain/hooks/lib-sprint.sh` — clean parse
+- [ ] `bash -n os/clavain/hooks/session-start.sh` — clean parse
+- [ ] `bash -n os/clavain/hooks/sprint-scan.sh` — clean parse
+- [ ] `bats os/clavain/tests/shell/test-lib-sprint.bats` — all pass
+- [ ] `bats os/clavain/tests/shell/test-sprint-resume.bats` — all pass
 - [ ] `python3 -c "import json; json.load(open('.claude-plugin/plugin.json'))"` — manifest valid
 - [ ] Manually test: `source hooks/lib-sprint.sh && sprint_create "test" && sprint_find_active`
