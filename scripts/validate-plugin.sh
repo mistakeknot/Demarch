@@ -164,8 +164,8 @@ validate_plugin() {
         if [ "$std_hooks" != "$declared_resolved" ]; then
             # Standard-path hooks exist but aren't the declared path
             if [ -z "$hooks_path" ]; then
-                # 9. Undeclared hooks.json on disk
-                error "hooks/hooks.json exists on disk but not declared in plugin.json"
+                # 9. Undeclared hooks.json on disk (warn, not error — standard path may be auto-loaded)
+                warn "hooks/hooks.json exists on disk but not declared in plugin.json (may be auto-loaded)"
             fi
             validate_hooks_json "$std_hooks" "$(basename "$(dirname "$std_hooks")")/hooks.json"
         fi
@@ -257,6 +257,15 @@ check_undeclared_dir() {
     local dir_name="$3"
     local json_key="$4"
 
+    # If the key is absent from plugin.json entirely, the plugin uses
+    # Claude Code auto-discovery — all files in the directory are loaded
+    # automatically, so nothing is "undeclared."
+    local key_type
+    key_type=$(jq -r ".${json_key} | type" "$plugin_json" 2>/dev/null)
+    if [ "$key_type" = "null" ]; then
+        return
+    fi
+
     # Collect declared paths
     local declared
     declared=$(jq -r ".${json_key}[]? // empty" "$plugin_json" 2>/dev/null | while IFS= read -r p; do
@@ -293,11 +302,10 @@ check_undeclared_dir() {
             if ! $is_declared; then
                 case "$json_key" in
                     skills)
-                        # Error on undeclared skill directories
-                        [ -d "$found" ] && error "$dir_name: undeclared directory '$rel' exists on disk"
+                        [ -d "$found" ] && warn "$dir_name: undeclared directory '$rel' exists on disk"
                         ;;
                     commands|agents)
-                        [[ "$found" == *.md ]] && error "$dir_name: undeclared file '$rel' exists on disk"
+                        [[ "$found" == *.md ]] && warn "$dir_name: undeclared file '$rel' exists on disk"
                         ;;
                 esac
             fi
