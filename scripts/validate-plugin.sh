@@ -165,7 +165,7 @@ validate_plugin() {
             # Standard-path hooks exist but aren't the declared path
             if [ -z "$hooks_path" ]; then
                 # 9. Undeclared hooks.json on disk
-                warn "hooks/hooks.json exists on disk but not declared in plugin.json (may be auto-loaded)"
+                error "hooks/hooks.json exists on disk but not declared in plugin.json"
             fi
             validate_hooks_json "$std_hooks" "$(basename "$(dirname "$std_hooks")")/hooks.json"
         fi
@@ -249,7 +249,7 @@ validate_hooks_json() {
 }
 
 # =============================================================================
-# Check for undeclared files on disk (warn only)
+# Check for undeclared files on disk (error — must be declared)
 # =============================================================================
 check_undeclared_dir() {
     local plugin_root="$1"
@@ -293,11 +293,11 @@ check_undeclared_dir() {
             if ! $is_declared; then
                 case "$json_key" in
                     skills)
-                        # Only warn about directories, not individual skill files within
-                        [ -d "$found" ] && warn "$dir_name: undeclared directory '$rel' exists on disk"
+                        # Error on undeclared skill directories
+                        [ -d "$found" ] && error "$dir_name: undeclared directory '$rel' exists on disk"
                         ;;
                     commands|agents)
-                        [[ "$found" == *.md ]] && warn "$dir_name: undeclared file '$rel' exists on disk"
+                        [[ "$found" == *.md ]] && error "$dir_name: undeclared file '$rel' exists on disk"
                         ;;
                 esac
             fi
