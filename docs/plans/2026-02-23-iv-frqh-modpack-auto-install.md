@@ -1,6 +1,7 @@
 # Plan: Modpack Auto-Install in clavain:setup
 
 **Bead:** iv-frqh
+**Phase:** executing (as of 2026-02-23T16:43:50Z)
 **Date:** 2026-02-23
 **Complexity:** 2/5 (simple)
 
@@ -30,7 +31,7 @@ Add a `scripts/modpack-install.sh` script to Clavain that:
 
 ## Tasks
 
-### Task 1: Create `scripts/modpack-install.sh`
+### Task 1: Create `scripts/modpack-install.sh` [DONE]
 
 **File:** `os/clavain/scripts/modpack-install.sh`
 
@@ -53,7 +54,7 @@ Shell script that:
   }
   ```
 
-### Task 2: Update `commands/setup.md` to use the script
+### Task 2: Update `commands/setup.md` to use the script [DONE]
 
 Replace the manual install lists in Steps 2, 2b, and 3 with:
 
@@ -65,7 +66,7 @@ Replace the manual install lists in Steps 2, 2b, and 3 with:
 
 Keep the `<!-- agent-rig:begin/end -->` markers and inline lists as **fallback documentation** — if jq isn't available or the script fails, the setup command can still guide manual installation.
 
-### Task 3: Add `--check-only` mode to the script
+### Task 3: Add `--check-only` mode to the script [DONE]
 
 When `--check-only` is passed:
 - Don't install anything
