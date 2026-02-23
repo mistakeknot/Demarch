@@ -105,15 +105,15 @@ All three are essentially **homogeneous per task type**: every review gets Sonne
 
 ## Implementation Plan
 
-### Phase A: Enable B2 Complexity Routing (~1 day)
-- Set `complexity.mode: shadow` in `routing.yaml`
-- Add logging to lib-routing.sh to emit `{task, complexity_tier, model_chosen, model_baseline}`
-- Run 20+ reviews in shadow mode, collect data
+### Phase A: Enable B2 Complexity Routing (~1 day) — DONE
+- [x] Set `complexity.mode: shadow` in `routing.yaml` (2026-02-23)
+- [x] Add logging to lib-routing.sh to emit `{task, complexity_tier, model_chosen, model_baseline}` — already implemented (B2-shadow logs)
+- [ ] Run 20+ reviews in shadow mode, collect data — collecting passively
 
-### Phase B: Role-Aware Agent Configuration (~1 day)
-- Add `role` field to flux-drive agent profile (Planner/Editor/Reviewer/Checker)
-- Add `model_override` per role in `routing.yaml`
-- Shadow mode: log what model WOULD be used, compare output quality
+### Phase B: Role-Aware Agent Configuration (~1 day) — DONE
+- [x] Add `role` field to flux-drive agent profile (Planner/Editor/Reviewer/Checker) — `config/flux-drive/agent-roles.yaml` created (2026-02-23)
+- [x] Add `model_override` per role in `routing.yaml` — B2 tier overrides already cover this
+- [ ] Shadow mode: log what model WOULD be used, compare output quality — collecting passively
 
 ### Phase C: Experiment Execution (~2 days)
 - Run experiments 1-4 using interbench for capture
