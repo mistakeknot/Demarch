@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "interserve": {
+      "command": "bash",
+      "args": [
+        "/home/mk/projects/Demarch/interverse/interserve/bin/launch-mcp.sh"
+      ]
+    },
+    "intermap": {
+      "command": "bash",
+      "args": [
+        "/home/mk/projects/Demarch/interverse/intermap/bin/launch-mcp.sh"
+      ]
+    },
+    "intermux": {
+      "command": "bash",
+      "args": [
+        "/home/mk/projects/Demarch/interverse/intermux/bin/launch-mcp.sh"
+      ]
+    },
+    "interlock": {
+      "command": "bash",
+      "args": [
+        "/home/mk/projects/Demarch/interverse/interlock/bin/launch-mcp.sh"
+      ]
+    }
+  }
+}
