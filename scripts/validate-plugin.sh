@@ -88,6 +88,17 @@ validate_plugin() {
         error "plugin.json: author must be object, got $author_type"
     fi
 
+    # --- 3b. Unrecognized top-level keys (Claude Code rejects unknown keys) ---
+    local known_keys="name version description author repository homepage license keywords skills commands agents mcpServers hooks lspServers"
+    local actual_keys
+    actual_keys=$(jq -r 'keys[]' "$plugin_json" 2>/dev/null)
+    while IFS= read -r key; do
+        [ -z "$key" ] && continue
+        if ! echo " $known_keys " | grep -q " $key "; then
+            error "plugin.json: unrecognized key '$key' (Claude Code will reject this)"
+        fi
+    done <<< "$actual_keys"
+
     # --- 4-6. Declared files exist on disk ---
     local all_ok=true
 
@@ -144,6 +155,11 @@ validate_plugin() {
         if [ ! -f "$hooks_file" ]; then
             error "hooks: declared file '$hooks_path' does not exist"
         else
+            # Check for duplicate hooks declaration (standard path is auto-loaded)
+            local norm_hooks="${hooks_path#./}"
+            if [ "$norm_hooks" = "hooks/hooks.json" ]; then
+                error "hooks: declaring './hooks/hooks.json' is redundant — Claude Code auto-loads this path, causing duplicate hooks error"
+            fi
             validate_hooks_json "$hooks_file" "$hooks_path"
         fi
     fi
