@@ -106,6 +106,17 @@ echo -e "${CYAN}Files:${NC}       ${VERSION_FILES[*]}"
 echo -e "${CYAN}Marketplace:${NC} $(realpath --relative-to="$PWD" "$MARKETPLACE_JSON" 2>/dev/null || echo "$MARKETPLACE_JSON") ($MARKETPLACE_CURRENT → $VERSION)"
 echo ""
 
+# --- Pre-publish validation gate ---
+VALIDATE_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/validate-plugin.sh"
+if [ -f "$VALIDATE_SCRIPT" ] && ! $DRY_RUN; then
+    echo -e "${CYAN}Running pre-publish validation...${NC}"
+    if ! bash "$VALIDATE_SCRIPT" 2>&1; then
+        echo -e "\n${RED}Error: Plugin validation failed. Fix issues above before publishing.${NC}" >&2
+        exit 1
+    fi
+    echo ""
+fi
+
 # --- Post-bump hook (plugin-specific pre-commit work) ---
 POST_BUMP="$PLUGIN_ROOT/scripts/post-bump.sh"
 if [ -f "$POST_BUMP" ]; then
