@@ -489,6 +489,7 @@ append_cross_dependencies() {
 require jq
 
 TMP_DIR="$(mktemp -d)"
+chmod 700 "$TMP_DIR"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 MODULES_FILE="$TMP_DIR/modules.jsonl"

@@ -135,15 +135,17 @@ $content"
         return 2
     fi
 
-    # Write compact file via temp to avoid partial writes
+    # Write compact file via temp (owner-only permissions — T1 hardening)
     local tmpfile
     tmpfile=$(mktemp)
+    chmod 600 "$tmpfile"
     echo "$output" > "$tmpfile"
     mv "$tmpfile" "$skill_dir/SKILL-compact.md"
     echo "Wrote: $skill_dir/SKILL-compact.md ($(wc -l < "$skill_dir/SKILL-compact.md") lines)" >&2
 
-    # Write manifest via temp to avoid partial writes
+    # Write manifest via temp (owner-only permissions — T1 hardening)
     tmpfile=$(mktemp)
+    chmod 600 "$tmpfile"
     compute_manifest "$skill_dir" > "$tmpfile"
     mv "$tmpfile" "$skill_dir/.skill-compact-manifest.json"
     echo "Wrote: $skill_dir/.skill-compact-manifest.json" >&2
