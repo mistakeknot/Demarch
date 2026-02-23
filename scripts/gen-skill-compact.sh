@@ -28,6 +28,16 @@ KNOWN_SKILLS=(
     "interverse/interwatch/skills/doc-watch"
     "interverse/interpath/skills/artifact-gen"
     "interverse/interflux/skills/flux-drive"
+    "os/clavain/skills/interserve"
+    "os/clavain/skills/engineering-docs"
+    "os/clavain/skills/subagent-driven-development"
+    "os/clavain/skills/dispatching-parallel-agents"
+    "os/clavain/skills/file-todos"
+    "os/clavain/skills/writing-plans"
+    "os/clavain/skills/code-review-discipline"
+    "os/clavain/skills/landing-a-change"
+    "os/clavain/skills/executing-plans"
+    "os/clavain/skills/brainstorming"
 )
 
 # ─── Helpers ──────────────────────────────────────────────────────────
