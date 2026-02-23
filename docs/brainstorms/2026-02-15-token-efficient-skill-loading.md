@@ -1,6 +1,6 @@
 # Token-Efficient Skill Loading
 
-**Bead:** Clavain-1lri
+**Bead:** iv-sytm
 **Date:** 2026-02-15
 **Status:** Brainstorm complete, ready for strategy
 

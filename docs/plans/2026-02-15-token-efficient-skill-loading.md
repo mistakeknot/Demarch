@@ -1,6 +1,6 @@
 # Token-Efficient Skill Loading — Implementation Plan
 
-**Bead:** Clavain-1lri
+**Bead:** iv-sytm
 **PRD:** [`docs/prds/2026-02-15-token-efficient-skill-loading.md`](../prds/2026-02-15-token-efficient-skill-loading.md)
 **Date:** 2026-02-15
 **Phase:** plan-reviewed (v2 — addresses fd-architecture P0 + fd-quality P1 findings)
