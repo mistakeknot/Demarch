@@ -167,6 +167,32 @@ log ""
 # --- Installation ---
 log "${BOLD}Installing...${RESET}"
 
+# Step 0: Fix stale marketplace paths in known_marketplaces.json
+# Claude Code stores absolute installLocation paths at add-time. If the user's
+# $HOME has changed (different machine, different user, dotfile sync), marketplace
+# update fails trying to clone to a nonexistent path. Fix: rewrite all
+# installLocation values to use the current $HOME.
+KNOWN_MKT="${HOME}/.claude/plugins/known_marketplaces.json"
+if [[ -f "$KNOWN_MKT" ]] && command -v jq &>/dev/null; then
+    EXPECTED_PREFIX="${HOME}/.claude/plugins/marketplaces"
+    NEEDS_FIX=$(jq -r --arg pfx "$EXPECTED_PREFIX" '
+        to_entries[]
+        | select(.value.installLocation != null)
+        | select(.value.installLocation | startswith($pfx) | not)
+        | .key' "$KNOWN_MKT" 2>/dev/null)
+    if [[ -n "$NEEDS_FIX" ]]; then
+        debug "Fixing stale marketplace paths in known_marketplaces.json"
+        jq --arg prefix "$EXPECTED_PREFIX" '
+            to_entries | map(
+                if .value.installLocation != null then
+                    .value.installLocation = ($prefix + "/" + .key)
+                else . end
+            ) | from_entries' "$KNOWN_MKT" > "${KNOWN_MKT}.tmp" && \
+            mv "${KNOWN_MKT}.tmp" "$KNOWN_MKT"
+        success "Fixed marketplace paths for current \$HOME"
+    fi
+fi
+
 # Step 1: Add marketplace
 log "  Adding interagency-marketplace..."
 MARKET_OUT=$(run claude plugin marketplace add mistakeknot/interagency-marketplace 2>&1) && {
