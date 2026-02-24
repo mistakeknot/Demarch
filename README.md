@@ -21,7 +21,7 @@ Then open Claude Code and run:
 ## What You Get
 
 - **Clavain** — the agent rig: brainstorm → strategy → plan → execute → review → ship
-- **33+ companion plugins** — multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing (the inter-* constellation, because naming things is hard and we committed early)
+- **33+ companion plugins** — multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing (the inter-* constellation, because naming things is hard)
 - **Multi-model orchestration** — Claude does the heavy lifting, Codex runs parallel tasks, GPT-5.2 Pro provides a second opinion via Oracle
 - **Sprint management** — track work with Beads, auto-discover what to work on next
 

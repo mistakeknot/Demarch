@@ -38,7 +38,7 @@ Layers describe dependency: L1 (core) has no upward dependencies, L2 (OS) depend
 
 ### Trunk-Based Development
 
-We commit directly to `main`. No feature branches unless explicitly discussed. This keeps the feedback loop tight.
+Commits go directly to `main`. No feature branches unless explicitly discussed. This keeps the feedback loop tight.
 
 ### Making Changes
 
