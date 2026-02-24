@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Curl-fetchable installer for Demarch (Clavain + Interverse)
+# install.sh -- Curl-fetchable installer for Demarch (Clavain + Interverse)
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/mistakeknot/Demarch/main/install.sh | bash
@@ -42,7 +42,7 @@ for arg in "$@"; do
     case "$arg" in
         --help|-h)
             cat <<'USAGE'
-install.sh — Curl-fetchable installer for Demarch (Clavain + Interverse)
+install.sh -- Curl-fetchable installer for Demarch (Clavain + Interverse)
 
 Usage:
   curl -fsSL https://raw.githubusercontent.com/mistakeknot/Demarch/main/install.sh | bash
@@ -150,19 +150,31 @@ log "${BOLD}Installing...${RESET}"
 
 # Step 1: Add marketplace
 log "  Adding interagency-marketplace..."
-if run claude plugins marketplace add mistakeknot/interagency-marketplace 2>/dev/null; then
+MARKET_OUT=$(run claude plugins marketplace add mistakeknot/interagency-marketplace 2>&1) && {
     [[ "$DRY_RUN" != true ]] && success "Marketplace added"
-else
-    warn "Marketplace add returned non-zero (may already be added — continuing)"
-fi
+} || {
+    if echo "$MARKET_OUT" | grep -qi "already"; then
+        [[ "$DRY_RUN" != true ]] && success "Marketplace already added"
+    else
+        fail "Marketplace add failed:"
+        log "  $MARKET_OUT"
+        exit 1
+    fi
+}
 
 # Step 2: Install Clavain
 log "  Installing Clavain..."
-if run claude plugins install clavain@interagency-marketplace 2>/dev/null; then
+INSTALL_OUT=$(run claude plugins install clavain@interagency-marketplace 2>&1) && {
     [[ "$DRY_RUN" != true ]] && success "Clavain installed"
-else
-    warn "Plugin install returned non-zero (may already be installed — continuing)"
-fi
+} || {
+    if echo "$INSTALL_OUT" | grep -qi "already"; then
+        [[ "$DRY_RUN" != true ]] && success "Clavain already installed"
+    else
+        fail "Clavain install failed:"
+        log "  $INSTALL_OUT"
+        exit 1
+    fi
+}
 
 # Step 3: Beads init (conditional)
 if [[ "$HAS_BD" == true ]] && git rev-parse --is-inside-work-tree &>/dev/null; then
@@ -170,7 +182,7 @@ if [[ "$HAS_BD" == true ]] && git rev-parse --is-inside-work-tree &>/dev/null; t
     if run bd init 2>/dev/null; then
         [[ "$DRY_RUN" != true ]] && success "Beads initialized"
     else
-        warn "Beads init returned non-zero (may already be initialized — continuing)"
+        warn "Beads init returned non-zero (may already be initialized, continuing)"
     fi
 else
     debug "Skipping bd init (bd not available or not in a git repo)"
@@ -184,7 +196,7 @@ log "${BOLD}Verifying installation...${RESET}"
 if [[ "$DRY_RUN" == true ]]; then
     log "  ${DIM}[DRY RUN] Would verify Clavain installation via 'claude plugins list'${RESET}"
     log ""
-    success "Dry run complete — no changes made"
+    success "Dry run complete, no changes made"
 elif claude plugins list 2>/dev/null | grep -q "clavain"; then
     success "Clavain installed and loaded!"
 elif [[ -d "${CACHE_DIR}/interagency-marketplace/clavain" ]]; then
