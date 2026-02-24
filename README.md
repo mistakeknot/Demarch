@@ -1,6 +1,8 @@
 # Demarch
 
-Autonomous software development agency platform — brainstorm, plan, execute, review, and ship with multi-agent orchestration.
+A monorepo for building software with agents the way I think software should be built with agents — where the review phases matter more than the building phases, and the point is not to remove humans from the loop but to make every moment in the loop count.
+
+Demarch is the platform behind [Clavain](os/clavain/), a self-improving Claude Code agent rig that orchestrates the full development lifecycle from brainstorm to ship. It coordinates Claude, Codex, and GPT-5.2 Pro into something that is (I think) more useful than any of them alone.
 
 ## Quick Start
 
@@ -18,9 +20,9 @@ Then open Claude Code and run:
 
 ## What You Get
 
-- **Clavain** — AI workflow engine: brainstorm → strategy → plan → execute → review → ship
-- **33+ companion plugins** — multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing
-- **Multi-model orchestration** — Claude, Codex, and GPT-5.2 Pro working together
+- **Clavain** — the agent rig: brainstorm → strategy → plan → execute → review → ship
+- **33+ companion plugins** — multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing (the inter-* constellation, because naming things is hard and I committed early)
+- **Multi-model orchestration** — Claude does the heavy lifting, Codex runs parallel tasks, GPT-5.2 Pro provides a second opinion via Oracle
 - **Sprint management** — track work with Beads, auto-discover what to work on next
 
 ## Guides
@@ -33,7 +35,7 @@ Then open Claude Code and run:
 
 ## How It Works
 
-Clavain orchestrates a disciplined development lifecycle:
+Most agent tools skip the product phases — brainstorm, strategy, specification — and jump straight to code generation. I find the thinking phases are where the real leverage is. Clavain makes them first-class:
 
 1. **Discover** — scan backlog, surface ready work, recommend next task
 2. **Brainstorm** — collaborative dialogue to explore the problem space

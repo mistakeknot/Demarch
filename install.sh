@@ -41,7 +41,18 @@ CACHE_DIR="${HOME}/.claude/plugins/cache"
 for arg in "$@"; do
     case "$arg" in
         --help|-h)
-            sed -n '2,/^$/p' "$0" | sed 's/^# \?//'
+            cat <<'USAGE'
+install.sh — Curl-fetchable installer for Demarch (Clavain + Interverse)
+
+Usage:
+  curl -fsSL https://raw.githubusercontent.com/mistakeknot/Demarch/main/install.sh | bash
+  bash install.sh [--help] [--dry-run] [--verbose]
+
+Flags:
+  --help      Show this usage message and exit
+  --dry-run   Show what would happen without executing
+  --verbose   Enable debug output
+USAGE
             exit 0
             ;;
         --dry-run) DRY_RUN=true ;;
@@ -84,7 +95,7 @@ run() {
         return 0
     fi
     debug "exec: $*"
-    eval "$@"
+    "$@"
 }
 
 # --- Prerequisites ---
@@ -139,24 +150,27 @@ log "${BOLD}Installing...${RESET}"
 
 # Step 1: Add marketplace
 log "  Adding interagency-marketplace..."
-run 'claude plugins marketplace add mistakeknot/interagency-marketplace 2>/dev/null || true'
-if [[ "$DRY_RUN" != true ]]; then
-    success "Marketplace added"
+if run claude plugins marketplace add mistakeknot/interagency-marketplace 2>/dev/null; then
+    [[ "$DRY_RUN" != true ]] && success "Marketplace added"
+else
+    warn "Marketplace add returned non-zero (may already be added — continuing)"
 fi
 
 # Step 2: Install Clavain
 log "  Installing Clavain..."
-run 'claude plugins install clavain@interagency-marketplace 2>/dev/null || true'
-if [[ "$DRY_RUN" != true ]]; then
-    success "Clavain installed"
+if run claude plugins install clavain@interagency-marketplace 2>/dev/null; then
+    [[ "$DRY_RUN" != true ]] && success "Clavain installed"
+else
+    warn "Plugin install returned non-zero (may already be installed — continuing)"
 fi
 
 # Step 3: Beads init (conditional)
-if [[ "$HAS_BD" == true ]] && git rev-parse --is-inside-work-tree &>/dev/null 2>&1; then
+if [[ "$HAS_BD" == true ]] && git rev-parse --is-inside-work-tree &>/dev/null; then
     log "  Initializing Beads in current project..."
-    run 'bd init 2>/dev/null || true'
-    if [[ "$DRY_RUN" != true ]]; then
-        success "Beads initialized"
+    if run bd init 2>/dev/null; then
+        [[ "$DRY_RUN" != true ]] && success "Beads initialized"
+    else
+        warn "Beads init returned non-zero (may already be initialized — continuing)"
     fi
 else
     debug "Skipping bd init (bd not available or not in a git repo)"
@@ -168,11 +182,13 @@ log ""
 log "${BOLD}Verifying installation...${RESET}"
 
 if [[ "$DRY_RUN" == true ]]; then
-    log "  ${DIM}[DRY RUN] Would check for ${CACHE_DIR}/interagency-marketplace/clavain/${RESET}"
+    log "  ${DIM}[DRY RUN] Would verify Clavain installation via 'claude plugins list'${RESET}"
     log ""
     success "Dry run complete — no changes made"
+elif claude plugins list 2>/dev/null | grep -q "clavain"; then
+    success "Clavain installed and loaded!"
 elif [[ -d "${CACHE_DIR}/interagency-marketplace/clavain" ]]; then
-    success "Clavain installed successfully!"
+    warn "Clavain files found in cache but not in 'claude plugins list'. May need session restart."
 else
     fail "Installation may have failed. Run 'claude plugins list' to check."
     exit 1
