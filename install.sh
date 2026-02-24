@@ -162,6 +162,14 @@ MARKET_OUT=$(run claude plugins marketplace add mistakeknot/interagency-marketpl
     fi
 }
 
+# Step 1b: Update marketplace (ensures latest plugin versions)
+log "  Updating marketplace..."
+if run claude plugins marketplace update interagency-marketplace 2>&1; then
+    [[ "$DRY_RUN" != true ]] && success "Marketplace updated"
+else
+    warn "Marketplace update returned non-zero (continuing with cached version)"
+fi
+
 # Step 2: Install Clavain
 log "  Installing Clavain..."
 INSTALL_OUT=$(run claude plugins install clavain@interagency-marketplace 2>&1) && {
