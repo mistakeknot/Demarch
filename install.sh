@@ -184,7 +184,50 @@ INSTALL_OUT=$(run claude plugins install clavain@interagency-marketplace 2>&1) &
     fi
 }
 
-# Step 3: Beads init (conditional)
+# Step 3: Install Interverse companion plugins
+CLAVAIN_DIR=$(find "${CACHE_DIR}/interagency-marketplace/clavain" -name "agent-rig.json" -exec dirname {} \; 2>/dev/null | sort -V | tail -1)
+MODPACK="${CLAVAIN_DIR}/scripts/modpack-install.sh"
+
+if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
+    log ""
+    log "${BOLD}Installing Interverse companion plugins...${RESET}"
+    MODPACK_FLAGS=""
+    [[ "$DRY_RUN" == true ]] && MODPACK_FLAGS="--dry-run"
+    [[ "$VERBOSE" != true ]] && MODPACK_FLAGS="$MODPACK_FLAGS --quiet"
+
+    if MODPACK_OUT=$(bash "$MODPACK" $MODPACK_FLAGS 2>&1); then
+        # Count results from JSON output (last line)
+        MODPACK_JSON=$(echo "$MODPACK_OUT" | tail -1)
+        N_INSTALLED=$(echo "$MODPACK_JSON" | jq -r '.installed // .would_install | length' 2>/dev/null || echo "?")
+        N_PRESENT=$(echo "$MODPACK_JSON" | jq -r '.already_present | length' 2>/dev/null || echo "?")
+        N_FAILED=$(echo "$MODPACK_JSON" | jq -r '.failed | length' 2>/dev/null || echo "0")
+
+        if [[ "$DRY_RUN" == true ]]; then
+            success "Would install ${N_INSTALLED} plugins (${N_PRESENT} already present)"
+        else
+            success "Installed ${N_INSTALLED} new plugins (${N_PRESENT} already present)"
+            if [[ "$N_FAILED" != "0" ]] && [[ "$N_FAILED" != "null" ]]; then
+                warn "${N_FAILED} plugins failed to install"
+                echo "$MODPACK_JSON" | jq -r '.failed[]' 2>/dev/null | while read -r p; do
+                    warn "  Failed: $p"
+                done
+            fi
+        fi
+    else
+        warn "Modpack install had errors (continuing)"
+        [[ "$VERBOSE" == true ]] && log "  $MODPACK_OUT"
+    fi
+elif [[ -n "$CLAVAIN_DIR" ]]; then
+    warn "Modpack install script not found at $MODPACK"
+    warn "Run /clavain:setup in Claude Code to install companion plugins"
+else
+    warn "Clavain install directory not found in cache"
+    warn "Run /clavain:setup in Claude Code to install companion plugins"
+fi
+
+log ""
+
+# Step 4: Beads init (conditional)
 if [[ "$HAS_BD" == true ]] && git rev-parse --is-inside-work-tree &>/dev/null; then
     log "  Initializing Beads in current project..."
     if run bd init 2>/dev/null; then
@@ -220,8 +263,8 @@ log "${GREEN}✓ Demarch installed successfully!${RESET}"
 log ""
 log "${BOLD}Next steps:${RESET}"
 log "  1. Open Claude Code in any project:  ${BLUE}claude${RESET}"
-log "  2. Install companion plugins:        ${BLUE}/clavain:setup${RESET}"
-log "  3. Start working:                    ${BLUE}/clavain:route${RESET}"
+log "  2. Start working:                    ${BLUE}/clavain:route${RESET}"
+log "  3. Verify setup:                     ${BLUE}/clavain:doctor${RESET}"
 log ""
 log "${BOLD}Guides:${RESET}"
 log "  Power user:   ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-power-user.md${RESET}"
