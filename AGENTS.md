@@ -40,6 +40,7 @@ Use nearest, task-scoped instruction loading instead of reading every instructio
 | Path | Pillar | Description |
 |------|--------|-------------|
 | `apps/autarch/` | Autarch | Swappable TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
+| `apps/intercom/` | Autarch | Multi-runtime AI assistant (Claude, Gemini, Codex) + messaging |
 | `os/clavain/` | Clavain | Autonomous software agency — brainstorm to ship |
 | *(housed in `os/clavain/`)* | Interspect | Adaptive profiler — evidence collection, pattern detection, routing overlays. Cross-cutting pillar; code is in Clavain's hooks/scripts, not a separate repo. |
 | `core/intercore/` | Intercore | Orchestration kernel (Go) |
@@ -137,9 +138,9 @@ All work is tracked at the **Demarch root level** using the monorepo `.beads/` d
 
 ### Roadmap
 
-The ecosystem roadmap is at [`docs/interverse-roadmap.md`](docs/interverse-roadmap.md) with machine-readable canonical output in [`docs/roadmap.json`](docs/roadmap.json). Regenerate both with `/interpath:roadmap` from the Interverse root. Propagate items to sub-module roadmaps with `/interpath:propagate`.
+The platform roadmap is at [`docs/demarch-roadmap.md`](docs/demarch-roadmap.md) with machine-readable canonical output in [`docs/roadmap.json`](docs/roadmap.json). Regenerate both with `/interpath:roadmap` from the Demarch root. Auto-generate module-level roadmaps from beads with `scripts/generate-module-roadmaps.sh` or `/interpath:propagate`.
 
-`scripts/sync-roadmap-json.sh` also generates the canonical JSON rollup across `apps/`, `os/`, `core/`, and `interverse/` roadmaps and cross-module dependencies.
+`scripts/sync-roadmap-json.sh` generates the canonical JSON rollup from the root roadmap and beads data. `scripts/generate-module-roadmaps.sh` auto-generates per-module `docs/roadmap.md` files from beads state.
 
 ## Naming Convention
 
@@ -184,7 +185,7 @@ claude --plugin-dir /root/projects/Demarch/interverse/<name>
 cd interverse/<name> && uv run pytest tests/structural/ -v
 ```
 
-**MCP server plugins** (interkasten, interlock, interject, tldr-swinton, tuivision, interflux, intermux, intermap, interfluence):
+**MCP server plugins** (interkasten, interlock, interject, tldr-swinton, tuivision, interflux, intermux, intermap, interfluence, interserve):
 ```bash
 # Build/install the server first, then test via Claude Code.
 # Entrypoints vary — check each module's local AGENTS.md. Examples:
