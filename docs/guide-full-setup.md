@@ -41,9 +41,9 @@ cd your-project
 bd init
 ```
 
-## Step 3: Build Intercore (Orchestration Kernel)
+## Step 3: Build Intercore (orchestration kernel)
 
-Intercore (`ic`) provides the orchestration kernel — runs, dispatches, gates, and agent lifecycle management.
+Intercore (`ic`) provides the orchestration kernel: runs, dispatches, gates, and agent lifecycle management.
 
 ```bash
 git clone https://github.com/mistakeknot/Demarch.git
@@ -61,7 +61,7 @@ Verify:
 ic version
 ```
 
-## Step 4: Build Intermute (Optional)
+## Step 4: Build Intermute (optional)
 
 Intermute is the multi-agent coordination service. Only needed if you run multiple Claude Code sessions editing the same repository simultaneously.
 
@@ -76,13 +76,13 @@ Start the service:
 intermute serve
 ```
 
-## Step 5: Build Autarch (Optional)
+## Step 5: Build Autarch (optional)
 
 Autarch provides TUI interfaces for agent monitoring and project management:
-- **Bigend** — dashboard with agent status, sprint progress, system health
-- **Gurgeh** — spec viewer with research overlay
-- **Coldwine** — project planning with epics, stories, and tasks
-- **Pollard** — competitive intelligence and market research
+- **Bigend**: dashboard with agent status, sprint progress, system health
+- **Gurgeh**: spec viewer with research overlay
+- **Coldwine**: project planning with epics, stories, and tasks
+- **Pollard**: competitive intelligence and market research
 
 ```bash
 cd Demarch/apps/autarch
@@ -91,7 +91,7 @@ make build
 
 Requires tmux for Coldwine's multi-pane layout.
 
-## Step 6: Oracle Setup (Optional)
+## Step 6: Oracle setup (optional)
 
 Oracle enables cross-AI review by sending prompts to GPT-5.2 Pro via a headless browser. This powers the `/interpeer` escalation workflow.
 
@@ -120,7 +120,7 @@ Hooks: 10/10 active
 Health: ALL CLEAR
 ```
 
-## What's Next
+## What's next
 
 Start working: `/clavain:route`
 

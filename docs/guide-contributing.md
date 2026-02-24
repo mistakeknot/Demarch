@@ -4,7 +4,7 @@
 
 **Prerequisites:** Everything in [Full Setup Guide](guide-full-setup.md), plus familiarity with Go and/or Claude Code plugin development.
 
-## Clone the Monorepo
+## Clone the monorepo
 
 ```bash
 git clone https://github.com/mistakeknot/Demarch.git
@@ -13,7 +13,7 @@ cd Demarch
 
 Each subproject (`os/clavain`, `interverse/interflux`, `core/intermute`, etc.) keeps its own `.git` and GitHub repo. The monorepo is a development workspace, not a git monorepo.
 
-## Project Structure
+## Project structure
 
 ```
 os/clavain/           # Self-improving agent rig (L2)
@@ -34,13 +34,13 @@ docs/                 # Shared documentation
 
 Layers describe dependency: L1 (core) has no upward dependencies, L2 (OS) depends on L1, L3 (apps) depends on L1+L2.
 
-## Development Workflow
+## Development workflow
 
-### Trunk-Based Development
+### Trunk-based development
 
 Commits go directly to `main`. No feature branches unless explicitly discussed. This keeps the feedback loop tight.
 
-### Making Changes
+### Making changes
 
 1. Read the subproject's `CLAUDE.md` and `AGENTS.md` for conventions
 2. Create a bead to track work:
@@ -63,7 +63,7 @@ Commits go directly to `main`. No feature branches unless explicitly discussed. 
 | Plugins (syntax) | `bash -n hooks/*.sh` | Syntax check all hook scripts |
 | Plugin (validate) | `/plugin-dev:plugin-validator` | Structural validation |
 
-### Code Review
+### Code review
 
 All changes go through multi-agent review:
 
@@ -79,9 +79,9 @@ For cross-AI review (sends to GPT-5.2 Pro for a second opinion):
 /interpeer
 ```
 
-## Plugin Development
+## Plugin development
 
-### Local Testing
+### Local testing
 
 Test a plugin locally without installing to marketplace:
 
@@ -89,7 +89,7 @@ Test a plugin locally without installing to marketplace:
 claude --plugin-dir /path/to/your-plugin
 ```
 
-### Plugin Structure
+### Plugin structure
 
 ```
 your-plugin/
@@ -113,13 +113,13 @@ After pushing changes:
 
 This bumps version in all locations, commits, pushes, and updates the marketplace.
 
-### Naming Conventions
+### Naming conventions
 
 - All module names are **lowercase**: `interflux`, `intermute`, `interkasten`
 - Exceptions: **Clavain** (proper noun), **Demarch** (project name), **Interverse** (ecosystem name), **Autarch** (proper noun), **Interspect** (proper noun)
 - GitHub repos match: `github.com/mistakeknot/interflux`
 
-## Key Files
+## Key files
 
 | File | Purpose |
 |------|---------|
@@ -129,7 +129,7 @@ This bumps version in all locations, commits, pushes, and updates the marketplac
 | `agent-rig.json` | Plugin companion/dependency declarations |
 | `.beads/` | Issue tracking database |
 
-## What's Next
+## What's next
 
 Start working: `/clavain:route`
 
