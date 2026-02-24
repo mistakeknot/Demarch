@@ -6,7 +6,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
-ROOT_ROADMAP_CANONICAL="$ROOT_DOCS_DIR/interverse-roadmap.md"
+ROOT_ROADMAP_CANONICAL="$ROOT_DOCS_DIR/demarch-roadmap.md"
 EM_DASH="—"
 
 require() {
@@ -41,10 +41,13 @@ as_json_array() {
 module_roadmap_file() {
     local module_dir="$1"
     local module="$2"
-    local canonical="$module_dir/docs/${module}-roadmap.md"
+    local new_canonical="$module_dir/docs/roadmap.md"
+    local old_canonical="$module_dir/docs/${module}-roadmap.md"
 
-    if [ -f "$canonical" ]; then
-        echo "$canonical"
+    if [ -f "$new_canonical" ]; then
+        echo "$new_canonical"
+    elif [ -f "$old_canonical" ]; then
+        echo "$old_canonical"
     else
         echo ""
     fi
@@ -122,7 +125,7 @@ add_item() {
     title="$(trim "$title")"
     status="$(trim "$status")"
     [ -n "$status" ] || status="open"
-    [ -n "$source_file" ] || source_file="docs/${module}-roadmap.md"
+    [ -n "$source_file" ] || source_file="docs/roadmap.md"
 
     jq -c -n \
         --arg module "$module" \
@@ -539,8 +542,8 @@ for base in "$ROOT_DIR/apps" "$ROOT_DIR/os" "$ROOT_DIR/core" "$ROOT_DIR/interver
                     "${module}-EMPTY-RM" \
                     "later" \
                     "$module" \
-                    "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/${module}-roadmap.md or docs/roadmap.json." \
-                    "$module_location/docs/${module}-roadmap.md" \
+                    "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json." \
+                    "$module_location/docs/roadmap.md" \
                     "empty-module-roadmap" \
                     "planned" \
                     "P4"
@@ -552,14 +555,14 @@ for base in "$ROOT_DIR/apps" "$ROOT_DIR/os" "$ROOT_DIR/core" "$ROOT_DIR/interver
                 status="early"
             fi
             add_module "$module" "$module_location" "$version" "$roadmap_source" 0 "$status"
-            add_no_roadmap_module "$module" "$module_location" "$version" "No docs/${module}-roadmap.md"
+            add_no_roadmap_module "$module" "$module_location" "$version" "No docs/roadmap.md"
             add_synthetic_roadmap_item \
                 "$module" \
                 "${module}-NO-RM" \
                 "later" \
                 "$module" \
-                "Roadmap artifact missing in this module; create docs/${module}-roadmap.md to define module priorities." \
-                "$module_location/docs/${module}-roadmap.md" \
+                "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads." \
+                "$module_location/docs/roadmap.md" \
                 "missing-module-roadmap" \
                 "planned" \
                 "P4"
@@ -601,8 +604,8 @@ cross_json="$(jq -s '.' "$CROSS_FILE")"
 no_roadmap_json="$(jq -s '.' "$NO_ROADMAP_FILE")"
 
 if ! jq -n \
-    --arg project "Interverse" \
-    --arg kind "interverse-monorepo-roadmap" \
+    --arg project "Demarch" \
+    --arg kind "demarch-monorepo-roadmap" \
     --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%S%:z)" \
     --argjson module_count "$module_count" \
     --argjson open_beads "$open_beads" \
