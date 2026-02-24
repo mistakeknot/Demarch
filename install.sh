@@ -126,6 +126,25 @@ else
     exit 1
 fi
 
+# go (REQUIRED — builds intercore kernel)
+if command -v go &>/dev/null; then
+    go_ver=$(go version | grep -Eo 'go[0-9]+\.[0-9]+' | head -1 | sed 's/go//')
+    go_major="${go_ver%%.*}"
+    go_minor="${go_ver#*.}"
+    if [[ "$go_major" -ge 2 ]] || { [[ "$go_major" -eq 1 ]] && [[ "$go_minor" -ge 22 ]]; }; then
+        success "go ${go_ver} found (>= 1.22)"
+    else
+        fail "go ${go_ver} found but >= 1.22 required"
+        log "  Update Go: ${BLUE}https://go.dev/dl/${RESET}"
+        exit 1
+    fi
+else
+    fail "go not found"
+    log "  Go >= 1.22 is required to build the intercore kernel."
+    log "  Install: ${BLUE}https://go.dev/dl/${RESET}"
+    exit 1
+fi
+
 # git (WARN)
 if command -v git &>/dev/null; then
     success "git found"
@@ -245,6 +264,71 @@ else
     debug "Skipping bd init (bd not available or not in a git repo)"
 fi
 
+# Step 5: Build intercore kernel (ic)
+log "  Building intercore kernel (ic)..."
+
+# Determine source directory
+IC_SRC=""
+if [[ -f "core/intercore/cmd/ic/main.go" ]]; then
+    IC_SRC="core/intercore"
+elif [[ -f "../core/intercore/cmd/ic/main.go" ]]; then
+    IC_SRC="../core/intercore"
+fi
+
+if [[ -z "$IC_SRC" ]]; then
+    # Curl-pipe mode: clone repo to temp dir
+    IC_TMPDIR=$(mktemp -d)
+    trap 'rm -rf "$IC_TMPDIR"' EXIT
+    log "    Cloning intercore source..."
+    if run git clone --depth=1 --filter=blob:none --sparse https://github.com/mistakeknot/Demarch.git "$IC_TMPDIR/Demarch" 2>/dev/null; then
+        if ! (cd "$IC_TMPDIR/Demarch" && git sparse-checkout set core/intercore); then
+            warn "Sparse checkout failed. Run '/clavain:setup' after cloning the repo to build ic."
+            IC_SRC=""
+        else
+            IC_SRC="$IC_TMPDIR/Demarch/core/intercore"
+        fi
+    else
+        warn "Could not clone intercore source. Run '/clavain:setup' after cloning the repo to build ic."
+        IC_SRC=""
+    fi
+fi
+
+if [[ -n "$IC_SRC" ]]; then
+    # Ensure ~/.local/bin exists
+    run mkdir -p "${HOME}/.local/bin"
+
+    if run go build -C "$IC_SRC" -mod=readonly -o "${HOME}/.local/bin/ic" ./cmd/ic; then
+        [[ "$DRY_RUN" != true ]] && success "ic built and installed to ~/.local/bin/ic"
+    else
+        fail "ic build failed"
+        log "  Try manually: go build -C core/intercore -o ~/.local/bin/ic ./cmd/ic"
+        exit 1
+    fi
+
+    # Initialize ic database
+    if [[ "$DRY_RUN" != true ]]; then
+        if "${HOME}/.local/bin/ic" init 2>/dev/null; then
+            success "ic database initialized"
+        else
+            warn "ic init returned non-zero (may already be initialized — continuing)"
+        fi
+
+        if "${HOME}/.local/bin/ic" health >/dev/null 2>&1; then
+            success "ic health check passed"
+        else
+            warn "ic health check failed — run 'ic health' to diagnose"
+        fi
+    fi
+
+    # Check if ~/.local/bin is on PATH
+    if ! echo "$PATH" | tr ':' '\n' | grep -qx "${HOME}/.local/bin"; then
+        warn "~/.local/bin is not on your PATH"
+        log "  Add to your shell config: ${BLUE}export PATH=\"\$HOME/.local/bin:\$PATH\"${RESET}"
+    fi
+else
+    warn "Skipping ic build (source not available)"
+fi
+
 log ""
 
 # --- Verification ---
@@ -263,14 +347,28 @@ else
     exit 1
 fi
 
+# Verify ic
+if command -v ic &>/dev/null; then
+    if ic health >/dev/null 2>&1; then
+        success "ic kernel healthy"
+    else
+        warn "ic found but health check failed"
+    fi
+elif [[ -x "${HOME}/.local/bin/ic" ]]; then
+    warn "ic built but not on PATH. Add ~/.local/bin to PATH."
+else
+    warn "ic not found — kernel features will be unavailable"
+fi
+
 # --- Next steps ---
 log ""
 log "${GREEN}✓ Demarch installed successfully!${RESET}"
 log ""
 log "${BOLD}Next steps:${RESET}"
-log "  1. Open Claude Code in any project:  ${BLUE}claude${RESET}"
-log "  2. Start working:                    ${BLUE}/clavain:route${RESET}"
-log "  3. Verify setup:                     ${BLUE}/clavain:doctor${RESET}"
+log "  1. Ensure ~/.local/bin is on PATH:  ${BLUE}export PATH=\"\$HOME/.local/bin:\$PATH\"${RESET}"
+log "  2. Open Claude Code in any project:  ${BLUE}claude${RESET}"
+log "  3. Install companion plugins:        ${BLUE}/clavain:setup${RESET}"
+log "  4. Start working:                    ${BLUE}/clavain:route${RESET}"
 log ""
 log "${BOLD}Guides:${RESET}"
 log "  Power user:   ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-power-user.md${RESET}"
