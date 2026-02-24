@@ -42,4 +42,5 @@ docs/docs
 .intermem/
 
 # ── Research clones (not part of monorepo) ──
-research/
+research/*
+!research/AGENTS.md
