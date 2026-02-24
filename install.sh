@@ -150,7 +150,7 @@ log "${BOLD}Installing...${RESET}"
 
 # Step 1: Add marketplace
 log "  Adding interagency-marketplace..."
-MARKET_OUT=$(run claude plugins marketplace add mistakeknot/interagency-marketplace 2>&1) && {
+MARKET_OUT=$(run claude plugin marketplace add mistakeknot/interagency-marketplace 2>&1) && {
     [[ "$DRY_RUN" != true ]] && success "Marketplace added"
 } || {
     if echo "$MARKET_OUT" | grep -qi "already"; then
@@ -164,7 +164,7 @@ MARKET_OUT=$(run claude plugins marketplace add mistakeknot/interagency-marketpl
 
 # Step 1b: Update marketplace (ensures latest plugin versions)
 log "  Updating marketplace..."
-if run claude plugins marketplace update interagency-marketplace 2>&1; then
+if run claude plugin marketplace update interagency-marketplace 2>&1; then
     [[ "$DRY_RUN" != true ]] && success "Marketplace updated"
 else
     warn "Marketplace update returned non-zero (continuing with cached version)"
@@ -172,7 +172,7 @@ fi
 
 # Step 2: Install Clavain
 log "  Installing Clavain..."
-INSTALL_OUT=$(run claude plugins install clavain@interagency-marketplace 2>&1) && {
+INSTALL_OUT=$(run claude plugin install clavain@interagency-marketplace 2>&1) && {
     [[ "$DRY_RUN" != true ]] && success "Clavain installed"
 } || {
     if echo "$INSTALL_OUT" | grep -qi "already"; then
@@ -245,15 +245,15 @@ log ""
 log "${BOLD}Verifying installation...${RESET}"
 
 if [[ "$DRY_RUN" == true ]]; then
-    log "  ${DIM}[DRY RUN] Would verify Clavain installation via 'claude plugins list'${RESET}"
+    log "  ${DIM}[DRY RUN] Would verify Clavain installation via 'claude plugin list'${RESET}"
     log ""
     success "Dry run complete, no changes made"
-elif claude plugins list 2>/dev/null | grep -q "clavain"; then
+elif claude plugin list 2>/dev/null | grep -q "clavain"; then
     success "Clavain installed and loaded!"
 elif [[ -d "${CACHE_DIR}/interagency-marketplace/clavain" ]]; then
-    warn "Clavain files found in cache but not in 'claude plugins list'. May need session restart."
+    warn "Clavain files found in cache but not in 'claude plugin list'. May need session restart."
 else
-    fail "Installation may have failed. Run 'claude plugins list' to check."
+    fail "Installation may have failed. Run 'claude plugin list' to check."
     exit 1
 fi
 

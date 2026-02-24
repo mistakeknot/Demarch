@@ -110,7 +110,7 @@ log "${BOLD}Uninstalling plugins...${RESET}"
 
 for plugin in "${PLUGINS[@]}"; do
     log "  Removing ${plugin}..."
-    if run claude plugins uninstall "${plugin}@interagency-marketplace" 2>&1; then
+    if run claude plugin uninstall "${plugin}@interagency-marketplace" 2>&1; then
         [[ "$DRY_RUN" != true ]] && success "Removed ${plugin}"
     else
         warn "Could not uninstall ${plugin} (may already be removed)"
@@ -121,7 +121,7 @@ done
 if [[ "$KEEP_MARKETPLACE" == false ]]; then
     log ""
     log "${BOLD}Removing marketplace...${RESET}"
-    if run claude plugins marketplace remove interagency-marketplace 2>&1; then
+    if run claude plugin marketplace remove interagency-marketplace 2>&1; then
         [[ "$DRY_RUN" != true ]] && success "Marketplace removed"
     else
         warn "Could not remove marketplace (may already be removed)"
