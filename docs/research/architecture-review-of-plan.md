@@ -1,193 +1,234 @@
-# Architecture Review: Agent Capability Discovery Plan
-**Plan reviewed:** `docs/plans/2026-02-22-agent-capability-discovery.md`
-**Date:** 2026-02-22
-**Reviewer:** Flux-drive Architecture & Design Agent
+# Architecture Review: Pollard Hunter Resilience Plan (iv-xlpg)
+
+**Plan file:** `/home/mk/projects/Demarch/docs/plans/2026-02-23-pollard-hunter-resilience.md`
+**Reviewed:** 2026-02-23
+**Reviewer:** fd-architecture
 
 ---
 
-## Summary
+## Executive Summary
 
-The plan wires a capability-discovery path across four modules: intermute (server-side storage + HTTP), interlock (MCP tool + registration script), and interflux (plugin manifest). The existing SQLite schema already stores `capabilities_json`, so the main work is plumbing that field through filters and surfacing it to clients. The plan is directionally correct and the scope is appropriate. There are three structural concerns worth resolving before implementation, one silent-failure risk in the bash path, and one simplicity improvement on the interface signature. None are blockers that require a design restart.
+The plan is architecturally sound in its primary goal and mostly correct in its boundary decisions. Three issues require attention before implementation: a zero-value enum trap in `HunterStatus`, a behavioral contract break in `Success()`, and a redundant `ErrorMsg` field. One structural question about retry placement is worth considering but the plan's choice is defensible. The watcher change is the highest-value task and is correctly designed.
 
 ---
 
 ## 1. Boundaries and Coupling
 
-### 1.1 `discover_agents` tool duplicates `list_agents` — wrong split point
+### Retry in `hunters/` vs caller layer
 
-The plan adds `discover_agents` as a new MCP tool in interlock alongside the existing `list_agents`. The two tools do the same thing — query `/api/agents` for a project — differing only by the presence of a `?capability=` query parameter.
+The plan places `HuntWithRetry` in the `hunters/` package. This is the right decision.
 
-This creates two tools that diverge on a single boolean axis (filtered vs. unfiltered), while sharing identical auth, error-handling, and serialization behavior. The correct split is to extend `list_agents` with an optional `capability` argument, not to add a parallel tool. The MCP protocol supports optional parameters; the existing `list_agents` tool in `interverse/interlock/internal/tools/tools.go:605` passes no arguments at all (its Handler ignores `req.Params.Arguments` entirely), which makes adding an optional `capability` string trivial.
+The `hunters/` package already owns the `Hunter` interface and `HuntResult` type. Both callers (`cli/scan.go` and `api/scanner.go`) would need identical retry logic if it lived in each caller. Putting retry in `hunters/` creates one implementation tested once.
 
-**Concrete change:** In `interverse/interlock/internal/tools/tools.go`, add `mcp.WithString("capability", mcp.Description("..."))` to the existing `listAgents` tool definition. In `interverse/interlock/internal/client/client.go`, change the `ListAgents` method to accept a capability string (empty string means no filter). Remove the proposed `discoverAgents` function and registration from `RegisterAll`. This keeps the tool count at 11, avoids parallel data paths, and keeps the consumer surface minimal.
+The function signature `HuntWithRetry(ctx, Hunter, HunterConfig, RetryConfig)` operates only on types already defined in the `hunters/` package. It introduces no new imports, no upward dependencies, and no coupling to `cli/` or `api/`. This is correct placement.
 
-### 1.2 `CLAUDE_PLUGIN_ROOT` is not available in interlock-register.sh
+One concern: both callers use `hunters.DefaultRetryConfig()` directly with no way to override from configuration. If a specific hunter type (say, `agent-hunter` which spawns subprocesses) should never retry, callers have no hook to vary the config per hunter. This is acceptable for the initial implementation but is worth noting as a future seam — the `HunterConfig` struct or the registry is the natural place to carry per-hunter retry policy later.
 
-The plan's capability extraction block in Task 2 relies on `CLAUDE_PLUGIN_ROOT` to locate the plugin.json of the calling plugin:
+### Dependency direction
 
-```bash
-PLUGIN_JSON="${CLAUDE_PLUGIN_ROOT:+${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json}"
-```
+All changes stay within `internal/pollard/`. No new cross-pillar imports. `cli/` and `api/` already import `hunters/`; adding the retry call does not change that dependency topology. `watch/` imports `api/` and continues to do so. No new couplings are introduced.
 
-`CLAUDE_PLUGIN_ROOT` is set by Claude Code to the installed cache directory of the plugin that owns the hook. In this case the hook is interlock's `session-start.sh`. When `session-start.sh` calls `interlock-register.sh` (confirmed at `interverse/interlock/hooks/session-start.sh:36`), `CLAUDE_PLUGIN_ROOT` points to interlock's own cache directory — not to the calling agent's plugin root.
+### Duplicate `CompetitorTarget` type
 
-The script is trying to read capabilities from interflux's plugin.json, but interflux's `CLAUDE_PLUGIN_ROOT` is unavailable in interlock's hook execution context. The `[[ -n "$AGENT_CAPS" ]]` guard means this silently produces an empty `[]` for every agent — the capabilities field is always sent as `[]`, and the feature does not work. No error or warning is emitted.
+`api/scanner.go` already defines its own `CompetitorTarget` struct (lines 59-65) that mirrors `hunters.CompetitorTarget`. This duplication exists before the plan and is not made worse by it. It is outside scope of this plan but should be noted as existing debt.
 
-**Root cause:** The registration script conflates two distinct responsibilities — agent identity (session-based, computed from tmux/git) and agent capabilities (plugin-manifest-based, belonging to the calling plugin's context). These two concerns have different access models.
+### `failedHunters` slice locality (Task 3)
 
-**Correct approach:** Capabilities should be pushed by the agent's own plugin context, not pulled by interlock's hook. Two viable paths:
-
-**Option A (preferred):** Add a convention where each plugin that uses interlock writes its capabilities to a well-known path at session start — for example `~/.config/clavain/capabilities-${AGENT_NAME}.json` — and `interlock-register.sh` reads from that path. This keeps the registration script stateless and eliminates the dependency on `CLAUDE_PLUGIN_ROOT` entirely.
-
-**Option B:** Accept capabilities as an optional argument to `interlock-register.sh` (e.g. `$2`), so callers that know their capabilities can pass them. The current call site at `session-start.sh:36` passes only `$SESSION_ID`:
-
-```bash
-RESULT=$("${SCRIPT_DIR}/../scripts/interlock-register.sh" "$SESSION_ID" 2>/dev/null)
-```
-
-Under Option B, interflux would add its own SessionStart hook that passes capabilities explicitly. This requires each agent plugin to understand interlock's registration protocol, increasing coupling in the wrong direction.
-
-Option A is the better boundary because it decouples the capability declaration from the registration call entirely.
-
-### 1.3 `agentCapabilities` in interflux plugin.json creates a parallel data structure that will drift
-
-The plan adds a top-level `agentCapabilities` map to `interverse/interflux/.claude-plugin/plugin.json` alongside the existing `agents` array. The `agents` array contains paths to agent `.md` files. The `agentCapabilities` map contains agent name strings as keys. These two data structures describe the same set of 17 agents by different identifiers.
-
-This creates a drift surface:
-- `agents` uses file path fragments: `"./agents/review/fd-architecture.md"`
-- `agentCapabilities` uses bare names: `"fd-architecture"`
-
-The derivation rule (strip `./agents/review/` prefix and `.md` suffix) is implicit and not enforced anywhere. When an agent is renamed, added, or removed, the `agentCapabilities` map has no mechanism to stay in sync.
-
-**Correct approach:** Move the capability declarations into each agent's `.md` file as a front-matter or structured metadata block. Capability data belongs next to the agent definition it describes, not in a sibling structure in the manifest.
-
-If the plugin.json approach must be used (e.g. because agent `.md` files are a Claude Code primitive that cannot be annotated), then the map keys should use the full relative path from `agents` to create a verifiable link:
-
-```json
-"agentCapabilities": {
-  "agents/review/fd-architecture.md": ["review:architecture", "review:code", "review:design-patterns"]
-}
-```
-
-This allows a validation step: every key in `agentCapabilities` must appear in `agents`. Without this constraint, drift is undetectable. The current plan provides no such validation.
+The plan introduces a `hunterSummary` local type and `failedHunters` slice in `cli/scan.go`. These are correctly scoped to the function. The plan's summary output references `len(hunterNames)` which is already in scope. This is clean.
 
 ---
 
-## 2. Pattern Analysis
+## 2. Enum Design — Zero-Value Trap
 
-### 2.1 Interface signature: positional param is correct for the internal Store
+**This is a must-fix.**
 
-The plan changes the `Store` interface in `core/intermute/internal/storage/storage.go:30` from:
+The plan defines:
 
 ```go
-ListAgents(ctx context.Context, project string) ([]core.Agent, error)
+const (
+    HunterStatusOK      HunterStatus = iota  // 0
+    HunterStatusPartial                       // 1
+    HunterStatusFailed                        // 2
+    HunterStatusSkipped                       // 3
+)
+```
+
+`HunterStatusOK` is assigned the zero value (0). The plan notes this is "backward compatible" because existing callers don't set `Status`, so it defaults to 0 = `HunterStatusOK`.
+
+The backward compatibility reasoning is correct, but it creates a semantic trap: any `HuntResult` that is zero-initialized (including failure results the caller fails to populate, or test stubs that return `&HuntResult{}`) will silently report `Status == HunterStatusOK`. This is the opposite of a safe default. If code omits setting `Status`, the result reads as successful.
+
+The safer iota ordering puts an explicit unknown/uninitialized state at zero:
+
+```go
+const (
+    HunterStatusUnknown HunterStatus = iota  // 0 — zero value, not yet set
+    HunterStatusOK                           // 1
+    HunterStatusPartial                      // 2
+    HunterStatusFailed                       // 3
+    HunterStatusSkipped                      // 4
+)
+```
+
+This means:
+- A zero-initialized `HuntResult` has `Status == HunterStatusUnknown`, which is distinguishable from success.
+- Callers that forgot to set `Status` are detectable.
+- The plan's backward compatibility concern is addressed by updating all successful hunt completion paths to set `Status = HunterStatusOK`. There are exactly two: `cli/scan.go` (after the `Hunt` call succeeds) and `api/scanner.go` (after the `Hunt` call succeeds). Both are already being modified in Tasks 3 and 4.
+
+The cost is two additional assignment lines in the success paths. The benefit is fail-safe behavior.
+
+---
+
+## 3. `Success()` Behavioral Contract Break
+
+**This is a must-fix.**
+
+The plan changes `Success()` from:
+
+```go
+func (r *HuntResult) Success() bool {
+    return len(r.Errors) == 0
+}
 ```
 
 to:
 
 ```go
-ListAgents(ctx context.Context, project string, capabilities []string) ([]core.Agent, error)
-```
-
-This is a breaking change to every implementation (SQLite at `sqlite.go:765`, InMemory at `storage.go:241`, ResilientStore at `resilient.go:126`) and all call sites. The plan identifies these correctly. The approach is correct — nil slices are idiomatic Go for "no filter," and the internal Store interface is not a public API.
-
-For the public Go client at `core/intermute/client/client.go:172`, the existing `ListAgents(ctx, project)` already has a project parameter separate from the struct's `c.Project` field. Adding a third positional parameter makes call sites harder to read:
-
-```go
-agents, err := c.ListAgents(ctx, "", []string{"review:architecture"})
-```
-
-An options struct is worth the small overhead at the public client boundary:
-
-```go
-type ListAgentsOptions struct {
-    Project      string
-    Capabilities []string
+func (r *HuntResult) Success() bool {
+    return r.Status == HunterStatusOK
 }
-
-func (c *Client) ListAgents(ctx context.Context, opts ListAgentsOptions) ([]Agent, error)
 ```
 
-The internal Store interface positional parameters are fine. The public client is consumed by Bigend/autarch — keep its call sites readable.
+The problem: `HunterStatusOK` is the zero value. All existing `HuntResult` values where callers did not set `Status` will return `true` from `Success()` regardless of `r.Errors`. The behavioral change looks neutral on the surface but is actually a silent divergence.
 
-### 2.2 `json_each` SQLite approach is sound
+More importantly, the existing callers in `cli/scan.go` (line 237) and `api/scanner.go` (line 209) call `result.Success()` to determine the `success` boolean they pass to `db.CompleteRun`. After the change, if the caller returns a result with errors but forgets to set `Status = HunterStatusPartial`, `Success()` returns true, and the DB records a successful run. This is worse than the current behavior.
 
-The SQLite driver is `modernc.org/sqlite v1.29.0` (confirmed in `core/intermute/go.mod`). This driver compiles the SQLite amalgamation with JSON1 enabled by default. The `json_each()` table-valued function is available and does not require any explicit extension loading.
+The fix depends on which enum ordering is chosen:
 
-The proposed query pattern is correct:
+- If `HunterStatusOK` stays at zero: do not change `Success()`. Keep it as `len(r.Errors) == 0`. The `Status` field adds structured reporting without replacing the existing error-based success check.
+- If `HunterStatusUnknown` is zero: change `Success()` as proposed, but explicitly set `Status` on all result paths (Tasks 3 and 4 already do this for failure; the success paths need `Status = HunterStatusOK` added).
 
-```sql
-EXISTS (SELECT 1 FROM json_each(capabilities_json) WHERE json_each.value IN (?, ?, ?))
-```
+The cleaner approach is to keep both signals consistent: set `Status` explicitly and keep `Success()` checking `Status`. This requires the `HunterStatusUnknown` zero-value ordering. The plan's current combination of `HunterStatusOK` at zero plus changing `Success()` to check `Status` is internally consistent only by accident — it works because the zero value happens to mean OK. But it fails to provide the invariant that an unset `Status` is distinguishable.
 
-This correctly handles OR semantics (any matching capability), avoids loading all rows into Go for filtering, and is safe from injection because placeholders are used for all capability values.
+---
 
-Edge case: if `capabilities_json` is `NULL` or an empty array `[]` (agents registered before this feature), `json_each(NULL)` returns zero rows with no error, so the EXISTS clause correctly evaluates to false. No guard is needed.
+## 4. Redundant `ErrorMsg` Field
 
-One naming note in the proposed Go code: the loop variable `cap` shadows the builtin `cap()` function:
+**Minor structural issue.**
+
+The plan adds two fields to `HuntResult`:
 
 ```go
-for i, cap := range capabilities {
+Status   HunterStatus
+ErrorMsg string // Human-readable error summary (empty if OK)
 ```
 
-Rename to `c`, `v`, or `capStr` to avoid the shadow.
+`HuntResult.Errors` already exists as `[]error`. The new `ErrorMsg` duplicates information that can be derived from `Errors`. Task 4 populates both:
+
+```go
+failedResult := &hunters.HuntResult{
+    HunterName: name,
+    Status:     hunters.HunterStatusFailed,
+    ErrorMsg:   err.Error(),
+    Errors:     []error{err},
+}
+```
+
+`err.Error()` is stored twice: once in `ErrorMsg` and once in `Errors[0]`. Callers that want a string already call `huntResult.Errors[0].Error()` (existing pattern in `api/scanner.go` line 212). Adding `ErrorMsg` as a separate field creates two sources of truth for the same data.
+
+The simpler design: keep only `Errors []error` for machine use, and derive strings from it at display time. If a single-string summary is needed at the struct level, a method `func (r *HuntResult) ErrorSummary() string` returning `errors.Join` or the first error message is cleaner than a persisted field.
+
+If `ErrorMsg` is kept for simplicity, at minimum it should not be populated separately — it should be derived on access via a method, not stored alongside `Errors`.
 
 ---
 
-## 3. Simplicity and YAGNI
+## 5. `isTransient` String-Matching Approach
 
-### 3.1 Two MCP tools for one query endpoint is the wrong abstraction
+**Low severity, worth noting.**
 
-Already covered in section 1.1. The structural consequence stated plainly: adding `discover_agents` as a distinct tool forces every agent that wants to discover peers to know two different tool names for what is semantically one operation. Extend `list_agents` with an optional `capability` param. This removes the proposed `DiscoverAgents` client method, the `discoverAgents` tool function, and the updated `RegisterAll` comment entirely.
+The `isTransient` function in `retry.go` uses substring matching on error strings for HTTP status codes:
 
-### 3.2 The integration test in Task 5 belongs in the existing unit test file
+```go
+for _, s := range []string{"rate limit", "429", "503", "timeout", "temporary"} {
+    if strings.Contains(msg, s) {
+        return true
+    }
+}
+```
 
-The plan proposes creating `core/intermute/internal/http/handlers_agents_integration_test.go` for what is an in-process unit test using `httptest.NewServer` and `storage.NewInMemory()`. This is not an integration test — it does not open a real SQLite file or use a real network socket. The file name implies a different test category than what it is, complicating future test organization.
+String-matching error messages is fragile: it depends on how downstream hunters format their errors. The substring `"429"` would match any error containing the digit sequence 429 (e.g., a file path, a port number, a metric value).
 
-Merge `TestCapabilityDiscoveryEndToEnd` into the existing `core/intermute/internal/http/handlers_agents_test.go`. The test itself is good and should be kept. The file split is not justified.
+The `net.Error` interface check above it is the correct pattern. The string fallback is pragmatic given that hunters likely return wrapped HTTP errors as plain strings. The plan's approach is acceptable as a first pass, but the comment should note it is a heuristic, not a contract.
 
-### 3.3 The `InMemory.agentHasAnyCapability` helper is correct as proposed
-
-The O(n*m) nested loop is appropriate for the test-only in-memory store. Do not complicate it. This is correct as written.
-
-### 3.4 The `?capability=` comma-split approach is sufficient
-
-The plan uses `?capability=review:architecture,review:safety` with a comma split. This is simpler than repeated `?capability=X&capability=Y` and consistent with the existing single-value `?project=` parameter style. The choice is fine for the current use cases.
-
----
-
-## Prioritized Findings
-
-**Must fix before implementation:**
-
-1. **`CLAUDE_PLUGIN_ROOT` environment problem in interlock-register.sh (Section 1.2):** The plan's capability extraction will silently produce empty capabilities for all agents. The feature will appear to work (no errors, `[]` sent) but register nothing. This is a design error in the data-flow ownership, not an implementation bug. Resolve before writing the bash code. Recommended: use a well-known per-agent capabilities file written by each plugin's own session hook (Option A).
-
-2. **`agentCapabilities` map will drift from `agents` array (Section 1.3):** The plan creates a parallel data structure with an implicit derivation rule between path-based identifiers and name-based identifiers. Either move capability declarations into the agent `.md` files, or change map keys to full relative paths and add a validation step that keys must appear in `agents`.
-
-**Should fix — structural cleanup:**
-
-3. **Remove `discover_agents` tool, extend `list_agents` with optional `capability` param (Sections 1.1 and 3.1):** One tool, one query endpoint. Add `mcp.WithString("capability", ...)` to the existing `listAgents` tool. Update `ListAgents` on the interlock client to accept a capability string argument. This eliminates the `discoverAgents` function, the `DiscoverAgents` client method, and avoids inflating the registered tool count.
-
-**Minor — low effort:**
-
-4. **Rename `cap` loop variable to avoid shadowing builtin (Section 2.2):** One-character fix in the proposed SQLite query builder.
-
-5. **Merge integration test into existing `handlers_agents_test.go` (Section 3.2):** Avoid creating a misleading file name for an in-process test.
-
-6. **Consider options struct on the public `core/intermute/client/client.go` `ListAgents` (Section 2.1):** Internal Store interface positional params are fine. The public client call sites in autarch deserve a readable API.
+The `"timeout"` substring also matches `context.DeadlineExceeded` wrappings in some Go HTTP clients. Whether that is desirable (context timeouts should retry) or not (context cancellation should not retry) depends on usage. The plan correctly handles `ctx.Done()` separately in the retry loop, so a context deadline error will be caught before the transient check. This is fine.
 
 ---
 
-## Files Referenced
+## 6. Watcher Change (Task 5)
 
-- `/home/mk/projects/Demarch/core/intermute/internal/storage/storage.go` — Store interface (line 30: current `ListAgents` signature), InMemory implementation (line 241)
-- `/home/mk/projects/Demarch/core/intermute/internal/storage/sqlite/sqlite.go` — SQLite `ListAgents` (line 765), `capabilities_json` usage (lines 620, 661, 681, 702, 705)
-- `/home/mk/projects/Demarch/core/intermute/internal/storage/sqlite/resilient.go` — ResilientStore passthrough (line 126)
-- `/home/mk/projects/Demarch/core/intermute/internal/http/handlers_agents.go` — `handleListAgents` (line 58), `s.store.ListAgents` call (line 71), `listAgentsResponse` and `agentJSON` structs
-- `/home/mk/projects/Demarch/core/intermute/client/client.go` — Public Go client `ListAgents` (line 172), `Agent` struct (line 43)
-- `/home/mk/projects/Demarch/core/intermute/go.mod` — SQLite driver: `modernc.org/sqlite v1.29.0` (JSON1 included)
-- `/home/mk/projects/Demarch/interverse/interlock/internal/tools/tools.go` — `RegisterAll` (line 27), `listAgents` tool (line 605)
-- `/home/mk/projects/Demarch/interverse/interlock/internal/client/client.go` — `Agent` struct (line 102: missing `Capabilities` and `LastSeen`), `ListAgents` (line 239)
-- `/home/mk/projects/Demarch/interverse/interlock/scripts/interlock-register.sh` — current POST payload (lines 36-44), no capabilities field
-- `/home/mk/projects/Demarch/interverse/interlock/hooks/session-start.sh` — hook that calls register script (line 36), `CLAUDE_PLUGIN_ROOT` not passed through
-- `/home/mk/projects/Demarch/interverse/interflux/.claude-plugin/plugin.json` — `agents` array (17 entries, no `agentCapabilities` yet)
+The change to `RunOnce` is the most impactful part of the plan and is correctly designed.
+
+The current behavior returns the error immediately, aborting the watch cycle and losing any partial results `Scanner.Scan` had accumulated. The plan separates two distinct cases:
+
+1. `ctx.Err() != nil` — truly fatal, propagate.
+2. Other errors — log to stderr, continue with partial results.
+
+This matches the existing `Run()` behavior (lines 104-106 in `watcher.go`), which already swallows `RunOnce` errors by logging them to stderr. The change makes `RunOnce` itself resilient so `Run()` receives a valid result even when some hunters fail.
+
+One issue in Task 5's proposed code:
+
+```go
+if result == nil {
+    result = &api.ScanResult{HunterResults: make(map[string]*hunters.HuntResult)}
+}
+```
+
+Looking at `api/scanner.go` `Scan()` (lines 120-226), `Scan` always initializes `result` before entering the loop and returns it unconditionally (`return result, nil`). The only way `result` is `nil` after calling `Scan` is if `Scan` itself panics or returns `nil, err`. Given the current implementation, `Scan` never returns `nil` for the result pointer. The nil guard is therefore dead code.
+
+It is harmless defensively, but it misleads readers into thinking `Scan` can return `(nil, err)`. If the nil guard is kept for defensive programming, a comment should explain the invariant.
+
+---
+
+## 7. YAGNI Check
+
+**`HunterStatusSkipped`** is defined in the enum but no task in the plan sets it. The plan describes it as "not in registry" but the CLI already handles that with `fmt.Printf("Warning: hunter %q not found in registry, skipping\n", name)` and `continue`. The skip path does not produce a `HuntResult` at all, so `HunterStatusSkipped` has no concrete consumer in this plan.
+
+This is a speculative value. It should either be removed from the initial implementation (add it when there is a real consumer) or added only if Task 3 is extended to create a `HuntResult` for skipped hunters and include them in the summary table. Currently, skipped hunters are not counted in `len(hunterNames)` used in the summary denominator, so the summary percentage would be wrong if skipped hunters were mixed with failed ones.
+
+**`RetryConfig` as a struct** is appropriate despite having only two fields — `MaxAttempts` and `Backoff`. The function signature `HuntWithRetry(ctx, Hunter, HunterConfig, RetryConfig)` is cleaner than a variadic options approach for two explicit fields. No concern here.
+
+**`DefaultRetryConfig()`** returning 2 attempts with 1s backoff means scans that hit transient failures will add up to 1 second of latency per affected hunter. For a 12-hunter scan, worst case is 12 extra seconds. This is acceptable but worth documenting in the function's godoc so callers understand the latency budget implication.
+
+---
+
+## 8. Pattern Alignment
+
+The plan follows existing patterns in the codebase:
+
+- Uses `fmt.Errorf("...: %w", err)` for wrapping (consistent with the rest of the file).
+- `fakeHunter` in tests implements the `Hunter` interface — correct test isolation.
+- Tests use table-driven format for `TestIsTransient` — consistent with Go idiom.
+- The `hunterSummary` local type in `cli/scan.go` follows the pattern of small anonymous structs used elsewhere in the codebase for iteration state.
+
+The plan does not introduce any new external dependencies. `net`, `errors`, `strings`, `time`, `context`, `fmt` are all already in use in `hunters/`.
+
+---
+
+## Summary: Required Changes Before Implementation
+
+### Must-fix
+
+1. **Enum zero-value ordering** (Task 1): Move `HunterStatusOK` off zero. Use `HunterStatusUnknown = iota` as the zero value. Update Tasks 3 and 4 to explicitly set `Status = HunterStatusOK` on successful hunt paths.
+
+2. **`Success()` contract** (Task 1): Either (a) keep `Success()` as `len(r.Errors) == 0` and treat `Status` as additive reporting, or (b) change to `Status == HunterStatusOK` only after ensuring all success paths explicitly set `Status`. Do not combine the zero-value-as-OK assumption with the Status-based `Success()` check — it works by coincidence, not design.
+
+### Should-fix
+
+3. **Remove `ErrorMsg` field** (Task 1 and 4): The field duplicates `Errors[0].Error()`. Replace with a `ErrorSummary() string` method or simply derive strings from `Errors` at display time.
+
+4. **Remove `HunterStatusSkipped`** (Task 1): No consumer exists in this plan. Add it when a concrete use case requires it (e.g., summary table includes skipped hunters).
+
+### Low priority
+
+5. **Nil guard comment** (Task 5): Document why the `result == nil` guard exists, or remove it if it is truly dead given `Scan`'s invariants.
+
+6. **Per-hunter retry config** (Task 2): Note in `DefaultRetryConfig` godoc that per-hunter retry overrides are a future extension point, and that the function adds up to 1s latency per hunter on transient failures.

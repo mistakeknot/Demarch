@@ -1,3 +1,49 @@
+# Quality Review: 2026-02-23-pollard-hunter-resilience.md
+
+> This file is a brief summary. Full review: `.claude/reviews/iv-xlpg-plan-quality.md`
+
+Reviewed against:
+- `/home/mk/projects/Demarch/docs/plans/2026-02-23-pollard-hunter-resilience.md`
+- `/home/mk/projects/Demarch/apps/autarch/internal/pollard/hunters/hunter.go`
+- `/home/mk/projects/Demarch/apps/autarch/internal/pollard/cli/scan.go`
+- `/home/mk/projects/Demarch/apps/autarch/internal/pollard/api/scanner.go`
+- `/home/mk/projects/Demarch/apps/autarch/internal/pollard/watch/watcher.go`
+
+---
+
+## Summary of Findings (iv-xlpg Pollard Hunter Resilience)
+
+### BLOCKER — `Success()` semantic gap after HunterStatus migration
+
+Task 1 replaces `Success()` with `return r.Status == HunterStatusOK`. Task 4 (`api/scanner.go`) only sets `Status` on the error path, not the partial-success path. After the migration, a hunt with `len(Errors) > 0` and `Status` still zero (`HunterStatusOK`) will be recorded as successful in the DB.
+
+Fix: add `huntResult.Status = hunters.HunterStatusPartial` to the success path in `api/scanner.go` when `len(huntResult.Errors) > 0`.
+
+### BUG — Pre-cancelled context reaches `h.Hunt`
+
+`HuntWithRetry` calls `h.Hunt(ctx, cfg)` without checking `ctx.Err()` first. The proposed `fakeHunter` discards the context, so `TestHuntWithRetry_RespectsContextCancellation` will fail — the hunter returns `DNSError`, not `context.Canceled`.
+
+Fix: add `if ctx.Err() != nil { return nil, ctx.Err() }` at the top of the retry loop body. Update `fakeHunter.Hunt` to check and return the context error.
+
+### MINOR — `net.Error` catches non-retryable DNS errors
+
+`errors.As(err, &netErr)` matches permanent network failures (`IsNotFound: true`). Tighten to `netErr.Timeout() || netErr.Temporary()`.
+
+## What Is Sound
+
+- `HunterStatus.String()` satisfies `fmt.Stringer` correctly — idiomatic
+- `fakeHunter` pointer-receiver mutation is safe — `HuntWithRetry` is a sequential loop with no goroutine concurrency
+- `hunterSummary` as a local type in `scan.go`'s closure is the right scope — CLI-only output, not needed by API or watcher
+- All `%w` error wrapping is consistent with project conventions
+- All new exported identifiers pass the 5-second naming rule
+- No new dependencies — stdlib only
+
+---
+
+## Original Review (2026-02-22-agent-capability-discovery.md preserved below for history)
+
+---
+
 # Quality Review: 2026-02-22-agent-capability-discovery.md
 
 Reviewed against:
