@@ -126,7 +126,7 @@ else
     exit 1
 fi
 
-# go (REQUIRED — builds intercore kernel)
+# go (REQUIRED, builds intercore kernel)
 if command -v go &>/dev/null; then
     go_ver=$(go version | grep -Eo 'go[0-9]+\.[0-9]+' | head -1 | sed 's/go//')
     go_major="${go_ver%%.*}"
@@ -214,9 +214,9 @@ if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
     [[ "$DRY_RUN" == true ]] && MODPACK_FLAGS="--dry-run"
     [[ "$VERBOSE" != true ]] && MODPACK_FLAGS="$MODPACK_FLAGS --quiet"
 
-    if MODPACK_OUT=$(bash "$MODPACK" $MODPACK_FLAGS 2>&1); then
-        # Count results from JSON output (last line)
-        MODPACK_JSON=$(echo "$MODPACK_OUT" | tail -1)
+    if MODPACK_OUT=$(bash "$MODPACK" $MODPACK_FLAGS 2>/dev/null); then
+        # JSON is on stdout; stderr was suppressed
+        MODPACK_JSON=$(echo "$MODPACK_OUT" | grep -E '^\{' | tail -1)
         N_INSTALLED=$(echo "$MODPACK_JSON" | jq -r '.installed // .would_install | length' 2>/dev/null || echo "?")
         N_PRESENT=$(echo "$MODPACK_JSON" | jq -r '.already_present | length' 2>/dev/null || echo "?")
         N_FAILED=$(echo "$MODPACK_JSON" | jq -r '.failed | length' 2>/dev/null || echo "0")
@@ -276,17 +276,12 @@ elif [[ -f "../core/intercore/cmd/ic/main.go" ]]; then
 fi
 
 if [[ -z "$IC_SRC" ]]; then
-    # Curl-pipe mode: clone repo to temp dir
+    # Curl-pipe mode: clone intercore repo directly
     IC_TMPDIR=$(mktemp -d)
     trap 'rm -rf "$IC_TMPDIR"' EXIT
     log "    Cloning intercore source..."
-    if run git clone --depth=1 --filter=blob:none --sparse https://github.com/mistakeknot/Demarch.git "$IC_TMPDIR/Demarch" 2>/dev/null; then
-        if ! (cd "$IC_TMPDIR/Demarch" && git sparse-checkout set core/intercore); then
-            warn "Sparse checkout failed. Run '/clavain:setup' after cloning the repo to build ic."
-            IC_SRC=""
-        else
-            IC_SRC="$IC_TMPDIR/Demarch/core/intercore"
-        fi
+    if run git clone --depth=1 https://github.com/mistakeknot/intercore.git "$IC_TMPDIR/intercore" 2>/dev/null; then
+        IC_SRC="$IC_TMPDIR/intercore"
     else
         warn "Could not clone intercore source. Run '/clavain:setup' after cloning the repo to build ic."
         IC_SRC=""
@@ -310,13 +305,13 @@ if [[ -n "$IC_SRC" ]]; then
         if "${HOME}/.local/bin/ic" init 2>/dev/null; then
             success "ic database initialized"
         else
-            warn "ic init returned non-zero (may already be initialized — continuing)"
+            warn "ic init returned non-zero (may already be initialized, continuing)"
         fi
 
         if "${HOME}/.local/bin/ic" health >/dev/null 2>&1; then
             success "ic health check passed"
         else
-            warn "ic health check failed — run 'ic health' to diagnose"
+            warn "ic health check failed. Run 'ic health' to diagnose."
         fi
     fi
 
@@ -357,7 +352,7 @@ if command -v ic &>/dev/null; then
 elif [[ -x "${HOME}/.local/bin/ic" ]]; then
     warn "ic built but not on PATH. Add ~/.local/bin to PATH."
 else
-    warn "ic not found — kernel features will be unavailable"
+    warn "ic not found, kernel features will be unavailable"
 fi
 
 # --- Next steps ---
