@@ -1,11 +1,12 @@
 # Project-level watchables override for Demarch monorepo.
-# Paths follow CONVENTIONS.md namespaced convention:
-#   docs/<module>-roadmap.md, docs/<module>-vision.md
+# Paths follow CONVENTIONS.md convention:
+#   Root: docs/demarch-roadmap.md, docs/demarch-vision.md
+#   Modules: docs/roadmap.md (auto-generated from beads)
 # PRD uses docs/prds/*.md at monorepo level (no single PRD to watch).
 
 watchables:
   - name: roadmap
-    path: docs/interverse-roadmap.md
+    path: docs/demarch-roadmap.md
     generator: interpath:artifact-gen
     generator_args: { type: roadmap }
     signals:
@@ -24,7 +25,7 @@ watchables:
     staleness_days: 7
 
   - name: vision
-    path: docs/interverse-vision.md
+    path: docs/demarch-vision.md
     generator: interpath:artifact-gen
     generator_args: { type: vision }
     signals:
