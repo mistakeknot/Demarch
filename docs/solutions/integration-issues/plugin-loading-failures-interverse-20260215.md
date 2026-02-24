@@ -186,3 +186,4 @@ When a plugin shows errors at session start:
 ## Related Issues
 - See also: [auto-build-launcher-go-mcp-plugins-20260215.md](../workflow-issues/auto-build-launcher-go-mcp-plugins-20260215.md) — launcher pattern that permanently fixes the missing binary problem for compiled MCP servers
 - See also: [plugin-validation-errors-cache-manifest-divergence-20260217.md](plugin-validation-errors-cache-manifest-divergence-20260217.md) — Second round of plugin failures: cache/manifest divergence, invalid hook events, missing skills directories
+- See also: [graceful-mcp-launcher-external-deps-interflux-20260224.md](graceful-mcp-launcher-external-deps-interflux-20260224.md) — Extends launcher pattern to external dependencies (qmd, exa) with graceful degradation on new machines

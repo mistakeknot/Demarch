@@ -95,3 +95,4 @@ exec "$BINARY" "$@"
 
 ## Related Issues
 - See also: [plugin-loading-failures-interverse-20260215.md](../integration-issues/plugin-loading-failures-interverse-20260215.md) — broader plugin debugging session where this pattern was discovered
+- See also: [graceful-mcp-launcher-external-deps-interflux-20260224.md](../integration-issues/graceful-mcp-launcher-external-deps-interflux-20260224.md) — adaptation of this pattern for external dependencies (check availability instead of building)
