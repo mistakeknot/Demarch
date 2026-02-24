@@ -202,6 +202,8 @@ if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
         N_PRESENT=$(echo "$MODPACK_JSON" | jq -r '.already_present | length' 2>/dev/null || echo "?")
         N_FAILED=$(echo "$MODPACK_JSON" | jq -r '.failed | length' 2>/dev/null || echo "0")
 
+        N_OPTIONAL=$(echo "$MODPACK_JSON" | jq -r '.optional_available | length' 2>/dev/null || echo "0")
+
         if [[ "$DRY_RUN" == true ]]; then
             success "Would install ${N_INSTALLED} plugins (${N_PRESENT} already present)"
         else
@@ -212,6 +214,10 @@ if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
                     warn "  Failed: $p"
                 done
             fi
+        fi
+
+        if [[ "$N_OPTIONAL" != "0" ]] && [[ "$N_OPTIONAL" != "null" ]]; then
+            log "  ${DIM}${N_OPTIONAL} optional plugins available. Run /clavain:setup in Claude Code to browse and install them.${RESET}"
         fi
     else
         warn "Modpack install had errors (continuing)"
