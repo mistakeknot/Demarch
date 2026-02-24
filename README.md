@@ -2,7 +2,7 @@
 
 A monorepo for building software with agents, where the review phases matter more than the building phases, and the point is not to remove humans from the loop but to make every moment in the loop count.
 
-Demarch is the platform behind [Clavain](os/clavain/), a self-improving Claude Code agent rig that orchestrates the full development lifecycle from brainstorm to ship. It coordinates Claude, Codex, and GPT-5.2 Pro into something more useful than any of them alone.
+Demarch is the platform behind [Clavain](https://github.com/mistakeknot/Clavain), a self-improving Claude Code agent rig that orchestrates the full development lifecycle from brainstorm to ship. It coordinates Claude, Codex, and GPT-5.2 Pro into something more useful than any of them alone.
 
 ## Quick start
 
@@ -51,13 +51,13 @@ Demarch is a monorepo with 5 pillars:
 
 | Pillar | Layer | Description |
 |--------|-------|-------------|
-| [Intercore](core/intercore/) | L1 (Core) | Orchestration kernel: runs, dispatches, gates, events |
-| [Intermute](core/intermute/) | L1 (Core) | Multi-agent coordination service (Go) |
-| [Clavain](os/clavain/) | L2 (OS) | Self-improving agent rig: 16 skills, 55 commands |
-| [Interverse](interverse/) | L2-L3 | 33+ companion plugins |
-| [Autarch](apps/autarch/) | L3 (Apps) | TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
+| [Intercore](https://github.com/mistakeknot/intercore) | L1 (Core) | Orchestration kernel: runs, dispatches, gates, events |
+| [Intermute](https://github.com/mistakeknot/intermute) | L1 (Core) | Multi-agent coordination service (Go) |
+| [Clavain](https://github.com/mistakeknot/Clavain) | L2 (OS) | Self-improving agent rig: 16 skills, 55 commands |
+| [Interverse](https://github.com/mistakeknot/interagency-marketplace) | L2-L3 | 33+ companion plugins |
+| [Autarch](https://github.com/mistakeknot/Autarch) | L3 (Apps) | TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
 
-Additional infrastructure: [marketplace](core/marketplace/), [agent-rig](core/agent-rig/), [interbench](core/interbench/), [interband](core/interband/), [interbase](sdk/interbase/).
+Additional infrastructure: [marketplace](https://github.com/mistakeknot/interagency-marketplace), [agent-rig](https://github.com/mistakeknot/agent-rig), [interbench](https://github.com/mistakeknot/interbench), [interband](https://github.com/mistakeknot/interband), [interbase](https://github.com/mistakeknot/interbase).
 
 ### Plugin ecosystem
 
