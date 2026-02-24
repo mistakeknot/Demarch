@@ -306,6 +306,7 @@ Consolidated reference guides — read the relevant guide before working in that
 
 | Guide | When to Read | Path |
 |-------|-------------|------|
+| Repo Operations | Before editing root-tracked files, pushing, or adding links to subprojects | `docs/guides/repo-ops.md` |
 | Plugin Troubleshooting | Before debugging plugin errors, creating hooks, publishing | `docs/guides/plugin-troubleshooting.md` |
 | Shell & Tooling Patterns | Before writing bash hooks, jq pipelines, or bd commands | `docs/guides/shell-and-tooling-patterns.md` |
 | Multi-Agent Coordination | Before multi-agent workflows, subagent dispatch, or token analysis | `docs/guides/multi-agent-coordination.md` |
