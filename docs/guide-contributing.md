@@ -4,14 +4,17 @@
 
 **Prerequisites:** Everything in [Full Setup Guide](guide-full-setup.md), plus familiarity with Go and/or Claude Code plugin development.
 
-## Clone the monorepo
+## Fork and clone
+
+1. Fork the repo you want to contribute to on GitHub
+2. Clone your fork:
 
 ```bash
-git clone https://github.com/mistakeknot/Demarch.git
+git clone https://github.com/<your-username>/Demarch.git
 cd Demarch
 ```
 
-Each subproject (`os/clavain`, `interverse/interflux`, `core/intermute`, etc.) keeps its own `.git` and GitHub repo. The monorepo is a development workspace, not a git monorepo.
+Each subproject (`os/clavain`, `interverse/interflux`, `core/intermute`, etc.) keeps its own `.git` and GitHub repo. If you're contributing to a subproject, fork and clone that repo directly.
 
 ## Project structure
 
@@ -36,48 +39,59 @@ Layers describe dependency: L1 (core) has no upward dependencies, L2 (OS) depend
 
 ## Development workflow
 
-### Trunk-based development
+### Branch and PR
 
-Commits go directly to `main`. No feature branches unless explicitly discussed. This keeps the feedback loop tight.
+All external contributions come through pull requests:
 
-### Making changes
-
-1. Read the subproject's `CLAUDE.md` and `AGENTS.md` for conventions
-2. Create a bead to track work:
+1. Create a feature branch from `main`:
    ```bash
-   bd create --title="What I'm doing" --type=task --priority=2
+   git checkout -b your-branch-name
    ```
-3. Work with Clavain:
-   ```
-   /clavain:route iv-<bead-id>
-   ```
-4. Commit and push to main
+2. Make your changes, following the subproject's `CLAUDE.md` and `AGENTS.md` conventions
+3. Run tests (see [Testing](#testing) below)
+4. Push your branch and open a PR against `main`
+
+**Branch protection is enabled** on `main` for all product repos. Direct pushes are blocked for non-admins. PRs require at least one approving review before merge.
+
+### Commit conventions
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat(scope): add new feature
+fix(scope): fix the bug
+refactor(scope): restructure without behavior change
+docs(scope): documentation only
+ci(scope): CI/CD changes
+test(scope): test additions or fixes
+```
+
+Keep commits focused. One logical change per commit.
 
 ### Testing
+
+Run the relevant tests before opening a PR:
 
 | Component | Command | Notes |
 |-----------|---------|-------|
 | Autarch | `cd apps/autarch && go test -race ./...` | Always use `-race` flag |
 | Intermute | `cd core/intermute && go test -race ./...` | |
 | Intercore | `cd core/intercore && go test -race ./...` | |
+| Go modules | `go build ./... && go vet ./... && go test -race ./...` | Standard for all Go repos |
 | Plugins (syntax) | `bash -n hooks/*.sh` | Syntax check all hook scripts |
 | Plugin (validate) | `/plugin-dev:plugin-validator` | Structural validation |
 
+CI runs automatically on PRs. All checks must pass before merge.
+
 ### Code review
 
-All changes go through multi-agent review:
+PRs are reviewed by maintainers. For larger changes, the maintainer may run multi-agent review:
 
 ```
 /clavain:quality-gates
 ```
 
-This dispatches 7 specialized agents (architecture, safety, correctness, quality, user/product, performance, game design) to review your changes.
-
-For cross-AI review (sends to GPT-5.2 Pro for a second opinion):
-
-```
-/interpeer
-```
+This dispatches specialized agents (architecture, safety, correctness, quality) to review changes. You don't need to run this yourself — the maintainer will.
 
 ## Plugin development
 
@@ -103,16 +117,6 @@ your-plugin/
   agents/                # Agent definitions
 ```
 
-### Publishing
-
-After pushing changes:
-
-```
-/interpub:release <version>
-```
-
-This bumps version in all locations, commits, pushes, and updates the marketplace.
-
 ### Naming conventions
 
 - All module names are **lowercase**: `interflux`, `intermute`, `interkasten`
@@ -131,8 +135,6 @@ This bumps version in all locations, commits, pushes, and updates the marketplac
 
 ## What's next
 
-Start working: `/clavain:route`
-
-Read the workflow guide: [Power User Guide](guide-power-user.md)
+Read the [Power User Guide](guide-power-user.md) for advanced workflows.
 
 Learn about the full platform: [Full Setup Guide](guide-full-setup.md)

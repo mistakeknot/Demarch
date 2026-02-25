@@ -64,6 +64,14 @@ docs/                 → shared documentation
 - **Pillars** are the 5 top-level components: Intercore, Clavain, Interverse, Autarch, Interspect
 - **Layers** (L1/L2/L3) describe architectural dependency; pillars describe organizational structure
 
+## Git Workflow
+
+**Owner/agents:** Trunk-based development — commit directly to `main`. You can bypass branch protection as admin.
+
+**External contributors:** Fork + PR. Branch protection is enabled on `main` for all public repos (require 1 approving review, dismiss stale reviews). Direct pushes to `main` are blocked for non-admins.
+
+See [docs/guide-contributing.md](docs/guide-contributing.md) for the full contributor guide.
+
 ## Working in Subprojects
 
 Each subproject has its own `CLAUDE.md` and `AGENTS.md`. When working in a subproject, those take precedence.
