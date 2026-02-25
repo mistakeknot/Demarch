@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Monorepo shortcut — forwards to apps/autarch/dev
+exec "$(dirname "$0")/apps/autarch/dev" "$@"
