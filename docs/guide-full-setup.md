@@ -16,6 +16,8 @@
 curl -fsSL https://raw.githubusercontent.com/mistakeknot/Demarch/main/install.sh | bash
 ```
 
+> **Migrating from superpowers or compound-engineering?** The installer automatically removes legacy marketplaces (`superpowers-marketplace`, `every-marketplace`) and Codex skill artifacts. See the [Codex Setup Guide](guide-codex-setup.md#migrating-from-legacy-patterns) for details.
+
 Then open Claude Code and install companion plugins:
 
 ```
@@ -61,7 +63,25 @@ Verify:
 ic version
 ```
 
-## Step 4: Build Intermute (optional)
+## Step 4: Codex CLI (optional)
+
+If you also use the Codex CLI, the main installer (`install.sh`) automatically installs Codex skills when it detects `codex` on PATH. Verify:
+
+```bash
+ls ~/.agents/skills/
+```
+
+Expected: `clavain`, `interdoc`, `tool-time`, `tldrs-agent-workflow`
+
+If you installed Codex after running the main installer, set up skills manually:
+
+```bash
+bash os/clavain/scripts/install-codex-interverse.sh install
+```
+
+Restart Codex after installation. See the [Codex Setup Guide](guide-codex-setup.md) for details, migration from legacy patterns, and troubleshooting.
+
+## Step 5: Build Intermute (optional)
 
 Intermute is the multi-agent coordination service. Only needed if you run multiple Claude Code sessions editing the same repository simultaneously.
 
@@ -76,7 +96,7 @@ Start the service:
 intermute serve
 ```
 
-## Step 5: Build Autarch (optional)
+## Step 6: Build Autarch (optional)
 
 Autarch provides TUI interfaces for agent monitoring and project management:
 - **Bigend**: dashboard with agent status, sprint progress, system health
@@ -91,7 +111,7 @@ make build
 
 Requires tmux for Coldwine's multi-pane layout.
 
-## Step 6: Oracle setup (optional)
+## Step 7: Oracle setup (optional)
 
 Oracle enables cross-AI review by sending prompts to GPT-5.2 Pro via a headless browser. This powers the `/interpeer` escalation workflow.
 

@@ -193,6 +193,26 @@ if [[ -f "$KNOWN_MKT" ]] && command -v jq &>/dev/null; then
     fi
 fi
 
+# Step 0b: Remove legacy superpowers/compound-engineering marketplaces
+LEGACY_MARKETPLACES=(superpowers-marketplace every-marketplace)
+for mkt in "${LEGACY_MARKETPLACES[@]}"; do
+    if [[ -f "$KNOWN_MKT" ]] && jq -e --arg m "$mkt" 'has($m)' "$KNOWN_MKT" &>/dev/null; then
+        log "  Removing legacy marketplace: $mkt"
+        if [[ "$DRY_RUN" == true ]]; then
+            log "  ${DIM}[DRY RUN] Would remove $mkt from known_marketplaces.json${RESET}"
+        else
+            # Remove from known_marketplaces.json
+            jq --arg m "$mkt" 'del(.[$m])' "$KNOWN_MKT" > "${KNOWN_MKT}.tmp" && \
+                mv "${KNOWN_MKT}.tmp" "$KNOWN_MKT"
+            # Remove marketplace checkout directory
+            if [[ -d "${HOME}/.claude/plugins/marketplaces/$mkt" ]]; then
+                rm -rf "${HOME}/.claude/plugins/marketplaces/$mkt"
+            fi
+            success "Removed legacy marketplace: $mkt"
+        fi
+    fi
+done
+
 # Step 1: Add marketplace
 log "  Adding interagency-marketplace..."
 MARKET_OUT=$(run claude plugin marketplace add mistakeknot/interagency-marketplace 2>&1) && {
@@ -352,6 +372,52 @@ fi
 
 log ""
 
+# --- Codex CLI (optional) ---
+if command -v codex &>/dev/null; then
+    log "${BOLD}Codex CLI detected — installing Codex skills...${RESET}"
+
+    # Determine Clavain source for the interverse installer
+    CODEX_SOURCE=""
+    if [[ -n "${CLAVAIN_DIR:-}" ]] && [[ -f "$CLAVAIN_DIR/scripts/install-codex-interverse.sh" ]]; then
+        CODEX_SOURCE="$CLAVAIN_DIR"
+    elif [[ -f "os/clavain/scripts/install-codex-interverse.sh" ]]; then
+        CODEX_SOURCE="os/clavain"
+    fi
+
+    if [[ -z "$CODEX_SOURCE" ]] && command -v git &>/dev/null; then
+        # Curl-pipe mode: clone Clavain for Codex skill install
+        CODEX_CLONE_DIR="${HOME}/.codex/clavain"
+        if [[ -d "$CODEX_CLONE_DIR/.git" ]]; then
+            log "  Updating Clavain checkout at $CODEX_CLONE_DIR"
+            git -C "$CODEX_CLONE_DIR" pull --ff-only 2>/dev/null || true
+        else
+            log "  Cloning Clavain for Codex skills..."
+            git clone https://github.com/mistakeknot/Clavain.git "$CODEX_CLONE_DIR" 2>/dev/null || true
+        fi
+        if [[ -f "$CODEX_CLONE_DIR/scripts/install-codex-interverse.sh" ]]; then
+            CODEX_SOURCE="$CODEX_CLONE_DIR"
+        fi
+    fi
+
+    if [[ -n "$CODEX_SOURCE" ]]; then
+        if [[ "$DRY_RUN" == true ]]; then
+            log "  ${DIM}[DRY RUN] Would install Codex skills via install-codex-interverse.sh${RESET}"
+        else
+            if bash "$CODEX_SOURCE/scripts/install-codex-interverse.sh" install --source "$CODEX_SOURCE" 2>&1; then
+                success "Codex skills installed (Clavain + companions)"
+            else
+                warn "Codex skill install had errors (non-fatal, Claude Code install succeeded)"
+            fi
+        fi
+    else
+        warn "Codex interverse installer not found — run manually after cloning:"
+        log "  ${BLUE}bash os/clavain/scripts/install-codex-interverse.sh install${RESET}"
+    fi
+    log ""
+else
+    debug "Codex CLI not found, skipping Codex skill setup"
+fi
+
 # --- Verification ---
 log "${BOLD}Verifying installation...${RESET}"
 
@@ -390,9 +456,16 @@ log "  1. Ensure ~/.local/bin is on PATH:  ${BLUE}export PATH=\"\$HOME/.local/bi
 log "  2. Open Claude Code in any project:  ${BLUE}claude${RESET}"
 log "  3. Install companion plugins:        ${BLUE}/clavain:setup${RESET}"
 log "  4. Start working:                    ${BLUE}/clavain:route${RESET}"
+if command -v codex &>/dev/null; then
+    log ""
+    log "${BOLD}Codex CLI:${RESET}"
+    log "  Skills installed to ~/.agents/skills/ — restart Codex to load them."
+    log "  Runbook: ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-codex-setup.md${RESET}"
+fi
 log ""
 log "${BOLD}Guides:${RESET}"
 log "  Power user:   ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-power-user.md${RESET}"
 log "  Full setup:   ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-full-setup.md${RESET}"
+log "  Codex setup:  ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-codex-setup.md${RESET}"
 log "  Contributing: ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-contributing.md${RESET}"
 log ""

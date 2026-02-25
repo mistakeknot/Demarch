@@ -18,6 +18,8 @@ Then open Claude Code and run:
 /clavain:route
 ```
 
+> **Migrating from superpowers or compound-engineering?** The installer automatically removes legacy marketplaces and skill artifacts. See the [Codex Setup Guide](docs/guide-codex-setup.md#migrating-from-legacy-patterns) for details on what gets cleaned up.
+
 ## What you get
 
 - **Clavain**: the agent rig (brainstorm → strategy → plan → execute → review → ship)

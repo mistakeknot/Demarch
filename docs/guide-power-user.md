@@ -18,6 +18,8 @@ Then open Claude Code and install companion plugins:
 
 This installs 12+ companion plugins for code review, phase tracking, doc freshness monitoring, and more.
 
+> **Migrating from superpowers or compound-engineering?** The installer automatically removes legacy marketplaces and skill artifacts. See the [Codex Setup Guide](guide-codex-setup.md#migrating-from-legacy-patterns) for details.
+
 ## Your first session
 
 ### Finding work
