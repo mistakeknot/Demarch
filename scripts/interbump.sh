@@ -341,9 +341,50 @@ if ! git -C "$MARKETPLACE_ROOT" push; then
 fi
 echo -e "${GREEN}Pushed marketplace${NC}"
 
-# --- Cache symlink bridging ---
+# --- Cache rebuild + symlink bridging ---
+CACHE_DIR="$HOME/.claude/plugins/cache/interagency-marketplace/$PLUGIN_NAME"
+
+# Populate cache with new version so next session picks it up immediately
+if [[ -d "$CACHE_DIR" ]]; then
+    NEW_CACHE="$CACHE_DIR/$VERSION"
+    if [[ ! -d "$NEW_CACHE" ]]; then
+        cp -a "$PLUGIN_ROOT" "$NEW_CACHE"
+        echo -e "  ${GREEN}Cached${NC} $PLUGIN_NAME v$VERSION"
+    fi
+fi
+
+# Update installed_plugins.json to point at the new cache
+INSTALLED_JSON="$HOME/.claude/plugins/installed_plugins.json"
+if [[ -f "$INSTALLED_JSON" ]]; then
+    PLUGIN_KEY="${PLUGIN_NAME}@interagency-marketplace"
+    tmp_inst="$(mktemp)"
+    jq --arg key "$PLUGIN_KEY" --arg v "$VERSION" \
+        --arg path "$CACHE_DIR/$VERSION" \
+        '(.plugins[$key][0].version = $v) | (.plugins[$key][0].installPath = $path)' \
+        "$INSTALLED_JSON" > "$tmp_inst" 2>/dev/null && \
+        mv "$tmp_inst" "$INSTALLED_JSON" && \
+        echo -e "  ${GREEN}Updated${NC} installed_plugins.json"
+fi
+
+# Sync Claude Code's own marketplace checkout if it differs from monorepo copy
+CC_MARKETPLACE="$HOME/.claude/plugins/marketplaces/interagency-marketplace"
+if [[ "$(realpath "$MARKETPLACE_ROOT" 2>/dev/null)" != "$(realpath "$CC_MARKETPLACE" 2>/dev/null)" && -f "$CC_MARKETPLACE/.claude-plugin/marketplace.json" ]]; then
+    CC_VER=$(jq -r --arg name "$PLUGIN_NAME" '.plugins[] | select(.name == $name) | .version' "$CC_MARKETPLACE/.claude-plugin/marketplace.json" 2>/dev/null || true)
+    if [[ "$CC_VER" != "$VERSION" ]]; then
+        tmp_cc="$(mktemp)"
+        jq --arg name "$PLUGIN_NAME" --arg ver "$VERSION" \
+            '(.plugins[] | select(.name == $name)).version = $ver' \
+            "$CC_MARKETPLACE/.claude-plugin/marketplace.json" > "$tmp_cc" && \
+            mv "$tmp_cc" "$CC_MARKETPLACE/.claude-plugin/marketplace.json"
+        git -C "$CC_MARKETPLACE" add .claude-plugin/marketplace.json 2>/dev/null || true
+        git -C "$CC_MARKETPLACE" commit -m "chore: bump $PLUGIN_NAME to v$VERSION" --quiet 2>/dev/null || true
+        git -C "$CC_MARKETPLACE" push --quiet 2>/dev/null || true
+        echo -e "  ${GREEN}Synced${NC} Claude Code marketplace checkout"
+    fi
+fi
+
+# Legacy symlink bridging for running sessions
 if [ -f "$PLUGIN_ROOT/.claude-plugin/hooks/hooks.json" ] || [ -f "$PLUGIN_ROOT/hooks/hooks.json" ]; then
-    CACHE_DIR="$HOME/.claude/plugins/cache/interagency-marketplace/$PLUGIN_NAME"
     if [[ -d "$CACHE_DIR" ]]; then
         REAL_DIR=""
         for candidate in "$CACHE_DIR"/*/; do
