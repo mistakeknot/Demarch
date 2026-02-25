@@ -30,12 +30,14 @@ interverse/           → companion plugins (all lowercase)
   interject/          → ambient discovery + research engine (MCP)
   interlearn/         → cross-repo institutional knowledge index
   interserve/         → Codex spark classifier + context compression (MCP)
+  interspect/         → agent profiler — evidence, classification, routing, canary (hooks)
   interstat/          → token efficiency benchmarking
   intersynth/         → multi-agent synthesis engine (verdict aggregation)
   internext/          → work prioritization + tradeoff analysis
   intersearch/        → shared embedding + Exa search library
   interlens/          → cognitive augmentation lenses (FLUX podcast)
   tldr-swinton/       → token-efficient code context (MCP)
+  intership/          → Culture ship names as spinner verbs
   tool-time/          → tool usage analytics
   tuivision/          → TUI automation + visual testing (MCP)
 core/
