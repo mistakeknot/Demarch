@@ -149,6 +149,14 @@ The platform roadmap is at [`docs/demarch-roadmap.md`](docs/demarch-roadmap.md) 
 - Exception: **Demarch** (platform name) and the five pillar names: **Intercore**, **Clavain**, **Interverse**, **Autarch**, **Interspect**
 - GitHub repos: `github.com/mistakeknot/<lowercase-name>`
 
+## Go Module Path Convention
+
+All first-party Go modules declare canonical module paths matching `github.com/mistakeknot/<module-name>`, where `<module-name>` matches the directory basename (e.g., `core/intercore` declares `github.com/mistakeknot/intercore`).
+
+- **Replace directives** use relative filesystem paths from the module's own directory (e.g., `../../core/intermute`), never symlinks.
+- **CI guard**: `scripts/check-go-module-paths.sh` validates all in-scope `go.mod` files. Excludes `research/`, `.external/`, and `testdata/` directories.
+- Third-party or vendored modules (under `.external/`, `research/`) are exempt from this convention.
+
 ## Prerequisites
 
 Required tools (all pre-installed on this server):
