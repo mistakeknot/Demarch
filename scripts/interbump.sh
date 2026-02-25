@@ -20,6 +20,49 @@ else
     RED=''; GREEN=''; YELLOW=''; CYAN=''; NC=''
 fi
 
+# --- Phase tracking for recovery ---
+PHASE=""
+phase() { PHASE="$1"; }
+
+recovery_message() {
+    echo ""
+    echo -e "${RED}=== RELEASE INTERRUPTED at phase: $PHASE ===${NC}" >&2
+    echo -e "${YELLOW}Recovery steps:${NC}" >&2
+    case "$PHASE" in
+        preflight|validate|update-files|verify)
+            echo "  No git changes pushed. Safe to re-run after fixing the issue." >&2
+            ;;
+        plugin-commit)
+            echo "  Plugin committed locally but NOT pushed. To undo:" >&2
+            echo "    git -C \"$PLUGIN_ROOT\" reset HEAD~1" >&2
+            ;;
+        plugin-push)
+            echo "  Plugin push failed after local commit. To retry:" >&2
+            echo "    cd \"$PLUGIN_ROOT\" && git pull --rebase && git push" >&2
+            echo "  Or to undo the commit:" >&2
+            echo "    git -C \"$PLUGIN_ROOT\" reset HEAD~1" >&2
+            ;;
+        marketplace-commit)
+            echo "  Plugin pushed successfully. Marketplace committed but NOT pushed." >&2
+            echo "  To retry marketplace push:" >&2
+            echo "    cd \"$MARKETPLACE_ROOT\" && git pull --rebase && git push" >&2
+            echo "  Or to undo marketplace commit:" >&2
+            echo "    git -C \"$MARKETPLACE_ROOT\" reset HEAD~1" >&2
+            ;;
+        marketplace-push)
+            echo "  Plugin pushed successfully. Marketplace push failed." >&2
+            echo "  To retry:" >&2
+            echo "    cd \"$MARKETPLACE_ROOT\" && git pull --rebase && git push" >&2
+            ;;
+        *)
+            echo "  Inspect git status in both repos and retry." >&2
+            ;;
+    esac
+    echo "" >&2
+}
+
+trap 'if [ $? -ne 0 ] && [ -n "$PHASE" ]; then recovery_message; fi' EXIT
+
 # --- Parse args ---
 usage() {
     echo "Usage: $0 <version> [--dry-run]"
@@ -98,6 +141,47 @@ if [ -z "$MARKETPLACE_CURRENT" ]; then
     exit 1
 fi
 
+# --- Preflight checks ---
+phase "preflight"
+
+preflight_ok=true
+
+# Check required tools
+for tool in jq git sed; do
+    if ! command -v "$tool" &>/dev/null; then
+        echo -e "${RED}Preflight: missing required tool: $tool${NC}" >&2
+        preflight_ok=false
+    fi
+done
+
+# Check both worktrees are clean
+for repo_label_path in "plugin:$PLUGIN_ROOT" "marketplace:$MARKETPLACE_ROOT"; do
+    label="${repo_label_path%%:*}"
+    repo="${repo_label_path#*:}"
+    if ! git -C "$repo" diff --quiet 2>/dev/null || ! git -C "$repo" diff --cached --quiet 2>/dev/null; then
+        echo -e "${RED}Preflight: $label worktree is dirty ($repo)${NC}" >&2
+        echo "  Run: git -C \"$repo\" status" >&2
+        preflight_ok=false
+    fi
+done
+
+# Check both remotes are reachable
+for repo_label_path in "plugin:$PLUGIN_ROOT" "marketplace:$MARKETPLACE_ROOT"; do
+    label="${repo_label_path%%:*}"
+    repo="${repo_label_path#*:}"
+    if ! git -C "$repo" ls-remote --exit-code origin HEAD &>/dev/null; then
+        echo -e "${RED}Preflight: $label remote unreachable ($repo)${NC}" >&2
+        preflight_ok=false
+    fi
+done
+
+if ! $preflight_ok; then
+    echo -e "\n${RED}Preflight checks failed. No files were modified.${NC}" >&2
+    exit 1
+fi
+echo -e "${GREEN}Preflight checks passed.${NC}"
+echo ""
+
 # --- Discovery table ---
 echo -e "${CYAN}Plugin:${NC}      $PLUGIN_NAME"
 echo -e "${CYAN}Current:${NC}     $CURRENT"
@@ -106,6 +190,7 @@ echo -e "${CYAN}Files:${NC}       ${VERSION_FILES[*]}"
 echo -e "${CYAN}Marketplace:${NC} $(realpath --relative-to="$PWD" "$MARKETPLACE_JSON" 2>/dev/null || echo "$MARKETPLACE_JSON") ($MARKETPLACE_CURRENT → $VERSION)"
 echo ""
 
+phase "validate"
 # --- Pre-publish validation gate ---
 VALIDATE_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/validate-plugin.sh"
 if [ -f "$VALIDATE_SCRIPT" ] && ! $DRY_RUN; then
@@ -129,6 +214,7 @@ if [ -f "$POST_BUMP" ]; then
     echo ""
 fi
 
+phase "update-files"
 # --- Update version files ---
 update_json() {
     local file="$1" label="$2"
@@ -177,6 +263,7 @@ for vf in "${VERSION_FILES[@]}"; do
     esac
 done
 
+phase "verify"
 # --- Post-update verification ---
 VERIFY_FAILED=false
 for vf in "${VERSION_FILES[@]}"; do
@@ -223,19 +310,35 @@ fi
 
 # --- Git: plugin repo ---
 echo ""
-cd "$PLUGIN_ROOT"
-git add "${VERSION_FILES[@]}"
-git commit -m "chore: bump version to $VERSION"
-git pull --rebase 2>/dev/null || true
-git push
+phase "plugin-commit"
+git -C "$PLUGIN_ROOT" add "${VERSION_FILES[@]}"
+git -C "$PLUGIN_ROOT" commit -m "chore: bump version to $VERSION"
+
+phase "plugin-push"
+if ! git -C "$PLUGIN_ROOT" pull --rebase; then
+    echo -e "${RED}Plugin rebase failed — resolve conflicts in $PLUGIN_ROOT${NC}" >&2
+    exit 1
+fi
+if ! git -C "$PLUGIN_ROOT" push; then
+    echo -e "${RED}Plugin push failed${NC}" >&2
+    exit 1
+fi
 echo -e "${GREEN}Pushed $PLUGIN_NAME${NC}"
 
 # --- Git: marketplace repo ---
-cd "$MARKETPLACE_ROOT"
-git add .claude-plugin/marketplace.json
-git commit -m "chore: bump $PLUGIN_NAME to v$VERSION"
-git pull --rebase 2>/dev/null || true
-git push
+phase "marketplace-commit"
+git -C "$MARKETPLACE_ROOT" add .claude-plugin/marketplace.json
+git -C "$MARKETPLACE_ROOT" commit -m "chore: bump $PLUGIN_NAME to v$VERSION"
+
+phase "marketplace-push"
+if ! git -C "$MARKETPLACE_ROOT" pull --rebase; then
+    echo -e "${RED}Marketplace rebase failed — resolve conflicts in $MARKETPLACE_ROOT${NC}" >&2
+    exit 1
+fi
+if ! git -C "$MARKETPLACE_ROOT" push; then
+    echo -e "${RED}Marketplace push failed${NC}" >&2
+    exit 1
+fi
 echo -e "${GREEN}Pushed marketplace${NC}"
 
 # --- Cache symlink bridging ---
@@ -279,7 +382,8 @@ install_interbase() {
 }
 install_interbase
 
-# --- Summary ---
+# --- Summary (only reached if all phases succeeded) ---
+PHASE=""  # clear so trap doesn't fire
 echo ""
 echo -e "${GREEN}Done!${NC} $PLUGIN_NAME v$VERSION"
 echo ""
