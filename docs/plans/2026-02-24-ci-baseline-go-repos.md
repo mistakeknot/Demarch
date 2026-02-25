@@ -21,32 +21,32 @@ Also add CI to `apps/autarch` (currently only has Gemini code review, no test CI
 ## Tasks
 
 ### Task 1: Create Go CI workflow template
-- [ ] Write `.github/workflows/ci.yml` for Go repos with:
+- [x] Write `.github/workflows/ci.yml` for Go repos with:
   - Trigger on push to main + PRs
   - Go setup (go 1.24)
   - `go build ./...`
   - `go test -race ./...`
   - `go vet ./...`
-- [ ] Keep it minimal — no caching, no matrix, no bells and whistles
+- [x] Keep it minimal — no caching, no matrix, no bells and whistles
 
 ### Task 2: Apply to core/ repos
-- [ ] `core/intercore` — add ci.yml, verify `go test -race ./...` passes
-- [ ] `core/intermute` — add ci.yml, verify tests pass
-- [ ] `core/interbench` — add ci.yml (may not have tests, build-only is fine)
-- [ ] `core/interband` — add ci.yml, verify tests pass
+- [x] `core/intercore` — add ci.yml, verify `go test -race ./...` passes
+- [x] `core/intermute` — add ci.yml, verify tests pass
+- [x] `core/interbench` — add ci.yml (may not have tests, build-only is fine)
+- [x] `core/interband` — add ci.yml, verify tests pass
 
 ### Task 3: Apply to interverse/ Go repos
-- [ ] `interverse/intermap` — add ci.yml
-- [ ] `interverse/interlock` — add ci.yml
-- [ ] `interverse/intermux` — add ci.yml
-- [ ] `interverse/interserve` — add ci.yml
+- [x] `interverse/intermap` — add ci.yml
+- [x] `interverse/interlock` — add ci.yml
+- [x] `interverse/intermux` — add ci.yml
+- [x] `interverse/interserve` — add ci.yml
 
 ### Task 4: Apply to apps/autarch
-- [ ] Add ci.yml alongside existing Gemini workflows
+- [x] Add ci.yml alongside existing Gemini workflows
 
 ### Task 5: Commit and push each repo
-- [ ] Commit each repo individually (they have independent .git)
-- [ ] Push all
+- [x] Commit each repo individually (they have independent .git)
+- [x] Push all
 
 ## Template
 
