@@ -184,18 +184,55 @@ If your MCP server wraps an HTTP API:
 
 Network failures (connection refused, timeout, DNS) should map to `TRANSIENT` — the service may come back.
 
+## Middleware Layer (mcputil)
+
+**Package:** `github.com/mistakeknot/interbase/mcputil`
+**Bead:** iv-wnurj
+
+The `mcputil` package provides a `ToolHandlerMiddleware` that wraps all MCP tool handlers with:
+
+- **Timing**: per-tool call duration (atomic nanosecond counters)
+- **Error wrapping**: unhandled Go errors → structured ToolError JSON
+- **Error counting**: per-tool error counter (both Go errors and `isError` results)
+- **Panic recovery**: catches panics → `ErrInternal` ToolError
+
+This complements `toolerror` — handlers use `toolerror.New()` or `mcputil` helpers for domain-specific errors, while the middleware catches anything that falls through (panics, bare Go errors).
+
+### Three-layer error handling
+
+```
+Handler level:   mcputil.ValidationError(...)  — known validation/not-found/conflict cases
+Domain mapper:   toToolError(err)              — HTTP status → ToolError type mapping
+Middleware:       metrics.Instrument()          — safety net for panics, timing, unhandled errors
+```
+
+### Convenience helpers
+
+The `mcputil` package exports helpers that replace the verbose `mcp.NewToolResultError(toolerror.New(...).JSON()), nil` pattern:
+
+```go
+return mcputil.ValidationError("field is required")
+return mcputil.NotFoundError("agent %q not found", id)
+return mcputil.ConflictError("file reserved")
+return mcputil.TransientError("service down")
+return mcputil.WrapError(err)
+```
+
+See `sdk/interbase/go/README.md` for full mcputil documentation.
+
 ## Adopters
 
 | Module | Commit | Scope |
 |--------|--------|-------|
-| interlock | `49beddf` | All 12 MCP tool handlers |
+| interlock | `49beddf` | All 12 MCP tool handlers (toolerror + mcputil middleware + helpers) |
 
 Future adopters: intermute (when it gains MCP tools), intermap, interserve.
 
 ## Related
 
-- **Bead iv-gkory** — implementation task (closed)
+- **Bead iv-gkory** — toolerror implementation task (closed)
 - **Bead iv-bg0a0** — parent epic "Adopt mcp_agent_mail patterns" (closed)
-- **Bead iv-wnurj** — middleware bead (unblocked, uses ToolError for error propagation)
-- `sdk/interbase/go/toolerror/toolerror.go` — source
+- **Bead iv-wnurj** — mcputil middleware (closed)
+- `sdk/interbase/go/toolerror/toolerror.go` — toolerror source
+- `sdk/interbase/go/mcputil/instrument.go` — middleware source
 - `interverse/interlock/internal/tools/tools.go` — reference adoption
