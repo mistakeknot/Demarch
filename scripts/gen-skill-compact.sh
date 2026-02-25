@@ -89,12 +89,121 @@ check_freshness() {
     fi
 }
 
+generate_compact_structural() {
+    # Deterministic fallback: extract structure without LLM.
+    # Keeps headings, code blocks, tables, scoring formulas, first sentence per section.
+    local skill_dir="$1"
+    local skill_name
+    skill_name=$(basename "$skill_dir")
+
+    echo "Generating compact (structural mode) for: $skill_dir" >&2
+
+    {
+        echo "# ${skill_name} — Compact Reference"
+        echo ""
+
+        for f in "$skill_dir"/SKILL.md "$skill_dir"/phases/*.md "$skill_dir"/references/*.md; do
+            [[ -f "$f" ]] || continue
+
+            local in_code_block=false
+            local in_table=false
+            local last_was_heading=false
+
+            while IFS= read -r line; do
+                # Code block boundaries
+                if [[ "$line" =~ ^\`\`\` ]]; then
+                    echo "$line"
+                    if $in_code_block; then
+                        in_code_block=false
+                    else
+                        in_code_block=true
+                    fi
+                    continue
+                fi
+
+                # Inside code block: keep everything
+                if $in_code_block; then
+                    echo "$line"
+                    continue
+                fi
+
+                # Headings: always keep
+                if [[ "$line" =~ ^#{1,4}\  ]]; then
+                    echo ""
+                    echo "$line"
+                    echo ""
+                    last_was_heading=true
+                    in_table=false
+                    continue
+                fi
+
+                # Table rows: keep all
+                if [[ "$line" =~ ^\| ]]; then
+                    echo "$line"
+                    in_table=true
+                    last_was_heading=false
+                    continue
+                fi
+                if $in_table && [[ -z "$line" ]]; then
+                    in_table=false
+                fi
+
+                # Scoring formulas and key assignments (lines with =, score, weight)
+                if [[ "$line" =~ (score|weight|formula|confidence|threshold|priority) ]] && [[ "$line" =~ [=\+\-\*] ]]; then
+                    echo "$line"
+                    last_was_heading=false
+                    continue
+                fi
+
+                # Bullet points with keywords (keep structural bullets)
+                if [[ "$line" =~ ^[[:space:]]*[-\*] ]] && [[ "$line" =~ (must|required|always|never|skip|include|exclude|check|verify|run|use|set|if|when|only|default) ]]; then
+                    echo "$line"
+                    last_was_heading=false
+                    continue
+                fi
+
+                # First non-empty line after a heading (the topic sentence)
+                if $last_was_heading && [[ -n "$line" ]] && [[ ! "$line" =~ ^[[:space:]]*$ ]]; then
+                    echo "$line"
+                    last_was_heading=false
+                    continue
+                fi
+
+                last_was_heading=false
+            done < "$f"
+        done
+
+        echo ""
+        echo "---"
+        echo "For edge cases or full reference, read SKILL.md and its phases/ directory."
+    }
+}
+
 generate_compact() {
     local skill_dir="$1"
 
     if [[ ! -f "$skill_dir/SKILL.md" ]]; then
         echo "Error: $skill_dir/SKILL.md not found" >&2
         return 2
+    fi
+
+    # Structural mode: deterministic extraction without LLM.
+    if [[ "${LLM_CMD}" == "structural" ]]; then
+        local output
+        output=$(generate_compact_structural "$skill_dir")
+        _write_compact "$skill_dir" "$output"
+        return 0
+    fi
+
+    # Check if LLM is available
+    local llm_bin
+    llm_bin=$(echo "$LLM_CMD" | cut -d' ' -f1)
+    if ! command -v "$llm_bin" >/dev/null 2>&1; then
+        echo "Warning: $llm_bin not found, falling back to structural mode" >&2
+        local output
+        output=$(generate_compact_structural "$skill_dir")
+        _write_compact "$skill_dir" "$output"
+        return 0
     fi
 
     echo "Generating compact for: $skill_dir" >&2
@@ -131,9 +240,16 @@ $content"
     output=$(echo "$prompt" | $LLM_CMD 2>/dev/null)
 
     if [[ -z "$output" ]] || ! echo "$output" | grep -q '[a-zA-Z]'; then
-        echo "Error: LLM returned empty or non-text output" >&2
-        return 2
+        echo "Warning: LLM returned empty output, falling back to structural mode" >&2
+        output=$(generate_compact_structural "$skill_dir")
     fi
+
+    _write_compact "$skill_dir" "$output"
+}
+
+_write_compact() {
+    local skill_dir="$1"
+    local output="$2"
 
     # Write compact file via temp (owner-only permissions — T1 hardening)
     local tmpfile
@@ -180,6 +296,8 @@ case "${1:-}" in
         echo ""
         echo "Environment:"
         echo "  GEN_COMPACT_CMD  LLM command (default: claude -p)"
+        echo "                   Set to 'structural' for deterministic extraction (no LLM)"
+        echo "                   Auto-falls back to structural if LLM binary not found"
         ;;
     "")
         echo "Error: skill directory required" >&2
