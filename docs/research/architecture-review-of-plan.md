@@ -1,234 +1,214 @@
-# Architecture Review: Pollard Hunter Resilience Plan (iv-xlpg)
-
-**Plan file:** `/home/mk/projects/Demarch/docs/plans/2026-02-23-pollard-hunter-resilience.md`
-**Reviewed:** 2026-02-23
-**Reviewer:** fd-architecture
-
----
-
-## Executive Summary
-
-The plan is architecturally sound in its primary goal and mostly correct in its boundary decisions. Three issues require attention before implementation: a zero-value enum trap in `HunterStatus`, a behavioral contract break in `Success()`, and a redundant `ErrorMsg` field. One structural question about retry placement is worth considering but the plan's choice is defensible. The watcher change is the highest-value task and is correctly designed.
+# Architecture Review: Intent Submission Mechanism
+**Plan:** `/home/mk/projects/Demarch/docs/plans/2026-02-26-intent-submission-mechanism.md`
+**Bead:** iv-gyq9l
+**Date:** 2026-02-26
+**Reviewer:** fd-architecture (Claude Sonnet 4.6)
 
 ---
 
-## 1. Boundaries and Coupling
+## Review Scope
 
-### Retry in `hunters/` vs caller layer
+This plan creates `apps/autarch/pkg/clavain/` — a Go subprocess client that routes 5 write operations through `clavain-cli` (L2 OS layer) instead of calling `ic` (L1 kernel) directly from Autarch (L3). The plan mirrors the existing `pkg/intercore/` pattern and includes graceful degradation plus an incremental "track-only" approach for dispatch.
 
-The plan places `HuntWithRetry` in the `hunters/` package. This is the right decision.
-
-The `hunters/` package already owns the `Hunter` interface and `HuntResult` type. Both callers (`cli/scan.go` and `api/scanner.go`) would need identical retry logic if it lived in each caller. Putting retry in `hunters/` creates one implementation tested once.
-
-The function signature `HuntWithRetry(ctx, Hunter, HunterConfig, RetryConfig)` operates only on types already defined in the `hunters/` package. It introduces no new imports, no upward dependencies, and no coupling to `cli/` or `api/`. This is correct placement.
-
-One concern: both callers use `hunters.DefaultRetryConfig()` directly with no way to override from configuration. If a specific hunter type (say, `agent-hunter` which spawns subprocesses) should never retry, callers have no hook to vary the config per hunter. This is acceptable for the initial implementation but is worth noting as a future seam — the `HunterConfig` struct or the registry is the natural place to carry per-hunter retry policy later.
-
-### Dependency direction
-
-All changes stay within `internal/pollard/`. No new cross-pillar imports. `cli/` and `api/` already import `hunters/`; adding the retry call does not change that dependency topology. `watch/` imports `api/` and continues to do so. No new couplings are introduced.
-
-### Duplicate `CompetitorTarget` type
-
-`api/scanner.go` already defines its own `CompetitorTarget` struct (lines 59-65) that mirrors `hunters.CompetitorTarget`. This duplication exists before the plan and is not made worse by it. It is outside scope of this plan but should be noted as existing debt.
-
-### `failedHunters` slice locality (Task 3)
-
-The plan introduces a `hunterSummary` local type and `failedHunters` slice in `cli/scan.go`. These are correctly scoped to the function. The plan's summary output references `len(hunterNames)` which is already in scope. This is clean.
+The four specific questions asked:
+1. Does the subprocess client pattern preserve layer boundaries correctly?
+2. Is the graceful degradation (fallback to direct ic) architecturally sound, or does it undermine the intent?
+3. Are there coupling concerns with the wiring approach in Tasks 4-5?
+4. Is the incremental approach for dispatch (track-only, not mediate) reasonable?
 
 ---
 
-## 2. Enum Design — Zero-Value Trap
+## 1. Boundary and Coupling Analysis
 
-**This is a must-fix.**
+### Layer Boundary Correctness: Sound with One Gap
 
-The plan defines:
+The subprocess client pattern correctly solves the L3->L2 boundary problem. `pkg/clavain/` lives inside `apps/autarch/`, imports no L2 source code, and communicates only via the `clavain-cli` binary contract. This mirrors `pkg/intercore/` exactly. The type duplication in `types.go` (`SprintCreateResult`, `AdvanceResult`, etc.) is deliberate and correct — shared types would create a compile-time dependency from L3 into L2's Go module, which would be worse than the current bypass.
 
-```go
-const (
-    HunterStatusOK      HunterStatus = iota  // 0
-    HunterStatusPartial                       // 1
-    HunterStatusFailed                        // 2
-    HunterStatusSkipped                       // 3
-)
-```
+One genuine gap: `pkg/clavain/` has no health check in `New()`. The `pkg/intercore/` client runs `ic health` at construction time. The clavain client skips this entirely. This matters because `Available()` is the fallback decision point — if `clavain-cli` is on PATH but broken (binary exists, core libraries missing), `Available()` returns true and the app routes calls into a failing client. The `pkg/intercore/` pattern should be followed faithfully here.
 
-`HunterStatusOK` is assigned the zero value (0). The plan notes this is "backward compatible" because existing callers don't set `Status`, so it defaults to 0 = `HunterStatusOK`.
+**The bypass inventory is correctly classified.** The plan explicitly keeps `ic.StateSet()` at `coldwine.go:420,528,951` as direct calls. Reading the actual codebase confirms `StateSet` writes metadata keys (`epic_id`, `task_id`, `dispatch_id`) linking entities — these are observation writes, not policy transitions. This classification is architecturally correct.
 
-The backward compatibility reasoning is correct, but it creates a semantic trap: any `HuntResult` that is zero-initialized (including failure results the caller fails to populate, or test stubs that return `&HuntResult{}`) will silently report `Status == HunterStatusOK`. This is the opposite of a safe default. If code omits setting `Status`, the result reads as successful.
+### Dependency Direction: Clean
 
-The safer iota ordering puts an explicit unknown/uninitialized state at zero:
+The plan introduces no new cross-module import. `pkg/clavain/` only imports stdlib. The calling sites in `internal/tui/views/` will add `"github.com/mistakeknot/autarch/pkg/clavain"` to their imports, which is a same-module intra-layer dependency. No circular risk.
 
-```go
-const (
-    HunterStatusUnknown HunterStatus = iota  // 0 — zero value, not yet set
-    HunterStatusOK                           // 1
-    HunterStatusPartial                      // 2
-    HunterStatusFailed                       // 3
-    HunterStatusSkipped                      // 4
-)
-```
+### New Dependency Between Independent Modules
 
-This means:
-- A zero-initialized `HuntResult` has `Status == HunterStatusUnknown`, which is distinguishable from success.
-- Callers that forgot to set `Status` are detectable.
-- The plan's backward compatibility concern is addressed by updating all successful hunt completion paths to set `Status = HunterStatusOK`. There are exactly two: `cli/scan.go` (after the `Hunt` call succeeds) and `api/scanner.go` (after the `Hunt` call succeeds). Both are already being modified in Tasks 3 and 4.
-
-The cost is two additional assignment lines in the success paths. The benefit is fail-safe behavior.
+The `SprintCommandRouter` in `sprint_commands.go` currently takes only `*intercore.Client`. Task 5 proposes adding a `clavain` client to it. The router's constructor signature will change from `NewSprintCommandRouter(inner, iclient)` to `NewSprintCommandRouter(inner, iclient, clavainClient)`. The plan's code snippet (Task 5 Step 1) does not show how `clavainClient` is passed into `SprintCommandRouter` — it just shows the body of the replaced handler function, assuming the client is already in scope. The constructor change is not planned. This is an execution gap that will cause a compile error when implementing Task 5.
 
 ---
 
-## 3. `Success()` Behavioral Contract Break
+## 2. Pattern Analysis
 
-**This is a must-fix.**
+### Pattern Alignment
 
-The plan changes `Success()` from:
+The `client.go` code in the plan is a faithful copy of `pkg/intercore/client.go` with `ic` replaced by `clavain-cli`. The option pattern, `execRaw`/`execText`/`execJSON` helpers, `ErrUnavailable` sentinel, and `Available()` convenience function all match. This is correct pattern reuse.
+
+Two divergences from the reference pattern are present and both are bugs:
+
+**Divergence 1 — Missing health check.** `pkg/intercore.New()` runs `ic health` and returns `ErrUnavailable` if the check fails. `pkg/clavain.New()` only calls `exec.LookPath`. If `clavain-cli` is installed but broken, the client is constructed successfully and all subsequent calls fail at invocation time with opaque errors rather than at construction time with a clear `ErrUnavailable`.
+
+**Divergence 2 — `baseArgs()` is missing.** `pkg/intercore` uses `baseArgs(useJSON bool)` to prepend `--db` and `--json` flags before any subcommand. The clavain client has no equivalent. `execJSON` in the plan calls `json.Unmarshal` on whatever stdout the binary produces — callers must know whether a given command produces JSON or plain text, creating a contract that is only inferable by reading the binary's source. The intercore pattern is self-documenting about this distinction via `execJSON` vs `execText`. This is a lower-severity divergence since clavain-cli has no `--json` global flag, but the comment discipline could be stronger.
+
+### Anti-Pattern: Goroutine Fire-and-Forget in Task 4
+
+Task 4 Step 3 introduces a goroutine fire-and-forget for agent tracking:
 
 ```go
-func (r *HuntResult) Success() bool {
-    return len(r.Errors) == 0
-}
+go func() {
+    tctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    _ = clavainClient.TrackAgent(tctx, epicID, taskTitle, "task", dispatchID)
+}()
 ```
 
-to:
+This is a Bubble Tea concurrency violation. The project's CLAUDE.md states Action closures run on a goroutine pool but Model fields must not be read from them — closures must snapshot data before entering the goroutine. More critically: unmanaged goroutines launched from `tea.Cmd` closures are invisible to Bubble Tea's lifecycle. If the program exits before the goroutine completes, it is leaked. The project memory records this pattern explicitly under "tea.Cmd goroutine safety."
+
+The correct pattern is to fire the tracking as a second `tea.Cmd` returned from the `taskDispatchedMsg` handler, not as a raw goroutine.
+
+### Anti-Pattern: Panic on nil Writer in dispatch.go
+
+Task 3's `dispatch.go` contains:
 
 ```go
-func (r *HuntResult) Success() bool {
-    return r.Status == HunterStatusOK
-}
+fmt.Fprintf(nil, "") // no-op, keeping the pattern clear
 ```
 
-The problem: `HunterStatusOK` is the zero value. All existing `HuntResult` values where callers did not set `Status` will return `true` from `Success()` regardless of `r.Errors`. The behavioral change looks neutral on the surface but is actually a silent divergence.
+`fmt.Fprintf(nil, ...)` panics in Go — `nil` does not satisfy `io.Writer`. This code will compile but panic at runtime if the error branch is hit. Remove the line.
 
-More importantly, the existing callers in `cli/scan.go` (line 237) and `api/scanner.go` (line 209) call `result.Success()` to determine the `success` boolean they pass to `db.CompleteRun`. After the change, if the caller returns a result with errors but forgets to set `Status = HunterStatusPartial`, `Success()` returns true, and the DB records a successful run. This is worse than the current behavior.
+### Premature Abstraction in gate.go and artifact.go
 
-The fix depends on which enum ordering is chosen:
+`gate.go` defines `EnforceGate()` and `GateOverride()`. Looking at `clavain-cli`'s actual command surface (`main.go`), `enforce-gate` exists but `gate-override` does not. `GateOverride` returns `ErrUnavailable` immediately — it is an unimplemented stub that always errors. Neither `EnforceGate` nor `GateOverride` appear as callers in Tasks 4-5.
 
-- If `HunterStatusOK` stays at zero: do not change `Success()`. Keep it as `len(r.Errors) == 0`. The `Status` field adds structured reporting without replacing the existing error-based success check.
-- If `HunterStatusUnknown` is zero: change `Success()` as proposed, but explicitly set `Status` on all result paths (Tasks 3 and 4 already do this for failure; the success paths need `Status = HunterStatusOK` added).
+Similarly, `artifact.go`'s `SetArtifact` and `GetArtifact` have no callers in Tasks 4-5. The bypass inventory table explicitly says `ic.StateSet()` artifact calls are kept as-is.
 
-The cleaner approach is to keep both signals consistent: set `Status` explicitly and keep `Success()` checking `Status`. This requires the `HunterStatusUnknown` zero-value ordering. The plan's current combination of `HunterStatusOK` at zero plus changing `Success()` to check `Status` is internally consistent only by accident — it works because the zero value happens to mean OK. But it fails to provide the invariant that an unset `Status` is distinguishable.
+Both files are dead code in this sprint. Their presence increases the new package's surface area without providing behavioral coverage. Per the project's YAGNI guideline ("Check new abstractions have more than one real caller before extraction"), both files should be deferred.
 
 ---
 
-## 4. Redundant `ErrorMsg` Field
+## 3. Graceful Degradation: Correct Intent, Structural Problem
 
-**Minor structural issue.**
+The graceful degradation strategy is architecturally sound in principle. It mirrors the existing `iclient == nil` guard pattern used throughout `ColdwineView`. The fallback preserves operational continuity and allows incremental deployment.
 
-The plan adds two fields to `HuntResult`:
-
-```go
-Status   HunterStatus
-ErrorMsg string // Human-readable error summary (empty if OK)
-```
-
-`HuntResult.Errors` already exists as `[]error`. The new `ErrorMsg` duplicates information that can be derived from `Errors`. Task 4 populates both:
+However, the wiring code for sprint advance in Task 4 Step 4 is structurally wrong:
 
 ```go
-failedResult := &hunters.HuntResult{
-    HunterName: name,
-    Status:     hunters.HunterStatusFailed,
-    ErrorMsg:   err.Error(),
-    Errors:     []error{err},
-}
-```
-
-`err.Error()` is stored twice: once in `ErrorMsg` and once in `Errors[0]`. Callers that want a string already call `huntResult.Errors[0].Error()` (existing pattern in `api/scanner.go` line 212). Adding `ErrorMsg` as a separate field creates two sources of truth for the same data.
-
-The simpler design: keep only `Errors []error` for machine use, and derive strings from it at display time. If a single-string summary is needed at the struct level, a method `func (r *HuntResult) ErrorSummary() string` returning `errors.Join` or the first error message is cleaner than a persisted field.
-
-If `ErrorMsg` is kept for simplicity, at minimum it should not be populated separately — it should be derived on access via a method, not stored alongside `Errors`.
-
----
-
-## 5. `isTransient` String-Matching Approach
-
-**Low severity, worth noting.**
-
-The `isTransient` function in `retry.go` uses substring matching on error strings for HTTP status codes:
-
-```go
-for _, s := range []string{"rate limit", "429", "503", "timeout", "temporary"} {
-    if strings.Contains(msg, s) {
-        return true
+if clavainClient != nil {
+    _, advErr := clavainClient.SprintAdvance(ctx, beadID, currentPhase)
+    if advErr != nil {
+        result, err = ic.RunAdvance(ctx, runID)  // fallback on failure
+    } else {
+        result, err = ic.RunAdvance(ctx, runID)  // same call on success
     }
+} else {
+    result, err = ic.RunAdvance(ctx, runID)
 }
 ```
 
-String-matching error messages is fragile: it depends on how downstream hunters format their errors. The substring `"429"` would match any error containing the digit sequence 429 (e.g., a file path, a port number, a metric value).
+Both branches of `advErr` call `ic.RunAdvance`. The plan's comment says this is intentional: "clavain-cli sprint-advance enforces gate policy, then we re-read the result from ic for TUI rendering." But this is a double-advance. Reading `clavain-cli/sprint.go` (cmdSprintAdvance) confirms it calls `ic run advance` internally. Calling `ic.RunAdvance` again afterward attempts to advance the run a second time. The second call will either silently succeed (advancing an already-advanced run) or return an error that is then surfaced to the TUI as an advance failure when the first advance actually succeeded.
 
-The `net.Error` interface check above it is the correct pattern. The string fallback is pragmatic given that hunters likely return wrapped HTTP errors as plain strings. The plan's approach is acceptable as a first pass, but the comment should note it is a heuristic, not a contract.
+This must be resolved before implementation. Two valid options:
 
-The `"timeout"` substring also matches `context.DeadlineExceeded` wrappings in some Go HTTP clients. Whether that is desirable (context timeouts should retry) or not (context cancellation should not retry) depends on usage. The plan correctly handles `ctx.Done()` separately in the retry loop, so a context deadline error will be caught before the transient check. This is fine.
+**Option A (pre-flight only):** Call `clavain-cli enforce-gate` (which exists and does not advance) as the L2 check, then call `ic.RunAdvance` once if the gate passes. This splits the gate enforcement from the advance execution.
+
+**Option B (full mediation):** Call `clavain-cli sprint-advance` and let it own the advance. After success, call `ic.RunStatus` (a read, not a write) to get the typed `AdvanceResult` for TUI rendering.
+
+Option A fits the "incremental" framing better since it requires no changes to how clavain-cli's sprint-advance output is parsed.
+
+### Fallback as Permanent Architecture Risk
+
+The plan's "Scope Notes" defer removing fallback branches until "clavain-cli is guaranteed installed." This is a valid short-term position, but the fallback creates an invisible testing gap: integration tests running without clavain-cli only exercise the fallback path, not the primary path. The plan should note that integration tests must run with clavain-cli present to validate L2 routing is actually engaged.
 
 ---
 
-## 6. Watcher Change (Task 5)
+## 4. Dispatch Incremental Approach: Acceptable but Misnamed
 
-The change to `RunOnce` is the most impactful part of the plan and is correctly designed.
+The decision to track rather than mediate dispatch is architecturally reasonable. It separates observation from control, and the L2 OS layer learns about dispatches without blocking or controlling them.
 
-The current behavior returns the error immediately, aborting the watch cycle and losing any partial results `Scanner.Scan` had accumulated. The plan separates two distinct cases:
-
-1. `ctx.Err() != nil` — truly fatal, propagate.
-2. Other errors — log to stderr, continue with partial results.
-
-This matches the existing `Run()` behavior (lines 104-106 in `watcher.go`), which already swallows `RunOnce` errors by logging them to stderr. The change makes `RunOnce` itself resilient so `Run()` receives a valid result even when some hunters fail.
-
-One issue in Task 5's proposed code:
+The structural problem is that `DispatchTask()` always returns an error:
 
 ```go
-if result == nil {
-    result = &api.ScanResult{HunterResults: make(map[string]*hunters.HuntResult)}
-}
+return "", fmt.Errorf("dispatch-task not yet mediated by clavain-cli — use ic.DispatchSpawn() and call clavain.TrackAgent() separately")
 ```
 
-Looking at `api/scanner.go` `Scan()` (lines 120-226), `Scan` always initializes `result` before entering the loop and returns it unconditionally (`return result, nil`). The only way `result` is `nil` after calling `Scan` is if `Scan` itself panics or returns `nil, err`. Given the current implementation, `Scan` never returns `nil` for the result pointer. The nil guard is therefore dead code.
+A method that always errors is not a callable API — it is a stub masquerading as a function. Any caller that follows the signature must handle an error that is not a transient failure but a permanent design decision. This couples callers to a temporary implementation state.
 
-It is harmless defensively, but it misleads readers into thinking `Scan` can return `(nil, err)`. If the nil guard is kept for defensive programming, a comment should explain the invariant.
-
----
-
-## 7. YAGNI Check
-
-**`HunterStatusSkipped`** is defined in the enum but no task in the plan sets it. The plan describes it as "not in registry" but the CLI already handles that with `fmt.Printf("Warning: hunter %q not found in registry, skipping\n", name)` and `continue`. The skip path does not produce a `HuntResult` at all, so `HunterStatusSkipped` has no concrete consumer in this plan.
-
-This is a speculative value. It should either be removed from the initial implementation (add it when there is a real consumer) or added only if Task 3 is extended to create a `HuntResult` for skipped hunters and include them in the summary table. Currently, skipped hunters are not counted in `len(hunterNames)` used in the summary denominator, so the summary percentage would be wrong if skipped hunters were mixed with failed ones.
-
-**`RetryConfig` as a struct** is appropriate despite having only two fields — `MaxAttempts` and `Backoff`. The function signature `HuntWithRetry(ctx, Hunter, HunterConfig, RetryConfig)` is cleaner than a variadic options approach for two explicit fields. No concern here.
-
-**`DefaultRetryConfig()`** returning 2 attempts with 1s backoff means scans that hit transient failures will add up to 1 second of latency per affected hunter. For a 12-hunter scan, worst case is 12 extra seconds. This is acceptable but worth documenting in the function's godoc so callers understand the latency budget implication.
+The method should be either:
+- Renamed `TrackDispatch(ctx, beadID, agentName string, agentType, dispatchID string) error` with non-fatal semantics (absorb failure, log if possible), or
+- Removed from this sprint entirely, leaving only `TrackAgent` exported.
 
 ---
 
-## 8. Pattern Alignment
+## 5. Wiring Coupling Assessment (Tasks 4-5)
 
-The plan follows existing patterns in the codebase:
+### SprintCreate Return Value Impedance Mismatch
 
-- Uses `fmt.Errorf("...: %w", err)` for wrapping (consistent with the rest of the file).
-- `fakeHunter` in tests implements the `Hunter` interface — correct test isolation.
-- Tests use table-driven format for `TestIsTransient` — consistent with Go idiom.
-- The `hunterSummary` local type in `cli/scan.go` follows the pattern of small anonymous structs used elsewhere in the codebase for iteration state.
+`ic.RunCreate` returns a run ID (plain base36 string). `clavain-cli sprint-create` returns a bead ID. The TUI's `sprintCreatedMsg` carries `runID` as its primary key. Task 4 Step 2 assigns `runID = beadID` with the comment "will resolve in state write," but no resolution is implemented in Task 4. The `sprintCreatedMsg` handler downstream expects a run ID for display and state linkage.
 
-The plan does not introduce any new external dependencies. `net`, `errors`, `strings`, `time`, `context`, `fmt` are all already in use in `hunters/`.
+The plan's private `resolveRunID(ctx, beadID)` method in `sprint.go` does exactly what is needed — it calls `sprint-read-state` and parses the JSON to extract the run ID. This method must be called explicitly after `SprintCreate` returns. Skipping this step means the TUI shows a bead ID where a run ID is expected, and downstream `ic.StateSet` calls will use the wrong identifier.
+
+This is a behavioral correctness issue, not just a style note.
+
+### ColdwineView Client Initialization Placement
+
+Task 4 Step 1 says to add the clavain client "In the struct or constructor" with an inline `clavain.New()` call. The correct location is as a named field `cclient *clavain.Client` on `ColdwineView`, initialized alongside `iclient` in the view's constructor. Initializing inside an `Action` closure will construct a new client on every command invocation — calling `exec.LookPath` on every palette menu action. This is minor performance waste but is also inconsistent with the `iclient` pattern.
+
+### Missing Field Declaration and Constructor Update for SprintCommandRouter
+
+`SprintCommandRouter` has an `iclient *intercore.Client` field declared on the struct. Task 5 adds clavain calls inside handler methods but does not:
+1. Add a `cclient *clavain.Client` field to the struct
+2. Update `NewSprintCommandRouter` to accept and store it
+3. Show where `NewSprintCommandRouter` is called to wire in the new client
+
+All three omissions must be addressed before Task 5 compiles.
 
 ---
 
-## Summary: Required Changes Before Implementation
+## 6. YAGNI Assessment
 
-### Must-fix
+The planned file layout is wider than this sprint's actual scope:
 
-1. **Enum zero-value ordering** (Task 1): Move `HunterStatusOK` off zero. Use `HunterStatusUnknown = iota` as the zero value. Update Tasks 3 and 4 to explicitly set `Status = HunterStatusOK` on successful hunt paths.
+| File | Callers in plan | Assessment |
+|------|----------------|------------|
+| `client.go` | All tasks | Keep |
+| `types.go` | All tasks | Keep |
+| `sprint.go` | Tasks 4-5 | Keep |
+| `dispatch.go` | Task 4 (TrackAgent only) | Trim: remove DispatchTask stub, keep TrackAgent |
+| `gate.go` | None | Defer entirely |
+| `artifact.go` | None | Defer entirely |
 
-2. **`Success()` contract** (Task 1): Either (a) keep `Success()` as `len(r.Errors) == 0` and treat `Status` as additive reporting, or (b) change to `Status == HunterStatusOK` only after ensuring all success paths explicitly set `Status`. Do not combine the zero-value-as-OK assumption with the Status-based `Success()` check — it works by coincidence, not design.
+Reducing to 5 files and removing 2 unimplemented stubs is a smaller viable change that still achieves the sprint's stated goal. `gate.go` and `artifact.go` should be created when their callers are wired in, which is explicitly deferred future work.
 
-### Should-fix
+---
 
-3. **Remove `ErrorMsg` field** (Task 1 and 4): The field duplicates `Errors[0].Error()`. Replace with a `ErrorSummary() string` method or simply derive strings from `Errors` at display time.
+## Summary of Findings
 
-4. **Remove `HunterStatusSkipped`** (Task 1): No consumer exists in this plan. Add it when a concrete use case requires it (e.g., summary table includes skipped hunters).
+### Must-Fix (behavioral or compilation failures)
 
-### Low priority
+1. **Double-advance in SprintAdvance wiring** (Task 4 Step 4): Both branches of `advErr` call `ic.RunAdvance`. Since `clavain-cli sprint-advance` calls `ic run advance` internally, this advances the run twice on success. Use Option A (call `enforce-gate`, then `ic.RunAdvance` once) or Option B (let clavain own the advance, read back via `ic.RunStatus`).
 
-5. **Nil guard comment** (Task 5): Document why the `result == nil` guard exists, or remove it if it is truly dead given `Scan`'s invariants.
+2. **BeadID assigned as RunID** (Task 4 Step 2): `runID = beadID` in `sprintCreatedMsg` is incorrect. Call `clavainClient.resolveRunID(ctx, beadID)` (or the equivalent public helper) before constructing the message.
 
-6. **Per-hunter retry config** (Task 2): Note in `DefaultRetryConfig` godoc that per-hunter retry overrides are a future extension point, and that the function adds up to 1s latency per hunter on transient failures.
+3. **`fmt.Fprintf(nil, "")` panics at runtime** (Task 3 dispatch.go): Remove the line.
+
+4. **SprintCommandRouter constructor not updated** (Task 5): Add `cclient *clavain.Client` field, update `NewSprintCommandRouter` signature, and update the construction callsite.
+
+### Recommended Fixes (reduce risk and entropy)
+
+5. **Add health check to `clavain.New()`**: Call `clavain-cli` with a lightweight no-op to verify execution. Aligns with `pkg/intercore` reference pattern.
+
+6. **Replace raw goroutine with tea.Cmd** (Task 4 Step 3): Move `TrackAgent` call into a `tea.Cmd` returned from the `taskDispatchedMsg` handler, not a raw `go func()`.
+
+7. **Rename or remove `DispatchTask()`**: A method that always returns an error is not an API. Either expose `TrackAgent` directly, or name it `TrackDispatch` with non-fatal semantics.
+
+8. **Defer `gate.go` and `artifact.go`**: No callers exist in this sprint. Creating stub files now violates YAGNI and inflates the package surface.
+
+9. **Move clavain client init to ColdwineView field**: Consistent with `iclient` pattern, avoids repeated `exec.LookPath` calls.
+
+---
+
+## Verdict
+
+The strategic direction is correct. The subprocess client pattern preserves L3->L2 boundaries without compile-time coupling, the bypass inventory is correctly classified, and the incremental track-only approach for dispatch is a pragmatic fit for the sprint's scope. The overall structure mirrors established `pkg/intercore/` conventions appropriately.
+
+Four must-fix issues in Tasks 3-5 will cause panics, incorrect run state, or compile failures. None require redesign — they are implementation-level corrections. The plan should be annotated with these corrections before execution, or the implementing agent must be made aware of them.

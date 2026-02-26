@@ -112,3 +112,64 @@ find ~/.claude/plugins/cache -maxdepth 4 -name ".orphaned_at" \
 **Placement/Context:** After any manual plugin cache operation, after version bumps, and as a diagnostic step when plugins show errors at session start.
 
 **Documented in:** `docs/solutions/integration-issues/plugin-loading-failures-interverse-20260215.md`
+
+---
+
+## 4. External-Dep MCP Servers Need Graceful Launcher Scripts (ALWAYS REQUIRED)
+
+### ❌ WRONG (Bare binary reference — fails on new machines)
+```json
+{
+  "mcpServers": {
+    "qmd": {
+      "command": "qmd",
+      "args": ["mcp"]
+    },
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server"],
+      "env": { "EXA_API_KEY": "${EXA_API_KEY}" }
+    }
+  }
+}
+```
+External tools (`qmd`, `npx`) may not exist on a new machine. MCP fails at session start, potentially blocking the entire plugin.
+
+### ✅ CORRECT
+```json
+{
+  "mcpServers": {
+    "qmd": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/scripts/launch-qmd.sh",
+      "args": ["mcp"]
+    },
+    "exa": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/scripts/launch-exa.sh",
+      "args": [],
+      "env": { "EXA_API_KEY": "${EXA_API_KEY}" }
+    }
+  }
+}
+```
+With launcher scripts that check prerequisites and **exit 0** when missing:
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+if ! command -v <tool> &>/dev/null; then
+    echo "<tool> not found — install with: <install-cmd>" >&2
+    echo "<plugin> will work without <tool> but <feature> unavailable." >&2
+    exit 0  # Clean exit — don't trigger retry
+fi
+# Check env vars too:
+if [[ -z "${REQUIRED_KEY:-}" ]]; then
+    echo "REQUIRED_KEY not set — <server> disabled." >&2
+    exit 0
+fi
+exec <tool> "$@"
+```
+
+**Why:** Pattern #1 covers compiled binaries (launcher builds from source). This covers **external dependencies** that the plugin can't build — tools installed separately (qmd via bun, exa via npm). The key difference: `exit 0` for graceful degradation (plugin works without the MCP server) vs `exit 1` for hard failure (plugin can't function without it).
+
+**Placement/Context:** Any plugin that depends on external binaries or services for its MCP servers. Check for: binary availability, required env vars, and optional service health.
+
+**Documented in:** `docs/solutions/integration-issues/graceful-mcp-launcher-external-deps-interflux-20260224.md`

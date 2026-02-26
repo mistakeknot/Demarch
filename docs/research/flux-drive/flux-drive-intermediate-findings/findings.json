@@ -1,0 +1,241 @@
+{
+  "reviewed": "2026-02-22",
+  "review_context": "Reviewing plan: flux-drive-intermediate-findings (2 agents, Stage 1 only)",
+  "agents_launched": [
+    "fd-architecture",
+    "fd-correctness"
+  ],
+  "agents_completed": [
+    "fd-architecture",
+    "fd-correctness"
+  ],
+  "agents_failed": [],
+  "verdict": "risky",
+  "findings": [
+    {
+      "id": "C1",
+      "severity": "P0",
+      "agent": "fd-correctness",
+      "convergence": 1,
+      "convergence_agents": ["fd-correctness"],
+      "section": "Task 1 — write command",
+      "title": "JSONL append is not atomic: concurrent writers corrupt records",
+      "description": "Bare >> append without flock synchronization; two concurrent jq -n -c processes can interleave write syscalls, resulting in split JSON records. Non-atomic on Linux for multi-page writes.",
+      "impact": "Findings silently lost or malformed in every run with 5+ parallel agents; synthesis receives incomplete or unparseable data.",
+      "fix": "Use flock -x to serialize appends"
+    },
+    {
+      "id": "C2",
+      "severity": "P0",
+      "agent": "fd-correctness",
+      "convergence": 1,
+      "convergence_agents": ["fd-correctness"],
+      "section": "Task 1 — read command",
+      "title": "jq -s reads file mid-append: partial JSON causes silent parse failure",
+      "description": "Read path uses jq -s without copy-then-read or lock protection. When writer has incomplete line in progress, jq encounters partial JSON bytes. With set -euo pipefail, parse error exits silently; agent interprets as no findings available.",
+      "impact": "Read operations silently return empty when concurrent writes active; synthesis contains unresolved contradictions between agents caused by transient race, not genuine disagreement.",
+      "fix": "Use copy-then-read pattern or shared flock on reads"
+    },
+    {
+      "id": "A1",
+      "severity": "P1",
+      "agent": "fd-architecture",
+      "convergence": 2,
+      "convergence_agents": ["fd-architecture", "fd-correctness"],
+      "section": "Helper Script — read subcommand",
+      "title": "Argument parsing bug: filter reads $2 after shift, always wrong argument",
+      "description": "After shift, old $2 becomes $1. But filter is read as ${2:-all}, grabbing the third original parameter. Works by accident when --severity present; fragile to argument reordering.",
+      "impact": "Severity filter unreliable; tests pass by coincidence; any caller varying argument order gets silently wrong results.",
+      "fix": "Parse --severity flag explicitly with while loop or use positional args only"
+    },
+    {
+      "id": "A3",
+      "severity": "P1",
+      "agent": "fd-architecture",
+      "convergence": 2,
+      "convergence_agents": ["fd-architecture", "fd-correctness"],
+      "section": "Template Variables",
+      "title": "{FINDINGS_HELPER} and {AGENT_NAME} have no defined resolution path in orchestrator",
+      "description": "Plan says variables resolved at dispatch time but does not specify WHERE in orchestrator code substitution occurs. FINDINGS_HELPER must resolve to ${CLAUDE_PLUGIN_ROOT}/scripts/findings-helper.sh but CLAUDE_PLUGIN_ROOT availability undefined.",
+      "impact": "Agents receive prompts with unresolved variables; orchestrator code path ambiguous, easy to implement wrong.",
+      "fix": "Specify exact substitution location in orchestrator Step 2.2 and verify CLAUDE_PLUGIN_ROOT available"
+    },
+    {
+      "id": "C8",
+      "severity": "P1",
+      "agent": "fd-correctness",
+      "convergence": 2,
+      "convergence_agents": ["fd-architecture", "fd-correctness"],
+      "section": "Template Variables — cache path stability",
+      "title": "{FINDINGS_HELPER} resolved at dispatch time breaks when plugin cache updated mid-session",
+      "description": "Path embedded in agent prompts becomes invalid if interflux plugin is updated. bump-version.sh symlink mitigation noted only for hooks/, not verified to cover scripts/ directory.",
+      "impact": "Agents with already-dispatched prompts fail at runtime after mid-session plugin update.",
+      "fix": "Verify bump-version.sh symlink covers scripts/ directory or use canonical (non-cache) path"
+    },
+    {
+      "id": "A4",
+      "severity": "P1",
+      "agent": "fd-architecture",
+      "convergence": 1,
+      "convergence_agents": ["fd-architecture"],
+      "section": "Test Suite",
+      "title": "New shell test bypasses Python structural test suite; assertion assert len(files)==3 will fail",
+      "description": "Task 4 adds commands/fetch-findings.md as fourth command. Existing tests/structural/test_commands.py asserts exactly 3 commands. Plan creates parallel shell test but ignores Python test breakage.",
+      "impact": "CI/test suite broken on first day; implementation halts at structural test failure.",
+      "fix": "Update tests/structural/test_commands.py to assert 4 commands OR defer fetch-findings command"
+    },
+    {
+      "id": "C4",
+      "severity": "P1",
+      "agent": "fd-correctness",
+      "convergence": 1,
+      "convergence_agents": ["fd-correctness"],
+      "section": "Task 5 — Test 10",
+      "title": "Concurrent-write simulation cannot detect split-write data corruption",
+      "description": "Test forks 5 writers and checks line count. Cannot detect C1 interleaving: if writes corrupt a record, jq -s fails with parse error, causing script exit (not assertion failure). Test passes with false confidence.",
+      "impact": "Test passes without detecting primary failure mode; P0 bugs ship with no test coverage.",
+      "fix": "Check parse integrity with jq -s > /dev/null before counting; run test 10+ times"
+    },
+    {
+      "id": "C5",
+      "severity": "P1",
+      "agent": "fd-correctness",
+      "convergence": 1,
+      "convergence_agents": ["fd-correctness"],
+      "section": "Synthesis Integration",
+      "title": "Synthesis reads findings.jsonl while agents may still be writing (TOCTOU race)",
+      "description": "Protocol instructs agents to write during analysis; last agent may have in-flight append when synthesis begins reading. No sync barrier between agent completion (.md rename) and synthesis dispatch.",
+      "impact": "Synthesis findings incomplete or corrupt; combined with C1/C2, creates window for silent data loss.",
+      "fix": "Add sync barrier after agent loop before synthesis dispatch"
+    },
+    {
+      "id": "A2",
+      "severity": "P1",
+      "agent": "fd-architecture",
+      "convergence": 1,
+      "convergence_agents": ["fd-architecture"],
+      "section": "Module Boundary",
+      "title": "findings.jsonl collides with synthesis output findings.json in OUTPUT_DIR",
+      "description": "New peer findings file named findings.jsonl; synthesis also writes findings.json (different ext). Nearly identical names create ambiguity for future tooling (intermap, interlearn) and human readers.",
+      "impact": "Naming confusion in OUTPUT_DIR; future tool maintainers must explicitly handle distinction.",
+      "fix": "Rename to peer-findings.jsonl (makes ownership explicit)"
+    },
+    {
+      "id": "A5",
+      "severity": "P2",
+      "agent": "fd-architecture",
+      "convergence": 1,
+      "convergence_agents": ["fd-architecture"],
+      "section": "Synthesis Integration",
+      "title": "Step numbering gap: 3.5 inserted into synthesis agent with no existing step 3",
+      "description": "Plan inserts 'step 3.5' into synthesize-review.md which uses standard step numbers (1-8). Decimal notation unusual and inconsistent with existing patterns.",
+      "impact": "Agent confusion during implementation; unclear instruction ordering.",
+      "fix": "Renumber as step 4+ or use 3b format to match existing pattern"
+    },
+    {
+      "id": "A6",
+      "severity": "P2",
+      "agent": "fd-architecture",
+      "convergence": 1,
+      "convergence_agents": ["fd-architecture"],
+      "section": "Run Isolation",
+      "title": "Task 6 step 3 modifies launch.md but scoped under SKILL-compact.md task",
+      "description": "Task 6 titled 'Update SKILL-compact.md' but Step 3 modifies launch.md (different file). Cross-file modification buried in task may be missed if implementor skips after concluding compact doesn't exist.",
+      "impact": "Cleanup pattern in launch.md may not be applied; findings.jsonl cleanup incomplete.",
+      "fix": "Move launch.md cleanup to own task or explicit conditional always-apply"
+    },
+    {
+      "id": "A7",
+      "severity": "P2",
+      "agent": "fd-architecture",
+      "convergence": 1,
+      "convergence_agents": ["fd-architecture"],
+      "section": "Template Boundary",
+      "title": "Peer Findings Protocol backtick blocks nest inside agent prompt template — template truncated",
+      "description": "Agent prompt template delimited by ``` (lines 285-440). New protocol section contains its own ``` code blocks. Triple-backtick cannot nest in markdown; first inner ``` terminates outer block.",
+      "impact": "Agent receives truncated prompt; Peer Findings Protocol section lost.",
+      "fix": "Use indented code blocks (4-space) or ~~~ fence alternative"
+    },
+    {
+      "id": "C6",
+      "severity": "P2",
+      "agent": "fd-correctness",
+      "convergence": 1,
+      "convergence_agents": ["fd-correctness"],
+      "section": "Task 1 — write command",
+      "title": "No validation of severity values; any string reaches JSONL record",
+      "description": "Write command accepts severity as raw arg without validation. Agent can pass severity='' or severity='all' producing invalid records. Synthesis logic expecting blocking/notable skips unrecognized values.",
+      "impact": "Malformed records in timeline; synthesis logic complexity increases.",
+      "fix": "Add case guard before jq -n -c to validate severity is blocking|notable"
+    },
+    {
+      "id": "C7",
+      "severity": "P2",
+      "agent": "fd-correctness",
+      "convergence": 1,
+      "convergence_agents": ["fd-correctness"],
+      "section": "Run Isolation",
+      "title": "Run-isolation cleanup races next run's writes in fast back-to-back invocations",
+      "description": "Task 6 Step 3 adds findings.jsonl to cleanup pattern. If two runs on same OUTPUT_DIR execute in rapid succession, cleanup may delete file mid-read. Synthesis checks file existence with ls; on unlink, ls returns 1 and timeline step skipped.",
+      "impact": "Low probability race; can be prevented via timestamped OUTPUT_DIRs (usage discipline).",
+      "fix": "Document non-concurrent OUTPUT_DIR usage assumption"
+    }
+  ],
+  "improvements": [
+    {
+      "id": "A9",
+      "severity": "IMP",
+      "agent": "fd-architecture",
+      "title": "Defer fetch-findings command to follow-up (YAGNI)",
+      "description": "Command adds ceremony without current non-debug callers. Helper script already provides capability. Keep this plan's diff minimal."
+    },
+    {
+      "id": "A10",
+      "severity": "IMP",
+      "agent": "fd-architecture",
+      "title": "Define explicit sync rule between launch.md and SKILL-compact.md",
+      "description": "After Task 6 adds findings.jsonl cleanup, compact skill description becomes silently incomplete. Add one-line note in SKILL-compact.md: 'findings.jsonl also cleared (see launch.md Step 2.0).'"
+    },
+    {
+      "id": "I1",
+      "severity": "IMP",
+      "agent": "fd-correctness",
+      "title": "Use flock for serialized appends (addresses C1)",
+      "description": "Replace bare >> with flock -x around jq-plus-append sequence. Lock file path ${findings_file}.lock natural, zero-overhead for sequential cases."
+    },
+    {
+      "id": "I2",
+      "severity": "IMP",
+      "agent": "fd-correctness",
+      "title": "Copy-then-read pattern prevents mid-write jq parse failure (addresses C2)",
+      "description": "Before jq -s, atomically copy file to temp path and read from copy. Eliminates race without reader lock."
+    },
+    {
+      "id": "I3",
+      "severity": "IMP",
+      "agent": "fd-correctness",
+      "title": "Strengthen Test 10 to detect corruption not just count (addresses C4)",
+      "description": "After wait, run jq -s > /dev/null before counting to validate parse integrity. Run Test 10 ten times to catch timing-dependent failures."
+    },
+    {
+      "id": "I4",
+      "severity": "IMP",
+      "agent": "fd-correctness",
+      "title": "Validate severity at write time (addresses C6)",
+      "description": "Four-line case guard before jq -n -c prevents invalid severity values from entering JSONL. Self-enforcing contract."
+    }
+  ],
+  "summary": {
+    "p0_count": 2,
+    "p1_count": 7,
+    "p2_count": 7,
+    "imp_count": 6,
+    "critical_blockers": [
+      "Non-atomic JSONL appends cause silent data corruption in every parallel run",
+      "Mid-write jq parse failures silently discard findings from peers",
+      "Shell argument parsing bug in read subcommand",
+      "Structural test suite broken by fourth command addition"
+    ],
+    "overall_assessment": "Plan's transport design (append-only JSONL) is sound and integration optional. However, two P0 issues guarantee silent data loss or corruption in every parallel run, and four P1 blockers cause immediate implementation failures. All fixable within scope. Once P0/P1 resolved, P2 issues are low-cost in-band fixes."
+  }
+}

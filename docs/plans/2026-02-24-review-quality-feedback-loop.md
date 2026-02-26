@@ -45,4 +45,4 @@
 
 ## Task 6: Test and commit
 - [x] Run `bash -n` syntax checks on all modified files
-- [ ] Commit with conventional format
+- [x] Commit with conventional format

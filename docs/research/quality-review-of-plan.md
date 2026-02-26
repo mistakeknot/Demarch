@@ -1,4 +1,153 @@
-# Quality Review: 2026-02-23-pollard-hunter-resilience.md
+# Quality Review: 2026-02-26-intent-submission-mechanism.md
+
+> Full verdict: `/home/mk/projects/Demarch/.clavain/verdicts/fd-quality-intent-plan.md`
+
+Reviewed against:
+- `/home/mk/projects/Demarch/docs/plans/2026-02-26-intent-submission-mechanism.md`
+- `/home/mk/projects/Demarch/apps/autarch/pkg/intercore/client.go`
+- `/home/mk/projects/Demarch/apps/autarch/pkg/intercore/run.go`
+- `/home/mk/projects/Demarch/apps/autarch/pkg/intercore/operations.go`
+- `/home/mk/projects/Demarch/apps/autarch/pkg/intercore/client_test.go`
+- `/home/mk/projects/Demarch/apps/autarch/pkg/intercore/types.go`
+
+---
+
+## Verdict: CONDITIONAL APPROVE
+
+4 required fixes (R1-R4) must be corrected in the plan before any implementation task begins.
+7 additional recommendations that should be addressed during implementation.
+
+---
+
+## Focus Q1: Does `pkg/clavain/` match `pkg/intercore/` conventions?
+
+**PASS with 3 gaps.**
+
+Correctly mirrors: option pattern, `New()`/`Available()`, `execRaw`/`execText`/`execJSON` helpers, `ErrUnavailable` sentinel, `types.go` separation.
+
+**Gap 1 — `execJSON` signature diverges without explanation.**
+Intercore returns `([]byte, error)` and callers use the `unmarshal[T]` generic helper. The plan takes `dst any` as a destination parameter. Neither approach is wrong but the deviation from the stated reference is undocumented and drops the useful generic helper.
+
+**Gap 2 — `New()` skips the health check.**
+Intercore runs `ic health` after LookPath. A broken or wrong-architecture `clavain-cli` passes `Available()` and fails silently on the first real call.
+
+**Gap 3 — No `WithWorkDir` option.**
+`clavain-cli` operates relative to a project directory. Intercore has `WithDBPath` for context. Without an equivalent, callers cannot target a specific project when their CWD differs.
+
+---
+
+## Focus Q2: Are test cases sufficient? Table-driven where appropriate?
+
+**FAIL — Tests are structurally weak.**
+
+Reference tests in `pkg/intercore/client_test.go` validate: JSON unmarshal against real captured CLI output, exec failure paths via `WithBinPath("/nonexistent/...")`, helper methods (`IsActive()`, `Succeeded()`), and sentinel detection with table-driven format.
+
+**3 specific defects in proposed tests:**
+
+1. `TestAvailable_NoError` calls `_ = Available()` and asserts nothing.
+2. `TestSprintCreate_MissingBinary` ends after the skip guard with no assertions.
+3. Zero JSON unmarshal tests for any of the 4 result types (`SprintCreateResult`, `AdvanceResult`, `GateResult`, `DispatchResult`). This is the primary gap — the reference package's emphasis is on type correctness against real CLI output.
+
+`SprintAdvance`'s dual-return semantics (pause reason string vs empty on success) have no test coverage despite being the most complex control path.
+
+---
+
+## Focus Q3: Go idiom adherence
+
+**PASS with 2 correctness bugs and 2 style issues.**
+
+**R1 (REQUIRED) — `fmt.Fprintf(nil, "")` panics at runtime.**
+In `dispatch.go`, the comment says "no-op" but `fmt.Fprintf` does not accept a nil `io.Writer`. Replace with `_ = err` or write to `os.Stderr`.
+
+**R2 (REQUIRED) — `SprintAdvance` pause-reason branch is unreachable.**
+```go
+result, err := c.execText(ctx, args...)
+if err != nil {
+    if result != "" {   // always "" — execText discards stdout on error
+        return result, nil
+    }
+}
+```
+`execText` always returns `("", err)` on failure. The pause-reason recovery never fires. Fix: call `execRaw` directly in `SprintAdvance` (same pattern as `GateCheck` in intercore `operations.go`) to access stdout alongside the error.
+
+**R3 (REQUIRED) — `resolveRunID` line-scans JSON.**
+Splits on newlines, searches for lines starting with `"id"`. Breaks on minified JSON, nested objects, any formatting variation. Use `json.Unmarshal` into a single-field struct.
+
+**Style — `ctx == nil` guard.** Accepted for consistency with the reference pattern.
+
+---
+
+## Focus Q4: Is `SprintCancel` returning an error string a good pattern?
+
+**No — worst-designed element in the plan.**
+
+```go
+func (c *Client) SprintCancel(ctx context.Context, runID string) error {
+    return fmt.Errorf("sprint cancel not yet implemented in clavain-cli — use ic.RunCancel()")
+}
+```
+
+Three problems:
+1. An always-erroring public method forces every caller to write permanent fallback logic.
+2. The error string is an instruction embedded as a machine value — appears in TUI surfaces and logs.
+3. The comment rationale ("safe to delegate to ic") directly contradicts the decision not to.
+
+**Correct fix:** Remove `SprintCancel` from this plan. Scope notes already list cancel as future work. If the method must exist for interface completeness, add `ErrNotImplemented` so callers can `errors.Is` to detect the unimplemented case.
+
+Same problem applies to `GateOverride` (returns `ErrUnavailable` — wrong sentinel, means "binary absent" not "feature absent") and `DispatchTask` (always returns error string).
+
+---
+
+## R4 (REQUIRED) — Double-advance bug in Task 4 wiring
+
+```go
+_, advErr := clavainClient.SprintAdvance(ctx, beadID, currentPhase)
+if advErr != nil {
+    result, err = ic.RunAdvance(ctx, runID)  // fallback — correct
+} else {
+    result, err = ic.RunAdvance(ctx, runID)  // BUG: advances sprint AGAIN
+}
+```
+
+On success, `clavain-cli sprint-advance` has already advanced the sprint. Calling `ic.RunAdvance()` a second time advances it to the next phase. The intent is to read the new state for TUI rendering — use `ic.RunStatus()` (read-only) in the success branch.
+
+---
+
+## Required Fixes
+
+| ID | Location | Issue |
+|----|----------|-------|
+| R1 | `dispatch.go` | `fmt.Fprintf(nil, "")` is a runtime panic |
+| R2 | `sprint.go:SprintAdvance` | Pause-reason branch unreachable — execText discards stdout on error |
+| R3 | `sprint.go:resolveRunID` | Line-scan JSON parsing — breaks on any real output variation |
+| R4 | Task 4 wiring pseudocode | Double-advance: `ic.RunAdvance()` called after clavain-cli already advanced |
+
+---
+
+## Additional Recommendations
+
+| ID | Location | Issue | Priority |
+|----|----------|-------|----------|
+| A | `sprint.go:SprintCancel` | Always-error method; omit or use `ErrNotImplemented` | HIGH |
+| B | `gate.go:GateOverride` | Returns `ErrUnavailable` for wrong semantic reason | HIGH |
+| C | `dispatch.go:DispatchTask` | Always-error method; omit or split | HIGH |
+| D | `client_test.go` | `TestAvailable_NoError` and `TestSprintCreate_MissingBinary` test nothing | MEDIUM |
+| E | `sprint_test.go` | No JSON unmarshal tests for plan's types | MEDIUM |
+| F | `artifact.go:GetArtifact` | Silent error swallowing conflates "not found" with exec failure | MEDIUM |
+| G | `sprint.go:SprintAdvance` | Variadic `...string` for single optional arg — use named option | LOW |
+| H | `dispatch.go:TrackAgent` | Positional arg encoding breaks when intermediate arg is empty | LOW |
+
+---
+
+## Structural Assessment
+
+The architectural intent is sound. Routing policy-governing writes through the OS layer (L2) rather than the kernel (L1) directly is correct layering. The incremental approach — 3 critical intents now, dispatch mediation later — is pragmatic. The 4 required fixes are pre-implementation bugs that cause runtime panics (R1), unreachable branches (R2), parse failures (R3), or data integrity errors (R4). All must be corrected in the plan text before execution begins.
+
+---
+
+## Prior Reviews (preserved for history)
+
+### Quality Review: 2026-02-23-pollard-hunter-resilience.md
 
 > This file is a brief summary. Full review: `.claude/reviews/iv-xlpg-plan-quality.md`
 

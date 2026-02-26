@@ -50,9 +50,9 @@ This sprint closes the epic by implementing the ToolError contract (iv-gkory) �
 - [x] Update `sdk/interbase/AGENTS.md` if it exists
 
 ## Task 6: Close epic and commit
-- [ ] Run all tests
-- [ ] Commit in interbase, interlock
-- [ ] Commit docs in Demarch root
-- [ ] Close iv-gkory (ToolError implemented)
-- [ ] Close iv-bg0a0 (epic — unblocks remaining children)
-- [ ] bd sync + push
+- [x] Run all tests
+- [x] Commit in interbase, interlock
+- [x] Commit docs in Demarch root
+- [x] Close iv-gkory (ToolError implemented)
+- [x] Close iv-bg0a0 (epic — unblocks remaining children)
+- [x] bd sync + push

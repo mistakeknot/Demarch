@@ -1,0 +1,94 @@
+{
+  "reviewed": "2026-02-25",
+  "document": "docs/research/autarch-autonomy-gap-analysis.md",
+  "verdict": "needs-changes",
+  "severity": "risky",
+  "agents_launched": [
+    "fd-user-product",
+    "fd-autonomy-ux-hierarchy",
+    "fd-recursive-ring-architecture",
+    "fd-delegation-escalation-protocol",
+    "fd-migration-transition-path",
+    "fd-vision-coherence"
+  ],
+  "agents_completed": [
+    "fd-user-product",
+    "fd-autonomy-ux-hierarchy",
+    "fd-recursive-ring-architecture",
+    "fd-delegation-escalation-protocol",
+    "fd-migration-transition-path",
+    "fd-vision-coherence"
+  ],
+  "agents_failed": [],
+  "summary": {
+    "diagnosis_quality": "high",
+    "remedy_completeness": "incomplete",
+    "data_model_gaps": "critical",
+    "infrastructure_gaps": "significant",
+    "architectural_coherence": "questionable"
+  },
+  "findings": {
+    "p0_critical": 5,
+    "p1_important": 7,
+    "p2_moderate": 8,
+    "total": 20
+  },
+  "key_blockers": [
+    "No implementable mode switching criteria (P0)",
+    "Recursive rings require unacknowledged kernel extensions (P0)",
+    "Autonomous advancement has no specified driver (P0)",
+    "Escalation protocol lacks state machine and trigger taxonomy (P0)",
+    "Recursive ring model misattributed to existing architecture (P0)"
+  ],
+  "convergence": {
+    "on_data_model_prerequisite": "5 of 6 agents",
+    "on_infrastructure_understated": "4 of 6 agents",
+    "on_mode_switching_unspecified": "4 of 6 agents",
+    "on_ring_model_is_new_architecture": "2 of 6 agents with strong consensus"
+  },
+  "recommendation": "Revise before PRD. Define mode switching criteria, audit data model requirements, clarify ring model scope, sequence migrations explicitly, design escalation schema. The analysis correctly diagnoses the gap but significantly understates remedy complexity. A PRD written from this document would ship incomplete Executive mode.",
+  "gates": {
+    "can_proceed_to_prd": false,
+    "can_proceed_to_prototype": false,
+    "can_proceed_to_implementation": false,
+    "can_inform_next_planning_cycle": true
+  },
+  "agent_verdicts": {
+    "fd-user-product": {
+      "status": "needs-attention",
+      "severity": "high",
+      "findings_count": 9,
+      "key_concern": "Attention queue mixes incompatible item types; mode transitions unspecified"
+    },
+    "fd-autonomy-ux-hierarchy": {
+      "status": "needs-attention",
+      "severity": "critical",
+      "findings_count": 4,
+      "key_concern": "Mode switching criteria not implementable; data model work is prerequisite"
+    },
+    "fd-recursive-ring-architecture": {
+      "status": "needs-attention",
+      "severity": "high",
+      "findings_count": 4,
+      "key_concern": "Recursive rings require kernel extensions; autonomous advancement undefined"
+    },
+    "fd-delegation-escalation-protocol": {
+      "status": "needs-attention",
+      "severity": "critical",
+      "findings_count": 6,
+      "key_concern": "Escalation triggers are categories not conditions; no lifecycle state machine"
+    },
+    "fd-migration-transition-path": {
+      "status": "needs-attention",
+      "severity": "high",
+      "findings_count": 8,
+      "key_concern": "No incremental adoption path; conflates two parallel migrations"
+    },
+    "fd-vision-coherence": {
+      "status": "needs-attention",
+      "severity": "critical",
+      "findings_count": 6,
+      "key_concern": "Ring model misattributed to existing architecture; 3 of 7 gaps are one gap"
+    }
+  }
+}
