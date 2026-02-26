@@ -5,6 +5,25 @@
 **Scope:** 6 source plugins → 12 resulting plugins + 2 library upgrades
 **Estimated tasks:** 38
 
+### Progress
+
+- [x] Phase 0 — Prerequisites (5/5 tasks) — committed
+- [x] Phase 1 — Leaf Extractions (15/15 tasks) — committed
+- [x] Phase 2 — Infrastructure Extractions (6/6 tasks) — committed
+- [x] Phase 3 — Dependent Extractions (5/5 tasks) — committed
+- [x] Phase 4 — Rewire Consumers + Cleanup (7/7 tasks) — all committed and validated
+
+**New plugins created:** interpulse, interskill, interplug, intertree, intersense, interknow
+**Plugins modified:** interflux, intercheck, interdev, interkasten, interbase, intercache, intersearch
+
+**Notes:**
+- intertree MCP tool handlers remain in interkasten (require DaemonContext). Pure functions extracted. Full migration deferred to Phase 4.
+- interdev reduced from 5 skills to 2 (mcp-cli, working-with-claude-code)
+- intercheck reduced to code quality only (syntax + format); pressure tracking moved to interpulse
+- intersense created for domain detection; interflux scripts replaced with delegation stubs
+- intersearch upgraded to v0.2.0 with MCP server + persistent embedding store (nomic-embed-text-v1.5)
+- intercache reduced to 8 tools (embedding_index/embedding_query moved to intersearch)
+
 ---
 
 ## Phase 0 — Prerequisites (no new plugins)
