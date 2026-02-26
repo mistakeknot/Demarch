@@ -12,13 +12,10 @@
 [ ] 2. git add <files>         (stage code changes)
 [ ] 3. bd sync                 (commit beads changes)
 [ ] 4. git commit -m "..."     (commit code)
-[ ] 5. bd sync                 (commit any new beads changes)
-[ ] 6. git push                (push to remote)
-[ ] 7. bd orphans              (check for beads referenced in commits that are still open)
+[ ] 5. bd orphans              (close beads referenced in commits — skip parents with open children)
+[ ] 6. bd sync                 (sync bead closes before push)
+[ ] 7. git push                (push to remote)
 ```
-
-If `bd orphans` finds results, close leaf beads (no open children) with `bd close`.
-Do NOT auto-close parents/epics that still have open children.
 
 **NEVER skip this.** Work is not done until pushed.
 
