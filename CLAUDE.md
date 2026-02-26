@@ -17,25 +17,31 @@ interverse/           → companion plugins (all lowercase)
   intermux/           → agent activity visibility + tmux monitoring (MCP)
   interpath/          → product artifact generator
   interphase/         → phase tracking + gates
+  interplug/          → plugin development toolkit (create + validate + troubleshoot)
   interpub/           → plugin publishing
+  interpulse/         → engineering pressure gauge + context-monitor
   interwatch/         → doc freshness monitoring
   interslack/         → Slack integration
   interform/          → design patterns + visual quality
   intercraft/         → agent-native architecture patterns
-  interdev/           → developer tooling + skill/plugin authoring
+  interdev/           → developer tooling (MCP CLI + Claude Code reference)
   interpeer/          → cross-AI peer review (Oracle/GPT escalation)
   intertest/          → engineering quality disciplines (TDD, debugging, verification)
-  intercheck/         → code quality guards + session health monitoring
+  intercheck/         → code quality guards (syntax + format enforcement)
   interleave/         → deterministic skeleton + LLM islands pattern (spec + library)
   interject/          → ambient discovery + research engine (MCP)
+  interknow/          → knowledge compounding + provenance tracking + qmd search
   interlearn/         → cross-repo institutional knowledge index
   interserve/         → Codex spark classifier + context compression (MCP)
   interspect/         → agent profiler — evidence, classification, routing, canary (hooks)
+  intertree/          → project discovery + hierarchy signals
   intertrust/         → agent trust scoring — reputation, decay, suppression candidates
   interstat/          → token efficiency benchmarking
   intersynth/         → multi-agent synthesis engine (verdict aggregation)
   internext/          → work prioritization + tradeoff analysis
-  intersearch/        → shared embedding + Exa search library
+  intersearch/        → shared embedding store + Exa search (MCP)
+  intersense/         → domain detection + project classification
+  interskill/         → skill authoring toolkit (create + audit)
   interlens/          → cognitive augmentation lenses (FLUX podcast)
   tldr-swinton/       → token-efficient code context (MCP)
   intership/          → Culture ship names as spinner verbs
