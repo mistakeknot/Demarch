@@ -1,0 +1,12 @@
+# demarch-managed: secret-scan-baseline v1
+title = "Demarch Secret Scanning Baseline"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Ignore secret-scanning backfill reports and gitleaks metadata artifacts"
+paths = [
+  '''^docs/reports/security/secret-scan-backfill-.*''',
+  '''^\.gitleaksignore$'''
+]
