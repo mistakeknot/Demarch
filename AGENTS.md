@@ -337,6 +337,14 @@ Consolidated reference guides — read the relevant guide before working in that
 | Interband Sideband Protocol | Before working on sideband communication between agents | `docs/guides/interband-sideband-protocol.md` |
 | Beads 0.51 Upgrade | Before unpinning/upgrading beads in Interverse | `docs/guides/beads-0.51-upgrade-plan.md` |
 
+## Unexpected Changes Policy
+
+Always ignore unrelated local changes by default.
+
+- Do not inspect, stage, edit, or revert files unrelated to the current task.
+- Scope edits strictly to files required for the requested work.
+- Only touch unrelated changes when the user explicitly asks.
+
 ## Critical Patterns
 
 Patterns that bite every session. Each learned from a production failure.
