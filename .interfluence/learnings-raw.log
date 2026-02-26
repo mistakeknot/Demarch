@@ -64808,3 +64808,118 @@ NEW:   "skills": [
     "./skills/working-with-claude-code",
     "./skills/developing-claude-code-plugins"
   ]
+
+--- 2026-02-26T05:11:51Z | interverse/interdev/CLAUDE.md | CONTEXT:unknown ---
+OLD: Developer tooling for Claude Code — MCP CLI interaction, skill authoring, plugin development, and Claude Code reference.
+
+## Overview
+
+5 skills, 0 agents, 0 commands, 0 hooks. Companion plugin for Clavain.
+
+## Skills
+
+| Skill | What it does |
+|-------|-------------|
+| `mcp-cli` | On-demand MCP server interaction via mcptools CLI |
+| `working-with-claude-code` | Official Claude Code documentation reference (37 docs) |
+| `developing-claude-code-plugins` | Plugin lifecycle — plan, create, test, release |
+| `create-agent-skills` | Expert guidance for SKILL.md authoring |
+| `writing-skills` | TDD-adapted skill creation process |
+
+## Quick Commands
+
+```bash
+python3 -c "import json; json.load(open('.claude-plugin/plugin.json'))"  # Manifest check
+ls skills/*/SKILL.md | wc -l  # Should be 5
+```
+
+## Design Decisions (Do Not Re-Ask)
+
+- Uses mcptools CLI for on-demand MCP server interaction
+- Discovery-first workflow: tools → resources → prompts → call
+- Extracted from Clavain — developer tooling concern, not core engineering
+NEW: Developer tooling for Claude Code — MCP CLI interaction and Claude Code reference.
+
+## Overview
+
+3 skills, 0 agents, 0 commands, 0 hooks. Companion plugin for Clavain.
+
+## Skills
+
+| Skill | What it does |
+|-------|-------------|
+| `mcp-cli` | On-demand MCP server interaction via mcptools CLI |
+| `working-with-claude-code` | Official Claude Code documentation reference (37 docs) |
+| `developing-claude-code-plugins` | Plugin lifecycle — plan, create, test, release |
+
+## Companion Plugins
+
+- **interskill** — skill authoring toolkit (extracted from interdev's create-agent-skills + writing-skills)
+
+## Quick Commands
+
+```bash
+python3 -c "import json; json.load(open('.claude-plugin/plugin.json'))"  # Manifest check
+ls skills/*/SKILL.md | wc -l  # Should be 3
+```
+
+## Design Decisions (Do Not Re-Ask)
+
+- Uses mcptools CLI for on-demand MCP server interaction
+- Discovery-first workflow: tools → resources → prompts → call
+- Extracted from Clavain — developer tooling concern, not core engineering
+- Skill authoring extracted to interskill plugin (2026-02-25)
+- Plugin development to be extracted to interplug plugin
+
+--- 2026-02-26T05:12:37Z | sdk/interbase/AGENTS.md | CONTEXT:unknown ---
+OLD: ```
+sdk/interbase/
+  lib/
+    interbase.sh    — core Bash SDK (installed to ~/.intermod/interbase/)
+    VERSION         — semver for installed copy
+  templates/
+    interbase-stub.sh   — shipped inside each plugin
+    integration.json    — schema template for plugin integration manifests
+  tests/
+    test-guards.sh      — guard function + stub fallback tests
+    test-nudge.sh       — nudge protocol tests
+  go/
+    go.mod              — Go module: github.com/mistakeknot/interbase
+    toolerror/
+      toolerror.go      — structured error contract for MCP servers
+      toolerror_test.go — 9 tests
+    mcputil/
+      instrument.go      — tool handler middleware (timing, errors, panics, metrics)
+      instrument_test.go — 8 tests
+  install.sh            — deploy Bash SDK to ~/.intermod/interbase/
+```
+NEW: ```
+sdk/interbase/
+  lib/
+    interbase.sh    — core Bash SDK (installed to ~/.intermod/interbase/)
+    VERSION         — semver for installed copy
+  templates/
+    interbase-stub.sh   — shipped inside each plugin
+    integration.json    — schema template for plugin integration manifests
+  tests/
+    test-guards.sh      — guard function + stub fallback tests (16 assertions)
+    test-nudge.sh       — nudge protocol tests (4 assertions)
+  go/
+    go.mod              — Go module: github.com/mistakeknot/interbase (Go 1.23, mcp-go v0.43.2)
+    README.md           — standalone Go SDK reference
+    toolerror/
+      toolerror.go      — structured error contract for MCP servers
+      toolerror_test.go — 9 tests
+    mcputil/
+      instrument.go      — tool handler middleware (timing, errors, panics, metrics)
+      instrument_test.go — 8 tests
+  install.sh            — deploy Bash SDK to ~/.intermod/interbase/
+```
+
+--- 2026-02-26T05:12:41Z | sdk/interbase/AGENTS.md | CONTEXT:unknown ---
+OLD: **Adopters:** interlock (all 12 tools)
+
+### mcputil — MCP Tool Handler Middleware
+NEW: **Adopters:** interlock (all 12 MCP tool handlers)
+
+### mcputil — MCP Tool Handler Middleware
