@@ -1,0 +1,63 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 600
+
+stages:
+  - name: "Foundation"
+    tasks:
+      - id: task-1
+        title: "Observability package (slog handler + trace context)"
+        files: [internal/observability/observability.go, internal/observability/observability_test.go]
+        depends: []
+      - id: task-7
+        title: "Bash log helpers (lib-log.sh)"
+        files: [os/clavain/hooks/lib-log.sh, os/clavain/hooks/lib.sh]
+        depends: []
+
+  - name: "Core Wiring"
+    tasks:
+      - id: task-2
+        title: "slog initialization in ic CLI main.go"
+        files: [cmd/ic/main.go]
+        depends: [task-1]
+      - id: task-5
+        title: "Trace schema migration v23 (audit_log.trace_id)"
+        files: [internal/db/migrations/023_audit_trace_id.sql, internal/audit/audit.go, internal/db/migrator_test.go]
+        depends: [task-1]
+      - id: task-8
+        title: "Clavain trace propagation (session-start + hooks)"
+        files: [os/clavain/hooks/session-start.sh, os/clavain/hooks/lib-intercore.sh, os/clavain/hooks/lib-sprint.sh, os/clavain/hooks/session-handoff.sh]
+        depends: [task-7]
+
+  - name: "Migration"
+    tasks:
+      - id: task-3
+        title: "Migrate event handlers to slog (handler_log, handler_hook, handler_spawn, relay, sentinel)"
+        files: [internal/event/handler_log.go, internal/event/handler_hook.go, internal/event/handler_spawn.go, internal/portfolio/relay.go, internal/sentinel/sentinel.go, cmd/ic/run.go, cmd/ic/portfolio.go]
+        depends: [task-2]
+      - id: task-6
+        title: "Wire trace context into EventEnvelope (store.go + phase envelope)"
+        files: [internal/event/store.go, internal/phase/event_envelope.go]
+        depends: [task-5]
+
+  - name: "Bulk Migration"
+    tasks:
+      - id: task-4
+        title: "Migrate all cmd/ic subcommands to slog (~17 files, ~576 calls)"
+        files: [cmd/ic/run.go, cmd/ic/discovery.go, cmd/ic/lane.go, cmd/ic/dispatch.go, cmd/ic/portfolio.go, cmd/ic/scheduler_cmd.go, cmd/ic/agency.go, cmd/ic/events.go, cmd/ic/gate.go, cmd/ic/cost.go, cmd/ic/publish.go, cmd/ic/action.go, cmd/ic/coordination.go, cmd/ic/lock.go, cmd/ic/interspect.go, cmd/ic/config.go]
+        depends: [task-3]
+        tier: deep
+
+  - name: "Adoption + Verification"
+    tasks:
+      - id: task-9
+        title: "Plugin adoption guide + Python formatter + reference migrations"
+        files: [docs/guide-plugin-logging.md, interverse/intermap/cmd/intermap-mcp/main.go]
+        depends: [task-1, task-7]
+      - id: task-10
+        title: "CI verification and contract update"
+        files: [core/intercore/.github/workflows/ci.yml]
+        depends: [task-4, task-6, task-8, task-9]
+        tier: fast
