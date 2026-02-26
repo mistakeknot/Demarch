@@ -64923,3 +64923,20 @@ OLD: **Adopters:** interlock (all 12 tools)
 NEW: **Adopters:** interlock (all 12 MCP tool handlers)
 
 ### mcputil — MCP Tool Handler Middleware
+
+--- 2026-02-26T05:12:45Z | sdk/interbase/AGENTS.md | CONTEXT:unknown ---
+OLD: // Read metrics snapshot:
+stats := metrics.ToolMetrics()  // map[string]ToolStats
+```
+NEW: // Read metrics snapshot:
+stats := metrics.ToolMetrics()  // map[string]ToolStats
+// ToolStats implements fmt.Stringer: "calls=N errors=N duration=Xs"
+```
+
+--- 2026-02-26T05:12:48Z | sdk/interbase/AGENTS.md | CONTEXT:unknown ---
+OLD: **Adopters:** interlock (middleware + helpers in all 12 tools)
+
+### Test Commands
+NEW: **Adopters:** interlock (middleware + helpers in all 12 MCP tool handlers)
+
+### Test Commands
