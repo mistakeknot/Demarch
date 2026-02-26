@@ -20,7 +20,7 @@ What are you searching for?
 │  └─ Architecture patterns → intermap:detect_patterns
 │
 ├─ Cached content from prior sessions
-│  ├─ By embedding similarity → intercache:embedding_query
+│  ├─ By embedding similarity → intersearch:embedding_query
 │  ├─ By content hash         → intercache:cache_lookup
 │  └─ Session diffs           → intercache:session_diff
 │
@@ -77,17 +77,17 @@ What are you searching for?
 
 **When:** You want to reuse analysis results across sessions or find similar content from prior work.
 
-| Tool | What it does |
-|------|-------------|
-| `cache_lookup` | Find cached content by SHA256 hash |
-| `cache_store` | Store content with embeddings |
-| `embedding_index` | Build embedding index over cached content |
-| `embedding_query` | Find similar cached content by embedding |
-| `session_track` | Track what this session has produced |
-| `session_diff` | Compare current session with prior sessions |
-| `cache_warm` | Pre-load embeddings for expected content |
+| Tool | Server | What it does |
+|------|--------|-------------|
+| `cache_lookup` | intercache | Find cached content by SHA256 hash |
+| `cache_store` | intercache | Store content in content-addressed blob store |
+| `embedding_index` | intersearch | Build embedding index over project files |
+| `embedding_query` | intersearch | Find similar content by embedding |
+| `session_track` | intercache | Track what this session has produced |
+| `session_diff` | intercache | Compare current session with prior sessions |
+| `cache_warm` | intercache | Pre-load cache for expected content |
 
-**Embedding model:** all-MiniLM-L6-v2 (384 dims, via sentence-transformers).
+**Embedding model:** nomic-ai/nomic-embed-text-v1.5 (768 dims, via intersearch).
 
 ### 4. interject (ambient discovery)
 
@@ -140,7 +140,7 @@ What are you searching for?
 | Call graph / impact | intermap:impact_analysis | tldr-swinton:impact |
 | Code structure overview | tldr-swinton:structure | intermap:code_structure |
 | Cross-project deps | intermap:cross_project | — |
-| Embedding similarity (cache) | intercache:embedding_query | — |
+| Embedding similarity | intersearch:embedding_query | — |
 | Web search | exa-mcp-server | — |
 | Research discovery | interject:scan/search | — |
 | Section classification | interserve:classify | — |
