@@ -45,6 +45,10 @@ docs/docs
 # ── Intermem state (per-project, not committed) ──
 .intermem/
 
+# ── Generated secret scan artifacts (reports/logs) ──
+docs/reports/security/secret-scan-backfill-*/
+docs/reports/security/secret-scan-backfill-*.md
+
 # ── Research clones (not part of monorepo) ──
 research/*
 !research/AGENTS.md
