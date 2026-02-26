@@ -76,6 +76,9 @@ ic publish doctor --json       # machine-readable output
 ic publish clean               # prune orphaned cache dirs
 ic publish clean --dry-run     # show what would be cleaned
 
+ic publish init                # register new plugin in marketplace
+ic publish init --name foo     # register with explicit name
+
 ic publish status              # show publish state for current plugin
 ic publish status --all        # show all 33 plugins' publish health
 ```
@@ -182,6 +185,8 @@ ic publish status --all        # show all 33 plugins' publish health
 | Missing bump-version.sh | Scan interverse/*/ for missing wrappers | Generate standard wrapper |
 | Stale publish state | Check for incomplete publishes | Offer resume/rollback |
 | Pre-publish hooks | Check for undeclared hooks on disk | Warn (don't auto-fix — needs human review) |
+| plugin.json schema | Required fields, unrecognized keys, author format | Report violations, auto-fix where safe (replaces validate-plugin.sh) |
+| Unregistered plugins | Plugin dirs not in marketplace.json | Suggest `ic publish init` |
 
 ### Auto-Publish Hook (Simplified)
 
@@ -291,9 +296,12 @@ After publish succeeds, remind:
 
 ---
 
+## Resolved Questions
+
+1. **`ic publish init`** — Yes. Handle initial marketplace registration for new plugins. One command from "plugin exists" to "plugin is published".
+2. **Doctor absorbs schema validation** — Yes. Doctor becomes the single health check, absorbing what `validate-plugin.sh` does today. One tool to rule them all.
+
 ## Open Questions
 
-1. Should `ic publish` also handle the initial marketplace registration for new plugins? (Currently manual `jq` edits to marketplace.json)
-2. Should the doctor check plugin.json schema validity (unrecognized keys, required fields) or leave that to `validate-plugin.sh`?
-3. Should cache rebuild use hard links instead of copies to save disk space?
-4. Should `ic publish --auto` emit a structured event to Intercore's event bus for observability?
+1. Should cache rebuild use hard links instead of copies to save disk space?
+2. Should `ic publish --auto` emit a structured event to Intercore's event bus for observability?
