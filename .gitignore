@@ -16,6 +16,10 @@ sdk/*
 # ── Claude Code session artifacts ──
 .claude/settings.local.json
 .claude/*.log
+.claude/worktrees/
+
+# ── Local tool caches ──
+.tmp/
 
 # ── Stale symlinks ──
 docs/docs
