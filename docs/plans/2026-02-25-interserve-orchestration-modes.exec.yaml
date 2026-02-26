@@ -1,0 +1,50 @@
+# Execution manifest for interserve orchestration modes plan
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: Schema & Core
+    tasks:
+      - id: task-1
+        title: "Execution manifest schema"
+        files:
+          - os/clavain/schemas/exec-manifest.schema.json
+          - os/clavain/schemas/exec-manifest.example.yaml
+        depends: []
+
+      - id: task-2
+        title: "Python orchestrator core"
+        files:
+          - os/clavain/scripts/orchestrate.py
+        depends: [task-1]
+
+  - name: Integration
+    tasks:
+      - id: task-3
+        title: "Output routing between dependent tasks"
+        files:
+          - os/clavain/scripts/orchestrate.py
+        depends: [task-2]
+
+      - id: task-4
+        title: "Update /write-plan manifest generation"
+        files:
+          - os/clavain/skills/writing-plans/SKILL.md
+        depends: [task-1]
+
+      - id: task-5
+        title: "Update /executing-plans orchestrator integration"
+        files:
+          - os/clavain/skills/executing-plans/SKILL.md
+        depends: [task-2]
+
+  - name: Verification
+    tasks:
+      - id: task-6
+        title: "Tests for orchestrate.py"
+        files:
+          - os/clavain/tests/structural/test_orchestrate.py
+        depends: [task-2, task-3, task-4, task-5]
