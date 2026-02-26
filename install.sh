@@ -215,17 +215,17 @@ done
 
 # Step 1: Add marketplace
 log "  Adding interagency-marketplace..."
-MARKET_OUT=$(run claude plugin marketplace add mistakeknot/interagency-marketplace 2>&1) && {
-    [[ "$DRY_RUN" != true ]] && success "Marketplace added"
-} || {
+if MARKET_OUT=$(run claude plugin marketplace add mistakeknot/interagency-marketplace 2>&1); then
+    [[ "$DRY_RUN" != true ]] && success "Marketplace added" || true
+else
     if echo "$MARKET_OUT" | grep -qi "already"; then
-        [[ "$DRY_RUN" != true ]] && success "Marketplace already added"
+        [[ "$DRY_RUN" != true ]] && success "Marketplace already added" || true
     else
         fail "Marketplace add failed:"
         log "  $MARKET_OUT"
         exit 1
     fi
-}
+fi
 
 # Step 1b: Update marketplace (ensures latest plugin versions)
 log "  Updating marketplace..."
@@ -237,17 +237,17 @@ fi
 
 # Step 2: Install Clavain
 log "  Installing Clavain..."
-INSTALL_OUT=$(run claude plugin install clavain@interagency-marketplace 2>&1) && {
-    [[ "$DRY_RUN" != true ]] && success "Clavain installed"
-} || {
+if INSTALL_OUT=$(run claude plugin install clavain@interagency-marketplace 2>&1); then
+    [[ "$DRY_RUN" != true ]] && success "Clavain installed" || true
+else
     if echo "$INSTALL_OUT" | grep -qi "already"; then
-        [[ "$DRY_RUN" != true ]] && success "Clavain already installed"
+        [[ "$DRY_RUN" != true ]] && success "Clavain already installed" || true
     else
         fail "Clavain install failed:"
         log "  $INSTALL_OUT"
         exit 1
     fi
-}
+fi
 
 # Step 3: Install Interverse companion plugins
 CLAVAIN_DIR=$(find "${CACHE_DIR}/interagency-marketplace/clavain" -name "agent-rig.json" -exec dirname {} \; 2>/dev/null | sort -V | tail -1)
@@ -261,13 +261,12 @@ if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
     [[ "$VERBOSE" != true ]] && MODPACK_FLAGS="$MODPACK_FLAGS --quiet"
 
     if MODPACK_OUT=$(bash "$MODPACK" $MODPACK_FLAGS 2>/dev/null); then
-        # JSON is on stdout; stderr was suppressed
-        MODPACK_JSON=$(echo "$MODPACK_OUT" | grep -E '^\{' | tail -1)
-        N_INSTALLED=$(echo "$MODPACK_JSON" | jq -r '.installed // .would_install | length' 2>/dev/null || echo "?")
-        N_PRESENT=$(echo "$MODPACK_JSON" | jq -r '.already_present | length' 2>/dev/null || echo "?")
-        N_FAILED=$(echo "$MODPACK_JSON" | jq -r '.failed | length' 2>/dev/null || echo "0")
+        # JSON is on stdout (multi-line); pipe full output through jq
+        N_INSTALLED=$(echo "$MODPACK_OUT" | jq -r '.installed // .would_install | length' 2>/dev/null || echo "?")
+        N_PRESENT=$(echo "$MODPACK_OUT" | jq -r '.already_present | length' 2>/dev/null || echo "?")
+        N_FAILED=$(echo "$MODPACK_OUT" | jq -r '.failed | length' 2>/dev/null || echo "0")
 
-        N_OPTIONAL=$(echo "$MODPACK_JSON" | jq -r '.optional_available | length' 2>/dev/null || echo "0")
+        N_OPTIONAL=$(echo "$MODPACK_OUT" | jq -r '.optional_available | length' 2>/dev/null || echo "0")
 
         if [[ "$DRY_RUN" == true ]]; then
             success "Would install ${N_INSTALLED} plugins (${N_PRESENT} already present)"
@@ -275,7 +274,7 @@ if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
             success "Installed ${N_INSTALLED} new plugins (${N_PRESENT} already present)"
             if [[ "$N_FAILED" != "0" ]] && [[ "$N_FAILED" != "null" ]]; then
                 warn "${N_FAILED} plugins failed to install"
-                echo "$MODPACK_JSON" | jq -r '.failed[]' 2>/dev/null | while read -r p; do
+                echo "$MODPACK_OUT" | jq -r '.failed[]' 2>/dev/null | while read -r p; do
                     warn "  Failed: $p"
                 done
             fi
