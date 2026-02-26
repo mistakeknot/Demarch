@@ -106,14 +106,15 @@ log ""
 
 log "${BOLD}Checking prerequisites...${RESET}"
 
-# claude CLI (REQUIRED)
+# claude CLI (OPTIONAL for core/companion, REQUIRED for Claude plugins)
 if command -v claude &>/dev/null; then
     success "claude CLI found"
     debug "$(command -v claude)"
+    HAS_CLAUDE=true
 else
-    fail "claude CLI not found"
-    log "  Claude Code is required. Install: ${BLUE}https://claude.ai/download${RESET}"
-    exit 1
+    warn "claude CLI not found"
+    log "  Claude Code is required for Claude plugins. Install: ${BLUE}https://claude.ai/download${RESET}"
+    HAS_CLAUDE=false
 fi
 
 # jq (REQUIRED)
@@ -167,135 +168,138 @@ log ""
 # --- Installation ---
 log "${BOLD}Installing...${RESET}"
 
-# Step 0: Fix stale marketplace paths in known_marketplaces.json
-# Claude Code stores absolute installLocation paths at add-time. If the user's
-# $HOME has changed (different machine, different user, dotfile sync), marketplace
-# update fails trying to clone to a nonexistent path. Fix: rewrite all
-# installLocation values to use the current $HOME.
-KNOWN_MKT="${HOME}/.claude/plugins/known_marketplaces.json"
-if [[ -f "$KNOWN_MKT" ]] && command -v jq &>/dev/null; then
-    EXPECTED_PREFIX="${HOME}/.claude/plugins/marketplaces"
-    NEEDS_FIX=$(jq -r --arg pfx "$EXPECTED_PREFIX" '
-        to_entries[]
-        | select(.value.installLocation != null)
-        | select(.value.installLocation | startswith($pfx) | not)
-        | .key' "$KNOWN_MKT" 2>/dev/null)
-    if [[ -n "$NEEDS_FIX" ]]; then
-        debug "Fixing stale marketplace paths in known_marketplaces.json"
-        jq --arg prefix "$EXPECTED_PREFIX" '
-            to_entries | map(
-                if .value.installLocation != null then
-                    .value.installLocation = ($prefix + "/" + .key)
-                else . end
-            ) | from_entries' "$KNOWN_MKT" > "${KNOWN_MKT}.tmp" && \
-            mv "${KNOWN_MKT}.tmp" "$KNOWN_MKT"
-        success "Fixed marketplace paths for current \$HOME"
-    fi
-fi
-
-# Step 0b: Remove legacy superpowers/compound-engineering marketplaces
-LEGACY_MARKETPLACES=(superpowers-marketplace every-marketplace)
-for mkt in "${LEGACY_MARKETPLACES[@]}"; do
-    if [[ -f "$KNOWN_MKT" ]] && jq -e --arg m "$mkt" 'has($m)' "$KNOWN_MKT" &>/dev/null; then
-        log "  Removing legacy marketplace: $mkt"
-        if [[ "$DRY_RUN" == true ]]; then
-            log "  ${DIM}[DRY RUN] Would remove $mkt from known_marketplaces.json${RESET}"
-        else
-            # Remove from known_marketplaces.json
-            jq --arg m "$mkt" 'del(.[$m])' "$KNOWN_MKT" > "${KNOWN_MKT}.tmp" && \
+if [[ "$HAS_CLAUDE" == true ]]; then
+    # Step 0: Fix stale marketplace paths in known_marketplaces.json
+    # Claude Code stores absolute installLocation paths at add-time. If the user's
+    # $HOME has changed (different machine, different user, dotfile sync), marketplace
+    # update fails trying to clone to a nonexistent path. Fix: rewrite all
+    # installLocation values to use the current $HOME.
+    KNOWN_MKT="${HOME}/.claude/plugins/known_marketplaces.json"
+    if [[ -f "$KNOWN_MKT" ]] && command -v jq &>/dev/null; then
+        EXPECTED_PREFIX="${HOME}/.claude/plugins/marketplaces"
+        NEEDS_FIX=$(jq -r --arg pfx "$EXPECTED_PREFIX" '
+            to_entries[]
+            | select(.value.installLocation != null)
+            | select(.value.installLocation | startswith($pfx) | not)
+            | .key' "$KNOWN_MKT" 2>/dev/null)
+        if [[ -n "$NEEDS_FIX" ]]; then
+            debug "Fixing stale marketplace paths in known_marketplaces.json"
+            jq --arg prefix "$EXPECTED_PREFIX" '
+                to_entries | map(
+                    if .value.installLocation != null then
+                        .value.installLocation = ($prefix + "/" + .key)
+                    else . end
+                ) | from_entries' "$KNOWN_MKT" > "${KNOWN_MKT}.tmp" && \
                 mv "${KNOWN_MKT}.tmp" "$KNOWN_MKT"
-            # Remove marketplace checkout directory
-            if [[ -d "${HOME}/.claude/plugins/marketplaces/$mkt" ]]; then
-                rm -rf "${HOME}/.claude/plugins/marketplaces/$mkt"
-            fi
-            success "Removed legacy marketplace: $mkt"
+            success "Fixed marketplace paths for current \$HOME"
         fi
     fi
-done
 
-# Step 1: Add marketplace
-log "  Adding interagency-marketplace..."
-if MARKET_OUT=$(run claude plugin marketplace add mistakeknot/interagency-marketplace 2>&1); then
-    [[ "$DRY_RUN" != true ]] && success "Marketplace added" || true
-else
-    if echo "$MARKET_OUT" | grep -qi "already"; then
-        [[ "$DRY_RUN" != true ]] && success "Marketplace already added" || true
+    # Step 0b: Remove legacy superpowers/compound-engineering marketplaces
+    LEGACY_MARKETPLACES=(superpowers-marketplace every-marketplace)
+    for mkt in "${LEGACY_MARKETPLACES[@]}"; do
+        if [[ -f "$KNOWN_MKT" ]] && jq -e --arg m "$mkt" 'has($m)' "$KNOWN_MKT" &>/dev/null; then
+            log "  Removing legacy marketplace: $mkt"
+            if [[ "$DRY_RUN" == true ]]; then
+                log "  ${DIM}[DRY RUN] Would remove $mkt from known_marketplaces.json${RESET}"
+            else
+                # Remove from known_marketplaces.json
+                jq --arg m "$mkt" 'del(.[$m])' "$KNOWN_MKT" > "${KNOWN_MKT}.tmp" && \
+                    mv "${KNOWN_MKT}.tmp" "$KNOWN_MKT"
+                # Remove marketplace checkout directory
+                if [[ -d "${HOME}/.claude/plugins/marketplaces/$mkt" ]]; then
+                    rm -rf "${HOME}/.claude/plugins/marketplaces/$mkt"
+                fi
+                success "Removed legacy marketplace: $mkt"
+            fi
+        fi
+    done
+
+    # Step 1: Add marketplace
+    log "  Adding interagency-marketplace..."
+    if MARKET_OUT=$(run claude plugin marketplace add mistakeknot/interagency-marketplace 2>&1); then
+        [[ "$DRY_RUN" != true ]] && success "Marketplace added" || true
     else
-        fail "Marketplace add failed:"
-        log "  $MARKET_OUT"
-        exit 1
-    fi
-fi
-
-# Step 1b: Update marketplace (ensures latest plugin versions)
-log "  Updating marketplace..."
-if run claude plugin marketplace update interagency-marketplace 2>&1; then
-    [[ "$DRY_RUN" != true ]] && success "Marketplace updated"
-else
-    warn "Marketplace update returned non-zero (continuing with cached version)"
-fi
-
-# Step 2: Install Clavain
-log "  Installing Clavain..."
-if INSTALL_OUT=$(run claude plugin install clavain@interagency-marketplace 2>&1); then
-    [[ "$DRY_RUN" != true ]] && success "Clavain installed" || true
-else
-    if echo "$INSTALL_OUT" | grep -qi "already"; then
-        [[ "$DRY_RUN" != true ]] && success "Clavain already installed" || true
-    else
-        fail "Clavain install failed:"
-        log "  $INSTALL_OUT"
-        exit 1
-    fi
-fi
-
-# Step 3: Install Interverse companion plugins
-CLAVAIN_DIR=$(find "${CACHE_DIR}/interagency-marketplace/clavain" -name "agent-rig.json" -exec dirname {} \; 2>/dev/null | sort -V | tail -1)
-MODPACK="${CLAVAIN_DIR}/scripts/modpack-install.sh"
-
-if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
-    log ""
-    log "${BOLD}Installing Interverse companion plugins...${RESET}"
-    MODPACK_FLAGS=""
-    [[ "$DRY_RUN" == true ]] && MODPACK_FLAGS="--dry-run"
-    [[ "$VERBOSE" != true ]] && MODPACK_FLAGS="$MODPACK_FLAGS --quiet"
-
-    if MODPACK_OUT=$(bash "$MODPACK" $MODPACK_FLAGS 2>/dev/null); then
-        # JSON is on stdout (multi-line); pipe full output through jq
-        N_INSTALLED=$(echo "$MODPACK_OUT" | jq -r '.installed // .would_install | length' 2>/dev/null || echo "?")
-        N_PRESENT=$(echo "$MODPACK_OUT" | jq -r '.already_present | length' 2>/dev/null || echo "?")
-        N_FAILED=$(echo "$MODPACK_OUT" | jq -r '.failed | length' 2>/dev/null || echo "0")
-
-        N_OPTIONAL=$(echo "$MODPACK_OUT" | jq -r '.optional_available | length' 2>/dev/null || echo "0")
-
-        if [[ "$DRY_RUN" == true ]]; then
-            success "Would install ${N_INSTALLED} plugins (${N_PRESENT} already present)"
+        if echo "$MARKET_OUT" | grep -qi "already"; then
+            [[ "$DRY_RUN" != true ]] && success "Marketplace already added" || true
         else
-            success "Installed ${N_INSTALLED} new plugins (${N_PRESENT} already present)"
-            if [[ "$N_FAILED" != "0" ]] && [[ "$N_FAILED" != "null" ]]; then
-                warn "${N_FAILED} plugins failed to install"
-                echo "$MODPACK_OUT" | jq -r '.failed[]' 2>/dev/null | while read -r p; do
-                    warn "  Failed: $p"
-                done
-            fi
+            fail "Marketplace add failed:"
+            log "  $MARKET_OUT"
+            exit 1
         fi
-
-        if [[ "$N_OPTIONAL" != "0" ]] && [[ "$N_OPTIONAL" != "null" ]]; then
-            log "  ${DIM}${N_OPTIONAL} optional plugins available. Run /clavain:setup in Claude Code to browse and install them.${RESET}"
-        fi
-    else
-        warn "Modpack install had errors (continuing)"
-        [[ "$VERBOSE" == true ]] && log "  $MODPACK_OUT"
     fi
-elif [[ -n "$CLAVAIN_DIR" ]]; then
-    warn "Modpack install script not found at $MODPACK"
-    warn "Run /clavain:setup in Claude Code to install companion plugins"
-else
-    warn "Clavain install directory not found in cache"
-    warn "Run /clavain:setup in Claude Code to install companion plugins"
-fi
 
-log ""
+    # Step 1b: Update marketplace (ensures latest plugin versions)
+    log "  Updating marketplace..."
+    if run claude plugin marketplace update interagency-marketplace 2>&1; then
+        [[ "$DRY_RUN" != true ]] && success "Marketplace updated"
+    else
+        warn "Marketplace update returned non-zero (continuing with cached version)"
+    fi
+
+    # Step 2: Install Clavain
+    log "  Installing Clavain..."
+    if INSTALL_OUT=$(run claude plugin install clavain@interagency-marketplace 2>&1); then
+        [[ "$DRY_RUN" != true ]] && success "Clavain installed" || true
+    else
+        if echo "$INSTALL_OUT" | grep -qi "already"; then
+            [[ "$DRY_RUN" != true ]] && success "Clavain already installed" || true
+        else
+            fail "Clavain install failed:"
+            log "  $INSTALL_OUT"
+            exit 1
+        fi
+    fi
+
+    # Step 3: Install Interverse companion plugins
+    CLAVAIN_DIR=$(find "${CACHE_DIR}/interagency-marketplace/clavain" -name "agent-rig.json" -exec dirname {} \; 2>/dev/null | sort -V | tail -1)
+    MODPACK="${CLAVAIN_DIR}/scripts/modpack-install.sh"
+
+    if [[ -n "$CLAVAIN_DIR" ]] && [[ -f "$MODPACK" ]]; then
+        log ""
+        log "${BOLD}Installing Interverse companion plugins...${RESET}"
+        MODPACK_FLAGS=""
+        [[ "$DRY_RUN" == true ]] && MODPACK_FLAGS="--dry-run"
+        [[ "$VERBOSE" != true ]] && MODPACK_FLAGS="$MODPACK_FLAGS --quiet"
+
+        if MODPACK_OUT=$(bash "$MODPACK" $MODPACK_FLAGS 2>/dev/null); then
+            # JSON is on stdout (multi-line); pipe full output through jq
+            N_INSTALLED=$(echo "$MODPACK_OUT" | jq -r '.installed // .would_install | length' 2>/dev/null || echo "?")
+            N_PRESENT=$(echo "$MODPACK_OUT" | jq -r '.already_present | length' 2>/dev/null || echo "?")
+            N_FAILED=$(echo "$MODPACK_OUT" | jq -r '.failed | length' 2>/dev/null || echo "0")
+
+            N_OPTIONAL=$(echo "$MODPACK_OUT" | jq -r '.optional_available | length' 2>/dev/null || echo "0")
+
+            if [[ "$DRY_RUN" == true ]]; then
+                success "Would install ${N_INSTALLED} plugins (${N_PRESENT} already present)"
+            else
+                success "Installed ${N_INSTALLED} new plugins (${N_PRESENT} already present)"
+                if [[ "$N_FAILED" != "0" ]] && [[ "$N_FAILED" != "null" ]]; then
+                    warn "${N_FAILED} plugins failed to install"
+                    echo "$MODPACK_OUT" | jq -r '.failed[]' 2>/dev/null | while read -r p; do
+                        warn "  Failed: $p"
+                    done
+                fi
+            fi
+
+            if [[ "$N_OPTIONAL" != "0" ]] && [[ "$N_OPTIONAL" != "null" ]]; then
+                log "  ${DIM}${N_OPTIONAL} optional plugins available. Run /clavain:setup in Claude Code to browse and install them.${RESET}"
+            fi
+        else
+            warn "Modpack install had errors (continuing)"
+            [[ "$VERBOSE" == true ]] && log "  $MODPACK_OUT"
+        fi
+    elif [[ -n "$CLAVAIN_DIR" ]]; then
+        warn "Modpack install script not found at $MODPACK"
+        warn "Run /clavain:setup in Claude Code to install companion plugins"
+    else
+        warn "Clavain install directory not found in cache"
+        warn "Run /clavain:setup in Claude Code to install companion plugins"
+    fi
+
+    log ""
+
+fi
 
 # Step 4: Beads init (conditional)
 if [[ "$HAS_BD" == true ]] && git rev-parse --is-inside-work-tree &>/dev/null; then
@@ -417,6 +421,49 @@ else
     debug "Codex CLI not found, skipping Codex skill setup"
 fi
 
+
+# --- Gemini CLI (optional) ---
+if command -v gemini &>/dev/null; then
+    log "${BOLD}Gemini CLI detected — installing Gemini skills...${RESET}"
+    GEMINI_SOURCE=""
+    
+    if [[ -f "scripts/install-gemini-interverse.sh" ]]; then
+        GEMINI_SOURCE="."
+    elif command -v git &>/dev/null; then
+        GEMINI_CLONE_DIR="${HOME}/.local/share/Demarch"
+        if [[ -d "$GEMINI_CLONE_DIR/.git" ]]; then
+            log "  Updating Demarch checkout at $GEMINI_CLONE_DIR"
+            git -C "$GEMINI_CLONE_DIR" pull --ff-only 2>/dev/null || true
+            git -C "$GEMINI_CLONE_DIR" submodule update --init --recursive 2>/dev/null || true
+        else
+            log "  Cloning Demarch for Gemini skills..."
+            git clone --recursive https://github.com/mistakeknot/Demarch.git "$GEMINI_CLONE_DIR" 2>/dev/null || true
+        fi
+        if [[ -f "$GEMINI_CLONE_DIR/scripts/install-gemini-interverse.sh" ]]; then
+            GEMINI_SOURCE="$GEMINI_CLONE_DIR"
+        fi
+    else
+        warn "git not found. Cannot clone Demarch for Gemini skills."
+    fi
+    
+    if [[ -n "$GEMINI_SOURCE" ]]; then
+        if [[ "$DRY_RUN" == true ]]; then
+            log "  ${DIM}[DRY RUN] Would install Gemini skills via install-gemini-interverse.sh${RESET}"
+        else
+            if bash "$GEMINI_SOURCE/scripts/install-gemini-interverse.sh" install >/dev/null 2>&1; then
+                success "Gemini skills generated and linked globally"
+            else
+                warn "Gemini skill install had errors"
+            fi
+        fi
+    else
+        warn "Gemini installer not found. Run manually."
+    fi
+    log ""
+else
+    debug "Gemini CLI not found, skipping Gemini skill setup"
+fi
+
 # --- Verification ---
 log "${BOLD}Verifying installation...${RESET}"
 
@@ -461,10 +508,17 @@ if command -v codex &>/dev/null; then
     log "  Skills installed to ~/.agents/skills/ — restart Codex to load them."
     log "  Runbook: ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-codex-setup.md${RESET}"
 fi
+if command -v gemini &>/dev/null; then
+    log ""
+    log "${BOLD}Gemini CLI:${RESET}"
+    log "  Skills generated and linked to ~/.gemini/skills/ globally."
+    log "  Runbook: ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-gemini-setup.md${RESET}"
+fi
 log ""
 log "${BOLD}Guides:${RESET}"
 log "  Power user:   ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-power-user.md${RESET}"
 log "  Full setup:   ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-full-setup.md${RESET}"
 log "  Codex setup:  ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-codex-setup.md${RESET}"
+log "  Gemini setup: ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-gemini-setup.md${RESET}"
 log "  Contributing: ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-contributing.md${RESET}"
 log ""

@@ -31,6 +31,7 @@ interverse/           → companion plugins (all lowercase)
   interlearn/         → cross-repo institutional knowledge index
   interserve/         → Codex spark classifier + context compression (MCP)
   interspect/         → agent profiler — evidence, classification, routing, canary (hooks)
+  intertrust/         → agent trust scoring — reputation, decay, suppression candidates
   interstat/          → token efficiency benchmarking
   intersynth/         → multi-agent synthesis engine (verdict aggregation)
   internext/          → work prioritization + tradeoff analysis

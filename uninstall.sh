@@ -140,6 +140,33 @@ if [[ -d "$CACHE_DIR" ]] && [[ "$KEEP_MARKETPLACE" == false ]]; then
     fi
 fi
 
+# --- Gemini CLI ---
+if command -v gemini &>/dev/null; then
+    log ""
+    log "${BOLD}Uninstalling Gemini skills...${RESET}"
+    
+    GEMINI_SOURCE=""
+    if [[ -f "scripts/install-gemini-interverse.sh" ]]; then
+        GEMINI_SOURCE="."
+    elif [[ -f "${HOME}/.local/share/Demarch/scripts/install-gemini-interverse.sh" ]]; then
+        GEMINI_SOURCE="${HOME}/.local/share/Demarch"
+    fi
+    
+    if [[ -n "$GEMINI_SOURCE" ]]; then
+        if [[ "$DRY_RUN" == true ]]; then
+            log "  ${DIM}[DRY RUN] Would run bash ${GEMINI_SOURCE}/scripts/install-gemini-interverse.sh uninstall${RESET}"
+        else
+            if bash "$GEMINI_SOURCE/scripts/install-gemini-interverse.sh" uninstall >/dev/null 2>&1; then
+                success "Gemini skills uninstalled"
+            else
+                warn "Could not uninstall Gemini skills"
+            fi
+        fi
+    else
+        warn "Gemini uninstall script not found. Remove skills manually: gemini skills uninstall <skill_name> --scope user"
+    fi
+fi
+
 # --- Done ---
 log ""
 if [[ "$DRY_RUN" == true ]]; then
