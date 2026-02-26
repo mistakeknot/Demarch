@@ -3,7 +3,7 @@
 #
 # Enforce metadata and expiration on inline gitleaks waivers.
 #
-# Required format on the same line as `gitleaks:allow`:
+# Required format on the same line as the `gitleaks:allow` marker:
 #   gitleaks:allow reason=<slug> owner=<team-or-user> expires=YYYY-MM-DD
 set -euo pipefail
 
@@ -54,6 +54,9 @@ done < <(
     --glob '!vendor/**' \
     --glob '!dist/**' \
     --glob '!build/**' \
+    --glob '!**/*.md' \
+    --glob '!**/*.markdown' \
+    --glob '!scripts/validate-gitleaks-waivers.sh' \
     'gitleaks:allow'
 )
 
