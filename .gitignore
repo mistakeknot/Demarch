@@ -21,6 +21,9 @@ sdk/*
 # ── Local tool caches ──
 .tmp/
 
+# ── Interfluence local learnings log ──
+.interfluence/learnings-raw.log
+
 # ── Stale symlinks ──
 docs/docs
 
