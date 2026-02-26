@@ -37,109 +37,33 @@ Use nearest, task-scoped instruction loading instead of reading every instructio
 
 ## Directory Layout
 
-| Path | Pillar | Description |
-|------|--------|-------------|
-| `apps/autarch/` | Autarch | Swappable TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
-| `apps/intercom/` | Autarch | Multi-runtime AI assistant (Claude, Gemini, Codex) + messaging |
-| `apps/interfin/` | Autarch | Local business expense & receipt tracker CLI (Python) |
-| `os/clavain/` | Clavain | Autonomous software agency — brainstorm to ship |
-| *(housed in `os/clavain/`)* | Interspect | Adaptive profiler — evidence collection, pattern detection, routing overlays. Cross-cutting pillar; code is in Clavain's hooks/scripts, not a separate repo. |
-| `core/intercore/` | Intercore | Orchestration kernel (Go) |
-| `core/intermute/` | Intercore | Multi-agent coordination service (Go, SQLite) |
-| `core/marketplace/` | Intercore | interagency plugin marketplace registry |
-| `core/interbench/` | — | Eval harness for driver capabilities (Go CLI; tooling, not kernel) |
-| `core/agent-rig/` | Intercore | Agent configuration |
-| `core/interband/` | Intercore | Sideband protocol |
-| `interverse/intercache/` | Interverse | Cross-session semantic cache (MCP, Python) |
-| `interverse/interchart/` | Interverse | Live ecosystem diagram generator (GitHub Pages) |
-| `interverse/intercheck/` | Interverse | Code quality guards and session health monitoring (hooks) |
-| `interverse/intercraft/` | Interverse | Agent-native architecture patterns and audit |
-| `interverse/interdev/` | Interverse | MCP CLI developer tooling and tool discovery |
-| `interverse/interdoc/` | Interverse | Recursive AGENTS.md generator with cross-AI critique |
-| `interverse/interfin/` | Interverse | Expense tracker plugin companion (AI-assisted workflows for `apps/interfin/`) |
-| `interverse/interfluence/` | Interverse | Voice profile analysis and style adaptation (MCP) |
-| `interverse/interflux/` | Interverse | Multi-agent document review + research engine (MCP) |
-| `interverse/interform/` | Interverse | Design patterns and visual quality for interfaces |
-| `interverse/interject/` | Interverse | Ambient discovery and research engine (MCP, Python) |
-| `interverse/interkasten/` | Interverse | Bidirectional Notion sync with adaptive documentation (MCP) |
-| `interverse/interlearn/` | Interverse | Cross-repo institutional knowledge index |
-| `interverse/interleave/` | Interverse | Deterministic skeleton + LLM islands pattern (spec + library) |
-| `interverse/interlens/` | Interverse | Cognitive augmentation lenses (FLUX podcast) |
-| `interverse/interline/` | Interverse | Dynamic statusline for Claude Code |
-| `interverse/interlock/` | Interverse | Multi-agent file coordination via intermute (MCP) |
-| `interverse/intermap/` | Interverse | Project-level code mapping + architecture analysis (MCP) |
-| `interverse/intermem/` | Interverse | Memory management for agent sessions |
-| `interverse/intermux/` | Interverse | Agent activity visibility + tmux monitoring (MCP) |
-| `interverse/internext/` | Interverse | Work prioritization and tradeoff analysis |
-| `interverse/interpath/` | Interverse | Product artifact generator (roadmaps, PRDs, changelogs) |
-| `interverse/interpeer/` | Interverse | Cross-AI peer review (Oracle/GPT escalation) |
-| `interverse/interphase/` | Interverse | Phase tracking, gate validation, work discovery |
-| `interverse/interpub/` | Interverse | Safe plugin version bumping and publishing |
-| `interverse/interpulse/` | Interverse | Session context pressure monitoring (hooks) |
-| `interverse/intersearch/` | Interverse | Shared embedding client + Exa semantic search (used by interject, interflux) |
-| `interverse/interserve/` | Interverse | Codex spark classifier + context compression (MCP) |
-| `interverse/intership/` | Interverse | Culture ship names as spinner verbs |
-| `interverse/interskill/` | Interverse | Unified skill authoring toolkit (create + audit) |
-| `interverse/interslack/` | Interverse | Slack integration via slackcli |
-| `interverse/interstat/` | Interverse | Token efficiency benchmarking for agent workflows |
-| `interverse/intersynth/` | Interverse | Multi-agent synthesis engine (verdict aggregation) |
-| `interverse/intertest/` | Interverse | Engineering quality disciplines (TDD, debugging, verification) |
-| `interverse/intertrust/` | Interverse | Agent trust scoring — reputation, decay, suppression candidates |
-| `interverse/interwatch/` | Interverse | Doc freshness monitoring and drift detection |
-| `interverse/tldr-swinton/` | Interverse | Token-efficient code context via MCP server |
-| `interverse/tool-time/` | Interverse | Tool usage analytics for Claude Code and Codex CLI |
-| `interverse/tuivision/` | Interverse | TUI automation and visual testing via MCP server |
-| `sdk/interbase/` | Interverse | Shared integration SDK for dual-mode plugins |
-| `scripts/` | — | Cross-project scripts (interbump.sh) |
-| `docs/` | — | **Platform-level** documentation only (cross-cutting brainstorms, research, solutions) |
-| `research/` | — | Gitignored clones of external repos for research (has own AGENTS.md) |
+Each subproject has its own CLAUDE.md and AGENTS.md — read those before editing. Use `ls apps/ core/ interverse/ os/ sdk/` to discover modules.
 
-> **Docs convention:** `Demarch/docs/` is for platform-level work only. Each subproject keeps its own docs at `Demarch/{core|os|interverse|apps|sdk}/<subproject>/docs/` (e.g., `interverse/interlock/docs/`, `core/intercore/docs/`).
->
-> **Artifact naming convention:** See [`CONVENTIONS.md`](CONVENTIONS.md) for strict canonical roadmap/vision/PRD paths. Compatibility filenames are not part of the active convention.
+| Path | Pillar | Notes |
+|------|--------|-------|
+| `apps/autarch/` | Autarch | TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
+| `apps/intercom/` | Autarch | Multi-runtime AI assistant (Claude, Gemini, Codex) |
+| `os/clavain/` | Clavain | Autonomous software agency (L2 OS) |
+| `core/intercore/` | Intercore | Orchestration kernel — Go CLI `ic` (L1) |
+| `core/intermute/` | Intercore | Multi-agent coordination service (Go) |
+| `core/marketplace/` | Intercore | Plugin marketplace registry |
+| `interverse/` | Interverse | 42 companion plugins — each has own docs |
+| `sdk/interbase/` | — | Shared integration SDK (Bash/Go/Python) |
+| `docs/` | — | Platform-level docs only (brainstorms, research, solutions) |
 
-## Module Relationships
+> **Docs convention:** `Demarch/docs/` is for platform-level work only. Each subproject keeps its own docs.
+> **Artifact naming:** See [`CONVENTIONS.md`](CONVENTIONS.md) for canonical paths.
+
+## Key Dependency Chains
 
 ```
-Clavain (L2 OS) uses these Interverse drivers:
-  interphase, interline, interflux, interpath, interwatch,
-  interlock, intercraft, interdev, interform, internext, interslack
-
-Dependency chains:
-  Clavain → interlock → intermute (L1 service)
-  Clavain → interflux → intersearch (shared lib)
-  Clavain → intertrust (trust scoring for agent dispatch)
-  interject → intersearch (shared lib)
-
-interject (MCP)    ← ambient discovery engine, uses intersearch for embeddings + Exa
-intersearch (lib)  ← shared embedding client + Exa search (used by interject, interflux)
-intermute (service) ← used by interlock for file reservation + messaging
-interpub           ← used to publish all plugins
-interdoc           ← generates AGENTS.md for all projects
-interfluence       ← standalone voice profiling
-interkasten        ← standalone Notion sync
-tldr-swinton       ← standalone code context MCP
-intercache         ← cross-session semantic cache MCP
-intercheck         ← standalone code quality guards + context monitoring
-interstat          ← standalone token efficiency benchmarking
-intersynth         ← multi-agent synthesis (used by interflux)
-interpeer          ← cross-AI peer review (Oracle/GPT escalation)
-intertest          ← engineering quality disciplines (TDD, debugging)
-interlearn         ← cross-repo institutional knowledge index
-interlens          ← cognitive augmentation lenses
-intermap           ← code mapping + architecture analysis MCP
-intermux           ← agent activity visibility + tmux monitoring MCP
-interserve         ← Codex spark classifier + context compression MCP
-interchart         ← ecosystem diagram generator
-interpulse         ← session context pressure monitoring
-interskill         ← unified skill authoring toolkit
-intertrust         ← agent trust scoring (used by interflux, clavain)
-interfin           ← expense tracker plugin (companion to apps/interfin/)
-tool-time          ← standalone usage analytics
-tuivision          ← standalone TUI testing MCP
-interbase (sdk)    ← shared integration SDK for dual-mode drivers
-marketplace        ← registry for all published plugins
+Clavain (L2) → interlock → intermute (L1)    # file coordination
+Clavain (L2) → interflux → intersearch        # multi-agent review
+interject → intersearch                        # ambient discovery
+Clavain (L2) → intertrust                     # agent trust scoring
 ```
+
+Standalone plugins (no cross-deps): interfluence, interkasten, tldr-swinton, intercache, intercheck, interstat, interpeer, intertest, interlens, intermap, intermux, interserve, tool-time, tuivision.
 
 ## Bead Tracking
 
@@ -155,13 +79,6 @@ All work is tracked at the **Demarch root level** using the monorepo `.beads/` d
 The platform roadmap is at [`docs/demarch-roadmap.md`](docs/demarch-roadmap.md) with machine-readable canonical output in [`docs/roadmap.json`](docs/roadmap.json). Regenerate both with `/interpath:roadmap` from the Demarch root. Auto-generate module-level roadmaps from beads with `scripts/generate-module-roadmaps.sh` or `/interpath:propagate`.
 
 `scripts/sync-roadmap-json.sh` generates the canonical JSON rollup from the root roadmap and beads data. `scripts/generate-module-roadmaps.sh` auto-generates per-module `docs/roadmap.md` files from beads state.
-
-## Naming Convention
-
-- All module directory names are **lowercase** (hyphens allowed): `interflux`, `intermute`, `tldr-swinton`, `tool-time`
-- In prose and documentation, use **lowercase**: `interflux provides review agents`
-- Exception: **Demarch** (platform name) and the five pillar names: **Intercore**, **Clavain**, **Interverse**, **Autarch**, **Interspect**
-- GitHub repos: `github.com/mistakeknot/<lowercase-name>`
 
 ## Go Module Path Convention
 
