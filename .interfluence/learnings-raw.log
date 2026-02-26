@@ -64794,3 +64794,17 @@ NEW: 	ttlSeconds := 1800 // Default: 30 minutes
 			ttlSeconds = parsed
 		}
 	}
+
+--- 2026-02-26T05:08:31Z | interverse/interdev/.claude-plugin/plugin.json | CONTEXT:unknown ---
+OLD:   "skills": [
+    "./skills/mcp-cli",
+    "./skills/working-with-claude-code",
+    "./skills/developing-claude-code-plugins",
+    "./skills/create-agent-skills",
+    "./skills/writing-skills"
+  ]
+NEW:   "skills": [
+    "./skills/mcp-cli",
+    "./skills/working-with-claude-code",
+    "./skills/developing-claude-code-plugins"
+  ]
