@@ -1,0 +1,58 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Specification"
+    tasks:
+      - id: task-1
+        title: "Write the interface spec document"
+        files: [sdk/interbase/spec/interbase-spec.md]
+        depends: []
+
+  - name: "Core Implementations"
+    tasks:
+      - id: task-2
+        title: "Go SDK — guards + actions + config"
+        files: [sdk/interbase/go/interbase.go, sdk/interbase/go/interbase_test.go]
+        depends: []
+      - id: task-3
+        title: "Python SDK — guards + actions + config"
+        files: [sdk/interbase/python/pyproject.toml, sdk/interbase/python/interbase/guards.py, sdk/interbase/python/interbase/actions.py, sdk/interbase/python/interbase/config.py, sdk/interbase/python/interbase/nudge.py, sdk/interbase/python/interbase/__init__.py, sdk/interbase/python/tests/test_guards.py, sdk/interbase/python/tests/test_actions.py, sdk/interbase/python/tests/test_config.py]
+        depends: []
+      - id: task-6
+        title: "Expand Bash SDK config functions"
+        files: [sdk/interbase/lib/interbase.sh, sdk/interbase/templates/interbase-stub.sh, sdk/interbase/tests/test-config.sh]
+        depends: []
+
+  - name: "MCP + Conformance"
+    tasks:
+      - id: task-4
+        title: "Python MCP contracts — toolerror + mcputil"
+        files: [sdk/interbase/python/interbase/toolerror.py, sdk/interbase/python/interbase/mcputil.py, sdk/interbase/python/tests/test_toolerror.py, sdk/interbase/python/tests/test_mcputil.py]
+        depends: [task-3]
+      - id: task-5
+        title: "YAML conformance test suite + per-language runners"
+        files: [sdk/interbase/tests/conformance/guards.yaml, sdk/interbase/tests/conformance/actions.yaml, sdk/interbase/tests/conformance/config.yaml, sdk/interbase/tests/conformance/mcp.yaml, sdk/interbase/tests/runners/run_bash.sh, sdk/interbase/tests/runners/run_go.sh, sdk/interbase/tests/runners/run_python.sh, sdk/interbase/go/conformance_test.go, sdk/interbase/python/tests/test_conformance.py]
+        depends: [task-2, task-3, task-6]
+
+  - name: "Adopter Migrations"
+    tasks:
+      - id: task-7
+        title: "First adopter — intermap Go MCP server (toolerror + mcputil)"
+        files: [interverse/intermap/cmd/intermap-mcp/main.go, interverse/intermap/go.mod]
+        depends: [task-2]
+      - id: task-8
+        title: "First adopter — Python hook reference + migration guide"
+        files: [interverse/interflux/hooks/python-hook-example.py, sdk/interbase/docs/migration-guide.md]
+        depends: [task-3]
+
+  - name: "Documentation"
+    tasks:
+      - id: task-9
+        title: "Documentation + version bump to 2.0.0"
+        files: [sdk/interbase/AGENTS.md, sdk/interbase/CLAUDE.md, sdk/interbase/lib/VERSION, sdk/interbase/go/README.md]
+        depends: [task-5, task-7, task-8]
+        tier: fast
