@@ -1,0 +1,68 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Foundation"
+    tasks:
+      - id: task-1
+        title: "Add invopop/jsonschema dependency"
+        files: [core/intercore/go.mod, core/intercore/go.sum]
+        depends: []
+        tier: fast
+      - id: task-7
+        title: "Extract baseline + additive migration files"
+        files: [core/intercore/internal/db/migrations/]
+        depends: []
+
+  - name: "Core Implementation"
+    tasks:
+      - id: task-2
+        title: "Create contract type registry"
+        files: [core/intercore/contracts/registry.go, core/intercore/contracts/doc.go]
+        depends: [task-1]
+      - id: task-8
+        title: "Implement migration runner"
+        files: [core/intercore/internal/db/migrator.go, core/intercore/internal/db/migrator_test.go]
+        depends: [task-7]
+      - id: task-6
+        title: "Write contract ownership matrix"
+        files: [docs/contract-ownership.md]
+        depends: []
+
+  - name: "Generator + Tests"
+    tasks:
+      - id: task-3
+        title: "Write JSON Schema generator"
+        files: [core/intercore/contracts/generate.go, core/intercore/contracts/generate_test.go]
+        depends: [task-2]
+      - id: task-9
+        title: "Forward-migration CI tests"
+        files: [core/intercore/internal/db/migrator_test.go]
+        depends: [task-8]
+
+  - name: "Generate + CI"
+    tasks:
+      - id: task-4
+        title: "Create go generate command runner + initial snapshots"
+        files: [core/intercore/contracts/cmd/gen/main.go, core/intercore/contracts/cli/, core/intercore/contracts/events/]
+        depends: [task-3]
+      - id: task-5
+        title: "Add contract snapshot CI gate"
+        files: [core/intercore/.github/workflows/ci.yml, core/intercore/contracts/overrides/]
+        depends: [task-4]
+      - id: task-10
+        title: "Add forward-migration CI step"
+        files: [core/intercore/.github/workflows/ci.yml]
+        depends: [task-9]
+        tier: fast
+
+  - name: "Verification"
+    tasks:
+      - id: task-11
+        title: "Integration smoke test"
+        files: []
+        depends: [task-5, task-10]
+        tier: fast
