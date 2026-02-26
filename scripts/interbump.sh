@@ -13,6 +13,16 @@
 
 set -euo pipefail
 
+# --- DEPRECATION NOTICE ---
+echo ""
+echo "⚠  interbump.sh is deprecated. Use 'ic publish' instead:"
+echo "   ic publish <version>     Bump to exact version"
+echo "   ic publish --patch       Auto-increment patch"
+echo "   ic publish doctor --fix  Detect and fix drift"
+echo ""
+echo "   Continuing with legacy interbump.sh..."
+echo ""
+
 # --- Colors (TTY-aware) ---
 if [ -t 1 ]; then
     RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; CYAN='\033[0;36m'; NC='\033[0m'

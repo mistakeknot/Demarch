@@ -59,7 +59,7 @@ sdk/
 apps/
   autarch/            → TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard)
   intercom/           → multi-runtime AI assistant (Claude, Gemini, Codex) + messaging
-scripts/              → shared scripts (interbump.sh)
+scripts/              → shared scripts (interbump.sh — deprecated, use `ic publish`)
 docs/                 → shared documentation
 ```
 
@@ -87,10 +87,13 @@ Compatibility symlinks exist at `/root/projects/<name>` pointing into this monor
 
 ## Plugin Publish Policy
 
-For plugin development and release workflow (including publish gates and required completion criteria), follow root `AGENTS.md`:
-- `## Publishing`
-- `## Plugin Dev/Publish Gate`
-- `## Version Bumping (interbump)`
+Publish with `ic publish` from any plugin directory:
+- `ic publish --patch` — auto-increment patch version
+- `ic publish <version>` — bump to exact version
+- `ic publish doctor --fix` — detect and auto-repair drift
+- Auto-publish hook calls `ic publish --auto` on `git push`
+
+For publish gates and completion criteria, follow root `AGENTS.md` → `## Publishing`.
 
 ## Critical Patterns
 
