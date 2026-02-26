@@ -64940,3 +64940,22 @@ OLD: **Adopters:** interlock (middleware + helpers in all 12 tools)
 NEW: **Adopters:** interlock (middleware + helpers in all 12 MCP tool handlers)
 
 ### Test Commands
+
+--- 2026-02-26T05:12:54Z | sdk/interbase/AGENTS.md | CONTEXT:unknown ---
+OLD: ## Load Guard Pattern
+NEW: ## Adopters (Bash SDK)
+
+| Plugin | Functions used |
+|--------|---------------|
+| interflux | `ib_session_status` |
+| intermem | `ib_session_status`, `ib_nudge_companion` |
+| intersynth | `ib_session_status`, `ib_nudge_companion` |
+| interline | `ib_session_status` |
+
+All four ship `interbase-stub.sh` in their `hooks/` directory and source it from `session-start.sh`.
+
+## Load Guard Pattern
+
+--- 2026-02-26T05:12:58Z | sdk/interbase/AGENTS.md | CONTEXT:unknown ---
+OLD: interband (`infra/interband/`) provides data sharing between plugins (key-value state, channels). interbase provides code sharing (SDK functions). Both use the same resolution pattern: env override → monorepo path → home directory fallback.
+NEW: interband (`core/interband/`) provides data sharing between plugins (key-value state, channels). interbase provides code sharing (SDK functions). Both use the same resolution pattern: env override → monorepo path → home directory fallback.
