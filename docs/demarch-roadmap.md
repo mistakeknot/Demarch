@@ -75,11 +75,14 @@
 | iv-w7bh | P0 | Intermap: Project-Level Code Mapping | open |
 | iv-r6mf | P0 | [interspect] F1: routing-overrides.json schema + flux-drive reader | open |
 | iv-ho3 | P0 | StrongDM Factory Substrate — validation-first infrastructure for Clavain | open |
+| iv-b46xi | P0 | Measure north star — cost-per-landable-change baseline | open |
 | iv-t712t | P1 | First-stranger experience — README, install, clavain setup | open |
-| iv-b46xi | P1 | Measure north star — cost-per-landable-change baseline | open |
 | iv-6376 | P1 | [intercore] E9: Autarch Phase 2 — Pollard + Gurgeh migration | open |
 | iv-yfkln | P1 | [intercom] IronClaw migration completion — retire NanoClaw compatibility | in-progress |
+| iv-5muhg | P1 | Disagreement → resolution → routing signal pipeline | open |
 | iv-14g9 | P2 | TOCTOU prevention: phased dispatch coordination | open |
+| iv-toe0e | P3 | Gridfire: capability-based composition layer | open |
+| iv-fl9gg | P3 | Research: anti-Goodhart mechanisms for Interspect optimization | open |
 | iv-5jqi | P3 | [interbase] SDK roadmap — extended API, plugin author guide | open |
 | iv-6376 | P3 | [intercore] E9: Autarch Phase 2 — Pollard + Gurgeh migration | open |
 | iv-6ixw | P3 | [clavain] C5: Self-building loop — Clavain runs its own sprints | open |
@@ -91,7 +94,7 @@
 
 ### Now (P0-P1)
 
-**P0 Epics & Features (3 core items)**
+**P0 Epics & Features (4 core items)**
 
 - **iv-w7bh** [P0] [epic] Intermap: Project-Level Code Mapping
   - Hub for the intermap extraction chain. Blocks 9 downstream beads (F1-F8 + vision docs). Currently in strategized phase.
@@ -99,13 +102,15 @@
   - Unblocks the entire Interspect routing override chain (F2-F5). Required for adaptive model routing (B3 in Clavain track).
 - **iv-ho3** [P0] [feature] StrongDM Factory Substrate — validation-first infrastructure for Clavain
   - New epic establishing validation-first infrastructure. Blocks 9 downstream items (CXDB-lite, scenario bank, Gurgeh/Coldwine integration).
+- **iv-b46xi** [P0] [epic] Measure north star — cost-per-landable-change baseline
+  - After 1,822 closed beads, no baseline exists for token spend, wall-clock time, or review quality per shipped change. Promoted from P1: the philosophy says "instrument first, optimize later" and the flywheel can't compound without evidence.
 
 **P1 Epics & Features (5 core items)**
 
 - **iv-t712t** [P1] [epic] First-stranger experience — README, install, clavain setup
-  - No outside user has ever run this. No validated getting-started flow for any pillar.
-- **iv-b46xi** [P1] [epic] Measure north star — cost-per-landable-change baseline
-  - After 1,822 closed beads, no baseline exists for token spend, wall-clock time, or review quality per shipped change.
+  - No outside user has ever run this. Split scope: docs/README are P0-urgent (low effort, high signal); validated interactive flow stays P1.
+- **iv-5muhg** [P1] [feature] Disagreement → resolution → routing signal pipeline
+  - Wire the structured disagreement capture loop from PHILOSOPHY.md: disagreement at T, human resolution at T+1, routing signal at T+2. Depends on Interspect routing overrides (iv-r6mf).
 - **iv-zsio** [P1] [feature] [clavain/interphase] Integrate full discovery pipeline into sprint workflow
   - Discovery stage vision (multi-source scoring/confidence tiers) described in clavain-vision.md; current Discover path is a shim.
 - **iv-6376** [P1] [epic] [intercore] E9: Autarch Phase 2 — Pollard + Gurgeh migration
@@ -209,8 +214,13 @@ The IronClaw migration epic (iv-yfkln) is actively in-progress with 6 sub-beads:
 - [interspect] **iv-2o6c** F4: status display + revert for routing overrides (blocked by iv-gkj9)
 - [interspect] **iv-6liz** F5: manual routing override support (blocked by iv-r6mf)
 
+**Disagreement Signal Pipeline** (downstream of iv-r6mf)
+
+- **iv-5muhg** Disagreement → resolution → routing signal pipeline (blocked by iv-r6mf)
+
 **Interspect Safety, Evaluation & Learning**
 
+- [interspect] **iv-fl9gg** Research: anti-Goodhart mechanisms for Interspect optimization
 - [interspect] **iv-5su3** Autonomous mode flag
 - [interspect] **iv-c2b4** /interspect:disable command
 - [interspect] **iv-g0to** /interspect:reset command
@@ -324,6 +334,8 @@ The IronClaw migration epic (iv-yfkln) is actively in-progress with 6 sub-beads:
 
 **P3 Themes** (279 items across these areas):
 
+**Gridfire Composition Layer** -- iv-toe0e epic placeholder. Capability-based composition layer with 7 primitives (Flow, Action, Receipt, Gate, Controller, Capability, RunGraph). Strangler-fig migration from Intercore primitives. Deny-by-default security model. May become a pillar. Not actionable until Intercore E-series matures. See `docs/brainstorms/2026-02-27-gridfire-brainstorm.md`.
+
 **Clavain Self-Building Loop** -- C4 cross-phase handoff protocol, C5 self-building loop where Clavain runs its own development sprints (blocked by iv-asfy -> iv-lx00 -> iv-1vny + iv-240m). Agency specs must land first.
 
 **Intercore E-Series** -- E9 Autarch Phase 2 (Pollard + Gurgeh migration, now P1, unblocked), E10 Sandboxing + Autarch Phase 3 (Coldwine, P4, blocked by E9). Write-path namespace validation and auditing. Sequential chain gating next-generation Autarch.
@@ -424,8 +436,8 @@ Eleven new plugins extracted from existing modules to maintain single-responsibi
 
 ## Research Agenda
 
-- **P0 Sprint Targets** -- Intermap extraction epic (iv-w7bh) for project-level code mapping; Interspect routing overrides (iv-r6mf) to activate adaptive model routing; StrongDM Factory Substrate (iv-ho3) for validation-first Clavain infrastructure
-- **P1 Sprint Targets** -- First-stranger experience (iv-t712t) for external adoptability; North star metric (iv-b46xi) to establish cost-per-landable-change baseline; Discovery OS integration (iv-zsio) to close research->backlog loop; E9 Autarch Phase 2 (iv-6376); IronClaw migration completion (iv-yfkln)
+- **P0 Sprint Targets** -- Intermap extraction epic (iv-w7bh) for project-level code mapping; Interspect routing overrides (iv-r6mf) to activate adaptive model routing; StrongDM Factory Substrate (iv-ho3) for validation-first Clavain infrastructure; North star metric (iv-b46xi) to establish cost-per-landable-change baseline (promoted: "instrument first, optimize later")
+- **P1 Sprint Targets** -- First-stranger experience (iv-t712t, docs P0/flow P1) for external adoptability; Disagreement signal pipeline (iv-5muhg) to wire the highest-value learning signal; Discovery OS integration (iv-zsio) to close research->backlog loop; E9 Autarch Phase 2 (iv-6376); IronClaw migration completion (iv-yfkln)
 - **Kernel E-Series Completion** -- E9 Autarch Phase 2 (Pollard + Gurgeh migration) is the next kernel epic, now P1 and unblocked
 - **Event-Driven Phase Advancement** -- Wire phase transitions through event-emitting action system; `ic run advance` returns resolved next-command(s) via `phase_actions` table
 - **Multi-Session File Coordination** -- Git-index-per-session + flock-serialized commits, mandatory file reservations on edit, session registration in sprint flow

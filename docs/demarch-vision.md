@@ -250,14 +250,13 @@ As of February 2026:
 
 ## What's Next
 
-Five P0 priorities driving the next phase, plus three parallel tracks converging toward a self-building agency with adaptive model routing and fleet-optimized dispatch:
+Four P0 priorities driving the next phase, plus three parallel tracks converging toward a self-building agency with adaptive model routing and fleet-optimized dispatch:
 
 **P0 Priorities:**
-- **Agency specs** (iv-asfy) — Declarative per-stage agent/model/tool configuration. Unblocks the entire Track C agency architecture chain (C2-C5).
-- **North star metric** (iv-b46xi) — Establish cost-per-landable-change baseline. After 1,748 closed beads, no baseline exists for token spend, wall-clock time, or review quality per shipped change.
-- **Interspect routing overrides** (iv-sksfx) — The routing override chain (F1-F5) that activates adaptive model routing. The flywheel cannot turn without this.
-- **First-stranger experience** (iv-t712t) — No outside user has ever run this. Validated getting-started flow for all pillars.
-- **Discovery OS integration** (iv-wie5i) — Kernel discovery primitives shipped; interject has adapters; but event-driven scan triggers and automated triage are not yet wired into the sprint workflow.
+- **Intermap** (iv-w7bh) — Project-level code mapping. Hub for the extraction chain, blocks 9 downstream beads.
+- **Interspect routing overrides** (iv-r6mf) — The routing override chain (F1-F5) that activates adaptive model routing. The flywheel cannot turn without this.
+- **StrongDM Factory Substrate** (iv-ho3) — Validation-first infrastructure for Clavain. Blocks 9 downstream items.
+- **North star metric** (iv-b46xi) — Establish cost-per-landable-change baseline. The philosophy says "instrument first, optimize later" — the flywheel can't compound without evidence.
 
 **Track A: Kernel integration.** Done. Sprint is fully kernel-driven.
 
