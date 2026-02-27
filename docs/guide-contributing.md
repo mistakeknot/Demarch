@@ -20,7 +20,7 @@ Each subproject (`os/clavain`, `interverse/interflux`, `core/intermute`, etc.) k
 
 ```
 os/clavain/           # Self-improving agent rig (L2)
-interverse/           # 33+ companion plugins (L2-L3)
+interverse/           # Companion plugins (L2-L3)
 core/
   intercore/          # Orchestration kernel (L1)
   intermute/          # Multi-agent coordination service (L1)

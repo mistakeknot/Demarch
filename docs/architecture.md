@@ -10,7 +10,7 @@ Demarch is built from five pillars — major components that together form the p
 |--------|------|
 | **Intercore** | Orchestration kernel — the durable system of record |
 | **Clavain** | Agent OS — workflow policy and the reference agency |
-| **Interverse** | 33+ companion plugins, each independently valuable |
+| **Interverse** | Companion plugins, each independently valuable (`ls interverse/ \| wc -l`) |
 | **Autarch** | Application layer — TUI surfaces for kernel state |
 | **Interspect** | Adaptive profiler — the learning loop |
 

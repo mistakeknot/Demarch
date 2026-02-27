@@ -12,7 +12,7 @@ Demarch's top-level organizational units. Each pillar has a clear owner and boun
 |--------|------|-------|
 | **Intercore** | Orchestration kernel — durable system of record | L1 (Kernel) |
 | **Clavain** | Agent OS — workflow policy, reference agency | L2 (OS) |
-| **Interverse** | 33+ companion plugins, each independently valuable | L2 (Drivers) |
+| **Interverse** | Companion plugins, each independently valuable (`ls interverse/ \| wc -l`) | L2 (Drivers) |
 | **Autarch** | TUI surfaces — Bigend, Gurgeh, Coldwine, Pollard | L3 (Apps) |
 | **Interspect** | Adaptive profiler — the learning loop | Cross-cutting |
 

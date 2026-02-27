@@ -47,7 +47,7 @@ Each subproject has its own CLAUDE.md and AGENTS.md — read those before editin
 | `core/intercore/` | Intercore | Orchestration kernel — Go CLI `ic` (L1) |
 | `core/intermute/` | Intercore | Multi-agent coordination service (Go) |
 | `core/marketplace/` | Intercore | Plugin marketplace registry |
-| `interverse/` | Interverse | 42 companion plugins — each has own docs |
+| `interverse/` | Interverse | Companion plugins — each has own docs (`ls interverse/ \| wc -l`) |
 | `sdk/interbase/` | — | Shared integration SDK (Bash/Go/Python) |
 | `docs/` | — | Platform-level docs only (brainstorms, research, solutions) |
 
@@ -79,16 +79,11 @@ All work is tracked at the **Demarch root level** using the monorepo `.beads/` d
 Beads use a two-dimensional label system. Backfill/apply with `scripts/backfill-bead-labels.py`.
 
 **Module labels** (`mod:<name>`) — which pillar/subproject the bead belongs to:
-```
-mod:clavain  mod:intercore  mod:intermute  mod:autarch  mod:intercom
-mod:interspect  mod:interverse  mod:interflux  mod:interkasten
-mod:interlock  mod:intermap  mod:interpath  mod:interwatch
-mod:interject  mod:intermem  mod:interbase  mod:intercache
-mod:interform  mod:interline  mod:interpeer  mod:intersearch
-mod:interpub  mod:interphase  mod:interdev  mod:interserve
-mod:interdoc  mod:intership  mod:internext  mod:intertest
-mod:interslack  mod:interlens  mod:intermux  mod:interfluence
-mod:intersynth  mod:intercraft  mod:demarch  mod:tldrs
+```bash
+# Generate current list:
+(echo "mod:clavain mod:demarch mod:autarch mod:intercom mod:interspect mod:tldrs"; \
+ ls -d interverse/inter* core/inter* sdk/inter* 2>/dev/null | xargs -I{} basename {} | sed 's/^/mod:/') \
+ | tr ' ' '\n' | sort | paste -d'  ' - - - - -
 ```
 
 **Theme labels** (`theme:<name>`) — what kind of work:
@@ -144,6 +139,26 @@ Required tools (all pre-installed on this server):
 - `INTERKASTEN_NOTION_TOKEN` — Notion API token for interkasten sync
 - `EXA_API_KEY` — Exa search API for interject and interflux research agents
 - `SLACK_TOKEN` — Slack API for interslack
+
+## Design Doctrine
+
+### Brainstorming
+1. Start from outcomes and failure modes, not implementation details.
+2. Generate at least three options: conservative, balanced, and aggressive.
+3. Explicitly call out assumptions, unknowns, and dependency risk across modules.
+4. Prefer ideas that improve clarity, reversibility, and operational visibility.
+
+### Planning
+1. Convert selected direction into small, testable, reversible slices.
+2. Define acceptance criteria, verification steps, and rollback path for each slice.
+3. Sequence dependencies explicitly and keep integration contracts narrow.
+4. Reserve optimization work until correctness and reliability are proven.
+
+### Decision Filters
+- Does this reduce ambiguity for future sessions?
+- Does this improve reliability without inflating cognitive load?
+- Is the change observable, measurable, and easy to verify?
+- Can we revert safely if assumptions fail?
 
 ## Development Workflow
 

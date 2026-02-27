@@ -348,7 +348,7 @@ Detailed status for modules with substantive strategic context. All other module
 
 ### clavain (os/clavain)
 
-v0.6.106 -- Autonomous software agency -- 16 skills, 4 agents, 53 commands, 22 hooks, 1 MCP server. 35 companion plugins. Sprint consolidation chain (iv-hks2) closed 2026-02-23: `/route -> /sprint -> /work` unified into adaptive single-entry workflow.
+Autonomous software agency. Sprint consolidation chain (iv-hks2) closed 2026-02-23: `/route -> /sprint -> /work` unified into adaptive single-entry workflow. For current version and stats: `grep '"version"' os/clavain/plugin.json`.
 
 **What's Working:** Full product lifecycle (Discover -> Design -> Build -> Ship), three-layer architecture (Kernel/OS/Drivers), multi-agent review engine (interflux), phase-gated `/sprint` pipeline, cross-AI peer review via Oracle, parallel Codex dispatch, 165 structural tests, multi-agent file coordination (interlock), signal-based drift detection (interwatch), Interspect analytics, Intercore kernel as durable state.
 

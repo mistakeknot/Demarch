@@ -22,7 +22,7 @@ The whole thing is open source.
 
 LLM-based agents have a fundamental problem: nothing survives. Context windows compress. Sessions end. Networks drop. Processes crash. An agent that ran for an hour, produced three artifacts, dispatched two sub-agents, and advanced through four workflow phases leaves behind... a chat transcript. The state, the decisions, the evidence, the coordination signals: gone. Not a prompting problem. An infrastructure problem. And most agent systems today handle it with temp files, environment variables, in-memory state, and hope.
 
-Demarch handles it with a durable kernel (SQLite-backed Go CLI), an opinionated OS that encodes development discipline, a profiler that learns from outcomes, and 42 companion drivers. But the infrastructure is not the aspiration.
+Demarch handles it with a durable kernel (SQLite-backed Go CLI), an opinionated OS that encodes development discipline, a profiler that learns from outcomes, and a constellation of companion drivers. But the infrastructure is not the aspiration.
 
 The bet: if you build the right infrastructure beneath agents, they become capable of the full development lifecycle. Not just code generation, but discovery, design, review, testing, shipping, and compounding what was learned. And if you build a learning loop on top of that infrastructure, one that measures outcomes per dollar and feeds that signal back into model routing, agent selection, and gate calibration, you get a system where autonomy, quality, and efficiency aren't tradeoffs. They're a flywheel. More autonomy produces more outcome data. More outcome data improves routing and review. Better routing cuts cost. Lower cost enables more autonomy. The system that runs the most sprints learns the fastest.
 
@@ -40,7 +40,7 @@ Layer 3: Apps (Autarch + Intercom)
 
 Layer 2: OS (Clavain) + Drivers (Companion Plugins)
 ├── The opinionated workflow — phases, gates, model routing, dispatch
-├── 42 companion plugins, each wrapping one capability
+├── Companion plugins, each wrapping one capability (`ls interverse/ | wc -l`)
 ├── Every driver independently installable and useful standalone
 └── If the host platform changes, opinions survive; UX adapters are rewritten
 
@@ -236,13 +236,13 @@ Revenue, when it matters, comes from managed hosting, enterprise support, and pr
 As of February 2026:
 
 - **Kernel:** 8 of 10 epics shipped (E1-E8). Runs, phases, gates, dispatches, events, discovery pipeline, rollback, portfolio orchestration, TOCTOU prevention, cost-aware scheduling, fair spawn scheduler, sandbox specs. All landed and tested. Remaining: E9 (Autarch Phase 2 — Pollard + Gurgeh migration) and E10 (Sandboxing + Autarch Phase 3).
-- **OS:** Version 0.6.106. 16 skills, 4 agents, 53 commands, 22 hooks, 1 MCP server. Full sprint lifecycle (brainstorm → ship) is kernel-driven. Sprint consolidation complete (`/route → /sprint → /work` unified into adaptive single-entry workflow).
+- **OS:** Full sprint lifecycle (brainstorm → ship) is kernel-driven. Sprint consolidation complete (`/route → /sprint → /work` unified into adaptive single-entry workflow). For current stats: `grep -c '^##' os/clavain/skills/*/SKILL.md` (skills), `ls os/clavain/agents/` (agents).
 - **Model routing:** Static routing and complexity-aware routing (C1-C5) shipped. Adaptive routing (B3) is the next frontier, blocked on Interspect routing overrides.
 - **Review engine:** 12 specialized review agents + 5 research agents, deployed through interflux with multi-agent synthesis. Capability declarations shipped. Interoperability benchmark harness completed.
-- **Ecosystem:** 42 companion plugins shipped, each independently installable. 11 new plugins extracted (2026-02-25) from Clavain, interflux, and interkasten to maintain single-responsibility. 53 total modules across the monorepo.
+- **Ecosystem:** Companion plugins shipped, each independently installable (`ls interverse/ | wc -l`). 11 new plugins extracted (2026-02-25) from Clavain, interflux, and interkasten to maintain single-responsibility. Total modules: `find apps os core interverse sdk -maxdepth 2 -name .git -printf '%h\n' 2>/dev/null | wc -l`.
 - **Apps:** Autarch TUI (Bigend monitoring with inline mode, Gurgeh PRD generation, Coldwine task orchestration, Pollard research). Intercom multi-runtime AI assistant bridging Claude, Gemini, and Codex (v1.1.0).
 - **Profiler:** Evidence collection shipped (override tracking, false positive rates, finding density). Routing override chain (F1-F5) is the P0 frontier for activating the adaptive routing flywheel.
-- **Self-building:** 2,147+ beads tracked (1,748 closed, 384 open). The system has been building itself for months.
+- **Self-building:** The system has been building itself for months. Current bead counts: `bd stats`.
 
 ## What's Next
 
@@ -287,7 +287,7 @@ Track A (Kernel)      Track B (Routing)     Track C (Agency)
 
 Demarch (from Alastair Reynolds' Democratic Anarchists, reflecting the continuous polling and consensus-driven architecture of the system). Clavain is a protagonist from the same series. The inter-\* naming convention describes what each component does: the space *between* things. Interverse is the universe that contains them all.
 
-The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous software development agency platform with five pillars and 53 modules.
+The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous software development agency platform with five pillars. Current module count: `find apps os core interverse sdk -maxdepth 2 -name .git -printf '%h\n' 2>/dev/null | wc -l`.
 
 ---
 

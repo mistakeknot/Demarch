@@ -1,6 +1,6 @@
 # Demarch
 
-Monorepo for the Demarch open-source autonomous software development agency platform. **Interverse** (`/interverse`) is the ecosystem of 42 Claude Code companion plugins.
+Monorepo for the Demarch open-source autonomous software development agency platform. **Interverse** (`/interverse`) is the companion plugin ecosystem (`ls interverse/ | wc -l` for current count).
 
 ## Structure
 

@@ -6,7 +6,7 @@ Demarch is the platform behind [Clavain](https://github.com/mistakeknot/Clavain)
 
 ## Quick start
 
-Install Clavain and 30+ companion plugins in one command:
+Install Clavain and the full companion plugin ecosystem in one command:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mistakeknot/Demarch/main/install.sh | bash
@@ -23,7 +23,7 @@ Then open Claude Code and run:
 ## What you get
 
 - **Clavain**: the agent rig (brainstorm → strategy → plan → execute → review → ship)
-- **33+ companion plugins**: multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing (the inter-* constellation, because naming things is hard)
+- **Companion plugins**: multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing (the inter-* constellation, because naming things is hard)
 - **Multi-model orchestration**: Claude does the heavy lifting, Codex runs parallel tasks, GPT-5.2 Pro provides a second opinion via Oracle
 - **Sprint management**: track work with Beads, auto-discover what to work on next
 
@@ -55,8 +55,8 @@ Demarch is a monorepo with 5 pillars:
 |--------|-------|-------------|
 | [Intercore](https://github.com/mistakeknot/intercore) | L1 (Core) | Orchestration kernel: runs, dispatches, gates, events |
 | [Intermute](https://github.com/mistakeknot/intermute) | L1 (Core) | Multi-agent coordination service (Go) |
-| [Clavain](https://github.com/mistakeknot/Clavain) | L2 (OS) | Self-improving agent rig: 16 skills, 55 commands |
-| [Interverse](https://github.com/mistakeknot/interagency-marketplace) | L2-L3 | 33+ companion plugins |
+| [Clavain](https://github.com/mistakeknot/Clavain) | L2 (OS) | Self-improving agent rig |
+| [Interverse](https://github.com/mistakeknot/interagency-marketplace) | L2-L3 | Companion plugins (`ls interverse/ \| wc -l`) |
 | [Autarch](https://github.com/mistakeknot/Autarch) | L3 (Apps) | TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
 
 Additional infrastructure: [marketplace](https://github.com/mistakeknot/interagency-marketplace), [agent-rig](https://github.com/mistakeknot/agent-rig), [interbench](https://github.com/mistakeknot/interbench), [interband](https://github.com/mistakeknot/interband), [interbase](https://github.com/mistakeknot/interbase).
