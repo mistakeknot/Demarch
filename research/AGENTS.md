@@ -2,15 +2,23 @@
 
 Gitignored clones of external repos for inspiration and bootstrapping Demarch components.
 
-## Contents
+## Repository Index
 
-| Directory | Source | Purpose |
-|-----------|--------|---------|
-| `mcp_agent_mail` | [Dicklesworthstone/mcp_agent_mail](https://github.com/Dicklesworthstone/mcp_agent_mail) | Multi-agent coordination protocol reference |
-| `frankentui` | — | TUI research |
-| `nanoclaw` | — | Agent runner research |
-| `ntm` | — | — |
-| `openclaw` | — | — |
+`AGENTS.md` is policy-only. The live clone inventory is generated at:
+
+- `research/REPO_INDEX.md`
+
+Regenerate from Demarch root:
+
+```bash
+bash scripts/sync-research-index.sh
+```
+
+Optional owner override:
+
+```bash
+bash scripts/sync-research-index.sh <github-owner>
+```
 
 ## Usage
 
@@ -43,17 +51,15 @@ When researching a clone, look for:
 
 ### Mapping to Demarch
 
-Always connect findings back to specific Demarch components. The table below maps research repos to their primary Demarch targets:
+Always connect findings back to specific Demarch components. Seed mappings:
 
 | Research Repo | Primary Demarch Target | What to Look For |
 |---------------|----------------------|------------------|
 | `mcp_agent_mail` | `interlock`, `intermute`, `mcp-agent-mail` MCP server | Coordination protocol, message routing, agent identity, file reservation |
 | `frankentui` | `apps/autarch` | TUI layout, rendering patterns |
 | `nanoclaw` | `apps/intercom` | Agent runner architecture |
-| `ntm` | — | — |
-| `openclaw` | — | — |
 
-When a clone doesn't have a mapping yet, add one when the research purpose becomes clear.
+Use research output docs to capture additional mappings as they emerge.
 
 ### Research Output
 

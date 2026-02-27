@@ -55,3 +55,4 @@ docs/reports/security/secret-scan-backfill-*.md
 # ── Research clones (not part of monorepo) ──
 research/*
 !research/AGENTS.md
+!research/REPO_INDEX.md
