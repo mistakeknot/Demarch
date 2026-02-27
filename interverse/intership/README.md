@@ -1,8 +1,10 @@
 # intership
 
+<img width="324" height="179" alt="image" src="https://github.com/user-attachments/assets/1f4853e8-d4f4-4de7-b1ae-763d42df343b" />
+
 Culture ship names as Claude Code spinner verbs. Because why would you settle for "Thinking..." when you could have *Experiencing A Significant Gravitas Shortfall*?
 
-237 curated names: 56 canonical Banks originals from the Culture novels, plus 181 generated Banksian originals refined through six rounds of editorial culling.
+237 curated names: 56 canonical Banks originals from [the Culture series](https://en.wikipedia.org/wiki/Culture_series), plus 181 generated Banksian originals refined through six rounds of editorial culling.
 
 ## Install
 
@@ -50,4 +52,7 @@ Configuration lives in `data/config.json`:
 
 ## Source novels
 
-The canonical names come from: Consider Phlebas, The Player of Games, Use of Weapons, Excession, Look to Windward, Matter, Surface Detail, and The Hydrogen Sonata.
+The canonical names come from: [Consider Phlebas](https://en.wikipedia.org/wiki/Consider_Phlebas), [The Player of Games](https://en.wikipedia.org/wiki/The_Player_of_Games), [Use of Weapons](https://en.wikipedia.org/wiki/Use_of_Weapons), [Excession](https://en.wikipedia.org/wiki/Excession), [Look to Windward](https://en.wikipedia.org/wiki/Look_to_Windward), [Matter](https://en.wikipedia.org/wiki/Matter_(novel)), [Surface Detail](https://en.wikipedia.org/wiki/Surface_Detail), and [The Hydrogen Sonata](https://en.wikipedia.org/wiki/The_Hydrogen_Sonata).
+
+## To Iain
+I hope you're having a wonderful time in the Land of Infinite Fun. We all miss you very much.
