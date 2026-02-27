@@ -1,0 +1,54 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Foundation"
+    tasks:
+      - id: task-1
+        title: "Create synthesize-documents agent"
+        files: [interverse/intersynth/agents/synthesize-documents.md]
+        depends: []
+      - id: task-5
+        title: "Create missing SKILL-compact.md files"
+        files: [os/clavain/skills/*/SKILL-compact.md, interverse/*/skills/*/SKILL-compact.md]
+        depends: []
+      - id: task-6
+        title: "Add synthesized_into frontmatter convention"
+        files: [interverse/interflux/agents/research/learnings-researcher.md, docs/solutions/INDEX.md]
+        depends: []
+
+  - name: "Command & Registration"
+    tasks:
+      - id: task-2
+        title: "Create /distill command"
+        files: [os/clavain/commands/distill.md]
+        depends: [task-1]
+      - id: task-7
+        title: "Wire interwatch distillation detection"
+        files: [interverse/interwatch/config/watchables.yaml]
+        depends: [task-6]
+        tier: fast
+
+  - name: "Integration"
+    tasks:
+      - id: task-3
+        title: "Register /distill in plugin manifest"
+        files: [os/clavain/.claude-plugin/plugin.json]
+        depends: [task-2]
+        tier: fast
+      - id: task-4
+        title: "Update AGENTS.md and CLAUDE.md counts"
+        files: [os/clavain/CLAUDE.md, os/clavain/AGENTS.md]
+        depends: [task-3]
+        tier: fast
+
+  - name: "Verification"
+    tasks:
+      - id: task-8
+        title: "Integration test — end-to-end dry run"
+        files: []
+        depends: [task-4, task-5, task-7]
+        tier: fast
