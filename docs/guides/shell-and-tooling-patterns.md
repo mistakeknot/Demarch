@@ -74,18 +74,19 @@ read_data() { [[ -f "$FILE" ]] && cat "$FILE" || echo "{}"; }
 grep -rn '|| echo ""' hooks/lib-*.sh | grep -v '#'
 ```
 
-## Beads Sync Modes
+## Beads Sync Commands (0.51+)
 
-`bd sync --from-main` is for ephemeral branches only. For trunk-based development (our workflow), use plain `bd sync`.
+Beads `0.51+` changed sync semantics: `bd sync` is now deprecated compatibility behavior and does not perform legacy git sync.
 
 | Command | Use Case | What It Does |
 |---------|----------|-------------|
-| `bd sync` | Trunk-based (main branch) | Export DB → JSONL |
-| `bd sync --import` | After `git pull` | Import JSONL → DB |
-| `bd sync --from-main` | Ephemeral branches only | Pull beads from main branch |
-| `bd sync --full` | Legacy full sync | Pull → merge → export → commit → push |
+| `bd sync` | Compatibility step in older workflows | No-op (deprecated) |
+| `bd export` | Write JSONL snapshot from DB | Export DB → JSONL |
+| `bd import` | Rehydrate DB from JSONL | Import JSONL → DB |
+| `bd dolt pull` | Pull tracker changes from Dolt remote | Dolt remote pull |
+| `bd dolt push` | Publish tracker changes to Dolt remote | Dolt remote push |
 
-**Common mistake:** `bd sync --from-main` fails with "no git remote configured" on main — this is correct behavior, not a bug. Use `bd sync` instead.
+`bd sync --from-main`, `bd sync --status`, and other legacy sync flags should be treated as obsolete.
 
 ## Hook Input/Output Contract
 

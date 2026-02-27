@@ -65,7 +65,7 @@ Clavain's sprint is a disciplined lifecycle that ensures you think before you co
 
 ### Beads (issue tracking)
 
-Beads is a lightweight, git-native issue tracker. It stores issues alongside your code and syncs via git.
+Beads is a lightweight, repo-native issue tracker. It stores issues alongside your code and uses Dolt/JSONL sync workflows.
 
 ```bash
 bd create --title="Add user auth" --type=feature --priority=2   # Create
@@ -73,7 +73,7 @@ bd ready                                                          # What's ready
 bd list --status=open                                            # All open issues
 bd show iv-abc1                                                  # Issue details
 bd close iv-abc1                                                 # Mark done
-bd sync                                                          # Push to remote
+bd sync                                                          # Compatibility no-op on 0.51+ (legacy workflow step)
 ```
 
 Beads integrates deeply with Clavain: sprints track against beads, discovery scans beads for work, and phase transitions record on beads automatically.
