@@ -54,7 +54,7 @@ Cross-cutting: Profiler (Interspect)
 ├── Reads kernel events, correlates with human corrections
 ├── Proposes changes to OS configuration (routing, agent selection, gates)
 ├── The learning loop — the thing that makes the system improve over time
-└── Never modifies the kernel — only the OS layer
+└── Today: modifies only the OS layer. The kernel boundary softens as trust is earned.
 ```
 
 The survival properties are the point. Each layer can be replaced, rewritten, or removed without destroying the layers beneath it. The kernel outlives the OS. The OS outlives its host platform. The apps outlive any particular rendering choice. Practical architecture for a system that must survive the agent platform wars. Not paranoia, just planning.
@@ -65,7 +65,7 @@ The survival properties are the point. Each layer can be replaced, rewritten, or
 
 **The OS (Clavain)** provides policy. Which phases make up a development sprint, what conditions must be met at each gate, which model to route each agent to, when to advance automatically. Clavain orchestrates the full lifecycle from problem discovery through shipped code. It's opinionated about what "good" looks like at every phase, and those opinions are encoded in gates, review agents, and quality disciplines. Today it ships as a Claude Code plugin; the architecture is designed so the opinions survive even if the host platform doesn't.
 
-**The profiler (Interspect)** provides learning. It reads the kernel's event stream, correlates dispatch outcomes with both human signals (review dismissals, gate overrides, manual corrections) and automated signals (CI results, revert frequency, finding density), and proposes changes to OS configuration. The signal mix shifts as autonomy increases: human-heavy at L0-L2, automated-heavy at L3-L4. Static orchestration is table stakes; a system that improves its own agents through evidence rather than intuition is what makes Demarch different. Interspect never touches the kernel. It modifies the OS layer through safe, reversible overlays. (Full signal taxonomy in the [Interspect vision](./interspect-vision.md).)
+**The profiler (Interspect)** provides learning. It reads the kernel's event stream, correlates dispatch outcomes with both human signals (review dismissals, gate overrides, manual corrections) and automated signals (CI results, revert frequency, finding density), and proposes changes to OS configuration. The signal mix shifts as autonomy increases: human-heavy at L0-L2, automated-heavy at L3-L4. Static orchestration is table stakes; a system that improves its own agents through evidence rather than intuition is what makes Demarch different. Today, Interspect modifies only the OS layer through safe, reversible overlays. The kernel boundary is a trust threshold that softens as evidence accumulates (see PHILOSOPHY.md § Earned Authority), but the current operating level restricts Interspect to OS-level changes. (Full signal taxonomy in the [Interspect vision](./interspect-vision.md).)
 
 **The drivers (companion plugins)** provide capabilities. Multi-agent review (interflux), file coordination (interlock), ambient research (interject), token-efficient code context (tldr-swinton), agent visibility (intermux), multi-agent synthesis (intersynth), shared embedding infrastructure (intersearch), cross-session semantic caching (intercache), agent trust scoring (intertrust), knowledge compounding (interknow), and three dozen more. Each wraps one capability and integrates with kernel primitives when present. Every driver is independently installable, usable in vanilla Claude Code without Clavain, Intercore, or any other Demarch module. Without the kernel, drivers use local or ephemeral state; with it, they get durability, coordination, and event history. The full stack provides enhanced integration, but each driver is valuable on its own.
 
@@ -115,9 +115,9 @@ Agents are cheap. Human focus is scarce. The system optimizes for the human's ti
 
 The human drives strategy (what to build, which tradeoffs to accept, when to ship) while the agency drives execution (which model, which agents, what sequence, when to advance, what to review). The human is above the loop, not in it. The autonomy ladder below tracks how this plays out as intervention frequency decreases.
 
-### 6. Discipline before speed
+### 6. Gates enable velocity
 
-Quality gates matter more than velocity. Agents without discipline ship slop. The system resolves all open questions before execution because ambiguity costs more during building than during planning. The review phases are not overhead; they are the product.
+Quality gates are not the opposite of speed — they are the mechanism that makes speed safe. The goal isn't more review; it's faster shipping with fewer regressions. If review phases slow you down more than they catch bugs, the gates are miscalibrated. Match rigor to risk.
 
 Gates are kernel-enforced invariants, not prompt suggestions. An agent cannot bypass a gate regardless of what the LLM requests. This is the difference between "please check for a plan artifact" and "the system will not advance without a plan artifact." The kernel enforces gates for transitions matching its gate rules map; the OS provides additional gates (via agency specs) for OS-specific phases. Both layers contribute to enforcement; neither alone covers the full chain.
 
@@ -163,7 +163,9 @@ Each macro-stage produces typed artifacts that become the next stage's input. Th
 
 ## The Autonomy Ladder
 
-How much human intervention does a single sprint require? The ladder tracks this one dimension. The human's role is fixed at every level (set objectives, make tradeoffs, approve deployments); what changes is how often they need to exercise it.
+How much human intervention does a single sprint require? This ladder tracks *system capability* — what the platform can do at each level. A separate *human delegation* ladder (see PHILOSOPHY.md § Earned Authority) tracks the progressive trust relationship: how much authority the human delegates to agents, from approving every action (L0) through setting policy (L3) to agents proposing mechanism changes (L5). The two ladders are orthogonal: a system at capability Level 2 might have a human operating at delegation Level 1 or Level 2, depending on earned trust.
+
+The human's role is fixed at every level (set objectives, make tradeoffs, approve deployments); what changes is how often they need to exercise it.
 
 **Level 0: Record.** The kernel records what happened. Runs, phases, dispatches, artifacts, all tracked. The human drives everything. The kernel is a logbook. *(Shipped.)*
 
@@ -208,6 +210,8 @@ Supporting metrics, organized by axis:
 | **Learning** | Self-improvement rate | Interspect proposals that improve metrics when applied |
 
 The north star is economic because the platform play only works if other people can afford to run it. But cost alone is a vanity metric. A system that's cheap and wrong is worthless. The point is outcomes per dollar: defects caught per token, merge-ready changes per session, signal per gate. Interspect drives this number down over time, and the self-building loop generates the evidence Interspect needs to learn.
+
+**Goodhart caveat:** Any stable metric becomes a target, and any target becomes gamed. Cost-per-landable-change is the north star for now, but the supporting metrics above exist to prevent tunnel vision. Rotate emphasis, diversify evaluation dimensions, and watch for agents optimizing the metric at the expense of actual quality. (See PHILOSOPHY.md § Receipts Close Loops, Measurement.)
 
 Establishing the cost-per-landable-change baseline is now a P0 priority (iv-b46xi). After 1,748 closed beads, the system has enough history to compute this number but has never measured it.
 
@@ -277,10 +281,10 @@ Track A (Kernel)      Track B (Routing)     Track C (Agency)
 
 ## What This Is Not
 
-- **Not a general AI gateway.** It doesn't route arbitrary messages to arbitrary agents. It orchestrates software development specifically.
+- **Not a general AI gateway.** It doesn't route arbitrary messages to arbitrary agents. The product orchestrates software development specifically — but the platform primitives (Gridfire: Flows, Actions, Receipts, Gates, Controllers, Capabilities, RunGraphs) are domain-general. Software dev is the proving ground; generalization follows once primitives are battle-tested.
 - **Not a coding assistant.** It doesn't help you write code; it *builds software*. The coding is one phase of five.
 - **Not a no-code tool.** It's for people who build software with agents. Full stop.
-- **Not self-modifying.** Interspect can modify OS-level configuration. It cannot modify the kernel. This is a deliberate safety boundary.
+- **Not uncontrollably self-modifying.** Interspect modifies OS-level configuration through safe, reversible overlays. It cannot modify the kernel today — but the kernel boundary is a trust threshold, not a permanent architectural invariant. It softens as trust is earned, through gated evidence-based processes, not direct modification. (See PHILOSOPHY.md § Earned Authority.)
 - **Not just an agency.** Demarch is the platform; Clavain is the reference agency built on it. The kernel and drivers are infrastructure anyone can use to build their own agency.
 
 ## Origins

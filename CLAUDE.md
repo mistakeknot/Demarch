@@ -4,7 +4,7 @@ Monorepo for the Demarch open-source autonomous software development agency plat
 
 ## Structure
 
-5 pillars across 3 layers: `os/clavain/` (L2 OS), `interverse/` (42 plugins), `core/intercore/` + `core/intermute/` (L1 kernel), `apps/autarch/` + `apps/intercom/` (L3 apps), `sdk/interbase/` (shared SDK). Each subproject has its own CLAUDE.md and AGENTS.md — read those when working in a module. See root `AGENTS.md` for full directory table and module relationships.
+5 pillars across 3 layers: `os/clavain/` (L2 OS), `interverse/` (plugins), `core/intercore/` + `core/intermute/` (L1 kernel), `apps/autarch/` + `apps/intercom/` (L3 apps), `sdk/interbase/` (shared SDK). Each subproject has its own CLAUDE.md and AGENTS.md — read those when working in a module. See root `AGENTS.md` for full directory table and module relationships. See `PHILOSOPHY.md` for design bets and tradeoffs.
 
 ## Naming Convention
 

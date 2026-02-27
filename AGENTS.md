@@ -2,7 +2,7 @@
 
 ## Overview
 
-Demarch is the physical monorepo for the open-source autonomous software development agency platform. It contains five pillars: **Intercore** (`/core`) the orchestration kernel, **Clavain** (`/os`) the agent OS and reference agency, **Interverse** (`/interverse`) 40 companion plugins, **Autarch** (`/apps`) the TUI surfaces, and **Interspect** (cross-cutting profiler, currently housed in Clavain). Plus `sdk/` for shared libraries (interbase). Each module keeps its own `.git` as a nested independent repo. The root `Demarch/` also has a `.git` for the monorepo skeleton (scripts, docs, CLAUDE.md). Git operations apply to the nearest `.git`; verify with `git rev-parse --show-toplevel`.
+Demarch is the physical monorepo for the open-source autonomous software development agency platform. It contains five pillars: **Intercore** (`/core`) the orchestration kernel, **Clavain** (`/os`) the agent OS and reference agency, **Interverse** (`/interverse`) the companion plugin ecosystem, **Autarch** (`/apps`) the TUI surfaces, and **Interspect** (cross-cutting profiler, currently housed in Clavain). Plus `sdk/` for shared libraries (interbase). Each module keeps its own `.git` as a nested independent repo. The root `Demarch/` also has a `.git` for the monorepo skeleton (scripts, docs, CLAUDE.md). Git operations apply to the nearest `.git`; verify with `git rev-parse --show-toplevel`.
 
 ## Agent Quickstart
 
@@ -141,6 +141,8 @@ Required tools (all pre-installed on this server):
 - `SLACK_TOKEN` — Slack API for interslack
 
 ## Design Doctrine
+
+> For the full design philosophy (core bets, autonomy model, failure stance, etc.), see [`PHILOSOPHY.md`](PHILOSOPHY.md).
 
 ### Brainstorming
 1. Start from outcomes and failure modes, not implementation details.
