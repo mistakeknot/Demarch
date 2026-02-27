@@ -74,6 +74,45 @@ All work is tracked at the **Demarch root level** using the monorepo `.beads/` d
 - Filter by module: `bd list --status=open | grep -i interlock`
 - Cross-module beads use multiple prefixes: `[interlock/intermute]`
 
+### Label Taxonomy
+
+Beads use a two-dimensional label system. Backfill/apply with `scripts/backfill-bead-labels.py`.
+
+**Module labels** (`mod:<name>`) — which pillar/subproject the bead belongs to:
+```
+mod:clavain  mod:intercore  mod:intermute  mod:autarch  mod:intercom
+mod:interspect  mod:interverse  mod:interflux  mod:interkasten
+mod:interlock  mod:intermap  mod:interpath  mod:interwatch
+mod:interject  mod:intermem  mod:interbase  mod:intercache
+mod:interform  mod:interline  mod:interpeer  mod:intersearch
+mod:interpub  mod:interphase  mod:interdev  mod:interserve
+mod:interdoc  mod:intership  mod:internext  mod:intertest
+mod:interslack  mod:interlens  mod:intermux  mod:interfluence
+mod:intersynth  mod:intercraft  mod:demarch  mod:tldrs
+```
+
+**Theme labels** (`theme:<name>`) — what kind of work:
+```
+theme:tech-debt  theme:performance  theme:security  theme:ux
+theme:observability  theme:dx  theme:infra  theme:docs
+theme:testing  theme:architecture  theme:coordination  theme:research
+```
+
+Labels are inferred from `[module]` bracket prefixes in titles and keyword patterns in title+description. The backfill script is idempotent and additive — it never removes existing labels.
+
+### Bead Recovery Scripts
+
+After data loss events, use these scripts to reconstruct missing beads:
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/replay-missing-beads-from-commit-manifest.py` | Recreate beads from a CSV of git commits where bead IDs appeared in commit messages but were missing from the database |
+| `scripts/replay-missing-roadmap-beads.py` | Create placeholder beads for IDs referenced in `docs/roadmap.json` and `*roadmap*.md` files but absent from the database |
+| `scripts/map_brainstorms_plans_to_beads.py` | Map `docs/brainstorms/` and `docs/plans/` markdown files to bead IDs via `**Bead:** ...` declarations; creates placeholder beads for unmatched docs |
+| `scripts/backfill-bead-labels.py` | Apply module and theme label taxonomy to existing beads using heuristic detection (idempotent) |
+
+Recovered beads are tagged `recovered, placeholder` so they are distinguishable from original data. See `docs/research/verify-recovered-beads-quality.md` for the audit report from the 2026-02-27 recovery.
+
 ### Roadmap
 
 The platform roadmap is at [`docs/demarch-roadmap.md`](docs/demarch-roadmap.md) with machine-readable canonical output in [`docs/roadmap.json`](docs/roadmap.json). Regenerate both with `/interpath:roadmap` from the Demarch root. Auto-generate module-level roadmaps from beads with `scripts/generate-module-roadmaps.sh` or `/interpath:propagate`.
@@ -252,7 +291,7 @@ Consolidated reference guides — read the relevant guide before working in that
 | Data Integrity Patterns | Before WAL, sync, or validation code in TypeScript | `docs/guides/data-integrity-patterns.md` |
 | Secret Scanning Baseline | Before rolling out or auditing secret scanning policy across repos | `docs/guides/secret-scanning-baseline.md` |
 | Interband Sideband Protocol | Before working on sideband communication between agents | `docs/guides/interband-sideband-protocol.md` |
-| Beads 0.51 Upgrade | Before unpinning/upgrading beads in Interverse | `docs/guides/beads-0.51-upgrade-plan.md` |
+| Beads 0.51 Upgrade | For completed migration status and post-migration operations | `docs/guides/beads-0.51-upgrade-plan.md` |
 
 ## Critical Patterns
 
