@@ -4,6 +4,12 @@ Cross-repo index of institutional knowledge across the Interverse monorepo.
 
 **Generated:** 2026-02-21T15:30:46Z | **Total:** 73 docs
 
+## Frontmatter Conventions
+
+### `synthesized_into`
+
+When a document has been synthesized into a broader pattern doc via `/distill`, this field records the target path. The original doc is retained for provenance but the synthesis target is the authoritative reference. The `learnings-researcher` agent prefers synthesis targets over originals (Step 3b).
+
 ---
 
 ## agent-rig (3 docs)
