@@ -1,7 +1,7 @@
 # Demarch — Vision
 
-**Version:** 3.0
-**Date:** 2026-02-21
+**Version:** 3.1
+**Date:** 2026-02-27
 **Status:** Draft
 
 ---
@@ -22,7 +22,7 @@ The whole thing is open source.
 
 LLM-based agents have a fundamental problem: nothing survives. Context windows compress. Sessions end. Networks drop. Processes crash. An agent that ran for an hour, produced three artifacts, dispatched two sub-agents, and advanced through four workflow phases leaves behind... a chat transcript. The state, the decisions, the evidence, the coordination signals: gone. Not a prompting problem. An infrastructure problem. And most agent systems today handle it with temp files, environment variables, in-memory state, and hope.
 
-Demarch handles it with a durable kernel (SQLite-backed Go CLI), an opinionated OS that encodes development discipline, a profiler that learns from outcomes, and 33+ companion drivers. But the infrastructure is not the aspiration.
+Demarch handles it with a durable kernel (SQLite-backed Go CLI), an opinionated OS that encodes development discipline, a profiler that learns from outcomes, and 42 companion drivers. But the infrastructure is not the aspiration.
 
 The bet: if you build the right infrastructure beneath agents, they become capable of the full development lifecycle. Not just code generation, but discovery, design, review, testing, shipping, and compounding what was learned. And if you build a learning loop on top of that infrastructure, one that measures outcomes per dollar and feeds that signal back into model routing, agent selection, and gate calibration, you get a system where autonomy, quality, and efficiency aren't tradeoffs. They're a flywheel. More autonomy produces more outcome data. More outcome data improves routing and review. Better routing cuts cost. Lower cost enables more autonomy. The system that runs the most sprints learns the fastest.
 
@@ -31,15 +31,16 @@ The bet: if you build the right infrastructure beneath agents, they become capab
 Five pillars, organized in three layers plus one cross-cutting profiler. Each pillar has a clear owner, a clear boundary, and a clear survival property.
 
 ```
-Layer 3: Apps (Autarch)
-├── Interactive TUI surfaces for kernel state
+Layer 3: Apps (Autarch + Intercom)
+├── Interactive TUI surfaces for kernel state (Autarch)
 ├── Bigend (monitoring), Gurgeh (PRD generation),
 │   Coldwine (task orchestration), Pollard (research)
-└── Swappable — if Autarch is replaced, everything beneath survives
+├── Multi-runtime AI assistant: Claude, Gemini, Codex (Intercom)
+└── Swappable — if apps are replaced, everything beneath survives
 
 Layer 2: OS (Clavain) + Drivers (Companion Plugins)
 ├── The opinionated workflow — phases, gates, model routing, dispatch
-├── 33+ companion plugins, each wrapping one capability
+├── 42 companion plugins, each wrapping one capability
 ├── Every driver independently installable and useful standalone
 └── If the host platform changes, opinions survive; UX adapters are rewritten
 
@@ -66,9 +67,9 @@ The survival properties are the point. Each layer can be replaced, rewritten, or
 
 **The profiler (Interspect)** provides learning. It reads the kernel's event stream, correlates dispatch outcomes with both human signals (review dismissals, gate overrides, manual corrections) and automated signals (CI results, revert frequency, finding density), and proposes changes to OS configuration. The signal mix shifts as autonomy increases: human-heavy at L0-L2, automated-heavy at L3-L4. Static orchestration is table stakes; a system that improves its own agents through evidence rather than intuition is what makes Demarch different. Interspect never touches the kernel. It modifies the OS layer through safe, reversible overlays. (Full signal taxonomy in the [Interspect vision](./interspect-vision.md).)
 
-**The drivers (companion plugins)** provide capabilities. Multi-agent review (interflux), file coordination (interlock), ambient research (interject), token-efficient code context (tldr-swinton), agent visibility (intermux), multi-agent synthesis (intersynth), and two dozen more. Each wraps one capability and integrates with kernel primitives when present. Every driver is independently installable, usable in vanilla Claude Code without Clavain, Intercore, or any other Demarch module. Without the kernel, drivers use local or ephemeral state; with it, they get durability, coordination, and event history. The full stack provides enhanced integration, but each driver is valuable on its own.
+**The drivers (companion plugins)** provide capabilities. Multi-agent review (interflux), file coordination (interlock), ambient research (interject), token-efficient code context (tldr-swinton), agent visibility (intermux), multi-agent synthesis (intersynth), shared embedding infrastructure (intersearch), cross-session semantic caching (intercache), agent trust scoring (intertrust), knowledge compounding (interknow), and three dozen more. Each wraps one capability and integrates with kernel primitives when present. Every driver is independently installable, usable in vanilla Claude Code without Clavain, Intercore, or any other Demarch module. Without the kernel, drivers use local or ephemeral state; with it, they get durability, coordination, and event history. The full stack provides enhanced integration, but each driver is valuable on its own.
 
-**The apps (Autarch)** provide surfaces. Bigend (monitoring), Gurgeh (PRD generation), Coldwine (task orchestration), Pollard (research intelligence). Each renders kernel state into interactive TUI experiences. The apps are a convenience layer; everything they do can be done via CLI.
+**The apps (Autarch, Intercom)** provide surfaces. Autarch delivers interactive TUI experiences: Bigend (monitoring), Gurgeh (PRD generation), Coldwine (task orchestration), Pollard (research intelligence). Intercom provides a multi-runtime AI assistant bridging Claude, Gemini, and Codex with gate approvals and sprint notifications over messaging. The apps are a convenience layer; everything they do can be done via CLI.
 
 ## The Frontier
 
@@ -180,9 +181,9 @@ No level is self-promoting. The system advances only when outcome data justifies
 
 Two capabilities cut across the autonomy ladder rather than sitting on it:
 
-**Discovery.** The pipeline that finds work before it can be recorded. Scans sources, scores relevance, routes findings through confidence-tiered gates. Operates at any autonomy level. *(Shipped, kernel primitives landed.)*
+**Discovery.** The pipeline that finds work before it can be recorded. Scans sources, scores relevance, routes findings through confidence-tiered gates. Operates at any autonomy level. *(Shipped, kernel primitives landed. OS integration is the P0 frontier — wiring event-driven scan triggers and automated triage into the sprint workflow.)*
 
-**Adaptation.** Interspect reads kernel events, correlates with outcomes, and proposes configuration changes. Agents that produce false positives get downweighted. Gate rules evolve based on evidence. Operates at any autonomy level, but its value compounds as more sprints produce more data. *(In progress, the current frontier.)*
+**Adaptation.** Interspect reads kernel events, correlates with outcomes, and proposes configuration changes. Agents that produce false positives get downweighted. Gate rules evolve based on evidence. Operates at any autonomy level, but its value compounds as more sprints produce more data. *(In progress — evidence collection shipped; routing override chain F1-F5 is the current P0 focus.)*
 
 **Portfolio orchestration.** The kernel manages concurrent runs across multiple projects. Token budgets prevent runaway costs. Changes in one project trigger verification in dependents. Operates at any autonomy level. *(Shipped, portfolio primitives landed.)*
 
@@ -208,6 +209,8 @@ Supporting metrics, organized by axis:
 
 The north star is economic because the platform play only works if other people can afford to run it. But cost alone is a vanity metric. A system that's cheap and wrong is worthless. The point is outcomes per dollar: defects caught per token, merge-ready changes per session, signal per gate. Interspect drives this number down over time, and the self-building loop generates the evidence Interspect needs to learn.
 
+Establishing the cost-per-landable-change baseline is now a P0 priority (iv-b46xi). After 1,748 closed beads, the system has enough history to compute this number but has never measured it.
+
 ## Audience
 
 Demarch is an open-source platform for anyone building autonomous software development agencies. Intercore is the kernel. Clavain is the reference agency. The personal rig is the highest-fidelity eval: built by using it to build itself.
@@ -232,31 +235,39 @@ Revenue, when it matters, comes from managed hosting, enterprise support, and pr
 
 As of February 2026:
 
-- **Kernel:** 10 of 12 epics shipped. Runs, phases, gates, dispatches, events, discovery pipeline, rollback, portfolio orchestration, TOCTOU prevention, cost-aware scheduling. All landed and tested.
-- **OS:** Version 0.6.60. 16 skills, 4 agents, 53 commands, 22 hooks. Full sprint lifecycle (brainstorm → ship) is kernel-driven.
-- **Model routing:** Static routing and complexity-aware routing (C1-C5) shipped. 22 routing tests.
-- **Review engine:** 7 specialized review agents + 5 research agents, deployed through interflux with multi-agent synthesis.
-- **Ecosystem:** 33+ companion plugins shipped, each independently installable.
-- **Profiler:** Evidence collection shipped (override tracking, false positive rates, finding density). Proposal engine and automatic routing adjustments are next.
-- **Self-building:** 1,419 beads tracked, 1,098 closed. The system has been building itself for months.
+- **Kernel:** 8 of 10 epics shipped (E1-E8). Runs, phases, gates, dispatches, events, discovery pipeline, rollback, portfolio orchestration, TOCTOU prevention, cost-aware scheduling, fair spawn scheduler, sandbox specs. All landed and tested. Remaining: E9 (Autarch Phase 2 — Pollard + Gurgeh migration) and E10 (Sandboxing + Autarch Phase 3).
+- **OS:** Version 0.6.106. 16 skills, 4 agents, 53 commands, 22 hooks, 1 MCP server. Full sprint lifecycle (brainstorm → ship) is kernel-driven. Sprint consolidation complete (`/route → /sprint → /work` unified into adaptive single-entry workflow).
+- **Model routing:** Static routing and complexity-aware routing (C1-C5) shipped. Adaptive routing (B3) is the next frontier, blocked on Interspect routing overrides.
+- **Review engine:** 12 specialized review agents + 5 research agents, deployed through interflux with multi-agent synthesis. Capability declarations shipped. Interoperability benchmark harness completed.
+- **Ecosystem:** 42 companion plugins shipped, each independently installable. 11 new plugins extracted (2026-02-25) from Clavain, interflux, and interkasten to maintain single-responsibility. 53 total modules across the monorepo.
+- **Apps:** Autarch TUI (Bigend monitoring with inline mode, Gurgeh PRD generation, Coldwine task orchestration, Pollard research). Intercom multi-runtime AI assistant bridging Claude, Gemini, and Codex (v1.1.0).
+- **Profiler:** Evidence collection shipped (override tracking, false positive rates, finding density). Routing override chain (F1-F5) is the P0 frontier for activating the adaptive routing flywheel.
+- **Self-building:** 2,147+ beads tracked (1,748 closed, 384 open). The system has been building itself for months.
 
 ## What's Next
 
-Three parallel tracks converging toward a self-building agency with adaptive model routing and fleet-optimized dispatch:
+Five P0 priorities driving the next phase, plus three parallel tracks converging toward a self-building agency with adaptive model routing and fleet-optimized dispatch:
+
+**P0 Priorities:**
+- **Agency specs** (iv-asfy) — Declarative per-stage agent/model/tool configuration. Unblocks the entire Track C agency architecture chain (C2-C5).
+- **North star metric** (iv-b46xi) — Establish cost-per-landable-change baseline. After 1,748 closed beads, no baseline exists for token spend, wall-clock time, or review quality per shipped change.
+- **Interspect routing overrides** (iv-sksfx) — The routing override chain (F1-F5) that activates adaptive model routing. The flywheel cannot turn without this.
+- **First-stranger experience** (iv-t712t) — No outside user has ever run this. Validated getting-started flow for all pillars.
+- **Discovery OS integration** (iv-wie5i) — Kernel discovery primitives shipped; interject has adapters; but event-driven scan triggers and automated triage are not yet wired into the sprint workflow.
 
 **Track A: Kernel integration.** Done. Sprint is fully kernel-driven.
 
-**Track B: Model routing.** Static and complexity-aware routing done. Next: Interspect outcome data driving model selection (B3).
+**Track B: Model routing.** Static and complexity-aware routing done. Next: Interspect outcome data driving model selection (B3), now explicitly P0.
 
-**Track C: Agency architecture.** The next frontier. Declarative agency specs (C1), agent fleet registry with cost/quality profiles (C2), budget-constrained fleet composition (C3), cross-phase handoff protocol (C4), and the convergence point: a self-building loop where Clavain uses its own agency specs to run its own development sprints (C5).
+**Track C: Agency architecture.** The next frontier. Declarative agency specs (C1, now P0), agent fleet registry with cost/quality profiles (C2), budget-constrained fleet composition (C3), cross-phase handoff protocol (C4), and the convergence point: a self-building loop where Clavain uses its own agency specs to run its own development sprints (C5).
 
 ```
 Track A (Kernel)      Track B (Routing)     Track C (Agency)
-    A1 ✓                  B1 ✓                  C1 ←
+    A1 ✓                  B1 ✓                  C1 ←  [P0]
     │                     │                     │
     A2 ✓                  B2 ✓─────────────→    C2 ←
     │                     │                     │
-    A3 ✓                  B3                    C3
+    A3 ✓                  B3 ← [P0]             C3
     │                                           │
     └───────────────────────────────────────→   C4
                                                 │
@@ -276,7 +287,7 @@ Track A (Kernel)      Track B (Routing)     Track C (Agency)
 
 Demarch (from Alastair Reynolds' Democratic Anarchists, reflecting the continuous polling and consensus-driven architecture of the system). Clavain is a protagonist from the same series. The inter-\* naming convention describes what each component does: the space *between* things. Interverse is the universe that contains them all.
 
-The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous software development agency platform with five pillars and 42 modules.
+The project began by merging [superpowers](https://github.com/obra/superpowers), [superpowers-lab](https://github.com/obra/superpowers-lab), [superpowers-developing-for-claude-code](https://github.com/obra/superpowers-developing-for-claude-code), and [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin). It has since grown into an autonomous software development agency platform with five pillars and 53 modules.
 
 ---
 

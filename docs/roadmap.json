@@ -1,10 +1,10 @@
 {
   "project": "Demarch",
   "kind": "demarch-monorepo-roadmap",
-  "generated_at": "2026-02-26T04:12:04+00:00",
-  "module_count": 49,
-  "open_beads": 136,
-  "blocked": 21,
+  "generated_at": "2026-02-27T18:15:24+00:00",
+  "module_count": 53,
+  "open_beads": 94,
+  "blocked": 0,
   "modules": [
     {
       "module": "autarch",
@@ -25,21 +25,12 @@
       "status": "active"
     },
     {
-      "module": "interfin",
-      "location": "apps/interfin",
-      "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
       "module": "clavain",
       "location": "os/clavain",
-      "version": "0.6.97",
+      "version": "0.6.106",
       "has_roadmap": true,
       "roadmap_source": "markdown",
-      "open_beads": 42,
+      "open_beads": 0,
       "status": "active"
     },
     {
@@ -82,10 +73,10 @@
       "module": "intermute",
       "location": "core/intermute",
       "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "planned"
+      "status": "active"
     },
     {
       "module": "marketplace",
@@ -99,7 +90,7 @@
     {
       "module": "intercache",
       "location": "interverse/intercache",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -151,18 +142,9 @@
       "status": "active"
     },
     {
-      "module": "interfin",
-      "location": "interverse/interfin",
-      "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "planned"
-    },
-    {
       "module": "interfluence",
       "location": "interverse/interfluence",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -171,7 +153,7 @@
     {
       "module": "interflux",
       "location": "interverse/interflux",
-      "version": "0.2.29",
+      "version": "0.2.30",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 0,
@@ -198,7 +180,16 @@
     {
       "module": "interkasten",
       "location": "interverse/interkasten",
-      "version": "0.4.5",
+      "version": "0.4.6",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
+      "module": "interknow",
+      "location": "interverse/interknow",
+      "version": "0.1.0",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -243,11 +234,11 @@
     {
       "module": "interlock",
       "location": "interverse/interlock",
-      "version": "0.2.6",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "version": "0.2.7",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intermap",
@@ -275,6 +266,15 @@
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "intername",
+      "location": "interverse/intername",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "internext",
@@ -306,11 +306,20 @@
     {
       "module": "interphase",
       "location": "interverse/interphase",
-      "version": "0.3.4",
+      "version": "0.3.7",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "interplug",
+      "location": "interverse/interplug",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "interpub",
@@ -322,13 +331,31 @@
       "status": "active"
     },
     {
+      "module": "interpulse",
+      "location": "interverse/interpulse",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "intersearch",
       "location": "interverse/intersearch",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "intersense",
+      "location": "interverse/intersense",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "interserve",
@@ -349,6 +376,15 @@
       "status": "early"
     },
     {
+      "module": "interskill",
+      "location": "interverse/interskill",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "interslack",
       "location": "interverse/interslack",
       "version": "0.1.0",
@@ -358,18 +394,9 @@
       "status": "active"
     },
     {
-      "module": "interspect",
-      "location": "interverse/interspect",
-      "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
       "module": "interstat",
       "location": "interverse/interstat",
-      "version": "0.2.5",
+      "version": "0.2.8",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -394,9 +421,18 @@
       "status": "early"
     },
     {
+      "module": "intertree",
+      "location": "interverse/intertree",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "intertrust",
       "location": "interverse/intertrust",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -468,21 +504,12 @@
       "status": "active"
     },
     {
-      "module": "interfin",
-      "location": "apps/interfin",
-      "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
       "module": "clavain",
       "location": "os/clavain",
-      "version": "0.6.97",
+      "version": "0.6.106",
       "has_roadmap": true,
       "roadmap_source": "markdown",
-      "open_beads": 42,
+      "open_beads": 0,
       "status": "active"
     },
     {
@@ -525,10 +552,10 @@
       "module": "intermute",
       "location": "core/intermute",
       "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "planned"
+      "status": "active"
     },
     {
       "module": "marketplace",
@@ -542,7 +569,7 @@
     {
       "module": "intercache",
       "location": "interverse/intercache",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -594,18 +621,9 @@
       "status": "active"
     },
     {
-      "module": "interfin",
-      "location": "interverse/interfin",
-      "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "planned"
-    },
-    {
       "module": "interfluence",
       "location": "interverse/interfluence",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -614,7 +632,7 @@
     {
       "module": "interflux",
       "location": "interverse/interflux",
-      "version": "0.2.29",
+      "version": "0.2.30",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 0,
@@ -641,7 +659,16 @@
     {
       "module": "interkasten",
       "location": "interverse/interkasten",
-      "version": "0.4.5",
+      "version": "0.4.6",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
+      "module": "interknow",
+      "location": "interverse/interknow",
+      "version": "0.1.0",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -686,11 +713,11 @@
     {
       "module": "interlock",
       "location": "interverse/interlock",
-      "version": "0.2.6",
-      "has_roadmap": false,
-      "roadmap_source": "none",
+      "version": "0.2.7",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
       "open_beads": 0,
-      "status": "early"
+      "status": "active"
     },
     {
       "module": "intermap",
@@ -718,6 +745,15 @@
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "intername",
+      "location": "interverse/intername",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "internext",
@@ -749,11 +785,20 @@
     {
       "module": "interphase",
       "location": "interverse/interphase",
-      "version": "0.3.4",
+      "version": "0.3.7",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "interplug",
+      "location": "interverse/interplug",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "interpub",
@@ -765,13 +810,31 @@
       "status": "active"
     },
     {
+      "module": "interpulse",
+      "location": "interverse/interpulse",
+      "version": "0.1.1",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "intersearch",
       "location": "interverse/intersearch",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
       "status": "active"
+    },
+    {
+      "module": "intersense",
+      "location": "interverse/intersense",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
     },
     {
       "module": "interserve",
@@ -792,6 +855,15 @@
       "status": "early"
     },
     {
+      "module": "interskill",
+      "location": "interverse/interskill",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "interslack",
       "location": "interverse/interslack",
       "version": "0.1.0",
@@ -801,18 +873,9 @@
       "status": "active"
     },
     {
-      "module": "interspect",
-      "location": "interverse/interspect",
-      "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
       "module": "interstat",
       "location": "interverse/interstat",
-      "version": "0.2.5",
+      "version": "0.2.8",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -837,9 +900,18 @@
       "status": "early"
     },
     {
+      "module": "intertree",
+      "location": "interverse/intertree",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
       "module": "intertrust",
       "location": "interverse/intertrust",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -893,180 +965,6 @@
   ],
   "roadmap": {
     "now": [
-      {
-        "module": "clavain",
-        "id": "iv-t712t",
-        "title": "First-stranger experience — README, install, clavain setup",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "First-stranger"
-        ],
-        "notes": "First-stranger experience — README, install, clavain setup"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-1opqc",
-        "title": "First-run validation on clean environment",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "First-run"
-        ],
-        "notes": "First-run validation on clean environment"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-be0ik",
-        "title": "CI pipeline + critical-path test coverage",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "critical-path"
-        ],
-        "notes": "CI pipeline + critical-path test coverage"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-1xtgd",
-        "title": "Bash-Heavy L2 Logic Migration",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "Bash-Heavy"
-        ],
-        "notes": "Bash-Heavy L2 Logic Migration"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-1xtgd.2",
-        "title": "Enforce shell hardening baseline for hooks and scripts",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Enforce shell hardening baseline for hooks and scripts"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-b46xi",
-        "title": "Measure north star — cost-per-landable-change baseline",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "cost-per-landable-change"
-        ],
-        "notes": "Measure north star — cost-per-landable-change baseline"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-xftvq",
-        "title": "Hook Cutover — migrate remaining temp-file hooks to ic kernel",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "temp-file"
-        ],
-        "notes": "Hook Cutover — migrate remaining temp-file hooks to ic kernel"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-zsio",
-        "title": "Integrate full discovery pipeline into sprint workflow",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Integrate full discovery pipeline into sprint workflow"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-kpoz8",
-        "title": "Bead lifecycle reliability — auto-close parents + universal claiming",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "auto-close"
-        ],
-        "notes": "Bead lifecycle reliability — auto-close parents + universal claiming"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-4xnp4",
-        "title": "C1 Agency specs — unblock Track C convergence",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "C1 Agency specs — unblock Track C convergence"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-9hx1t",
-        "title": "Go Module Path Alignment (Demarch Reorg)",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Go Module Path Alignment (Demarch Reorg)"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-jay06",
-        "title": "Formalize interbase as a Multi-Language SDK",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "Multi-Language"
-        ],
-        "notes": "Formalize interbase as a Multi-Language SDK"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-ip4zr",
-        "title": "Autarch self-hosting: make usable for developing Demarch",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "self-hosting"
-        ],
-        "notes": "Autarch self-hosting: make usable for developing Demarch"
-      },
       {
         "module": "intercheck",
         "id": "ICHK-N1",
@@ -1354,6 +1252,162 @@
         "source_file": "docs/roadmap.json",
         "blocked_by": [],
         "notes": "Stabilize deterministic replay for complex interactive terminal sessions."
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-t712t",
+        "title": "Platform: clavain — First-stranger experience — README, install, clavain setup",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — First-stranger experience — README, install, clavain setup"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-1opqc",
+        "title": "Platform: clavain — First-run validation on clean environment",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — First-run validation on clean environment"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-be0ik",
+        "title": "Platform: clavain — CI pipeline + critical-path test coverage",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — CI pipeline + critical-path test coverage"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-1xtgd",
+        "title": "Platform: clavain — Bash-Heavy L2 Logic Migration",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Bash-Heavy L2 Logic Migration"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-1xtgd.2",
+        "title": "Platform: clavain — Enforce shell hardening baseline for hooks and scripts",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Enforce shell hardening baseline for hooks and scripts"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-b46xi",
+        "title": "Platform: clavain — Measure north star — cost-per-landable-change baseline",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Measure north star — cost-per-landable-change baseline"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-xftvq",
+        "title": "Platform: clavain — Hook Cutover — migrate remaining temp-file hooks to ic kernel",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Hook Cutover — migrate remaining temp-file hooks to ic kernel"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-zsio",
+        "title": "Platform: clavain — Integrate full discovery pipeline into sprint workflow",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Integrate full discovery pipeline into sprint workflow"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-kpoz8",
+        "title": "Platform: clavain — Bead lifecycle reliability — auto-close parents + universal claiming",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Bead lifecycle reliability — auto-close parents + universal claiming"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-4xnp4",
+        "title": "Platform: clavain — C1 Agency specs — unblock Track C convergence",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — C1 Agency specs — unblock Track C convergence"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-9hx1t",
+        "title": "Platform: clavain — Go Module Path Alignment (Demarch Reorg)",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Go Module Path Alignment (Demarch Reorg)"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-jay06",
+        "title": "Platform: clavain — Formalize interbase as a Multi-Language SDK",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Formalize interbase as a Multi-Language SDK"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-ip4zr",
+        "title": "Platform: clavain — Autarch self-hosting: make usable for developing Demarch",
+        "phase": "now",
+        "priority": "P1",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Autarch self-hosting: make usable for developing Demarch"
       },
       {
         "module": "interverse",
@@ -1645,162 +1699,6 @@
       }
     ],
     "next": [
-      {
-        "module": "clavain",
-        "id": "iv-e8dg",
-        "title": "Migrate Clavain to consume flux-drive Python library",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "flux-drive"
-        ],
-        "notes": "Migrate Clavain to consume flux-drive Python library"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-ia66",
-        "title": "Extract domain detection library",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Extract domain detection library"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-ho3",
-        "title": "StrongDM Factory Substrate — validation-first infrastructure",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "validation-first"
-        ],
-        "notes": "StrongDM Factory Substrate — validation-first infrastructure"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-6u3s",
-        "title": "Sprint Scan Release Visibility",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Sprint Scan Release Visibility"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-qlt8",
-        "title": "Unify duplicated command entry points across Clavain/modules",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Unify duplicated command entry points across Clavain/modules"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-c2b4",
-        "title": "/interspect:disable command",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "/interspect:disable command"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-g0to",
-        "title": "/interspect:reset command",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "/interspect:reset command"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-asfy",
-        "title": "C1: Agency specs — declarative per-stage agent/model/tool config",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "per-stage"
-        ],
-        "notes": "C1: Agency specs — declarative per-stage agent/model/tool config"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-iu31",
-        "title": "Remove tool-time PreToolUse binding, extract Task redirect",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "tool-time"
-        ],
-        "notes": "Remove tool-time PreToolUse binding, extract Task redirect"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-1xtgd.1",
-        "title": "Centralize plugin discovery API and remove cache-glob duplication",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "cache-glob"
-        ],
-        "notes": "Centralize plugin discovery API and remove cache-glob duplication"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-1zh2",
-        "title": "Brainstorm on all 7 token-efficiency findings",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "token-efficiency"
-        ],
-        "notes": "Brainstorm on all 7 token-efficiency findings"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-qlt8.1-4",
-        "title": "Unified canonical commands (/status, /changelog, /doctor, /setup)",
-        "phase": "next",
-        "priority": "P2",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Unified canonical commands (/status, /changelog, /doctor, /setup)"
-      },
       {
         "module": "intercheck",
         "id": "ICHK-N2",
@@ -2580,6 +2478,150 @@
         "source_file": "docs/roadmap.json",
         "blocked_by": [],
         "notes": "Add cross-device runner support for varied terminal backends."
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-e8dg",
+        "title": "Platform: clavain — Migrate Clavain to consume flux-drive Python library",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Migrate Clavain to consume flux-drive Python library"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-ia66",
+        "title": "Platform: clavain — Extract domain detection library",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Extract domain detection library"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-ho3",
+        "title": "Platform: clavain — StrongDM Factory Substrate — validation-first infrastructure",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — StrongDM Factory Substrate — validation-first infrastructure"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-6u3s",
+        "title": "Platform: clavain — Sprint Scan Release Visibility",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Sprint Scan Release Visibility"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-qlt8",
+        "title": "Platform: clavain — Unify duplicated command entry points across Clavain/modules",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Unify duplicated command entry points across Clavain/modules"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-c2b4",
+        "title": "Platform: clavain — /interspect:disable command",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — /interspect:disable command"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-g0to",
+        "title": "Platform: clavain — /interspect:reset command",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — /interspect:reset command"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-asfy",
+        "title": "Platform: clavain — C1: Agency specs — declarative per-stage agent/model/tool config",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — C1: Agency specs — declarative per-stage agent/model/tool config"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-iu31",
+        "title": "Platform: clavain — Remove tool-time PreToolUse binding, extract Task redirect",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Remove tool-time PreToolUse binding, extract Task redirect"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-1xtgd.1",
+        "title": "Platform: clavain — Centralize plugin discovery API and remove cache-glob duplication",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Centralize plugin discovery API and remove cache-glob duplication"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-1zh2",
+        "title": "Platform: clavain — Brainstorm on all 7 token-efficiency findings",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Brainstorm on all 7 token-efficiency findings"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-qlt8.1-4",
+        "title": "Platform: clavain — Unified canonical commands (/status, /changelog, /doctor, /setup)",
+        "phase": "next",
+        "priority": "P2",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Unified canonical commands (/status, /changelog, /doctor, /setup)"
       },
       {
         "module": "interverse",
@@ -3388,232 +3430,16 @@
         "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
       },
       {
-        "module": "interfin",
-        "id": "PL-interfin-NO-RM",
-        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "module": "clavain",
+        "id": "PL-clavain-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "apps/interfin/docs/roadmap.md",
+        "source": "empty-module-roadmap",
+        "source_file": "os/clavain/docs/roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
-      },
-      {
-        "module": "clavain",
-        "id": "iv-6ixw",
-        "title": "C5: Self-building loop — Clavain runs its own sprints",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "Self-building"
-        ],
-        "notes": "C5: Self-building loop — Clavain runs its own sprints"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-240m",
-        "title": "C3: Composer — match agency specs to fleet within budget",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "C3: Composer — match agency specs to fleet within budget"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-1vny",
-        "title": "C4: Cross-phase handoff protocol — structured contracts",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "Cross-phase"
-        ],
-        "notes": "C4: Cross-phase handoff protocol — structured contracts"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-i198",
-        "title": "B3: Adaptive routing — Interspect outcomes drive selection",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "B3: Adaptive routing — Interspect outcomes drive selection"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-d6vf",
-        "title": "B2: Zero-cost routing abstraction + shadow mode",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "Zero-cost"
-        ],
-        "notes": "B2: Zero-cost routing abstraction + shadow mode"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-4xqu",
-        "title": "Adaptive model routing based on measured trust",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Adaptive model routing based on measured trust"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-a0mv",
-        "title": "Sprint completion rate tracking",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Sprint completion rate tracking"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-8hhd",
-        "title": "Fix dotfiles-sync.sh log path — /var/log not writable",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "dotfiles-sync.sh"
-        ],
-        "notes": "Fix dotfiles-sync.sh log path — /var/log not writable"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-6i37",
-        "title": "Blueprint distillation: channel optimization for sprint intake",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Blueprint distillation: channel optimization for sprint intake"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-u2pd",
-        "title": "Arbiter extraction Phase 2: spec sprint sequencing",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Arbiter extraction Phase 2: spec sprint sequencing"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-d5hz",
-        "title": "Extract Coldwine task orchestration to Clavain skills (v2)",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Extract Coldwine task orchestration to Clavain skills (v2)"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-bkzf",
-        "title": "Arbiter extraction Phase 3",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Arbiter extraction Phase 3"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-k1q4",
-        "title": "Coldwine: intent submission to Clavain OS",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Coldwine: intent submission to Clavain OS"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-1quv",
-        "title": "Add TTL cleanup for /tmp/clavain-* sentinel files",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Add TTL cleanup for /tmp/clavain-* sentinel files"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-eqbo",
-        "title": "Add Conductor-style project init wizard to /clavain:init",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "Conductor-style"
-        ],
-        "notes": "Add Conductor-style project init wizard to /clavain:init"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-d8yi",
-        "title": "Add inherit model tier to Clavain model routing",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [],
-        "notes": "Add inherit model tier to Clavain model routing"
-      },
-      {
-        "module": "clavain",
-        "id": "iv-64j3",
-        "title": "Multi-agent sprint reflection (N artifacts for N dispatches)",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "module-roadmap-md",
-        "source_file": "os/clavain/docs/clavain-roadmap.md",
-        "blocked_by": [
-          "Multi-agent"
-        ],
-        "notes": "Multi-agent sprint reflection (N artifacts for N dispatches)"
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
       },
       {
         "module": "agent-rig",
@@ -3665,15 +3491,15 @@
       },
       {
         "module": "intermute",
-        "id": "PL-intermute-NO-RM",
-        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "id": "PL-intermute-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
+        "source": "empty-module-roadmap",
         "source_file": "core/intermute/docs/roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
       },
       {
         "module": "marketplace",
@@ -3712,18 +3538,6 @@
         "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
       },
       {
-        "module": "interfin",
-        "id": "PL-interfin-NO-RM",
-        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "interverse/interfin/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
-      },
-      {
         "module": "interflux",
         "id": "PL-interflux-EMPTY-RM",
         "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
@@ -3744,6 +3558,18 @@
         "status": "planned",
         "source": "missing-module-roadmap",
         "source_file": "interverse/interkasten/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "interknow",
+        "id": "PL-interknow-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "interverse/interknow/docs/roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
       },
@@ -3797,15 +3623,15 @@
       },
       {
         "module": "interlock",
-        "id": "PL-interlock-NO-RM",
-        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "id": "PL-interlock-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
-        "source": "missing-module-roadmap",
+        "source": "empty-module-roadmap",
         "source_file": "interverse/interlock/docs/roadmap.md",
         "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
       },
       {
         "module": "intermap",
@@ -3844,6 +3670,18 @@
         "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
       },
       {
+        "module": "intername",
+        "id": "PL-intername-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "interverse/intername/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
         "module": "interpeer",
         "id": "PL-interpeer-NO-RM",
         "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
@@ -3852,6 +3690,42 @@
         "status": "planned",
         "source": "missing-module-roadmap",
         "source_file": "interverse/interpeer/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "interplug",
+        "id": "PL-interplug-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "interverse/interplug/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "interpulse",
+        "id": "PL-interpulse-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "interverse/interpulse/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "intersense",
+        "id": "PL-intersense-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "interverse/intersense/docs/roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
       },
@@ -3868,14 +3742,14 @@
         "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
       },
       {
-        "module": "interspect",
-        "id": "PL-interspect-NO-RM",
+        "module": "interskill",
+        "id": "PL-interskill-NO-RM",
         "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
         "phase": "later",
         "priority": "P4",
         "status": "planned",
         "source": "missing-module-roadmap",
-        "source_file": "interverse/interspect/docs/roadmap.md",
+        "source_file": "interverse/interskill/docs/roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
       },
@@ -3900,6 +3774,18 @@
         "status": "planned",
         "source": "missing-module-roadmap",
         "source_file": "interverse/intertest/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "intertree",
+        "id": "PL-intertree-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "interverse/intertree/docs/roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
       },
@@ -3938,6 +3824,210 @@
         "source_file": "interverse/tool-time/docs/roadmap.md",
         "blocked_by": [],
         "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-6ixw",
+        "title": "Platform: clavain — C5: Self-building loop — Clavain runs its own sprints",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — C5: Self-building loop — Clavain runs its own sprints"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-240m",
+        "title": "Platform: clavain — C3: Composer — match agency specs to fleet within budget",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — C3: Composer — match agency specs to fleet within budget"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-1vny",
+        "title": "Platform: clavain — C4: Cross-phase handoff protocol — structured contracts",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — C4: Cross-phase handoff protocol — structured contracts"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-i198",
+        "title": "Platform: clavain — B3: Adaptive routing — Interspect outcomes drive selection",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — B3: Adaptive routing — Interspect outcomes drive selection"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-d6vf",
+        "title": "Platform: clavain — B2: Zero-cost routing abstraction + shadow mode",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — B2: Zero-cost routing abstraction + shadow mode"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-4xqu",
+        "title": "Platform: clavain — Adaptive model routing based on measured trust",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Adaptive model routing based on measured trust"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-a0mv",
+        "title": "Platform: clavain — Sprint completion rate tracking",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Sprint completion rate tracking"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-8hhd",
+        "title": "Platform: clavain — Fix dotfiles-sync.sh log path — /var/log not writable",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Fix dotfiles-sync.sh log path — /var/log not writable"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-6i37",
+        "title": "Platform: clavain — Blueprint distillation: channel optimization for sprint intake",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Blueprint distillation: channel optimization for sprint intake"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-u2pd",
+        "title": "Platform: clavain — Arbiter extraction Phase 2: spec sprint sequencing",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Arbiter extraction Phase 2: spec sprint sequencing"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-d5hz",
+        "title": "Platform: clavain — Extract Coldwine task orchestration to Clavain skills (v2)",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Extract Coldwine task orchestration to Clavain skills (v2)"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-bkzf",
+        "title": "Platform: clavain — Arbiter extraction Phase 3",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Arbiter extraction Phase 3"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-k1q4",
+        "title": "Platform: clavain — Coldwine: intent submission to Clavain OS",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Coldwine: intent submission to Clavain OS"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-1quv",
+        "title": "Platform: clavain — Add TTL cleanup for /tmp/clavain-* sentinel files",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Add TTL cleanup for /tmp/clavain-* sentinel files"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-eqbo",
+        "title": "Platform: clavain — Add Conductor-style project init wizard to /clavain:init",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Add Conductor-style project init wizard to /clavain:init"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-d8yi",
+        "title": "Platform: clavain — Add inherit model tier to Clavain model routing",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Add inherit model tier to Clavain model routing"
+      },
+      {
+        "module": "interverse",
+        "id": "PL-iv-64j3",
+        "title": "Platform: clavain — Multi-agent sprint reflection (N artifacts for N dispatches)",
+        "phase": "later",
+        "priority": "P3",
+        "status": "planned",
+        "source": "interverse-rollup",
+        "source_file": "/home/mk/projects/Demarch/docs/roadmap.json",
+        "blocked_by": [],
+        "notes": "Platform: clavain — Multi-agent sprint reflection (N artifacts for N dispatches)"
       },
       {
         "module": "interverse",
@@ -4002,11 +4092,6 @@
     ]
   },
   "module_highlights": [
-    {
-      "module": "clavain",
-      "location": "os/clavain",
-      "summary": "| ID | Title | Status | |----|-------|--------|"
-    },
     {
       "module": "intercheck",
       "location": "interverse/intercheck",
@@ -4118,36 +4203,9 @@
       "summary": "Tuivision automates TUI and terminal UI testing through scriptable sessions and screenshot workflows."
     }
   ],
-  "research_agenda": [
-    {
-      "item": "**Token-efficient orchestration** (iv-1zh2 series): Lead-orchestrator + worker roles, cross-model specialization, complexity-based dispatch, artifact-first handoffs, context compaction, lazy skill loading. 7 brainstorm subtasks strategized.",
-      "source_file": "os/clavain/docs/clavain-roadmap.md"
-    },
-    {
-      "item": "**Flux-drive library extraction** (iv-ia66 → iv-0etu → iv-e8dg → iv-rpso): Domain detection → scoring library → Clavain migration → full pipeline. Phase 2 next.",
-      "source_file": "os/clavain/docs/clavain-roadmap.md"
-    },
-    {
-      "item": "**Agent communication patterns** (iv-5leh): Hook-level agent comms for intra-session coordination.",
-      "source_file": "os/clavain/docs/clavain-roadmap.md"
-    },
-    {
-      "item": "**ADL discipline extensions** (iv-icqo): Research extensions for Clavain agents.",
-      "source_file": "os/clavain/docs/clavain-roadmap.md"
-    },
-    {
-      "item": "**Sprint resilience**: Phase 1 and Phase 2 brainstorms completed. Implementation pending.",
-      "source_file": "os/clavain/docs/clavain-roadmap.md"
-    }
-  ],
+  "research_agenda": [],
   "cross_module_dependencies": [],
   "modules_without_roadmaps": [
-    {
-      "module": "interfin",
-      "location": "apps/interfin",
-      "version": "0.1.0",
-      "notes": "No docs/roadmap.md"
-    },
     {
       "module": "agent-rig",
       "location": "core/agent-rig",
@@ -4167,15 +4225,9 @@
       "notes": "No docs/roadmap.md"
     },
     {
-      "module": "intermute",
-      "location": "core/intermute",
-      "version": "—",
-      "notes": "No docs/roadmap.md"
-    },
-    {
       "module": "intercache",
       "location": "interverse/intercache",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "notes": "No docs/roadmap.md"
     },
     {
@@ -4185,15 +4237,15 @@
       "notes": "No docs/roadmap.md"
     },
     {
-      "module": "interfin",
-      "location": "interverse/interfin",
-      "version": "—",
+      "module": "interkasten",
+      "location": "interverse/interkasten",
+      "version": "0.4.6",
       "notes": "No docs/roadmap.md"
     },
     {
-      "module": "interkasten",
-      "location": "interverse/interkasten",
-      "version": "0.4.5",
+      "module": "interknow",
+      "location": "interverse/interknow",
+      "version": "0.1.0",
       "notes": "No docs/roadmap.md"
     },
     {
@@ -4203,14 +4255,32 @@
       "notes": "No docs/roadmap.md"
     },
     {
-      "module": "interlock",
-      "location": "interverse/interlock",
-      "version": "0.2.6",
+      "module": "intername",
+      "location": "interverse/intername",
+      "version": "0.1.1",
       "notes": "No docs/roadmap.md"
     },
     {
       "module": "interpeer",
       "location": "interverse/interpeer",
+      "version": "0.1.0",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "interplug",
+      "location": "interverse/interplug",
+      "version": "0.1.0",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "interpulse",
+      "location": "interverse/interpulse",
+      "version": "0.1.1",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "intersense",
+      "location": "interverse/intersense",
       "version": "0.1.0",
       "notes": "No docs/roadmap.md"
     },
@@ -4221,8 +4291,8 @@
       "notes": "No docs/roadmap.md"
     },
     {
-      "module": "interspect",
-      "location": "interverse/interspect",
+      "module": "interskill",
+      "location": "interverse/interskill",
       "version": "0.1.0",
       "notes": "No docs/roadmap.md"
     },
@@ -4239,9 +4309,15 @@
       "notes": "No docs/roadmap.md"
     },
     {
+      "module": "intertree",
+      "location": "interverse/intertree",
+      "version": "0.1.0",
+      "notes": "No docs/roadmap.md"
+    },
+    {
       "module": "intertrust",
       "location": "interverse/intertrust",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "notes": "No docs/roadmap.md"
     }
   ],
