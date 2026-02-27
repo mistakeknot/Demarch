@@ -61,7 +61,7 @@ Bad: `interdbsync`, `interllmgw`, `interCfg`
 
 1. `inter` + one-syllable English word (two syllables total after prefix)
 2. The word should hint at function without being too literal
-3. Check the existing list (currently 45 modules) for conflicts
+3. Check the existing list for conflicts (see Checking for Collisions below)
 4. Must work as: `interverse/<name>/`, `github.com/mistakeknot/<name>`
 
 ## Checking for Collisions

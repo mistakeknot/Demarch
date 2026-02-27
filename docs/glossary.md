@@ -64,7 +64,7 @@ Demarch has five pillars — the major components that make up the platform:
 
 | Term | Definition |
 |------|------------|
-| **Interspect** | Adaptive profiler that consumes kernel events and proposes OS configuration changes. Read-only — never writes to the kernel. Cross-cutting, not a layer. |
+| **Interspect** | Adaptive profiler that consumes kernel events and proposes OS configuration changes. Today: modifies only the OS layer. The kernel boundary is a trust threshold that softens as trust is earned (see PHILOSOPHY.md § Earned Authority). Cross-cutting, not a layer. |
 | **Write-path contract** | The invariant that all durable state flows through the kernel (L1). Higher layers call `ic` CLI commands — they never write to the database directly. |
 | **Host adapter** | Platform integration layer (Claude Code plugin interface, Codex CLI, bare shell). Not a companion plugin. |
 | **Dispatch driver** | Agent execution backend (Claude CLI, Codex CLI, container runtime) — the runtime that executes a dispatch. |

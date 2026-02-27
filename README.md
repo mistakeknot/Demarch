@@ -47,6 +47,12 @@ Most agent tools skip the product phases (brainstorm, strategy, specification) a
 6. **Review**: multi-agent quality gates catch issues before shipping
 7. **Ship**: land the change with verification and session reflection
 
+## Philosophy
+
+Three principles, applied recursively: every action produces evidence, evidence earns authority, and authority is scoped and composed. The cycle compounds — more autonomy produces more data, more data improves routing, better routing cuts cost, lower cost enables more autonomy.
+
+See [PHILOSOPHY.md](PHILOSOPHY.md) for the full design bets, tradeoffs, and convictions.
+
 ## Architecture
 
 Demarch is a monorepo with 5 pillars:

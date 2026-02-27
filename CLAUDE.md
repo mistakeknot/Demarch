@@ -30,11 +30,13 @@ Compatibility symlinks exist at `/root/projects/<name>` pointing into this monor
 
 ## Plugin Publish Policy
 
-Publish with `ic publish` from any plugin directory:
-- `ic publish --patch` — auto-increment patch version
-- `ic publish <version>` — bump to exact version
-- `ic publish doctor --fix` — detect and auto-repair drift
-- Auto-publish hook calls `ic publish --auto` on `git push`
+Three entrypoints to the same engine — use whichever fits your context:
+- **`ic publish --patch`** / **`ic publish <version>`** — Go CLI (preferred when `ic` is built)
+- **`/interpub:release <version>`** — Claude Code slash command
+- **`scripts/bump-version.sh <version>`** — shell wrapper (terminal fallback)
+
+Health checks: `ic publish doctor --fix` (detect and auto-repair drift).
+Auto-publish hook calls `ic publish --auto` on `git push`.
 
 For publish gates and completion criteria, follow root `AGENTS.md` → `## Publishing`.
 

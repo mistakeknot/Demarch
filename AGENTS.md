@@ -211,21 +211,30 @@ cd core/interbench && go build -o interbench . && ./interbench --help
 
 ### Publishing
 
-In Claude Code chat, use the interpub slash command:
+Three entrypoints to the same engine — use whichever fits your context:
 
+**1. Go CLI (preferred when `ic` is built):**
+```bash
+cd interverse/interflux
+ic publish --patch               # auto-increment patch version
+ic publish 0.2.1                 # bump to exact version
+ic publish --dry-run             # preview only
+ic publish doctor --fix          # detect and auto-repair drift
+```
+
+**2. Claude Code slash command:**
 ```
 /interpub:release <version>
 ```
 
-Or from a terminal, use the bump script directly:
-
+**3. Shell wrapper (terminal fallback):**
 ```bash
 cd interverse/interflux
 scripts/bump-version.sh 0.2.1            # bump + commit + push
 scripts/bump-version.sh 0.2.1 --dry-run  # preview only
 ```
 
-Both methods call the same underlying engine (`scripts/interbump.sh`). All `/interpath:*`, `/interpub:*`, etc. are **Claude Code slash commands** — run them inside a Claude Code session, not from a terminal.
+All three call the same underlying engine. `/interpub:*` and other slash commands are **Claude Code slash commands** — run them inside a Claude Code session, not from a terminal.
 
 ## Plugin Dev/Publish Gate
 

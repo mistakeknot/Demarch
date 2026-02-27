@@ -18,7 +18,7 @@ Demarch's top-level organizational units. Each pillar has a clear owner and boun
 
 ## The Constellation
 
-37 modules organized by architectural role within the pillars.
+Modules organized by architectural role within the pillars.
 
 ### Infrastructure (Intercore pillar)
 

@@ -56,7 +56,8 @@ Pillars describe *what* makes up Demarch. The three-layer model below describes 
 
               ╔══════════════════════════════════════════╗
               ║   Cross-cutting: Interspect (profiler)   ║
-              ║   Consumes kernel events. No writes.     ║
+              ║   Today: OS-layer changes only.          ║
+              ║   Kernel boundary softens with trust.    ║
               ╚══════════════════════════════════════════╝
 ```
 
@@ -67,7 +68,7 @@ Pillars describe *what* makes up Demarch. The three-layer model below describes 
 | L1 Kernel | Intercore | Runs, phases, gates, events, dispatches, state, locks, sentinels, artifacts | CLI (`ic`) commands, exit codes |
 | L2 OS | Clavain + Drivers | Workflow semantics, sprint lifecycle, agent supervision, brainstorm-to-ship pipeline | Calls L1 via `ic` CLI; receives events via `ic events tail` |
 | L3 Apps | Autarch (TUIs) | User-facing dashboards, visualizations | Reads L1 state via `ic` queries; sends intents to L2 |
-| Cross-cutting | Interspect | Observability, profiling, pattern detection | Consumes L1 events (read-only) |
+| Cross-cutting | Interspect | Observability, profiling, pattern detection | Consumes L1 events; today writes only to L2 (OS config). Kernel boundary softens as trust is earned. |
 
 ## Write-Path Contract
 
@@ -83,7 +84,7 @@ All durable state flows through the kernel (L1). Higher layers do not write to t
 - **v1 (current):** Convention — callers use `ic` commands by agreement.
 - **v1.5:** Namespace validation — `ic` validates key prefixes match declared namespaces.
 - **v2:** `--caller` flag — audit trail records which component wrote each entry.
-- **v3:** Capability tokens — callers present tokens scoped to specific operations.
+- **v3:** Capability tokens (Gridfire) — callers present unforgeable tokens scoped to specific operations, with effects allowlists and resource bounds. See PHILOSOPHY.md § Earned Authority, Security.
 
 ## Inter-Layer Communication
 
