@@ -23,7 +23,7 @@ Since Gemini CLI uses specialized `SKILL.md` instructions dynamically generated 
    bash scripts/install-gemini-interverse.sh install
    ```
 
-This generates all the required `SKILL.md` files locally and registers the directory (`~/.local/share/Demarch/.gemini/skills`) to your global `~/.gemini/skills` directory so you can invoke them via `gemini` in any project workspace.
+This generates all the required `SKILL.md` files locally and registers the directory (`~/.local/share/Demarch/.gemini/generated-skills`) to your global `~/.gemini/skills` directory so you can invoke them via `gemini` in any project workspace.
 
 ## Verify
 

@@ -9,7 +9,7 @@ set -e
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
 cd "$PROJECT_ROOT"
 
-SKILLS_DIR=".gemini/skills"
+SKILLS_DIR=".gemini/generated-skills"
 mkdir -p "$SKILLS_DIR"
 
 echo "Generating Gemini Skills from Clavain and Interverse drivers..."

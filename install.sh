@@ -511,7 +511,7 @@ fi
 if command -v gemini &>/dev/null; then
     log ""
     log "${BOLD}Gemini CLI:${RESET}"
-    log "  Skills generated and linked to ~/.gemini/skills/ globally."
+    log "  Skills generated and linked to ~/.gemini/generated-skills/ globally."
     log "  Runbook: ${BLUE}https://github.com/mistakeknot/Demarch/blob/main/docs/guide-gemini-setup.md${RESET}"
 fi
 log ""

@@ -26,14 +26,14 @@ case "$ACTION" in
         
         echo "Linking skills to Gemini global scope..."
         cd "$PROJECT_ROOT"
-        gemini skills link .gemini/skills --scope user --consent
+        gemini skills link .gemini/generated-skills --scope user --consent
         
         echo "Successfully installed Gemini CLI skills!"
         ;;
     uninstall)
         echo "Unlinking Gemini CLI skills..."
         # Gemini does not have a bulk unlink yet, but we can iterate over the generated skills
-        for skill_dir in "$PROJECT_ROOT/.gemini/skills"/*; do
+        for skill_dir in "$PROJECT_ROOT/.gemini/generated-skills"/*; do
             if [ -d "$skill_dir" ]; then
                 skill_name=$(basename "$skill_dir")
                 echo "Unlinking $skill_name..."
