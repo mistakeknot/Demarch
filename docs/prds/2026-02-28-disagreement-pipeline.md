@@ -37,22 +37,22 @@ Wire the pipeline end-to-end using intercore's event bus: clavain:resolve emits 
 ### F3: Emit logic in clavain:resolve
 **What:** Extend clavain:resolve Step 5 to detect `severity_conflict` on resolved findings, apply the impact gate, and emit via `ic events emit`.
 **Acceptance criteria:**
-- [ ] After recording trust feedback, check each resolved finding for `severity_conflict` field in `.clavain/quality-gates/findings.json`
-- [ ] Impact gate: only emit when the resolution "changed a decision" — finding was discarded despite having P0/P1 severity from at least one agent, OR was accepted when the majority severity was lower
-- [ ] Call `ic events emit --source=review --type=disagreement_resolved --context=<JSON>` with the disagreement payload
-- [ ] Silent fail-open: if `ic` binary not found or emit fails, log warning and continue (same pattern as existing trust feedback)
-- [ ] No change to existing trust feedback behavior — emit is additive, runs after `_trust_record_outcome`
+- [x] After recording trust feedback, check each resolved finding for `severity_conflict` field in `.clavain/quality-gates/findings.json`
+- [x] Impact gate: only emit when the resolution "changed a decision" — finding was discarded despite having P0/P1 severity from at least one agent, OR was accepted when the majority severity was lower
+- [x] Call `ic events emit --source=review --type=disagreement_resolved --context=<JSON>` with the disagreement payload
+- [x] Silent fail-open: if `ic` binary not found or emit fails, log warning and continue (same pattern as existing trust feedback)
+- [x] No change to existing trust feedback behavior — emit is additive, runs after `_trust_record_outcome`
 
 ### F4: Interspect cursor consumer for `disagreement_resolved` events
 **What:** Extend interspect's event consumer to handle `disagreement_resolved` events and convert them to evidence records.
 **Acceptance criteria:**
-- [ ] `lib-interspect.sh` has new function `_interspect_process_disagreement_event` that parses the review event payload
-- [ ] For each agent whose severity was overridden by the resolution, call `_interspect_insert_evidence` with: agent name, type `"disagreement_override"`, the resolution context, and the project
-- [ ] Evidence records include finding_id, agent's severity vs chosen severity, and resolution outcome
-- [ ] `override_reason` mapping: `dismissal_reason=agent_wrong` → `override_reason="agent_wrong"`; `dismissal_reason=deprioritized` → `override_reason="deprioritized"` (does NOT count toward routing override threshold); `dismissal_reason=already_fixed` → `override_reason="stale_finding"` (does NOT count); `resolution=accepted` with severity override → `override_reason="severity_miscalibrated"`
-- [ ] Existing `_interspect_classify_pattern` naturally picks up `disagreement_override` evidence (counts by agent, not by type)
-- [ ] Consumer polls `ic events tail --consumer=interspect-disagreement --since-review=<cursor>` for review events
-- [ ] When accumulated overrides cross routing-eligibility threshold (≥80%), existing `_interspect_apply_propose` handles it — no new routing logic needed
+- [x] `lib-interspect.sh` has new function `_interspect_process_disagreement_event` that parses the review event payload
+- [x] For each agent whose severity was overridden by the resolution, call `_interspect_insert_evidence` with: agent name, type `"disagreement_override"`, the resolution context, and the project
+- [x] Evidence records include finding_id, agent's severity vs chosen severity, and resolution outcome
+- [x] `override_reason` mapping: `dismissal_reason=agent_wrong` → `override_reason="agent_wrong"`; `dismissal_reason=deprioritized` → `override_reason="deprioritized"` (does NOT count toward routing override threshold); `dismissal_reason=already_fixed` → `override_reason="stale_finding"` (does NOT count); `resolution=accepted` with severity override → `override_reason="severity_miscalibrated"`
+- [x] Existing `_interspect_classify_pattern` naturally picks up `disagreement_override` evidence (counts by agent, not by type)
+- [x] Consumer polls `ic events tail --consumer=interspect-disagreement --since-review=<cursor>` for review events
+- [x] When accumulated overrides cross routing-eligibility threshold (≥80%), existing `_interspect_apply_propose` handles it — no new routing logic needed
 
 ## Non-goals
 
