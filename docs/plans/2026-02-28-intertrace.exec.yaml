@@ -1,0 +1,69 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Scaffolding"
+    tasks:
+      - id: task-1
+        title: "Create plugin directory structure"
+        files: [interverse/intertrace/.claude-plugin/plugin.json, interverse/intertrace/CLAUDE.md, interverse/intertrace/AGENTS.md, interverse/intertrace/PHILOSOPHY.md, interverse/intertrace/README.md, interverse/intertrace/LICENSE]
+        depends: []
+      - id: task-2
+        title: "Write canon doc and root AGENTS.md pointer"
+        files: [docs/canon/mcp-server-criteria.md, AGENTS.md]
+        depends: []
+      - id: task-3
+        title: "Write structural tests"
+        files: [interverse/intertrace/tests/pyproject.toml, interverse/intertrace/tests/structural/conftest.py, interverse/intertrace/tests/structural/test_structure.py, interverse/intertrace/tests/structural/test_skills.py]
+        depends: [task-1]
+
+  - name: "Tracers"
+    tasks:
+      - id: task-4
+        title: "Write event bus tracer"
+        files: [interverse/intertrace/lib/trace-events.sh]
+        depends: []
+      - id: task-5
+        title: "Write contract verifier"
+        files: [interverse/intertrace/lib/trace-contracts.sh]
+        depends: []
+      - id: task-6
+        title: "Write companion graph verifier"
+        files: [interverse/intertrace/lib/trace-companion.sh]
+        depends: []
+
+  - name: "Skill & Agent"
+    tasks:
+      - id: task-7
+        title: "Write /intertrace slash command"
+        files: [interverse/intertrace/skills/intertrace/SKILL.md]
+        depends: [task-4, task-5, task-6]
+      - id: task-8
+        title: "Write fd-integration review agent"
+        files: [interverse/intertrace/agents/review/fd-integration.md]
+        depends: []
+
+  - name: "Validation"
+    tasks:
+      - id: task-9
+        title: "Run tests and fix failures"
+        files: []
+        depends: [task-3, task-7, task-8]
+        tier: fast
+      - id: task-10
+        title: "Register plugin in marketplace"
+        files: [core/marketplace/.claude-plugin/marketplace.json]
+        depends: [task-9]
+      - id: task-11
+        title: "Integration test — trace iv-5muhg"
+        files: []
+        depends: [task-9]
+        tier: fast
+      - id: task-12
+        title: "Final polish and push"
+        files: []
+        depends: [task-10, task-11]
+        tier: fast
