@@ -13,7 +13,7 @@ Every plugin repo has these 6 root files:
 | `AGENTS.md` | Cross-AI development guide | Standard boilerplate header + plugin-specific content (see below) |
 | `PHILOSOPHY.md` | Design bets | Purpose, North Star, Working Priorities, Brainstorming/Planning Doctrine, Decision Filters |
 | `LICENSE` | MIT license | Standard MIT text, copyright "MK" |
-| `.gitignore` | Excludes | `__pycache__/`, `*.pyc`, `.pytest_cache/`, `.claude/`, `.beads/`, OS/editor files |
+| `.gitignore` | Excludes | `node_modules/`, `__pycache__/`, `*.pyc`, `.venv/`, `.pytest_cache/`, `.claude/`, `.beads/`, `*.log`, OS/editor files |
 
 ## Required Directories
 
@@ -35,6 +35,60 @@ Present when the plugin needs them, absent otherwise:
 | `hooks/` | Plugin registers hooks (`hooks.json`) or provides hook libraries (`lib-*.sh`) |
 | `config/` | Plugin has configuration files |
 | `docs/` | Plugin has brainstorms, plans, PRDs, specs, or roadmaps |
+
+## Skills Convention
+
+Every skill lives in its own subdirectory under `skills/` and contains a `SKILL.md`:
+
+```
+skills/
+├── analyze/
+│   └── SKILL.md
+├── status/
+│   ├── SKILL.md
+│   └── SKILL-compact.md    # Optional compact version
+└── create/
+    ├── SKILL.md
+    ├── SKILL-compact.md
+    ├── references/          # Optional supporting files
+    └── templates/
+```
+
+### Why subdirectories, not flat files
+
+The flat pattern (`skills/foo.md`) is **not valid**. Use `skills/foo/SKILL.md` instead because:
+
+1. **Claude Code expects it** — the plugin loader resolves each `skills` entry in `plugin.json` as a directory and looks for `SKILL.md` inside it
+2. **Companion files** — `SKILL-compact.md`, `references/`, `templates/`, and `workflows/` subdirs only work alongside `SKILL.md` in the same directory
+3. **Discoverability** — `plugin.json` lists each skill directory individually (e.g., `./skills/analyze`, `./skills/status`), making the skill inventory explicit
+
+### SKILL.md requirements
+
+Every `SKILL.md` must have YAML frontmatter with at least `description`:
+
+```yaml
+---
+description: "One sentence — what this skill does and when to use it."
+---
+```
+
+Additional frontmatter fields (`name`, `user_invocable`, `allowed-tools`, `argument-hint`) are optional but recommended. The structural test suite validates that `description` exists.
+
+### plugin.json skills array
+
+List each skill directory individually — never list the bare `./skills` directory:
+
+```json
+{
+  "skills": [
+    "./skills/analyze",
+    "./skills/status",
+    "./skills/create"
+  ]
+}
+```
+
+**Wrong:** `"skills": ["./skills"]` — this expects `skills/SKILL.md` to exist at the top level, which is incorrect for multi-skill plugins.
 
 ## plugin.json Schema
 
