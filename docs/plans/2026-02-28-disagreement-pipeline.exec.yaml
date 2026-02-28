@@ -1,0 +1,56 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Kernel Event Infrastructure"
+    tasks:
+      - id: task-1
+        title: "Add ReviewEvent type and SourceReview constant"
+        files: [core/intercore/internal/event/event.go]
+        depends: []
+      - id: task-2
+        title: "Add review_events table via schema migration (schema.sql + db.go + baseline)"
+        files: [core/intercore/internal/db/db.go, core/intercore/internal/db/schema.sql, core/intercore/internal/db/migrations/020_baseline.sql]
+        depends: [task-1]
+      - id: task-3
+        title: "Add AddReviewEvent, ListReviewEvents, MaxReviewEventID with replay input"
+        files: [core/intercore/internal/event/store.go, core/intercore/internal/event/store_test.go, core/intercore/internal/event/replay_capture.go]
+        depends: [task-2]
+
+  - name: "CLI and Cursor Integration"
+    tasks:
+      - id: task-4
+        title: "Update cursor tracking for review events"
+        files: [core/intercore/cmd/ic/events.go]
+        depends: [task-3]
+      - id: task-5
+        title: "Add ic events emit CLI subcommand"
+        files: [core/intercore/cmd/ic/events.go]
+        depends: [task-4]
+      - id: task-6
+        title: "Integration test for emit roundtrip"
+        files: [core/intercore/test-integration.sh]
+        depends: [task-5]
+        tier: fast
+
+  - name: "Consumer Wiring"
+    tasks:
+      - id: task-7
+        title: "Extend clavain:resolve to emit disagreement events"
+        files: [os/clavain/commands/resolve.md]
+        depends: [task-5]
+      - id: task-8
+        title: "Add interspect disagreement event consumer + ic events review subcommand"
+        files: [interverse/interspect/hooks/lib-interspect.sh, core/intercore/cmd/ic/events.go]
+        depends: [task-5]
+
+  - name: "Verification"
+    tasks:
+      - id: task-9
+        title: "Full test suite and end-to-end verification"
+        files: []
+        depends: [task-6, task-7, task-8]
+        tier: fast

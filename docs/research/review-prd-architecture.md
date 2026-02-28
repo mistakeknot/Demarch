@@ -1,200 +1,225 @@
-# Architecture Review: Static Routing Table PRD (B1)
+# Architecture Review: Disagreement → Resolution → Routing Signal Pipeline PRD
 
-**Reviewed:** 2026-02-21
-**Document:** `docs/prds/2026-02-21-static-routing-table.md`
-**Reviewer:** Flux-drive Architecture & Design Reviewer (Sonnet 4.6)
-**Focus Areas:** Module boundaries, coupling, design patterns, anti-patterns, unnecessary complexity
+**Reviewed:** 2026-02-28
+**PRD:** `/home/mk/projects/Demarch/docs/prds/2026-02-28-disagreement-pipeline.md`
+**Bead:** iv-5muhg
+**Reviewer role:** Flux-drive Architecture & Design Reviewer
 
 ---
 
 ## Summary
 
-The PRD addresses a real and legitimate pain point: two independent routing systems with hardcoded policy. The core direction — declarative config, shell library, backward-compatible integration — is sound. However, the PRD carries one significant structural conflict, one unnecessary scope creep item, and one under-specified integration that will create debugging confusion at implementation time. These are fixable before work begins.
+The PRD wires a T+1 → T+2 signal path that the philosophy calls out by name. The overall direction is sound, and the dependency list is accurate — every named component was verified to exist. Three structural problems need resolution before implementation begins. One is a schema boundary violation (the table the PRD assumes exists in the event UNION does not). One is a hidden contract gap that will silently corrupt cursor state. One is a missing field in the intermediate findings.json schema that makes the detection point in clavain:resolve permanently inert.
 
 ---
 
 ## 1. Boundaries & Coupling
 
-### Finding 1 — CRITICAL: routing.yaml and tiers.yaml Govern Different Namespaces, But the PRD Conflates Their Output Types
+### 1.1 Layer Topology — Passes
 
-**Location:** F1 schema, F3 dispatch integration, dependency statement ("routing.yaml extends but does not replace this")
+The flow direction is correct: L2 shell (clavain:resolve) calls L1 kernel CLI (`ic events emit`) which writes to the L1 event store, and L2 plugin consumer (interspect) reads it back via cursor. No upward dependencies from L1 into L2 are introduced.
 
-`tiers.yaml` maps symbolic **tier names** (`fast`, `deep`, `fast-clavain`, `deep-clavain`) to **concrete Codex model strings** (`gpt-5.3-codex-spark`). The tier names are stable abstractions that insulate callers from model churn. This is a Codex CLI concern.
+The existing key dependency chains from `AGENTS.md` are untouched:
 
-The PRD's `routing.yaml` maps phases and categories to values described with Claude model aliases (e.g., `brainstorm: opus`, `execute: sonnet`). These are Claude subagent model names, not Codex tier names. The two files operate in different namespaces for different runtimes.
-
-This is structurally fine if the two systems stay separate. The problem is F3, which states that `dispatch.sh` should "consult routing.yaml for phase-aware tier selection." This means `lib-routing.sh` must return something that tiers.yaml and `dispatch.sh` understand — a Codex tier name (`fast`, `deep`) — not a Claude alias (`opus`, `sonnet`). But F4 applies the same `routing.yaml` to Claude subagent frontmatter, where the correct values are Claude model names, not Codex tier names.
-
-Under the single-file design, `routing.yaml` must either:
-- (A) Use Claude model names (`opus`, `sonnet`, `haiku`) — then F3 dispatch integration requires an implicit translation to Codex tiers, which is underdefined and error-prone, or
-- (B) Use Codex tier names (`fast`, `deep`) — then F4 subagent integration must translate back to Claude model names, and the translation table lives nowhere specified.
-
-The PRD says the config "extends but does not replace" tiers.yaml but does not define what values `routing.yaml`'s `phases:` section actually contains or how `lib-routing.sh` maps its output to each caller's requirement. "Extends but does not replace" is a design gesture, not a specification.
-
-**What to fix.**
-
-Split `routing.yaml` into two explicitly namespaced sections with documented value types:
-
-```yaml
-# config/routing.yaml
-
-# For Claude subagents — values are Claude model aliases (haiku, sonnet, opus, inherit)
-subagents:
-  phases:
-    brainstorm: opus
-    execute: sonnet
-  categories:
-    research: haiku
-    review: sonnet
-  overrides:
-    fd-safety: opus
-
-# For Codex dispatch — values are tier names from config/dispatch/tiers.yaml
-dispatch:
-  phases:
-    brainstorm: deep
-    execute: fast
-    review: fast
+```
+Clavain (L2) → interflux → intersearch   [untouched]
+Clavain (L2) → intertrust               [untouched]
 ```
 
-`lib-routing.sh` exposes two distinct resolver functions:
-- `routing_resolve_subagent_model <phase> <category> [agent]` — returns a Claude model name consumed by `/model-routing`
-- `routing_resolve_dispatch_tier <phase>` — returns a Codex tier name consumed by `dispatch.sh`
+The new edge is `Clavain (L2) → intercore (L1)` via shell-out to `ic`, which already exists implicitly everywhere clavain calls `ic`. Not a new coupling category.
 
-This makes the namespace boundary explicit, eliminates translation ambiguity, and preserves each caller's existing vocabulary.
+### 1.2 MUST-FIX: `EmitExternal()` Targets a Table That Is Not in the Event UNION
 
----
+F2 specifies a new `event.Store.EmitExternal()` method. The PRD states: "Existing `ListEvents` and `ListAllEvents` queries return the new events without changes (they're just rows in the same table)."
 
-### Finding 2 — MODERATE: Interserve-Mode Tier Remapping Creates Invisible Context-Dependence in routing.yaml Outputs
+This claim requires verification against the actual store code, and verification shows a problem.
 
-**Location:** F3 acceptance criteria — "resolves model from routing.yaml before falling back to `--tier`"
+`ListAllEvents` in `/home/mk/projects/Demarch/core/intercore/internal/event/store.go` (lines 113-143) unions exactly four tables:
 
-`dispatch.sh` already has a silent post-resolution remapping step: when `CLAVAIN_DISPATCH_PROFILE=interserve`, it translates `fast` → `fast-clavain` and `deep` → `deep-clavain` inside `resolve_tier_model`. This remapping is invisible to callers.
+```go
+// UNION in ListAllEvents:
+//   phase_events        (sincePhaseID cursor slot)
+//   dispatch_events     (sinceDispatchID cursor slot)
+//   discovery_events    (sinceDiscoveryID cursor slot)
+//   coordination_events (no cursor — hardcoded id > 0)
+```
 
-Under the proposed flow, `dispatch.sh --phase brainstorm` would resolve `brainstorm` → `deep` (from `routing.yaml`), pass `deep` to `resolve_tier_model`, which silently remaps it to `deep-clavain` in interserve mode. A `routing.yaml` author writing `brainstorm: deep` cannot know whether "deep" will be the actual tier or a remapped variant at execution time. `routing.yaml` is supposed to be a declarative single source of truth, but its effective output becomes context-dependent on an environment variable.
+`interspect_events` is an entirely separate table with its own `AddInterspectEvent` / `ListInterspectEvents` methods and `MaxInterspectEventID`. It is not part of the UNION. If `EmitExternal()` writes to `interspect_events`, the F1 acceptance criterion "Event appears in `ic events tail` output" silently fails because `cmdEventsTail` calls `ListAllEvents`.
 
-**What to fix.**
+If `EmitExternal()` introduces a fifth table (e.g., `review_events`), that table must be added to both `ListEvents` and `ListAllEvents`, a new cursor field must be added to the cursor state JSON, and the schema version must increment from 23 to 24. The current cursor payload is:
 
-Document the layer boundary explicitly in both `routing.yaml`'s inline comments and `lib-routing.sh`'s header: `routing.yaml` declares base tier names (`fast`, `deep`); interserve-mode remapping is a post-resolution step inside `dispatch.sh` and is not routing.yaml's concern. This is already how the current system works. The PRD must state this separation clearly so implementers don't accidentally route around it.
+```json
+{"phase":0,"dispatch":0,"interspect":0,"discovery":0}
+```
 
-For B2/B3, if `routing.yaml` needs to express interserve-specific overrides, that can be added as a separate `dispatch.interserve_overrides:` section. Mark it out of scope for B1.
+The `interspect` field in that JSON is not the `interspect_events` table cursor — it is the cursor slot used by the consumer for a different purpose. Adding a `review` field without migrating existing registered cursors will cause those cursors to read zero for the new field on first access, processing all historical review events again.
 
----
+The PRD must pick one of two concrete options:
 
-### Finding 3 — LOW: dispatch.sh's YAML Parser Is a Load-Bearing Implementation Detail That lib-routing.sh Must Replicate Exactly
+**Option A — Use dispatch_events (zero schema change):** `EmitExternal()` inserts into `dispatch_events` with `dispatch_id="review:external"`, `run_id` from `--run`, `event_type` from `--type`, and payload serialized into `reason` (truncated to 500 chars) or a new `payload_json` column via a one-column ALTER TABLE migration. The event appears in `ListAllEvents` immediately. The `sinceDispatch` cursor slot tracks it. Tradeoff: `reason` is semantically strained; a `payload_json` column alteration is the cleaner path at minimal migration cost.
 
-**Location:** F2 — "Uses line-by-line YAML parsing consistent with dispatch.sh pattern"
+**Option B — New review_events table (schema v24):** New table `review_events (id, source TEXT, event_type TEXT, run_id TEXT, payload_json TEXT, envelope_json TEXT, created_at INTEGER)`. Added to both `ListAllEvents` and `ListEvents` UNIONs as a fifth source. A `sinceReview` cursor field added with zero-default for existing cursors. Schema bumps to v24. This is the cleanest long-term design.
 
-The existing parser in `resolve_tier_model` handles three specific structural patterns in `tiers.yaml`: a top-level `tiers:` section, two-space-indented tier keys, and four-space-indented `model:` values within each tier block. It detects section exit by watching for a line that starts with a lowercase letter at column 0.
+The "just rows in the same table" claim in F2 must be replaced with a concrete decision on which table and a verification that it appears in `ListAllEvents`.
 
-`routing.yaml` will have a more complex nested structure (`subagents:` → `phases:` → key-value pairs, `categories:` → key-value pairs, `overrides:` → key-value pairs). The existing parser's section-exit heuristic (any top-level lowercase letter terminates the current section) works because `tiers.yaml` has only two top-level sections. With `routing.yaml`'s deeper nesting, the same heuristic becomes ambiguous — `phases:` under `subagents:` looks like a top-level key to a regex that examines indentation level.
+### 1.3 MUST-FIX: `severity_conflict` Is Not Confirmed in findings.json — Detection Point Is Unverified
 
-**What to fix.**
+F3: "When resolving a finding that has `severity_conflict` metadata..."
 
-Before writing `lib-routing.sh`, write down the exact YAML shape that the file will have — including indent depths and the nesting structure — and verify that the planned parsing logic correctly handles it. Add this to the acceptance criteria: "Parsing is verified against a sample routing.yaml with all four sections populated (phases, categories, overrides, and the dispatch section)." The "consistent with dispatch.sh pattern" criterion is underspecified because `routing.yaml` is structurally more complex than `tiers.yaml`.
+The resolve command sources its data from `.clavain/quality-gates/findings.json`. The interflux synthesis spec (deduplication Rule 4, documented in `docs/research/explore-flux-drive-codebase.md`) says conflicting severity is "recorded in `severity_conflict`." However, the `findings.json` schema documented in `/home/mk/projects/Demarch/interverse/interflux/skills/flux-drive/phases/synthesize.md` (Step 3.4a) specifies these finding fields:
+
+```json
+{
+  "id": "P0-1",
+  "severity": "P0",
+  "agent": "fd-architecture",
+  "section": "Section Name",
+  "title": "Short description",
+  "convergence": 3
+}
+```
+
+There is no `severity_conflict` key in that schema. The synthesis subagent (`intersynth:synthesize-review`) writes `findings.json`. If `severity_conflict` is not written into that file, clavain:resolve has no detection point, and F3 silently never fires.
+
+This is a contract gap between interflux's synthesis subagent and clavain:resolve. The PRD lists both as dependencies but does not identify the intermediate contract.
+
+Before implementation: verify whether `intersynth:synthesize-review` writes `severity_conflict` to `findings.json`. If it does not, either (a) extend the findings.json schema to include it and update intersynth to emit it, or (b) change F3's detection mechanism to another source. This gap must be closed or F3 produces nothing and the entire pipeline is inert.
+
+### 1.4 WATCH: Invisible Failure Mode in Fire-and-Forget Emit
+
+F3: "The emit is fire-and-forget — resolve does not fail if the event emission fails (log warning only)."
+
+This is architecturally correct. The concern is operational: if `ic` is not on PATH, the DB path is wrong, or schema has drifted, the event is silently dropped with no observable signal. Over time this creates a systematic gap in interspect's evidence without any way to diagnose it.
+
+The existing trust feedback block in `resolve.md` (lines 84-91) handles unavailability gracefully using an explicit availability check:
+
+```bash
+TRUST_PLUGIN=$(find ~/.claude/plugins/cache -path "*/intertrust/*/hooks/lib-trust.sh" 2>/dev/null | head -1)
+if [[ -n "$TRUST_PLUGIN" ]]; then ...
+```
+
+The emit logic should follow the same pattern. A one-line check after emit (`ic events tail --all --limit=1 2>/dev/null` or checking exit code) would make the success case observable without adding a blocking failure path. Not a blocker, but worth an implementation note.
 
 ---
 
 ## 2. Pattern Analysis
 
-### Finding 4 — MODERATE: lib-routing.sh Placed in `hooks/` Is a Layer Signal Violation
+### 2.1 `EmitExternal()` Naming and Source Allowlisting
 
-**Location:** F2 — "Shell library (`hooks/lib-routing.sh`)"
+The method name `EmitExternal()` is ambiguous — all existing Store methods are called externally. The intent is "emitted by an untrusted CLI caller rather than an internal subsystem."
 
-The existing `hooks/lib-*.sh` files are support libraries for hook execution context: `lib-sprint.sh` manages sprint state for hooks, `lib-gates.sh` provides gate checks within hooks, `lib-intercore.sh` wraps `ic` CLI calls invoked by hooks. They all exist to serve hooks (PostToolUse, SessionStart, etc.) running inside Claude Code's event model.
+More importantly, the method accepts an arbitrary `source` string from the command line. All existing store methods use typed constants (`SourcePhase`, `SourceDispatch`, etc.). F1 specifies `--source=review` as a string flag but does not enumerate valid values or specify rejection of invalid ones. If `ic events emit --source=phase --type=advance` can write a synthetic phase event, that is an event integrity problem.
 
-`lib-routing.sh` would be called by two callers that are not hooks:
-1. `scripts/dispatch.sh` — a standalone shell script invoked by Codex CLI agents
-2. `commands/model-routing.md` — a Claude command, not a hook
+A source allowlist for CLI-originated events must be part of the implementation. Valid CLI-emit sources should be an enumerated set distinct from internal source constants. "review" is a new category. "phase", "dispatch", "coordination", "discovery", and "interspect" must be refused with exit code 3.
 
-Placing `lib-routing.sh` in `hooks/` makes `dispatch.sh` depend on a path that signals "hook internals." Any future developer reading `dispatch.sh` will find `source "$SCRIPT_DIR/../hooks/lib-routing.sh"` and reasonably wonder whether this is intentional. The `hooks/` directory communicates lifecycle ownership; a shared config reader library does not belong there.
+### 2.2 Payload Column Semantics
 
-**What to fix.**
+F2 introduces `DisagreementPayload` with rich structured data (agents map, chosen_severity, impact, session_id, project). The PRD does not specify which column stores this.
 
-Place `lib-routing.sh` in `scripts/` alongside `dispatch.sh`. Both F3 and F4 callers can source it from there. If a hook later needs routing resolution (plausible in B2, e.g., a session-start hook that auto-applies a profile), the hook sources from `scripts/` — that direction is less surprising than the reverse.
+The existing `dispatch_events` schema has:
+- `reason TEXT` — intended for a short human-readable string
+- `envelope_json TEXT` — the Gridfire provenance envelope (CallerIdentity, TraceID, CapabilityScope, artifact refs)
 
-Do not introduce a new `lib/` top-level directory for a single file. The overhead of a new directory for one library exceeds the clarity benefit; use `scripts/` for B1.
+Neither is the right home for a structured application payload. Storing `DisagreementPayload` in `reason` is semantically wrong. Storing it in `envelope_json` alongside provenance mixes application data with infrastructure provenance and breaks `ParseEnvelopeJSON` assumptions.
 
----
+If Option B (new table) is chosen, a `payload_json TEXT` column is the correct home. If Option A (dispatch_events) is chosen, a one-column migration adding `payload_json` to `dispatch_events` is the cleaner path than overloading `reason`.
 
-### Finding 5 — LOW: "Caches parsed config for the duration of a single function call" Is Not Caching
+### 2.3 F4 Consumer Handling — May Require No New Code
 
-**Location:** F2 — "Caches parsed config for the duration of a single function call (no redundant file reads within one resolution)"
+The existing `_interspect_consume_kernel_events()` in `lib-interspect.sh` (verified at lines 2013-2056) reads all events from `ic events tail --all --consumer=interspect-consumer` and calls `_interspect_insert_evidence` for every event:
 
-Any function that reads a file once to resolve a value performs no redundant reads "within one resolution" by definition. This describes normal function behavior, not caching. True caching means storing parsed state between multiple calls within the same shell process.
+```bash
+event_source=$(echo "$line" | jq -r '.source // empty')
+event_type=$(echo "$line" | jq -r '.type // empty')
+_interspect_insert_evidence \
+    "$session_id" "kernel-${event_source}" "${event_type}" \
+    "" "$enriched_context" "interspect-consumer"
+```
 
-In practice, `dispatch.sh` calls model resolution exactly once per invocation, so multi-call caching is irrelevant for B1. The criterion as written is not testable.
+If the new event has `source="review"` and appears in `ListAllEvents` (i.e., the table routing fix in 1.2 is applied), this consumer will already pick it up as `source="kernel-review"` and `event="disagreement_resolved"`. The cursor will advance. The evidence row will be created.
 
-**What to fix.**
+F4 says "converts event payload to evidence row via `_interspect_insert_evidence()` ... `override_reason` derived from resolution outcome." The current generic path passes `override_reason=""` always. If non-empty `override_reason` is required for the routing proposal flow to work correctly, the consumer needs a conditional branch to extract it from the payload:
 
-Replace with a concrete criterion: "`routing_resolve_subagent_model` and `routing_resolve_dispatch_tier` read `routing.yaml` at most once per shell process by storing the parsed sections in shell variables on first call and skipping re-reads on subsequent calls within the same process." This is implementable with a standard variable-guard pattern and is the correct specification if interoperability with a future B2 hook (which calls resolution multiple times in a session) is intended.
+```bash
+if [[ "$event_source" == "review" && "$event_type" == "disagreement_resolved" ]]; then
+    override_reason=$(echo "$line" | jq -r '.payload_json | fromjson | .impact // ""' 2>/dev/null)
+    _interspect_insert_evidence "$session_id" "kernel-review" "disagreement_resolved" \
+        "$override_reason" "$enriched_context" "interspect-consumer"
+fi
+```
 
----
-
-## 3. Simplicity and YAGNI
-
-### Finding 6 — MODERATE: The `profiles:` Concept Adds a State-Tracking Problem That B1 Does Not Solve
-
-**Location:** F1 — "Supports `profiles:` section defining named routing profiles", F2 — `routing_active_profile`, F4 — `/model-routing economy|quality|<custom-profile>`
-
-The profiles feature requires answering a question the PRD does not address: **how is the active profile persisted between invocations?**
-
-The current `/model-routing economy` command works by physically editing agent frontmatter files with `sed`. After the command runs, the frontmatter is the state. There is no separate "active profile" concept — the files are the source of truth.
-
-If `routing.yaml` adds a `profiles:` section and `routing_active_profile` must report the currently active profile, that selection must be stored somewhere between command invocations. The options are:
-
-1. Written to a state file (e.g., `.clavain/routing-profile`) on each `/model-routing <profile>` call — adds a new state file with stale-on-manual-edit behavior.
-2. Inferred by reading all agent frontmatter and pattern-matching against profile definitions — expensive, fragile when models are mixed.
-3. Not persisted — `routing_active_profile` always returns "unknown" — making it nearly useless.
-
-None of these are specified in the PRD. None are resolved by B1's static-config-only scope.
-
-The profiles concept itself — named mapping sets in `routing.yaml` — is correct and should stay. Named profiles in the config file are pure data. What is premature is `routing_active_profile` (a function that queries runtime state) and the profile-name display in `/model-routing status`.
-
-**What to fix.**
-
-Remove `routing_active_profile` from F2's acceptance criteria. Remove the "active profile name" display from the F2 `routing_list_mappings` function and from F4's status output. The `/model-routing status` command can continue to show which model each agent currently has (the existing grep behavior), without needing to name the profile that produced it. Profile-activation tracking is a natural B2 addition when the system gains complexity-aware routing and needs to explain its current selection. Add it to the non-goals section.
+The PRD must clarify whether the generic path (empty override_reason) is sufficient or whether distinct handling is needed. If generic suffices, F4 may require zero new shell code once the table routing fix is applied. If distinct handling is needed, spec the extraction expression.
 
 ---
 
-### Finding 7 — LOW: Fallthrough Behavior When routing.yaml Exists But a Phase Is Missing Is Not Specified
+## 3. Simplicity & YAGNI
 
-**Location:** F2 — "Returns empty string (not error) when routing.yaml doesn't exist"
+### 3.1 `ic events emit` Is Correctly Scoped
 
-The PRD specifies graceful degradation when the file is entirely absent. It does not specify behavior when the file exists but the requested phase or category key is absent — which is the common partial-population case during initial adoption.
+The CLI subcommand is the right mechanism. It decouples shell plugins from Go internals, makes the event bus accessible to any future script, and follows the existing CLI-first design decision documented in intercore's `CLAUDE.md` ("CLI only (no Go library API in v1) — bash hooks shell out to `ic`"). The flag set is minimal and sufficient. No objection.
 
-If `routing_resolve_dispatch_tier "shipping"` is called and `shipping` is not in the `dispatch.phases:` section, does the function return empty string, return the category default, or return the fallback tier? The stated resolution order (per-agent > phase > category > fallback) implies a missing phase should fall through to category, then to fallback. But this needs an explicit criterion, not an implicit reading of a priority diagram.
+### 3.2 NULL Handling for `--run` Must Match Existing Convention
 
-**What to fix.**
+F1: "run is optional (global events allowed)." The existing store uses `NULLIF(?, '')` to convert empty string to NULL for `run_id`. The new command must follow the same convention — not store `""` in `run_id`. The `ListEvents` query filters `WHERE run_id = ?`; an empty string stored as `""` would not be returned correctly. Worth a unit test for the NULL/empty-string boundary.
 
-Add one acceptance criterion: "When the requested phase is not present in `routing.yaml`, resolution falls through to category default, then to the configured fallback value, then to empty string. A missing phase is not an error and does not log a warning."
+### 3.3 Hardcoded Impact Gate — Correct YAGNI
 
----
+The non-goal on configurable thresholds is correctly justified. There is no second concrete consumer that would need a different threshold. The heuristic (discard ≥P1, or accept with severity override) is the correct starting point.
 
-## Pattern Observations (Non-Blocking)
+### 3.4 `DisagreementPayload` Field Names Must Be Exported
 
-**The line-by-line YAML parser replication is the right call for B1.** Introducing an external YAML library (`yq`, `python yaml`) adds a dependency to a shell plugin system that explicitly avoids them. The existing pattern in `resolve_tier_model` is already proven and understood by the codebase. Replicating it in `lib-routing.sh` is the correct consistency choice; see Finding 3 for the caveat about `routing.yaml`'s more complex nesting requiring the parser to handle deeper structure.
-
-**The `--phase` flag addition to dispatch.sh is a clean, additive change.** Existing callers that do not pass `--phase` get identical behavior. This is the lowest-risk integration surface possible and the PRD correctly enforces that invariant.
-
-**The sed-based frontmatter editing in `/model-routing` is not an architecture concern for B1.** It works, it is implicitly validated by usage, and the PRD does not propose changing the mechanism — only the source of truth for which values to apply. That is the correct scope.
-
-**The B1 → B2 → B3 evolution path is coherent.** With the two-section `routing.yaml` structure (Finding 1), complexity-aware routing in B2 can add a resolver that reads runtime signals without changing the config schema. Adaptive routing in B3 can write back to a state file that `lib-routing.sh` consults on load. The config shape proposed in F1 does not foreclose either evolution.
+F2 defines the struct with lowercase field names (Go notation would make them unexported). Since the payload must round-trip through JSON for `ic events emit --payload='<json>'`, all fields must be exported with `json:` struct tags. The PRD uses lowercase as informal notation; the implementation must not transcribe it literally.
 
 ---
 
-## Verdict by Finding
+## 4. Risk Register
 
-| # | Severity | Finding | Required Action |
-|---|----------|---------|-----------------|
-| 1 | CRITICAL | routing.yaml value namespace conflicts: Claude model aliases vs. Codex tier names used by dispatch.sh | Split routing.yaml into `subagents:` and `dispatch:` sections; expose two resolver functions in lib-routing.sh |
-| 2 | MODERATE | Interserve-mode tier remapping is a silent post-resolution step invisible to routing.yaml authors | Document the layer boundary explicitly; lib-routing.sh returns base tiers only; interserve remapping stays in dispatch.sh |
-| 3 | LOW | routing.yaml's nested structure is more complex than tiers.yaml; the existing parsing heuristic may not generalize | Validate parser against full sample routing.yaml before implementation; add sample-validation criterion to F2 |
-| 4 | MODERATE | lib-routing.sh in `hooks/` misrepresents ownership; dispatch.sh is not a hook | Move lib-routing.sh to `scripts/`; hooks source from scripts if needed in B2 |
-| 5 | LOW | "Caches parsed config for the duration of a single function call" is not a testable criterion | Rewrite as a variable-guard criterion with a concrete process-scoped caching contract |
-| 6 | MODERATE | `routing_active_profile` and active-profile status display require state persistence that B1 does not define | Remove active-profile tracking from B1 acceptance criteria; defer to B2 non-goals |
-| 7 | LOW | Fallthrough behavior when a phase key is absent but the file exists is unspecified | Add one explicit acceptance criterion for partial-file fallthrough |
+| # | Risk | Severity | Action |
+|---|------|----------|--------|
+| R1 | `EmitExternal()` targets wrong or absent table; `ic events tail` does not show the event; F1 AC silently fails | High | Must-fix: specify target table; verify it is in `ListAllEvents` UNION |
+| R2 | `severity_conflict` not in findings.json schema; F3 detection never fires; entire pipeline produces nothing | High | Must-fix: verify intersynth emits this field or extend the schema |
+| R3 | CLI source allowlist absent; `--source=phase` could inject synthetic phase events | Medium | Should-fix: enumerate valid CLI sources in `EmitExternal`; exit code 3 on invalid |
+| R4 | Cursor field migration not specified; existing interspect-consumer cursor re-reads all historical review events on first session after deploy | Medium | Should-fix: specify zero-default migration for new cursor field |
+| R5 | F4 generic consumer path may be sufficient; F4 may overestimate required code | Low | Clarify: state whether empty `override_reason` is acceptable |
+| R6 | `DisagreementPayload` lowercase fields break JSON marshal | Low | Fix at implementation: uppercase exported fields with json tags |
 
-**Must-fix before implementation:** Findings 1 and 6. Finding 1 is a design decision that shapes the API surface of `lib-routing.sh` — resolving it after code is written costs significantly more than doing so now. Finding 6 removes a state-tracking problem that has no solution in B1's scope.
+---
 
-**Can be fixed during implementation:** Findings 2, 3, 4, 5, 7. These are clarifications that reduce implementation confusion but do not change the API shape.
+## 5. Recommended Changes to the PRD
+
+### Must-fix (block implementation)
+
+**F2 — Specify the target table:**
+
+Replace "event.Store.EmitExternal() — a new method for CLI-originated events" with a concrete target:
+
+- Option A: Insert into `dispatch_events` (no new table; add `payload_json TEXT` column via ALTER TABLE in schema v24 migration; update dispatch_events INSERT and UNION columns).
+- Option B: New `review_events` table in schema v24; added to `ListAllEvents` and `ListEvents` UNIONs; `sinceReview` cursor field with zero-default.
+
+Update F1 AC "Event appears in `ic events tail`" to explicitly state which table/source field will be returned.
+
+**F3 — Verify the findings.json contract:**
+
+Add to the Dependencies section: `intersynth:synthesize-review must write severity_conflict map to findings.json per-finding`. Either confirm it already does, or add a sub-feature: "extend findings.json schema with severity_conflict field (map[string]string) and update intersynth to emit it."
+
+### Should-fix (before shipping)
+
+**F1 — Source allowlist:** Valid `--source` values for CLI emit are enumerated (initially just "review"). Reject "phase", "dispatch", "coordination", "discovery", "interspect". Exit code 3 on invalid source.
+
+**F2/F4 — Cursor migration path:** "Existing interspect-consumer cursors will have no `sinceReview` key; consumer defaults to 0 (re-reads from origin). This is acceptable for the first deploy — review events are sparse and reprocessing them is idempotent (duplicate evidence rows are harmless). Document this in the implementation notes."
+
+**F4 — Specify override_reason handling:** State whether the generic consumer path (empty override_reason) is sufficient for routing proposals, or whether the consumer must extract `impact` from `DisagreementPayload` into `override_reason`.
+
+---
+
+## 6. What Is Correct and Should Not Change
+
+Using the existing cursor mechanism is the right integration seam. Do not introduce a poll loop, a separate watch process, or a direct DB write from the shell skill.
+
+Fire-and-forget semantics for the emit call in clavain:resolve are correct. The pipeline is a learning loop, not a control path. Missing one event does not break the system; the overall evidence base degrades gracefully.
+
+Routing through the event bus rather than a direct function call from clavain to interspect is the right decoupling. clavain:resolve does not need to know interspect exists. The event is the contract.
+
+The `run` flag being optional correctly enables global disagreement events not tied to a specific run — severity conflicts span agents that may have run under different dispatches.
+
+The impact gate heuristic is appropriate signal filtering. Without a gate, every resolved finding (including P3 nits with no conflict) would emit events, flooding interspect's evidence table with low-value rows.
