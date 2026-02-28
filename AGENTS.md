@@ -59,6 +59,7 @@ Each subproject has its own CLAUDE.md and AGENTS.md — read those before editin
 ```
 Clavain (L2) → interlock → intermute (L1)    # file coordination
 Clavain (L2) → interflux → intersearch        # multi-agent review
+Clavain (L2) → interwatch → interpath/interdoc # doc freshness → generator dispatch
 interject → intersearch                        # ambient discovery
 Clavain (L2) → intertrust                     # agent trust scoring
 ```

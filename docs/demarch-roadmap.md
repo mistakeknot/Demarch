@@ -57,7 +57,7 @@
 | intertest | interverse/intertest | 0.1.1 | early | no | 0 |
 | intertree | interverse/intertree | 0.1.0 | early | no | 0 |
 | intertrust | interverse/intertrust | 0.1.2 | early | no | 0 |
-| interwatch | interverse/interwatch | 0.1.5 | active | yes | 4 |
+| interwatch | interverse/interwatch | 0.1.9 | active | yes | 4 |
 | marketplace | core/marketplace | — | active | yes | 0 |
 | tldr-swinton | interverse/tldr-swinton | 0.7.14 | active | yes | 0 |
 | tool-time | interverse/tool-time | 0.3.5 | active | yes | 0 |
