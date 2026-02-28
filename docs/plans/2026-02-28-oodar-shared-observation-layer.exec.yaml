@@ -1,0 +1,46 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Foundation — Types and Store Methods"
+    tasks:
+      - id: task-1
+        title: "Create observation package with Collector, Snapshot types, and interfaces"
+        files: [core/intercore/internal/observation/observation.go, core/intercore/internal/observation/observation_test.go]
+        depends: []
+      - id: task-2
+        title: "Add SchedulerStore.CountByStatus method"
+        files: [core/intercore/internal/scheduler/store.go, core/intercore/internal/scheduler/store_test.go]
+        depends: []
+
+  - name: "Integration — Wire Up and Test"
+    tasks:
+      - id: task-3
+        title: "Integration tests for Collector with real SQLite"
+        files: [core/intercore/internal/observation/observation_test.go]
+        depends: [task-1, task-2]
+      - id: task-7
+        title: "Update PHILOSOPHY.md with OODAR vocabulary"
+        files: [PHILOSOPHY.md]
+        depends: []
+        tier: fast
+
+  - name: "CLI — Command and End-to-End"
+    tasks:
+      - id: task-4
+        title: "Create ic situation snapshot CLI command"
+        files: [core/intercore/cmd/ic/situation.go, core/intercore/cmd/ic/main.go]
+        depends: [task-3]
+      - id: task-5
+        title: "Integration test for CLI end-to-end"
+        files: [core/intercore/test-integration.sh]
+        depends: [task-4]
+        tier: fast
+      - id: task-6
+        title: "Add printUsage entry and AGENTS.md documentation"
+        files: [core/intercore/cmd/ic/main.go, core/intercore/AGENTS.md]
+        depends: [task-4]
+        tier: fast
