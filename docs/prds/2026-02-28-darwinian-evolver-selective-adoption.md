@@ -52,7 +52,10 @@ Two genuine gaps were identified in Demarch:
 
 **Integration point:** Extends intersynth synthesis agent's deduplication phase.
 
-**Success metric:** Detects and flags redundant agent dispatch; reduces per-review cost.
+**Success metrics:**
+- Flags agent pairs with >80% findings overlap (measured by {file, issue_category, severity} tuple intersection) in ≥1 of every 5 multi-agent reviews
+- Flagged overlaps result in interspect routing override proposals that reduce redundant agent dispatch by ≥1 agent per affected review
+- Net effect: ≥5% reduction in per-review token spend across reviews where overlap is detected (baseline: current average tokens per flux-drive review)
 
 ### F4: Interspect Baseline Rescaling (P2 — Tune)
 
@@ -60,7 +63,10 @@ Two genuine gaps were identified in Demarch:
 
 **Integration point:** ~10-line change to `ic interspect score` aggregation.
 
-**Success metric:** Improved routing decision quality when evidence scores cluster.
+**Success metrics:**
+- Score spread improvement: when pre-rescaling scores cluster within ≤30% of [0,1] range, post-rescaling spread covers ≥60% of range (2x minimum improvement in discrimination)
+- Routing decision divergence: rescaled scores produce a different top-agent ranking vs raw scores in ≥10% of routing decisions (validates that rescaling changes outcomes, not just numbers)
+- No regression: false-positive rate in agent selection remains ≤ pre-rescaling baseline (measured via interspect override tracking)
 
 ## Out of Scope
 
@@ -78,12 +84,26 @@ Two genuine gaps were identified in Demarch:
 | 3 | F3: Findings-identity feedback | Enhance | ~4 hours | Medium (cost reduction) | Fully reversible |
 | 4 | F4: Baseline rescaling | Tune | ~30 min | Low (routing quality) | Fully reversible |
 
+## Measurement Instrumentation
+
+Each feature includes measurement instrumentation via **intertrack** (`iv-mi8e0`), a new plugin for feature-level success metric tracking. Each affected repo gets a `<name>-metrics.md` artifact (same convention as `<name>-roadmap.md` and `<name>-vision.md`).
+
+| Feature | Repo | Key Metrics |
+|---------|------|-------------|
+| F1 | interknow | repeated-failure-rate, failure-entry-recall-rate, failure-entry-count |
+| F2 | interflux | verify-fix-pass-rate, review-token-savings, false-negative-rate |
+| F3 | intersynth | overlap-detection-rate, agents-saved-per-review, per-review-token-reduction |
+| F4 | interspect | score-spread-ratio, ranking-divergence-rate, false-positive-regression |
+
+Metric events are emitted at instrumentation points within each feature and flow to intertrack's SQLite store. Metrics docs are tracked by interwatch for drift detection.
+
 ## Dependencies
 
 - F1 depends on interknow plugin access
 - F2 depends on flux-drive resolve workflow
 - F3 depends on intersynth synthesis agent
 - F4 depends on interspect scoring code
+- All features depend on intertrack scaffold (`iv-dvdkg`) for metric recording infrastructure
 
 ## Evidence
 
