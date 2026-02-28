@@ -1235,6 +1235,7 @@
 {"issue_id":"iv-6nwo","label":"theme:architecture"}
 {"issue_id":"iv-6nwo","label":"theme:coordination"}
 {"issue_id":"iv-6pvu","label":"mod:interpeer"}
+{"issue_id":"iv-6qduh","label":"complexity:3"}
 {"issue_id":"iv-6u3s","label":"mod:interlock"}
 {"issue_id":"iv-6u3s","label":"phase:strategized"}
 {"issue_id":"iv-6u3s","label":"theme:infra"}
@@ -4929,6 +4930,7 @@
 {"issue_id":"iv-tj7v","label":"theme:dx"}
 {"issue_id":"iv-tjd2","label":"mod:interflux"}
 {"issue_id":"iv-tjzi","label":"theme:dx"}
+{"issue_id":"iv-tk7g6","label":"complexity:2"}
 {"issue_id":"iv-tkc6","label":"mod:clavain"}
 {"issue_id":"iv-tkc6","label":"mod:interlock"}
 {"issue_id":"iv-tkc6","label":"mod:interphase"}
