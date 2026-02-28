@@ -2217,3 +2217,5 @@
 {"actor":"mistakeknot","comment":null,"created_at":"2026-02-28T12:16:21Z","event_type":"created","id":2219,"issue_id":"iv-tk7g6.1","new_value":"","old_value":""}
 {"actor":"mistakeknot","comment":"Added label: complexity:2","created_at":"2026-02-28T12:16:21Z","event_type":"label_added","id":2220,"issue_id":"iv-tk7g6","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-02-28T12:53:05Z","event_type":"closed","id":2221,"issue_id":"iv-tk7g6","new_value":"Shipped: /interwatch:audit command with ground-truth gatherer (interwatch-audit.py), 8 drift classes, sonnet agent dispatch. Tests pass (29/29). Published v0.1.12.","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-02-28T13:17:29Z","event_type":"created","id":2222,"issue_id":"iv-divat.1","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Added label: complexity:3","created_at":"2026-02-28T13:17:29Z","event_type":"label_added","id":2223,"issue_id":"iv-divat","new_value":null,"old_value":null}
