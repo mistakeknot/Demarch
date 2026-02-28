@@ -103,13 +103,13 @@ List each skill directory individually — never list the bare `./skills` direct
   "skills": ["./skills/skill-name"],
   "commands": ["./commands/command-name.md"],
   "agents": ["./agents/category/agent-name.md"],
-  "hooks": "./hooks/hooks.json",
   "mcpServers": {}
 }
 ```
 
 - `name`, `version`, `description`, `author`, `skills` are required
-- `commands`, `agents`, `hooks`, `mcpServers` only when the plugin has them
+- `commands`, `agents`, `mcpServers` only when the plugin has them
+- **Do NOT declare `hooks` in plugin.json** — Claude Code auto-loads `hooks/hooks.json` by convention. Declaring it explicitly causes duplicate hook registration errors
 - `author.name` is `"mistakeknot"`, not `"MK"`
 - Every path in `skills`/`commands`/`agents` must exist on disk
 
