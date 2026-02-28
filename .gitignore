@@ -56,3 +56,4 @@ docs/reports/security/secret-scan-backfill-*.md
 research/*
 !research/AGENTS.md
 !research/REPO_INDEX.md
+docs/research/*/
