@@ -1,0 +1,61 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Container Surface (TypeScript)"
+    tasks:
+      - id: task-1
+        title: "Add write wrapper functions to demarch-tools.ts"
+        files: [apps/intercom/container/shared/demarch-tools.ts]
+        depends: []
+      - id: task-2
+        title: "Add write MCP tool declarations for Claude runtime"
+        files: [apps/intercom/container/agent-runner/src/ipc-mcp-stdio.ts]
+        depends: [task-1]
+      - id: task-3
+        title: "Add demarch_research read tool (H1 completion)"
+        files: [apps/intercom/src/query-handlers.ts, apps/intercom/container/shared/demarch-tools.ts, apps/intercom/container/agent-runner/src/ipc-mcp-stdio.ts]
+        depends: []
+
+  - name: "Telegram Inline Keyboard Infrastructure (Rust)"
+    tasks:
+      - id: task-4
+        title: "Add Telegram inline keyboard support to send_message"
+        files: [apps/intercom/rust/intercomd/src/telegram.rs]
+        depends: []
+      - id: task-5
+        title: "Update event notifications to use inline buttons"
+        files: [apps/intercom/rust/intercomd/src/events.rs, apps/intercom/rust/intercomd/src/ipc.rs]
+        depends: [task-4]
+
+  - name: "Gate Approval Callback Loop (Rust + TypeScript)"
+    tasks:
+      - id: task-6
+        title: "Add Telegram callback query handler for gate approval"
+        files: [apps/intercom/rust/intercomd/src/telegram.rs, apps/intercom/rust/intercomd/src/main.rs]
+        depends: [task-4]
+      - id: task-7
+        title: "Wire Telegram callback routing in Node host"
+        files: [apps/intercom/src/channels/telegram.ts, apps/intercom/src/intercomd-client.ts]
+        depends: [task-6]
+
+  - name: "Testing & Verification"
+    tasks:
+      - id: task-8
+        title: "Add Rust tests for callback handler and button builders"
+        files: [apps/intercom/rust/intercomd/src/telegram.rs, apps/intercom/rust/intercomd/src/events.rs]
+        depends: [task-5, task-6]
+        tier: fast
+      - id: task-9
+        title: "Integration test — end-to-end write tool via IPC"
+        files: [apps/intercom/container/shared/demarch-tools.test.ts]
+        depends: [task-1, task-3]
+        tier: fast
+      - id: task-10
+        title: "Build, restart services, and verify"
+        files: []
+        depends: [task-8, task-9]
+        tier: fast
