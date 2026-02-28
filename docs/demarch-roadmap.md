@@ -12,7 +12,7 @@
 |--------|----------|---------|--------|---------|------------|
 | agent-rig | core/agent-rig | 0.1.0 | early | no | 0 |
 | autarch | apps/autarch | 0.1.0 | active | yes | 0 |
-| clavain | os/clavain | 0.6.106 | active | yes | 0 |
+| clavain | os/clavain | 0.6.107 | active | yes | 0 |
 | interband | core/interband | — | planned | no | 0 |
 | interbench | core/interbench | — | planned | no | 0 |
 | intercache | interverse/intercache | 0.2.0 | early | no | 0 |
@@ -22,7 +22,7 @@
 | intercore | core/intercore | — | active | yes | 0 |
 | intercraft | interverse/intercraft | 0.1.2 | active | yes | 4 |
 | interdev | interverse/interdev | 0.2.0 | active | yes | 4 |
-| interdoc | interverse/interdoc | 5.1.1 | active | yes | 4 |
+| interdoc | interverse/interdoc | 5.1.2 | active | yes | 4 |
 | interfluence | interverse/interfluence | 0.2.8 | active | yes | 4 |
 | interflux | interverse/interflux | 0.2.30 | active | yes | 0 |
 | interform | interverse/interform | 0.1.0 | active | yes | 4 |
