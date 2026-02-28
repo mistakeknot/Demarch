@@ -1,0 +1,46 @@
+version: 1
+mode: all-sequential
+tier: deep
+max_parallel: 1
+timeout_per_task: 300
+
+stages:
+  - name: "Correctness"
+    tasks:
+      - id: task-1
+        title: "Symbol overlap regression fixtures and correctness fix"
+        files:
+          - interverse/intermap/python/tests/test_live_changes.py
+          - interverse/intermap/python/intermap/live_changes.py
+        depends: []
+
+  - name: "Observability"
+    tasks:
+      - id: task-2
+        title: "Structured extractor error logging contract"
+        files:
+          - interverse/intermap/python/intermap/live_changes.py
+          - interverse/intermap/python/tests/test_live_changes.py
+        depends:
+          - task-1
+
+  - name: "Performance"
+    tasks:
+      - id: task-3
+        title: "Benchmark harness, optimization path, and legacy fallback mode"
+        files:
+          - interverse/intermap/python/intermap/live_changes.py
+          - interverse/intermap/python/tests/test_live_changes.py
+          - interverse/intermap/python/tests/test_live_changes_perf.py
+        depends:
+          - task-2
+
+  - name: "Verification and Docs"
+    tasks:
+      - id: task-4
+        title: "Final verification and benchmark evidence docs"
+        files:
+          - interverse/intermap/docs/research/performance-review-of-sprint.md
+          - interverse/intermap/docs/research/quality-review-of-sprint.md
+        depends:
+          - task-3
