@@ -26,6 +26,19 @@ case "$ACTION" in
         
         echo "Linking skills to Gemini global scope..."
         cd "$PROJECT_ROOT"
+        
+        # Clean up conflicting skills in ~/.agents/skills to prevent Gemini CLI override warnings
+        for skill_dir in .gemini/generated-skills/*; do
+            if [ -d "$skill_dir" ]; then
+                skill_name=$(basename "$skill_dir")
+                agents_skill_path="$HOME/.agents/skills/$skill_name"
+                if [ -e "$agents_skill_path" ]; then
+                    echo "Removing conflicting skill $skill_name from ~/.agents/skills/"
+                    rm -rf "$agents_skill_path"
+                fi
+            fi
+        done
+
         gemini skills link .gemini/generated-skills --scope user --consent
         
         echo "Successfully installed Gemini CLI skills!"
