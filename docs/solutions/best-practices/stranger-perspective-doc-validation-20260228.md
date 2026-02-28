@@ -61,6 +61,7 @@ The author-stranger gap is the #1 doc quality risk. The author has compensating 
 
 ## Related
 
-- interwatch doc-watch (automated drift detection, but measures freshness not correctness)
+- `/interwatch:audit` — automated correctness audit implementing this pattern
+- interwatch doc-watch — automated drift detection (measures freshness, complementary to correctness)
 - docs/canon/doc-structure.md (structural conventions)
 - interscribe (doc quality enforcement)
