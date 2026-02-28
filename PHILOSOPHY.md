@@ -25,6 +25,18 @@ Four claims, all of which must be true for Demarch to be right:
 
 If any of these claims is wrong, the project is misguided.
 
+### The OODAR Lens
+
+The flywheel (authority → actions → evidence → authority) is an instance of **OODAR** — Observe, Orient, Decide, Act, Reflect — operating at nested timescales:
+
+- **Per-turn:** Agent observes tool results, orients on context, decides next action, acts, and reflects via signal scoring.
+- **Per-sprint:** Phase gates observe artifacts, orient on sprint state, decide phase transitions, advance phases, and reflect at sprint end.
+- **Cross-session:** Interspect observes evidence, orients via pattern classification, decides routing proposals, acts via override application, and reflects via canary monitoring.
+
+OODAR extends Boyd's OODA loop with an explicit **Reflect** phase because AI agents don't implicitly learn from experience — learning must be captured as durable evidence that earns authority.
+
+Situation assessments are prompt aids, not ground truth. Always verify recent evidence against cached assessments.
+
 ---
 
 ## Receipts Close Loops
