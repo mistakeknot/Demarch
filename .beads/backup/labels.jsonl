@@ -4882,8 +4882,10 @@
 {"issue_id":"iv-t4v6","label":"mod:autarch"}
 {"issue_id":"iv-t4v6","label":"theme:architecture"}
 {"issue_id":"iv-t66u","label":"theme:dx"}
+{"issue_id":"iv-t712t","label":"complexity:4"}
 {"issue_id":"iv-t712t","label":"mod:clavain"}
 {"issue_id":"iv-t712t","label":"mod:interspect"}
+{"issue_id":"iv-t712t","label":"sprint:true"}
 {"issue_id":"iv-t712t","label":"theme:docs"}
 {"issue_id":"iv-t712t","label":"theme:dx"}
 {"issue_id":"iv-t712t","label":"theme:infra"}
@@ -5242,6 +5244,7 @@
 {"issue_id":"iv-vk79v","label":"research:repo"}
 {"issue_id":"iv-vk79v","label":"source:dicklesworthstone"}
 {"issue_id":"iv-vk79v","label":"theme:research"}
+{"issue_id":"iv-vkb9z","label":"complexity:2"}
 {"issue_id":"iv-vke3e","label":"mod:demarch"}
 {"issue_id":"iv-vke3e","label":"research:repo"}
 {"issue_id":"iv-vke3e","label":"source:dicklesworthstone"}
@@ -5471,6 +5474,7 @@
 {"issue_id":"iv-x04o","label":"theme:dx"}
 {"issue_id":"iv-x1k2","label":"mod:interject"}
 {"issue_id":"iv-x1k2","label":"theme:infra"}
+{"issue_id":"iv-x2l69","label":"complexity:2"}
 {"issue_id":"iv-x4dk","label":"mod:intercore"}
 {"issue_id":"iv-x4dk","label":"phase:executing"}
 {"issue_id":"iv-x4dk.1","label":"mod:intercore"}
