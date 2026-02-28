@@ -2,7 +2,7 @@
 
 **Time:** 10 minutes to read, 2 minutes to install
 
-**Prerequisites:** [Claude Code](https://claude.ai/download) installed and working
+**Prerequisites:** [Claude Code](https://claude.ai/download) installed and working, plus `jq` and `git`
 
 ## Install
 
@@ -16,9 +16,7 @@ Then open Claude Code and install companion plugins:
 /clavain:setup
 ```
 
-This installs 12+ companion plugins for code review, phase tracking, doc freshness monitoring, and more.
-
-> **Migrating from superpowers or compound-engineering?** The installer automatically removes legacy marketplaces and skill artifacts. See the [Codex Setup Guide](guide-codex-setup.md#migrating-from-legacy-patterns) for details.
+This installs 26 companion plugins (required + recommended) for code review, phase tracking, doc freshness monitoring, and more. 14 additional optional plugins are available.
 
 ## Your first session
 
@@ -65,7 +63,7 @@ Clavain's sprint is a disciplined lifecycle that ensures you think before you co
 
 ### Beads (issue tracking)
 
-Beads is a lightweight, repo-native issue tracker. It stores issues alongside your code and uses Dolt/JSONL sync workflows.
+Beads is a lightweight, repo-native issue tracker. Issues are stored in `.beads/` alongside your code.
 
 ```bash
 bd create --title="Add user auth" --type=feature --priority=2   # Create
@@ -73,7 +71,6 @@ bd ready                                                          # What's ready
 bd list --status=open                                            # All open issues
 bd show iv-abc1                                                  # Issue details
 bd close iv-abc1                                                 # Mark done
-bd sync                                                          # Compatibility no-op on 0.51+ (legacy workflow step)
 ```
 
 Beads integrates deeply with Clavain: sprints track against beads, discovery scans beads for work, and phase transitions record on beads automatically.

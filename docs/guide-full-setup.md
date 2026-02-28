@@ -4,7 +4,7 @@
 
 **Prerequisites:**
 - [Claude Code](https://claude.ai/download) installed
-- Go 1.24+ (`go version`)
+- Go 1.24+ (`go version`) — intercore works with 1.22+, but intermute and autarch require 1.24
 - Node.js 20+ (`node --version`)
 - Python 3.10+ (`python3 --version`)
 - jq (`jq --version`)
@@ -15,8 +15,6 @@
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mistakeknot/Demarch/main/install.sh | bash
 ```
-
-> **Migrating from superpowers or compound-engineering?** The installer automatically removes legacy marketplaces (`superpowers-marketplace`, `every-marketplace`) and Codex skill artifacts. See the [Codex Setup Guide](guide-codex-setup.md#migrating-from-legacy-patterns) for details.
 
 Then open Claude Code and install companion plugins:
 
@@ -49,7 +47,9 @@ Intercore (`ic`) provides the orchestration kernel: runs, dispatches, gates, and
 
 ```bash
 git clone https://github.com/mistakeknot/Demarch.git
-cd Demarch/core/intercore
+cd Demarch
+# From the repo root:
+cd core/intercore
 go build -o ic ./cmd/ic
 ```
 
@@ -86,7 +86,8 @@ Restart Codex after installation. See the [Codex Setup Guide](guide-codex-setup.
 Intermute is the multi-agent coordination service. Only needed if you run multiple Claude Code sessions editing the same repository simultaneously.
 
 ```bash
-cd Demarch/core/intermute
+# From the repo root:
+cd core/intermute
 go build -o intermute ./cmd/intermute
 cp intermute ~/.local/bin/
 ```
@@ -105,8 +106,9 @@ Autarch provides TUI interfaces for agent monitoring and project management:
 - **Pollard**: competitive intelligence and market research
 
 ```bash
-cd Demarch/apps/autarch
-make build
+# From the repo root:
+cd apps/autarch
+go build ./cmd/...
 ```
 
 Requires tmux for Coldwine's multi-pane layout.
@@ -130,15 +132,7 @@ Run the full health check:
 /clavain:doctor
 ```
 
-Expected output (all green):
-```
-Plugin loaded: clavain v0.6.76
-MCP: context7 connected
-Beads: bd v0.52.0 found
-Companions: 12/12 installed
-Hooks: 10/10 active
-Health: ALL CLEAR
-```
+Expected: all checks green. The output includes plugin version, MCP connections, beads CLI, companion plugin count, and hook status.
 
 ## What's next
 

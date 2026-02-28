@@ -18,12 +18,10 @@ Then open Claude Code and run:
 /clavain:route
 ```
 
-> **Migrating from superpowers or compound-engineering?** The installer automatically removes legacy marketplaces and skill artifacts. See the [Codex Setup Guide](docs/guide-codex-setup.md#migrating-from-legacy-patterns) for details on what gets cleaned up.
-
 ## What you get
 
 - **Clavain**: the agent rig (brainstorm → strategy → plan → execute → review → ship)
-- **Companion plugins**: multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing (the inter-* constellation, because naming things is hard)
+- **40+ companion plugins**: multi-agent code review, phase tracking, doc freshness, semantic search, TUI testing (26 installed by default, 14 optional)
 - **Multi-model orchestration**: Claude does the heavy lifting, Codex runs parallel tasks, GPT-5.2 Pro provides a second opinion via Oracle
 - **Sprint management**: track work with Beads, auto-discover what to work on next
 
@@ -60,12 +58,12 @@ Demarch is a monorepo with 5 pillars:
 | Pillar | Layer | Description |
 |--------|-------|-------------|
 | [Intercore](https://github.com/mistakeknot/intercore) | L1 (Core) | Orchestration kernel: runs, dispatches, gates, events |
-| [Intermute](https://github.com/mistakeknot/intermute) | L1 (Core) | Multi-agent coordination service (Go) |
 | [Clavain](https://github.com/mistakeknot/Clavain) | L2 (OS) | Self-improving agent rig |
-| [Interverse](https://github.com/mistakeknot/interagency-marketplace) | L2-L3 | Companion plugins (`ls interverse/ \| wc -l`) |
+| [Interverse](https://github.com/mistakeknot/interagency-marketplace) | L2-L3 | 47 companion plugins |
 | [Autarch](https://github.com/mistakeknot/Autarch) | L3 (Apps) | TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
+| [Interspect](interverse/interspect/) | L2 | Agent performance profiler and routing optimizer |
 
-Additional infrastructure: [marketplace](https://github.com/mistakeknot/interagency-marketplace), [agent-rig](https://github.com/mistakeknot/agent-rig), [interbench](https://github.com/mistakeknot/interbench), [interband](https://github.com/mistakeknot/interband), [interbase](https://github.com/mistakeknot/interbase).
+Additional infrastructure: [Intermute](https://github.com/mistakeknot/intermute) (multi-agent coordination), [interbase](https://github.com/mistakeknot/interbase) (SDK), [interbench](https://github.com/mistakeknot/interbench), [interband](https://github.com/mistakeknot/interband).
 
 ### Plugin ecosystem
 
