@@ -1761,6 +1761,7 @@
 {"issue_id":"iv-a41q","label":"theme:research"}
 {"issue_id":"iv-a98","label":"mod:interject"}
 {"issue_id":"iv-a98","label":"theme:dx"}
+{"issue_id":"iv-aa0ts","label":"source:intertrace"}
 {"issue_id":"iv-aama","label":"theme:infra"}
 {"issue_id":"iv-ac7","label":"mod:autarch"}
 {"issue_id":"iv-ac7","label":"theme:infra"}
@@ -3362,6 +3363,7 @@
 {"issue_id":"iv-jzfh","label":"theme:coordination"}
 {"issue_id":"iv-jzm2","label":"theme:coordination"}
 {"issue_id":"iv-jzm2","label":"theme:docs"}
+{"issue_id":"iv-k0kgq","label":"source:intertrace"}
 {"issue_id":"iv-k15ja","label":"mod:intermute"}
 {"issue_id":"iv-k15ja","label":"research:repo"}
 {"issue_id":"iv-k15ja","label":"source:dicklesworthstone"}
@@ -5547,6 +5549,7 @@
 {"issue_id":"iv-xlpg.2","label":"theme:docs"}
 {"issue_id":"iv-xlpg.3","label":"mod:autarch"}
 {"issue_id":"iv-xlpg.3","label":"theme:docs"}
+{"issue_id":"iv-xm17j","label":"source:intertrace"}
 {"issue_id":"iv-xn01","label":"mod:intercore"}
 {"issue_id":"iv-xn01","label":"phase:executing"}
 {"issue_id":"iv-xn01","label":"phase_history:{\n  \"strategized_at\": \"2026-02-19T02:31:45Z\",\n  \"planned_at\": \"2026-02-19T02:34:47Z\"\n}"}
