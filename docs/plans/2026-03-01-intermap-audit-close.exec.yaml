@@ -1,0 +1,51 @@
+version: 1
+mode: all-sequential      # Audit tasks build context; later tasks depend on earlier closures
+tier: fast                 # Verification-focused, not implementation
+max_parallel: 1
+timeout_per_task: 180
+
+stages:
+  - name: "Audit & Close Done Beads"
+    tasks:
+      - id: task-1
+        title: "Audit F1 Go MCP scaffold, close iv-728k"
+        files: [cmd/intermap-mcp/main.go, internal/tools/tools.go, bin/launch-mcp.sh]
+        depends: []
+      - id: task-2
+        title: "Audit F4 project registry, close iv-h3jl"
+        files: [internal/registry/registry.go, internal/registry/registry_test.go]
+        depends: []
+      - id: task-3
+        title: "Audit F2 Python extraction, close iv-vwj3"
+        files: [python/intermap/]
+        depends: []
+      - id: task-4
+        title: "Audit F6 cross_project_deps, close iv-80s4e"
+        files: [python/intermap/cross_project.py, python/tests/test_cross_project.py]
+        depends: []
+      - id: task-5
+        title: "Audit F7 detect_patterns, close iv-dta9w"
+        files: [python/intermap/detect_patterns.py, python/tests/test_patterns.py]
+        depends: []
+      - id: task-6
+        title: "Audit F1-Audit overall tools, close iv-dl72x"
+        files: []
+        depends: [task-1, task-2, task-3, task-4, task-5]
+
+  - name: "Remaining Work"
+    tasks:
+      - id: task-7
+        title: "F3 Document tool overlap with tldr-swinton, close iv-mif9"
+        files: [CLAUDE.md]
+        depends: []
+      - id: task-8
+        title: "F5 Write vision and roadmap docs, close iv-3kz0v"
+        files: [docs/intermap-vision.md, docs/intermap-roadmap.md, docs/roadmap.json]
+        depends: []
+
+  - name: "Ship"
+    tasks:
+      - id: task-9
+        title: "Close epic, commit, push"
+        files: []
+        depends: [task-6, task-7, task-8]
