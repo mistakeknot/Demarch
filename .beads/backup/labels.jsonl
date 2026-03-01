@@ -2303,6 +2303,8 @@
 {"issue_id":"iv-d72t.4","label":"theme:docs"}
 {"issue_id":"iv-d7mw","label":"theme:performance"}
 {"issue_id":"iv-d8yi","label":"mod:clavain"}
+{"issue_id":"iv-db5pc","label":"claimed_at:0"}
+{"issue_id":"iv-db5pc","label":"claimed_by:cleared"}
 {"issue_id":"iv-db5pc","label":"complexity:2"}
 {"issue_id":"iv-db5pc","label":"phase:reflect"}
 {"issue_id":"iv-dbhfb","label":"mod:intercore"}
@@ -2407,6 +2409,9 @@
 {"issue_id":"iv-dxsow","label":"recovered"}
 {"issue_id":"iv-dxsow","label":"theme:docs"}
 {"issue_id":"iv-dxsow","label":"theme:research"}
+{"issue_id":"iv-dyy33","label":"claimed_at:1772388457"}
+{"issue_id":"iv-dyy33","label":"claimed_by:unknown"}
+{"issue_id":"iv-dyy33","label":"complexity:3"}
 {"issue_id":"iv-dyyy","label":"phase:strategized"}
 {"issue_id":"iv-dyyy","label":"theme:architecture"}
 {"issue_id":"iv-dyyy","label":"theme:dx"}
