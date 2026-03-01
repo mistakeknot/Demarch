@@ -909,6 +909,9 @@
 {"issue_id":"iv-4man0","label":"research:repo"}
 {"issue_id":"iv-4man0","label":"source:dicklesworthstone"}
 {"issue_id":"iv-4man0","label":"theme:research"}
+{"issue_id":"iv-4mdq0","label":"ic_run_id:2nz8wmab"}
+{"issue_id":"iv-4mdq0","label":"sprint:true"}
+{"issue_id":"iv-4mdq0","label":"token_budget:250000"}
 {"issue_id":"iv-4n4e","label":"theme:testing"}
 {"issue_id":"iv-4nem","label":"complexity:2"}
 {"issue_id":"iv-4nem","label":"mod:intercore"}
@@ -936,6 +939,7 @@
 {"issue_id":"iv-4qs","label":"mod:interject"}
 {"issue_id":"iv-4qs","label":"theme:coordination"}
 {"issue_id":"iv-4s0b","label":"theme:dx"}
+{"issue_id":"iv-4x5pz","label":"complexity:3"}
 {"issue_id":"iv-4xbz","label":"mod:interflux"}
 {"issue_id":"iv-4xbz","label":"theme:docs"}
 {"issue_id":"iv-4xbz","label":"theme:infra"}
