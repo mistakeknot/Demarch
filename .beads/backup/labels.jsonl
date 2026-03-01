@@ -3698,6 +3698,7 @@
 {"issue_id":"iv-lwsf","label":"theme:docs"}
 {"issue_id":"iv-lwsf","label":"theme:research"}
 {"issue_id":"iv-lwsf","label":"theme:security"}
+{"issue_id":"iv-lx00","label":"complexity:3"}
 {"issue_id":"iv-lx00","label":"mod:clavain"}
 {"issue_id":"iv-lx00","label":"theme:docs"}
 {"issue_id":"iv-lx00","label":"theme:infra"}
@@ -3803,6 +3804,8 @@
 {"issue_id":"iv-md5q","label":"theme:infra"}
 {"issue_id":"iv-md5q","label":"theme:research"}
 {"issue_id":"iv-md5q","label":"theme:testing"}
+{"issue_id":"iv-me3bu","label":"claimed_at:1772353677"}
+{"issue_id":"iv-me3bu","label":"claimed_by:test-claim-variant"}
 {"issue_id":"iv-mew5","label":"mod:interserve"}
 {"issue_id":"iv-mew5","label":"theme:dx"}
 {"issue_id":"iv-mew5","label":"theme:tech-debt"}
@@ -3885,6 +3888,8 @@
 {"issue_id":"iv-mxuu","label":"mod:intercore"}
 {"issue_id":"iv-mxuu","label":"mod:interspect"}
 {"issue_id":"iv-mxuu","label":"theme:docs"}
+{"issue_id":"iv-mylsn","label":"claimed_at:1772353509"}
+{"issue_id":"iv-mylsn","label":"claimed_by:session-A-original"}
 {"issue_id":"iv-mztz","label":"mod:interflux"}
 {"issue_id":"iv-mztz","label":"theme:docs"}
 {"issue_id":"iv-n0ewk","label":"mod:demarch"}
@@ -4015,6 +4020,7 @@
 {"issue_id":"iv-nrnh","label":"mod:interspect"}
 {"issue_id":"iv-nrnh","label":"theme:coordination"}
 {"issue_id":"iv-nrnh","label":"theme:dx"}
+{"issue_id":"iv-nrqin","label":"claimed_at:12345"}
 {"issue_id":"iv-nu4uo","label":"mod:intercom"}
 {"issue_id":"iv-nu4uo","label":"research:repo"}
 {"issue_id":"iv-nu4uo","label":"source:dicklesworthstone"}
@@ -4193,6 +4199,8 @@
 {"issue_id":"iv-otvb","label":"mod:intercore"}
 {"issue_id":"iv-otvb","label":"theme:architecture"}
 {"issue_id":"iv-otvb","label":"theme:testing"}
+{"issue_id":"iv-oyjmi","label":"claimed_at:1772353626"}
+{"issue_id":"iv-oyjmi","label":"claimed_by:session-fresh-override"}
 {"issue_id":"iv-oynjj","label":"sprint:true"}
 {"issue_id":"iv-p39k","label":"mod:interflux"}
 {"issue_id":"iv-p39k","label":"theme:docs"}
@@ -5738,6 +5746,8 @@
 {"issue_id":"iv-yfkln.5","label":"mod:intercom"}
 {"issue_id":"iv-yfkln.5","label":"theme:architecture"}
 {"issue_id":"iv-yfkln.5","label":"theme:docs"}
+{"issue_id":"iv-yfzp9","label":"claimed_at:1772353603"}
+{"issue_id":"iv-yfzp9","label":"claimed_by:test-session-12345678"}
 {"issue_id":"iv-yhxq1","label":"mod:demarch"}
 {"issue_id":"iv-yhxq1","label":"research:repo"}
 {"issue_id":"iv-yhxq1","label":"source:dicklesworthstone"}
