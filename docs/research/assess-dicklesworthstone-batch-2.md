@@ -15,10 +15,10 @@ Eight repos assessed in this batch, grouped by Demarch module target:
 | Repo | Stars | Language | Last Commit | Verdict | Target Module |
 |------|-------|----------|-------------|---------|---------------|
 | your-source-to-prompt.html | 745 | HTML/JS | 2025-02-27 | inspire-only | tldr-swinton |
-| cross_agent_session_resumer | 14 | Rust | 2026-02-26 | inspire-only | intercom |
+| cross_agent_session_resumer | 14 | Rust | 2026-02-26 | adopt (tentative) | intercom |
 | guide_to_openai_response_api | 3 | Markdown | 2025-04-25 | skip | intercom |
 | beads_rust | 627 | Rust | 2026-02-28 | port-partially | clavain |
-| coding_agent_session_search | 527 | Rust | 2026-03-01 | port-partially | intercom |
+| coding_agent_session_search | 527 | Rust | 2026-03-01 | adopt | intercom |
 | agentic_coding_flywheel_setup | 1181 | Shell | 2026-02-28 | inspire-only | clavain |
 | beads_for_cass | 4 | HTML/JS | 2026-01-26 | skip | — |
 | flywheel_gateway | 19 | TypeScript | 2026-02-22 | inspire-only | intercore |
@@ -69,9 +69,11 @@ Eight repos assessed in this batch, grouped by Demarch module target:
 - The problem (session portability across providers) is not a current Demarch pain point — Clavain manages its own sprint state, and sessions are not meant to be resumed in different tools.
 - CI failing, early-stage quality signals suggest the project isn't production-ready.
 
-**Verdict:** inspire-only
+**Verdict:** adopt (tentative)
 
-**Rationale:** The canonical session IR pattern and provider auto-detection are interesting design ideas for intercom's long-term evolution, but the project is too early-stage and solves a problem Demarch doesn't currently have.
+**Rationale:** Session portability between providers is valuable as Demarch uses multiple agents (Claude Code, Codex, Gemini). The same adopt-as-dependency model used for `bd` (beads) applies — install the binary, call from Clavain. Early-stage but concept is sound; revisit once the project matures further. Holding lightly.
+
+**First step:** Monitor the repo for stability. When CI is green and the core providers (Claude Code, Codex, Gemini) are well-tested, install via `curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/cross_agent_session_resumer/main/install.sh" | bash`.
 
 ---
 
@@ -151,9 +153,9 @@ Eight repos assessed in this batch, grouped by Demarch module target:
 - **Health check protocol** — `cass health --json || cass index --full` — check health, rebuild if stale. Clean pattern for any tool with an index.
 - **Multi-provider normalization** — 11 providers normalized to one schema. The `Provider` trait pattern (read/write/detect) generalizes to any Demarch tool that needs to consume multiple external formats.
 
-**Verdict:** port-partially
+**Verdict:** adopt
 
-**Rationale:** Adopt `cass` as an external tool (install the binary, call from Clavain skills). Port the robot-mode API patterns and agent-first documentation convention. The session normalization schema could inform intercom's session model. Don't port the Rust code into Demarch's Go codebase.
+**Rationale:** Adopt `cass` as an external dependency the same way Demarch uses `bd` (beads) — install the binary, call it from Clavain skills. The robot-mode API is production-ready, the session normalization schema is mature, and the project has strong traction (527 stars, daily commits). Treat it as infrastructure rather than porting Rust code into Go.
 
 **First step:** `curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/coding_agent_session_search/main/install.sh" | bash` and add `cass search --robot` to Clavain's diagnostic toolkit.
 
@@ -269,10 +271,10 @@ Eight repos assessed in this batch, grouped by Demarch module target:
 | Repo | Verdict | Key Takeaway |
 |------|---------|-------------|
 | your-source-to-prompt.html | inspire-only | File selection UX patterns, but solves a problem Demarch agents don't have |
-| cross_agent_session_resumer | inspire-only | Canonical session IR is interesting for intercom's future, but too early-stage |
+| cross_agent_session_resumer | adopt (tentative) | Install binary when mature; session portability across Claude/Codex/Gemini |
 | guide_to_openai_response_api | skip | Documentation only — no code to integrate |
 | beads_rust | port-partially | Output formatting patterns, CLI schema docs, VCS integration patterns for `ic` |
-| coding_agent_session_search | port-partially | Install binary + robot mode for Clavain; session schema for intercom |
+| coding_agent_session_search | adopt | Install binary as infrastructure (like bd); robot-mode session search for Clavain |
 | agentic_coding_flywheel_setup | inspire-only | Manifest-driven installation architecture for Clavain `/setup` |
 | beads_for_cass | skip | Demo deployment of already-assessed beads_viewer-pages |
 | flywheel_gateway | inspire-only | DCG safety rules, contract testing, WebSocket dashboard patterns |
