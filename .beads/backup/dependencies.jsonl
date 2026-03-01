@@ -304,6 +304,7 @@
 {"created_at":"2026-02-15T10:33:10Z","created_by":"mk","depends_on_id":"iv-ty1f","issue_id":"iv-5si3","type":"blocks"}
 {"created_at":"2026-02-15T07:32:25Z","created_by":"mk","depends_on_id":"iv-cylo","issue_id":"iv-5su3","type":"blocks"}
 {"created_at":"2026-02-15T01:35:05Z","created_by":"mk","depends_on_id":"iv-jo3i","issue_id":"iv-5su3","type":"blocks"}
+{"created_at":"2026-03-01T08:40:52Z","created_by":"mistakeknot","depends_on_id":"iv-5t62v","issue_id":"iv-5t62v.1","type":"parent-child"}
 {"created_at":"2026-02-15T08:27:28Z","created_by":"mk","depends_on_id":"iv-55lq","issue_id":"iv-5xac","type":"blocks"}
 {"created_at":"2026-02-18T15:45:08Z","created_by":"mk","depends_on_id":"iv-72c","issue_id":"iv-60m3","type":"blocks"}
 {"created_at":"2026-02-15T08:00:55Z","created_by":"mk","depends_on_id":"iv-ql9a","issue_id":"iv-60m3","type":"blocks"}
