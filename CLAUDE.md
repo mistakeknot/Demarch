@@ -2,6 +2,14 @@
 
 Monorepo for the Demarch open-source autonomous software development agency platform. **Interverse** (`/interverse`) is the companion plugin ecosystem (`ls interverse/ | wc -l` for current count).
 
+## Working Style
+
+When you have enough context to start implementing, do it. Write a 3-bullet inline assessment, not a plan file. For irreversible actions (publish, delete, merge, bead-close), always ask before proceeding. If you are redirected, stop immediately and follow the new direction — do not finish the current approach first.
+
+## Debugging
+
+When diagnosing issues, check the cheapest observable signals first: is the binary present? (`command -v <tool>`), is the cache stale? (clear and retry), is CWD correct? (`pwd`). Explore complex hypotheses only after ruling out simple causes.
+
 ## Structure
 
 5 pillars across 3 layers: `os/clavain/` (L2 OS), `interverse/` (plugins), `core/intercore/` + `core/intermute/` (L1 kernel), `apps/autarch/` + `apps/intercom/` (L3 apps), `sdk/interbase/` (shared SDK). Each subproject has its own CLAUDE.md and AGENTS.md — read those when working in a module. See root `AGENTS.md` for full directory table and module relationships. See `PHILOSOPHY.md` for design bets and tradeoffs.
@@ -39,6 +47,12 @@ Health checks: `ic publish doctor --fix` (detect and auto-repair drift).
 Auto-publish hook calls `ic publish --auto` on `git push`.
 
 For publish gates and completion criteria, follow root `AGENTS.md` → `## Publishing`.
+
+After modifying plugin code, run the full test suite before committing. Fix stale hardcoded counts or version mismatches in the same pass — do not commit with failing tests.
+
+## Cross-Repo Safety
+
+Always verify CWD before running publish, commit, or build commands — use `pwd` explicitly. When working across multiple repos in the monorepo, confirm the target repo before making changes. Use absolute paths for cross-repo operations.
 
 ## Critical Patterns
 
