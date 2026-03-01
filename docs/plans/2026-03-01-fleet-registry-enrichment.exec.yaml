@@ -1,0 +1,43 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Test Fixtures"
+    tasks:
+      - id: task-1
+        title: "Create interstat mock DB fixture"
+        files: [os/clavain/tests/fixtures/fleet/interstat-mock.sql]
+        depends: []
+
+  - name: "Core Implementation"
+    tasks:
+      - id: task-2
+        title: "Add --enrich-costs to scan-fleet.sh (F1)"
+        files: [os/clavain/scripts/scan-fleet.sh, os/clavain/tests/shell/test_fleet.bats]
+        depends: [task-1]
+      - id: task-3
+        title: "Add fleet_cost_estimate_live to lib-fleet.sh (F2)"
+        files: [os/clavain/scripts/lib-fleet.sh, os/clavain/tests/shell/test_fleet.bats]
+        depends: [task-1]
+
+  - name: "Integration"
+    tasks:
+      - id: task-4
+        title: "Wire fleet registry into estimate-costs.sh (F3)"
+        files: [interverse/interflux/scripts/estimate-costs.sh, interverse/interflux/tests/test_estimate_costs.bats]
+        depends: [task-2, task-3]
+      - id: task-5
+        title: "Update lib-fleet.sh API header docs"
+        files: [os/clavain/scripts/lib-fleet.sh]
+        depends: [task-3]
+
+  - name: "Verification"
+    tasks:
+      - id: task-6
+        title: "Run full test suite and verify"
+        files: []
+        depends: [task-4, task-5]
+        tier: fast
