@@ -2429,3 +2429,50 @@
 {"actor":"mistakeknot","comment":"Added label: claimed_at:0","created_at":"2026-03-01T10:08:30Z","event_type":"label_added","id":2431,"issue_id":"iv-db5pc","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T10:16:54Z","event_type":"closed","id":2432,"issue_id":"iv-dyy33","new_value":"Added RejectGate, DeferGate, ExtendBudget, CancelRun WriteOperation variants. Wired Telegram callbacks, gate buttons (approve/reject/defer), budget buttons (extend/cancel). exec_cli supports stdin piping. 7 new tests, all 112 Rust tests pass.","old_value":""}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:16:15Z","event_type":"created","id":2433,"issue_id":"iv-nwoga","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:16:23Z","event_type":"created","id":2434,"issue_id":"iv-nwoga.1","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:test123","created_at":"2026-03-01T11:16:23Z","event_type":"label_added","id":2435,"issue_id":"iv-nwoga","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:16:32Z","event_type":"created","id":2436,"issue_id":"iv-nwoga.2","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_by:test123","created_at":"2026-03-01T11:16:32Z","event_type":"label_removed","id":2437,"issue_id":"iv-nwoga","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:released","created_at":"2026-03-01T11:16:32Z","event_type":"label_added","id":2438,"issue_id":"iv-nwoga","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:16:32Z","event_type":"created","id":2439,"issue_id":"iv-nwoga.3","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:0","created_at":"2026-03-01T11:16:32Z","event_type":"label_added","id":2440,"issue_id":"iv-nwoga","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:19Z","event_type":"created","id":2441,"issue_id":"iv-0ta08","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:51Z","event_type":"created","id":2442,"issue_id":"iv-0ta08.1","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:test-release-001","created_at":"2026-03-01T11:18:51Z","event_type":"label_added","id":2443,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:51Z","event_type":"created","id":2444,"issue_id":"iv-0ta08.2","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:1772392731","created_at":"2026-03-01T11:18:51Z","event_type":"label_added","id":2445,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:52Z","event_type":"created","id":2446,"issue_id":"iv-0ta08.3","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_at:1772392731","created_at":"2026-03-01T11:18:52Z","event_type":"label_removed","id":2447,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:1772392732","created_at":"2026-03-01T11:18:52Z","event_type":"label_added","id":2448,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:52Z","event_type":"status_changed","id":2449,"issue_id":"iv-0ta08","new_value":"{\"assignee\":\"\",\"status\":\"open\"}","old_value":"{\"id\":\"iv-0ta08\",\"title\":\"[test] release-path verification\",\"description\":\"temp\",\"status\":\"open\",\"priority\":4,\"issue_type\":\"task\",\"owner\":\"mistakeknot@users.noreply.github.com\",\"created_at\":\"2026-03-01T19:18:20Z\",\"created_by\":\"mistakeknot\",\"updated_at\":\"2026-03-01T19:18:20Z\"}"}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:53Z","event_type":"created","id":2450,"issue_id":"iv-0ta08.4","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_by:test-release-001","created_at":"2026-03-01T11:18:53Z","event_type":"label_removed","id":2451,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:released","created_at":"2026-03-01T11:18:53Z","event_type":"label_added","id":2452,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:53Z","event_type":"created","id":2453,"issue_id":"iv-0ta08.5","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_at:1772392732","created_at":"2026-03-01T11:18:53Z","event_type":"label_removed","id":2454,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:0","created_at":"2026-03-01T11:18:53Z","event_type":"label_added","id":2455,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:53Z","event_type":"created","id":2456,"issue_id":"iv-0ta08.6","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_by:released","created_at":"2026-03-01T11:18:53Z","event_type":"label_removed","id":2457,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:test-release-002","created_at":"2026-03-01T11:18:53Z","event_type":"label_added","id":2458,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:53Z","event_type":"created","id":2459,"issue_id":"iv-0ta08.7","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_at:0","created_at":"2026-03-01T11:18:53Z","event_type":"label_removed","id":2460,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:1772392733","created_at":"2026-03-01T11:18:53Z","event_type":"label_added","id":2461,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:53Z","event_type":"created","id":2462,"issue_id":"iv-0ta08.8","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_by:test-release-002","created_at":"2026-03-01T11:18:53Z","event_type":"label_removed","id":2463,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:unknown","created_at":"2026-03-01T11:18:53Z","event_type":"label_added","id":2464,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:54Z","event_type":"created","id":2465,"issue_id":"iv-0ta08.9","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_by:unknown","created_at":"2026-03-01T11:18:54Z","event_type":"label_removed","id":2466,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:test-release-003","created_at":"2026-03-01T11:18:54Z","event_type":"label_added","id":2467,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:54Z","event_type":"created","id":2468,"issue_id":"iv-0ta08.10","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_at:1772392733","created_at":"2026-03-01T11:18:54Z","event_type":"label_removed","id":2469,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:1772392734","created_at":"2026-03-01T11:18:54Z","event_type":"label_added","id":2470,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:54Z","event_type":"created","id":2471,"issue_id":"iv-0ta08.11","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_by:test-release-003","created_at":"2026-03-01T11:18:54Z","event_type":"label_removed","id":2472,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_by:released","created_at":"2026-03-01T11:18:54Z","event_type":"label_added","id":2473,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:54Z","event_type":"created","id":2474,"issue_id":"iv-0ta08.12","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_at:1772392734","created_at":"2026-03-01T11:18:54Z","event_type":"label_removed","id":2475,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:0","created_at":"2026-03-01T11:18:54Z","event_type":"label_added","id":2476,"issue_id":"iv-0ta08","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:18:54Z","event_type":"closed","id":2477,"issue_id":"iv-0ta08","new_value":"test complete","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:19:54Z","event_type":"closed","id":2478,"issue_id":"iv-apmp9","new_value":"F1: scan-fleet.sh --enrich-costs implemented and tested (6 tests)","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:19:54Z","event_type":"closed","id":2479,"issue_id":"iv-6cfx9","new_value":"F2: fleet_cost_estimate_live() implemented and tested (5 tests)","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-01T11:19:54Z","event_type":"closed","id":2480,"issue_id":"iv-8orpg","new_value":"F3: estimate-costs.sh fleet registry fallback implemented and tested (3 tests)","old_value":""}
