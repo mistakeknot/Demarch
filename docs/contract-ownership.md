@@ -37,6 +37,12 @@ Maps each Intercore contract surface to its owner, consumers, and versioning pol
 | `dispatch.status_change` | `events/dispatch-status-change.json` | Intercore | Clavain hooks, Interspect |
 | `interspect.*` | `events/interspect-signal.json` | Intercore | Interspect |
 
+<!-- Traceability (iv-k0kgq, iv-xm17j): consumers are indirect, not string-matchable.
+     Clavain hooks: intercore handler_hook.go maps SourcePhase/SourceDispatch to
+     .clavain/hooks/on-phase-advance and on-dispatch-change (convention-based dispatch).
+     Interspect: ic events tail --all --consumer=interspect-consumer in lib-interspect.sh
+     _interspect_consume_kernel_events() — generic cursor consumer, no event type filter. -->
+
 ## Versioning Policy
 
 **Stable contracts:**
