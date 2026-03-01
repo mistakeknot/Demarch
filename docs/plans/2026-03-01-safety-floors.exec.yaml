@@ -1,0 +1,28 @@
+version: 1
+mode: all-sequential
+tier: deep
+max_parallel: 1
+timeout_per_task: 300
+
+stages:
+  - name: "Core Implementation"
+    tasks:
+      - id: task-1
+        title: "Add agent-roles.yaml parsing to lib-routing.sh cache"
+        files: [os/clavain/scripts/lib-routing.sh, os/clavain/tests/shell/test_routing.bats]
+        depends: []
+      - id: task-2
+        title: "Add model tier comparison and clamping to routing_resolve_model"
+        files: [os/clavain/scripts/lib-routing.sh]
+        depends: [task-1]
+  - name: "Coverage and Observability"
+    tasks:
+      - id: task-3
+        title: "Expand agent-roles.yaml min_model coverage to planner role"
+        files: [interverse/interflux/config/flux-drive/agent-roles.yaml, os/clavain/tests/shell/test_routing.bats]
+        depends: [task-2]
+      - id: task-4
+        title: "Add clamping observability and edge case tests"
+        files: [os/clavain/tests/shell/test_routing.bats]
+        depends: [task-2]
+        tier: fast
