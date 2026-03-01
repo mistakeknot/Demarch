@@ -2302,6 +2302,7 @@
 {"issue_id":"iv-d72t.4","label":"theme:docs"}
 {"issue_id":"iv-d7mw","label":"theme:performance"}
 {"issue_id":"iv-d8yi","label":"mod:clavain"}
+{"issue_id":"iv-db5pc","label":"complexity:2"}
 {"issue_id":"iv-dbhfb","label":"mod:intercore"}
 {"issue_id":"iv-dbhfb","label":"research:repo"}
 {"issue_id":"iv-dbhfb","label":"source:dicklesworthstone"}
@@ -2342,6 +2343,9 @@
 {"issue_id":"iv-div3h","label":"placeholder"}
 {"issue_id":"iv-div3h","label":"recovered"}
 {"issue_id":"iv-divat","label":"complexity:3"}
+{"issue_id":"iv-djada","label":"ic_run_id:mq1dvunt"}
+{"issue_id":"iv-djada","label":"sprint:true"}
+{"issue_id":"iv-djada","label":"token_budget:250000"}
 {"issue_id":"iv-dkdu","label":"mod:autarch"}
 {"issue_id":"iv-dkdu","label":"theme:research"}
 {"issue_id":"iv-dkdu","label":"theme:ux"}
