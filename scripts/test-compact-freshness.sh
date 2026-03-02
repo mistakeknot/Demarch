@@ -32,6 +32,7 @@ KNOWN_SKILLS=(
     "os/clavain/skills/landing-a-change"
     "os/clavain/skills/executing-plans"
     "os/clavain/skills/brainstorming"
+    "interverse/intermonk/skills/dialectic"
 )
 
 test_skill() {
