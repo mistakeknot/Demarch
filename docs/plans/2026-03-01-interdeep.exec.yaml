@@ -1,0 +1,66 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 600
+
+stages:
+  - name: "Foundation"
+    tasks:
+      - id: task-1
+        title: "Scaffold plugin structure"
+        files: [interverse/interdeep/]
+        depends: []
+
+  - name: "Core Implementation"
+    tasks:
+      - id: task-2
+        title: "Content extraction layer (trafilatura)"
+        files: [interverse/interdeep/src/interdeep/extraction/]
+        depends: []
+      - id: task-3
+        title: "Playwright fallback and hybrid router"
+        files: [interverse/interdeep/src/interdeep/extraction/]
+        depends: [task-2]
+      - id: task-4
+        title: "MCP server tools"
+        files: [interverse/interdeep/src/interdeep/server.py, interverse/interdeep/src/interdeep/reports/]
+        depends: [task-2, task-3]
+
+  - name: "Orchestration & Agents"
+    tasks:
+      - id: task-5
+        title: "Orchestration skill (SKILL.md)"
+        files: [interverse/interdeep/skills/, interverse/interdeep/commands/]
+        depends: []
+      - id: task-6
+        title: "Subagent definitions"
+        files: [interverse/interdeep/agents/]
+        depends: []
+
+  - name: "Documentation & Tests"
+    tasks:
+      - id: task-7
+        title: "Required documentation (CLAUDE.md, AGENTS.md, PHILOSOPHY.md, README.md)"
+        files: [interverse/interdeep/CLAUDE.md, interverse/interdeep/AGENTS.md, interverse/interdeep/PHILOSOPHY.md, interverse/interdeep/README.md]
+        depends: []
+      - id: task-8
+        title: "Structural tests per plugin standard"
+        files: [interverse/interdeep/tests/]
+        depends: []
+        tier: fast
+
+  - name: "Companion Plugin Extension"
+    tasks:
+      - id: task-9
+        title: "Extend interject with 5 new adapters (Tavily, Brave, PubMed, Semantic Scholar, SearXNG)"
+        files: [interverse/interject/src/interject/sources/, interverse/interject/src/interject/scanner.py, interverse/interject/config/default.yaml]
+        depends: []
+
+  - name: "Integration & Publish"
+    tasks:
+      - id: task-10
+        title: "Integration test and publish"
+        files: [interverse/interdeep/]
+        depends: [task-1, task-2, task-3, task-4, task-5, task-6, task-7, task-8]
+        tier: fast
