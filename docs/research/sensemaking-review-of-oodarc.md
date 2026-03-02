@@ -1,16 +1,16 @@
-# Sensemaking Review: OODAR Loops Brainstorm
+# Sensemaking Review: OODARC Loops Brainstorm
 **Date:** 2026-02-28
 **Reviewer Role:** Flux-drive Sensemaking Agent
 **Review Scope:** Mental models, information quality, temporal reasoning, perceptual biases
-**Document:** `/home/mk/projects/Demarch/docs/brainstorms/2026-02-28-oodar-loops-brainstorm.md`
+**Document:** `/home/mk/projects/Demarch/docs/brainstorms/2026-02-28-oodarc-loops-brainstorm.md`
 
 ---
 
 ## Executive Summary
 
-The OODAR loops brainstorm presents a sophisticated framework for nested decision-making across four timescales. **Strengths**: grounded in philosophy (PHILOSOPHY.md), addresses a real gap (explicit Reflect phase), and preserves incremental value via Approach A. **Blind spots**: 1) the "mental models" and "situation assessment" abstractions are performative (described as "explicit" but unimplemented), 2) the shared observation layer risks becoming a map that agents mistake for territory, 3) the four timescales assume cleaner separation than real agent workflows exhibit, 4) both approaches under-specify how Orient distinguishes signal from noise, and 5) the multi-agent coordination loop (Loop 3) is the most immature yet framed as parallel to mature loops.
+The OODARC loops brainstorm presents a sophisticated framework for nested decision-making across four timescales. **Strengths**: grounded in philosophy (PHILOSOPHY.md), addresses a real gap (explicit Reflect phase), and preserves incremental value via Approach A. **Blind spots**: 1) the "mental models" and "situation assessment" abstractions are performative (described as "explicit" but unimplemented), 2) the shared observation layer risks becoming a map that agents mistake for territory, 3) the four timescales assume cleaner separation than real agent workflows exhibit, 4) both approaches under-specify how Orient distinguishes signal from noise, and 5) the multi-agent coordination loop (Loop 3) is the most immature yet framed as parallel to mature loops.
 
-**Key Finding**: The document conflates "naming existing patterns with OODAR vocabulary" (Approach A) and "building formal abstractions" (Approach B) as different paths to the same destination. They're not. Approach A is descriptive; Approach B is prescriptive. Choosing one requires acknowledging the other's cost, not pretending both deliver equivalent value.
+**Key Finding**: The document conflates "naming existing patterns with OODARC vocabulary" (Approach A) and "building formal abstractions" (Approach B) as different paths to the same destination. They're not. Approach A is descriptive; Approach B is prescriptive. Choosing one requires acknowledging the other's cost, not pretending both deliver equivalent value.
 
 ---
 
@@ -18,7 +18,7 @@ The OODAR loops brainstorm presents a sophisticated framework for nested decisio
 
 ### 1. **[P1 BLIND SPOT] Orient's "Mental Models" Are Not Yet Implemented — Reification Risk**
 
-**Location:** Sections "Step 2: Situation Assessment Schema" (lines 155-175) and "The OODAR Primitive" (lines 244-284).
+**Location:** Sections "Step 2: Situation Assessment Schema" (lines 155-175) and "The OODARC Primitive" (lines 244-284).
 
 **Issue:** The brainstorm describes Orient producing a "structured situation assessment" with fields like `current_state`, `active_patterns`, `anomalies`, `recommended_mental_model`. But the document never specifies:
 - How agents **acquire** mental models (what's the learning mechanism?)
@@ -34,7 +34,7 @@ The OODAR loops brainstorm presents a sophisticated framework for nested decisio
 - Missed anomalies outside the schema's fields
 
 **Recommendation:**
-- Specify the mental model update mechanism before naming OODAR loops (e.g., "Reflect computes delta_from_expectation and writes to evidence store; next session, Orient queries evidence store to adjust expectations").
+- Specify the mental model update mechanism before naming OODARC loops (e.g., "Reflect computes delta_from_expectation and writes to evidence store; next session, Orient queries evidence store to adjust expectations").
 - Define success/failure criteria for a mental model (e.g., "model is valid if its predictions match outcomes on the last 10 similar situations").
 - Acknowledge the reification risk in PHILOSOPHY.md or add a guard: "SituationAssessment is a prompt aid, not ground truth. Orient always verifies recent evidence against cached assessment."
 
@@ -125,7 +125,7 @@ In reality, agent workflows blur these boundaries:
 
 But then Approach B proposes implementing CoordinationLoop **last** (lines 362-365), after TurnLoop, SprintLoop, and LearningLoop are mature. This is a valid architectural choice—stabilize interfaces before tackling the hardest problem.
 
-**However**, the document frames all four loops as **compositional peers** (line 407 in comparison table: all three approaches show them equally). The mental model is: "All four loops are OODAR instances; they differ only in scope." But Loop 3 lacks:
+**However**, the document frames all four loops as **compositional peers** (line 407 in comparison table: all three approaches show them equally). The mental model is: "All four loops are OODARC instances; they differ only in scope." But Loop 3 lacks:
 - A clear **model store** (what does "coordination models" mean? line 308: agent trust scores + conflict history—vague)
 - A proven **significance classifier** (what makes a conflict worth inlining reflection vs async?)
 - Any example of the **feedback loop** (agent commits a conflict; does it update the coordination model for next session?)
@@ -157,7 +157,7 @@ But what happens when the underlying **category of things** changes? Examples:
 - An agent's assigned role changes (its operational model shifts).
 - A new pillar is added to Demarch (the coordination model needs new concepts).
 
-The document mentions "paradigm shifts" in the perceptual biases context (line 8 in this sensemaking review: "Paradigm Shift") but never addresses how OODAR loops detect or adapt to them. A paradigm shift is invisible to Orient unless **reflection explicitly checks for category errors**.
+The document mentions "paradigm shifts" in the perceptual biases context (line 8 in this sensemaking review: "Paradigm Shift") but never addresses how OODARC loops detect or adapt to them. A paradigm shift is invisible to Orient unless **reflection explicitly checks for category errors**.
 
 **Example of Risk:** Interspect accumulates evidence that routing-to-Agent-A is working poorly. Reflect updates the routing model: "reduce Agent A's load." But what if the real problem is "Agent A's skill tier has changed"—a paradigm shift, not a parameter adjustment? Incrementally lowering Agent A's allocation won't fix it. The system will confuse a **category shift** with **parameter drift** (temporal discounting applied to structural change).
 
@@ -197,7 +197,7 @@ A fast-path match with 0.8 confidence is still a decision. Who decided 0.8 is th
 
 | Dimension | Root Cause |
 |-----------|-----------|
-| **Approach A (low risk)** → But higher coupling, harder to add new loops | Contracts layered on existing code re-implement OODAR at each level |
+| **Approach A (low risk)** → But higher coupling, harder to add new loops | Contracts layered on existing code re-implement OODARC at each level |
 | **Approach B (slower start)** → But more reusable, easier to add loops | Generic interface requires upfront investment, payoff scales with loop count |
 
 The real trade-off is: **how many loops will exist in the end state?**
@@ -205,7 +205,7 @@ The real trade-off is: **how many loops will exist in the end state?**
 - If ≤ 4 loops ever exist, Approach A wins (lower total implementation cost).
 - If ≥ 5 loops will exist (e.g., cross-project loop, cross-team loop, analytics loop), Approach B wins (amortized cost of the generic interface drops below ad-hoc implementations).
 
-The brainstorm doesn't forecast the number of loops. It only specifies four now, with "open questions" about scope (line 395: "Should the OODAR primitive be in intercore or clavain?"), not about the long-term loop count.
+The brainstorm doesn't forecast the number of loops. It only specifies four now, with "open questions" about scope (line 395: "Should the OODARC primitive be in intercore or clavain?"), not about the long-term loop count.
 
 **Narrative Fallacy:** The comparison presents both approaches as "paths to the same destination," implying they're equivalent given different constraints. But Approach A is inherently limited: each new loop costs O(n) effort where n = complexity of that loop's context. Approach B is inherently better at reuse: each new loop costs O(1) interface implementations.
 
@@ -258,7 +258,7 @@ Before moving forward, the brainstorm should address:
 
 4. **Escalation contracts:** Explicit rules: "Per-turn loop observes signal_score ≥ 4 → escalate to sprint loop. Sprint loop observes phase_stuck for >60s → escalate to multi-agent loop."
 
-5. **Loop count forecast:** How many OODAR loops will Demarch have by end of year? Forecast drives Approach selection.
+5. **Loop count forecast:** How many OODARC loops will Demarch have by end of year? Forecast drives Approach selection.
 
 6. **Change detection:** In Reflect, how do agents detect that a model category (not just parameters) has shifted?
 
@@ -271,7 +271,7 @@ Before moving forward, the brainstorm should address:
 **Recommended direction:** Hybrid of Approach A + Approach B.
 
 - **Phase 1:** Implement Approach A's Shared Observation Layer and signal classification (low risk, immediate value).
-- **Phase 2:** Spike a minimal `OODARLoop` interface in intercore with SprintLoop as first implementation (tests the abstraction with a mature loop).
+- **Phase 2:** Spike a minimal `OODARCLoop` interface in intercore with SprintLoop as first implementation (tests the abstraction with a mature loop).
 - **Phase 3:** If spike succeeds, roll out TurnLoop and LearningLoop against the interface. If spike reveals interface is wrong, it's cheaper to fix early.
 - **Phase 4:** Loop 3 (CoordinationLoop) gets designed separately after loops 1/2/4 prove the interface stable.
 
@@ -281,6 +281,6 @@ This sequence preserves low risk (Approach A's strength), maintains optionality 
 
 ## Summary for Project Memory
 
-This brainstorm is **philosophically sound** (extends PHILOSOPHY.md's flywheel) but **operationally under-specified** on the actual mechanisms. The gap isn't between Approach A and B—it's between naming patterns and implementing primitives. The document correctly identifies what's missing (explicit Reflect, Orient schema) but conflates "describing existing patterns with OODAR vocabulary" with "building formal abstractions." They're different paths; choosing requires acknowledging costs, not pretending equivalence.
+This brainstorm is **philosophically sound** (extends PHILOSOPHY.md's flywheel) but **operationally under-specified** on the actual mechanisms. The gap isn't between Approach A and B—it's between naming patterns and implementing primitives. The document correctly identifies what's missing (explicit Reflect, Orient schema) but conflates "describing existing patterns with OODARC vocabulary" with "building formal abstractions." They're different paths; choosing requires acknowledging costs, not pretending equivalence.
 
-**Critical unknown:** How many OODAR loops will Demarch need in the end state? Answer drives Approach choice.
+**Critical unknown:** How many OODARC loops will Demarch need in the end state? Answer drives Approach choice.

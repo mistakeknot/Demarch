@@ -1,6 +1,6 @@
-# Systems Thinking Review: OODAR Loops Brainstorm
+# Systems Thinking Review: OODARC Loops Brainstorm
 
-**Source document:** `docs/brainstorms/2026-02-28-oodar-loops-brainstorm.md`
+**Source document:** `docs/brainstorms/2026-02-28-oodarc-loops-brainstorm.md`
 **Reviewer:** flux-drive Systems Thinking Reviewer
 **Date:** 2026-02-28
 **Grounded in:** PHILOSOPHY.md (flywheel model), Gridfire brainstorm (cybernetic requirements), AGENTS.md design doctrine
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The OODAR brainstorm is architecturally sound and demonstrates strong awareness of compounding loops and tempo dynamics. The document correctly identifies the Reflect phase as the engine of the flywheel and proposes a dual-mode mechanism that preserves speed without sacrificing learning. However, five systemic blind spots could cause real-world failure at scale: a reinforcing loop in the shared observation layer that is not rate-limited, missing damping analysis for nested Reflect→Orient update cycles, a causal inversion in the escalation/de-escalation chain, a pace layer mismatch between Loop 3 (multi-agent) and Loop 2 (sprint), and an over-adaptation risk in the fast-path decision routing. These are analyzed below.
+The OODARC brainstorm is architecturally sound and demonstrates strong awareness of compounding loops and tempo dynamics. The document correctly identifies the Reflect phase as the engine of the flywheel and proposes a dual-mode mechanism that preserves speed without sacrificing learning. However, five systemic blind spots could cause real-world failure at scale: a reinforcing loop in the shared observation layer that is not rate-limited, missing damping analysis for nested Reflect→Orient update cycles, a causal inversion in the escalation/de-escalation chain, a pace layer mismatch between Loop 3 (multi-agent) and Loop 2 (sprint), and an over-adaptation risk in the fast-path decision routing. These are analyzed below.
 
 ---
 
@@ -144,9 +144,9 @@ Reflect finds a pattern
 
 The more the system is used, the more situations are handled by fast-path, the less novel reasoning occurs, and the less the system updates its models. This is the over-adaptation failure mode: perfect optimization for observed conditions makes any novel condition catastrophic, because the deliberate path atrophies from disuse.
 
-PHILOSOPHY.md explicitly calls out this risk: "Goodhart optimization — optimizing a proxy metric that can be gamed" and "Anti-gaming by design: Agents will optimize for any stable target. Rotate metrics, cap optimization rate, randomize audits." But the OODAR document does not apply this principle to its own decision routing. The fast-path is a stable optimization target.
+PHILOSOPHY.md explicitly calls out this risk: "Goodhart optimization — optimizing a proxy metric that can be gamed" and "Anti-gaming by design: Agents will optimize for any stable target. Rotate metrics, cap optimization rate, randomize audits." But the OODARC document does not apply this principle to its own decision routing. The fast-path is a stable optimization target.
 
-The Gridfire brainstorm names this directly under D5: "Anti-gaming evaluation design — Counterfactual/shadow evaluation planned but not hardened." The OODAR fast-path routing is a new instance of this same gap.
+The Gridfire brainstorm names this directly under D5: "Anti-gaming evaluation design — Counterfactual/shadow evaluation planned but not hardened." The OODARC fast-path routing is a new instance of this same gap.
 
 **Questions to answer:**
 - What forces deliberate-path invocation even when fast-path confidence exceeds the threshold (random audits, forced deliberation rate)?
@@ -186,7 +186,7 @@ PHILOSOPHY.md's failure doctrine states: "every failure produces a receipt, no f
 
 The document correctly identifies cache invalidation as "the hard problem" in Open Question 1, but then sets it aside. This is understated: the cache invalidation problem for situation assessments is not just a latency optimization challenge — it is the primary source of TOCTOU failures (Gridfire failure mode 4).
 
-The per-turn OODAR loop caches situation assessments "across turns in the session." If an event occurs that should invalidate the cached Orient (another agent grabs a lock, a phase gate fails, a budget threshold is crossed), the per-turn loop will continue acting on the stale assessment until the cache is invalidated. At <100ms per turn, a stale cache that persists for even 10 seconds means up to 100 decisions made on incorrect context.
+The per-turn OODARC loop caches situation assessments "across turns in the session." If an event occurs that should invalidate the cached Orient (another agent grabs a lock, a phase gate fails, a budget threshold is crossed), the per-turn loop will continue acting on the stale assessment until the cache is invalidated. At <100ms per turn, a stale cache that persists for even 10 seconds means up to 100 decisions made on incorrect context.
 
 The shared observation layer is described as an event stream, but the document does not specify whether the per-turn loop subscribes to this stream in a way that would invalidate its situation assessment cache. If the cache is push-invalidated (loop subscribes to relevant events), the latency overhead may exceed the <100ms target. If it is pull-invalidated (loop checks for new events on each cycle), the staleness window is exactly one turn duration.
 
@@ -205,7 +205,7 @@ This is not just a performance question. In multi-agent scenarios, a stale Orien
 
 The document describes the system at steady-state without tracing its temporal trajectory.
 
-At T=0 (first sprint using OODAR): the fast-path routing tables are empty, the model store has no patterns, and every decision will hit the deliberate path. The system will be significantly slower than the current bash-based implementation, because every Orient phase invokes LLM deliberation. The <100ms per-turn overhead target assumes populated routing tables; it is not achievable at T=0.
+At T=0 (first sprint using OODARC): the fast-path routing tables are empty, the model store has no patterns, and every decision will hit the deliberate path. The system will be significantly slower than the current bash-based implementation, because every Orient phase invokes LLM deliberation. The <100ms per-turn overhead target assumes populated routing tables; it is not achievable at T=0.
 
 At T=6mo: the routing tables are populated, the fast-path hit rate is rising, and the system is approaching its designed steady-state. But this is also when the over-adaptation risk (Finding 5) first becomes visible — the fraction of decisions hitting fast-path will be rising while the model's exposure to novel situations is declining.
 

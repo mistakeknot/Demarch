@@ -25,15 +25,20 @@ Four claims, all of which must be true for Demarch to be right:
 
 If any of these claims is wrong, the project is misguided.
 
-### The OODAR Lens
+### The OODARC Lens
 
-The flywheel (authority → actions → evidence → authority) is an instance of **OODAR** — Observe, Orient, Decide, Act, Reflect — operating at nested timescales:
+The flywheel (authority → actions → evidence → authority) is an instance of **OODARC** — Observe, Orient, Decide, Act, Reflect, Compound — operating at nested timescales:
 
-- **Per-turn:** Agent observes tool results, orients on context, decides next action, acts, and reflects via signal scoring.
-- **Per-sprint:** Phase gates observe artifacts, orient on sprint state, decide phase transitions, advance phases, and reflect at sprint end.
-- **Cross-session:** Interspect observes evidence, orients via pattern classification, decides routing proposals, acts via override application, and reflects via canary monitoring.
+- **Per-turn:** Agent observes tool results, orients on context, decides next action, acts, reflects on the outcome, and compounds by updating working memory.
+- **Per-sprint:** Phase gates observe artifacts, orient on sprint state, decide phase transitions, advance phases, reflect at sprint end, and compound by calibrating estimates and persisting learnings.
+- **Cross-session:** Interspect observes evidence, orients via pattern classification, decides routing proposals, acts via override application, reflects via canary monitoring, and compounds by writing routing overrides that change future behavior.
 
-OODAR extends Boyd's OODA loop with an explicit **Reflect** phase because AI agents don't implicitly learn from experience — learning must be captured as durable evidence that earns authority. The **Closed-loop by default** principle (below) is how Reflect feeds back into Orient: without the 4-stage calibration pattern, Reflect is journaling — durable but inert. With it, each cycle's actuals recalibrate the next cycle's predictions, and the R in OODAR actually closes.
+OODARC extends Boyd's OODA loop with two phases, not one:
+
+- **Reflect** extracts the lesson: what happened, what was expected, what differed. This is observation of one's own process — per-sprint, ephemeral until captured.
+- **Compound** persists the lesson in a form that changes future behavior: calibration files that adjust estimates, routing overrides that reclassify agents, solution docs that prevent repeated mistakes. This is what closes the loop — without it, Reflect is journaling.
+
+The distinction matters because Reflect without Compound is write-only learning (OODA with a diary). Compound without Reflect is cargo-culting (copying patterns without understanding why). The **Closed-loop by default** principle (below) is the operational implementation of Compound: the 4-stage calibration pattern (defaults → collect → calibrate → fallback) is how the C in OODARC feeds back into O (Orient) for the next cycle.
 
 Situation assessments are prompt aids, not ground truth. Always verify recent evidence against cached assessments.
 

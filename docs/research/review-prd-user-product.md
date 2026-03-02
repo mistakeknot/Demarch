@@ -163,7 +163,7 @@ If two agents both rate a finding P0 but with different recommendation text (tri
 
 ### Does this directly address the stated problem?
 
-Yes. The problem is a broken learning loop. The solution wires exactly the missing link (T+1 -> T+2) via the kernel event bus. The approach is consistent with PHILOSOPHY.md's "Receipts Close Loops" principle and the OODAR model — the disagreement event is a durable receipt that enables the Orient phase of the cross-session OODAR loop.
+Yes. The problem is a broken learning loop. The solution wires exactly the missing link (T+1 -> T+2) via the kernel event bus. The approach is consistent with PHILOSOPHY.md's "Receipts Close Loops" principle and the OODARC model — the disagreement event is a durable receipt that enables the Orient phase of the cross-session OODARC loop.
 
 ### Is the event-driven approach the right one?
 

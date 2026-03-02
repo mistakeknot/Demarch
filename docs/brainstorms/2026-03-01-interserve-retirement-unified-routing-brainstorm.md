@@ -81,7 +81,7 @@ This directly implements Core Bet #4: "quality floor is non-negotiable; above it
 - **Phase 2 (evidence-aware):** Interspect success rates adjust effective cost. Model X failing 40% on task Y makes it 2.5x more expensive in practice.
 - **Phase 3 (adaptive):** Router proposes policy changes based on evidence trends. Human approves via trust ladder (Level 4: agent proposes policy changes).
 
-This matches the OODAR lens: observe (interspect evidence) → orient (pattern classification) → decide (routing proposal) → act (apply override) → reflect (canary monitoring).
+This matches the OODARC lens: observe (interspect evidence) → orient (pattern classification) → decide (routing proposal) → act (apply override) → reflect (canary monitoring).
 
 ### 5. lib-routing.sh becomes a thin shell wrapper
 

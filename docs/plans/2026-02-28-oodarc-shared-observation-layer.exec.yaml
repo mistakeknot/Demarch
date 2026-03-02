@@ -23,7 +23,7 @@ stages:
         files: [core/intercore/internal/observation/observation_test.go]
         depends: [task-1, task-2]
       - id: task-7
-        title: "Update PHILOSOPHY.md with OODAR vocabulary"
+        title: "Update PHILOSOPHY.md with OODARC vocabulary"
         files: [PHILOSOPHY.md]
         depends: []
         tier: fast

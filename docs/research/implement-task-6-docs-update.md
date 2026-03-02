@@ -11,7 +11,7 @@ Two documentation-only changes to expose the `ic situation` command in user-faci
 Added a single line to the `printUsage()` function's Commands block:
 
 ```
-  situation snapshot [opts]      Unified observation layer (OODAR)
+  situation snapshot [opts]      Unified observation layer (OODARC)
 ```
 
 Placed after `publish init` and before `compat status`, keeping it near the end of the command list where newer commands are grouped. The `situation` case already existed in the main switch statement (line 135-136), routing to `cmdSituation` in `cmd/ic/situation.go`.
@@ -23,7 +23,7 @@ Added a new `### Situation` subsection between `### Portfolio` and `### Config &
 ```markdown
 ### Situation
 
-Unified observation layer for OODAR loops.
+Unified observation layer for OODARC loops.
 
 \```
 ic situation snapshot                      JSON snapshot of all active runs, dispatches, events, queue depth

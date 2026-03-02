@@ -183,9 +183,9 @@ All tools are stateless. Orchestration intelligence lives in the skill prompt, n
 
 *"Every action produces evidence. Evidence earns authority."*
 
-### Research Session as OODAR Loop
+### Research Session as OODARC Loop
 
-| OODAR Phase | Research Session Equivalent | Evidence Produced |
+| OODARC Phase | Research Session Equivalent | Evidence Produced |
 |---|---|---|
 | **Observe** | Scan sources, extract content | Raw findings, source URLs, extraction metadata |
 | **Orient** | Classify query type, score source relevance | Query decomposition, source credibility scores |

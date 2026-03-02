@@ -22,7 +22,7 @@ Why not a thin shell wire in clavain:resolve?
 - The event bus already exists and interspect already has a cursor consumer registered
 - Kernel events are durable, replayable, and content-addressed (Gridfire envelopes)
 - Decouples the resolution action from the routing signal — resolve doesn't need to know about interspect
-- Aligns with OODAR Phase 2 direction — formalizing event types for Orient/Decide
+- Aligns with OODARC Phase 2 direction — formalizing event types for Orient/Decide
 
 ## Key Decisions
 

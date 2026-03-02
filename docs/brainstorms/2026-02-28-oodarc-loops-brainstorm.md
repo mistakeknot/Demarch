@@ -1,4 +1,4 @@
-# OODAR Loops for Agent Decision-Making — Brainstorm
+# OODARC Loops for Agent Decision-Making — Brainstorm
 
 **Date:** 2026-02-28
 **Type:** Architecture design
@@ -6,15 +6,15 @@
 
 ## What We're Building
 
-An explicit OODAR (Observe → Orient → Decide → Act → Reflect) framework for Demarch that operates at four nested timescales: per-turn, per-sprint, multi-agent, and cross-session. Extends Boyd's OODA loop with a fifth phase (Reflect) to formalize the learning/compounding step that Demarch's philosophy already demands.
+An explicit OODARC (Observe → Orient → Decide → Act → Reflect) framework for Demarch that operates at four nested timescales: per-turn, per-sprint, multi-agent, and cross-session. Extends Boyd's OODA loop with a fifth phase (Reflect) to formalize the learning/compounding step that Demarch's philosophy already demands.
 
-### Why OODAR, Not OODA
+### Why OODARC, Not OODA
 
 Boyd's OODA assumes Orient implicitly incorporates learning from past cycles. For AI agents, this is too important to leave implicit:
 
 - **Agents don't have intuition.** Human operators implicitly learn from each OODA cycle — their Orient phase naturally improves. LLM agents start from scratch each session unless learning is explicitly captured.
 - **Compounding is Demarch's flywheel.** PHILOSOPHY.md defines the cycle: authority → actions → evidence → authority. The Reflect phase IS the evidence-to-authority conversion.
-- **Demarch already has Reflect.** The sprint lifecycle includes a mandatory `reflect` phase. Signal scoring triggers `/compound`. Interspect accumulates evidence. OODAR names what exists.
+- **Demarch already has Reflect.** The sprint lifecycle includes a mandatory `reflect` phase. Signal scoring triggers `/compound`. Interspect accumulates evidence. OODARC names what exists.
 
 ### The Fifth Phase: Reflect
 
@@ -27,7 +27,7 @@ This resolves the tempo-vs-depth tension: routine cycles stay fast (Boyd's speed
 
 ## Loop Communication: Hybrid Architecture
 
-All four OODAR loops communicate via a **hybrid model**: hierarchical decisions + shared observations.
+All four OODARC loops communicate via a **hybrid model**: hierarchical decisions + shared observations.
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -42,7 +42,7 @@ All four OODAR loops communicate via a **hybrid model**: hierarchical decisions 
            │ any loop reads any layer
      ┌─────┴──────┐
      │ Per-Turn   │──escalate──→ Sprint ──escalate──→ Cross-Session
-     │ OODAR      │              OODAR                OODAR
+     │ OODARC      │              OODARC                OODARC
      └────────────┘              │
                     de-escalate ←─┘ (writes to shared obs,
                                      inner loops read & adjust)
@@ -56,7 +56,7 @@ All four OODAR loops communicate via a **hybrid model**: hierarchical decisions 
 - Reflect: writes back to shared observation layer (evidence, updated models)
 - De-escalation: outer loops calm inner loops by writing to shared observations
 
-## The Four OODAR Loops
+## The Four OODARC Loops
 
 ### Loop 1: Per-Turn (milliseconds–seconds)
 
@@ -120,7 +120,7 @@ The learning loop. Runs between sessions, accumulating evidence and adapting rou
 
 ### Philosophy
 
-Name the OODAR legs on top of existing infrastructure. No new primitives — just contracts, interfaces, and a unified observation surface over existing code. Ship incrementally; each step is independently useful.
+Name the OODARC legs on top of existing infrastructure. No new primitives — just contracts, interfaces, and a unified observation surface over existing code. Ship incrementally; each step is independently useful.
 
 ### Implementation Path
 
@@ -150,7 +150,7 @@ Returns:
 
 **Implementation:** Go function in intercore that queries phase_log, dispatch_states, event bus, interspect DB, and budget tracker. Serializes to JSON. Single round-trip.
 
-**What this enables:** Any OODAR loop at any level can start with `ic situation snapshot` instead of querying 5 different sources. Observation becomes O(1) calls instead of O(n).
+**What this enables:** Any OODARC loop at any level can start with `ic situation snapshot` instead of querying 5 different sources. Observation becomes O(1) calls instead of O(n).
 
 #### Step 2: Situation Assessment Schema — Orient Output
 
@@ -207,13 +207,13 @@ Formalize the existing signal scoring + /compound pattern:
 2. Continue loop immediately
 3. Background: interspect accumulates, classifies when threshold met
 
-#### Step 5: OODAR Vocabulary in Docs and Skills
+#### Step 5: OODARC Vocabulary in Docs and Skills
 
-Label existing loops with OODAR terminology in:
-- PHILOSOPHY.md (flywheel IS OODAR)
-- Sprint skills (phase lifecycle IS sprint OODAR)
-- Agent skills (per-turn reasoning IS turn OODAR)
-- Interspect docs (evidence accumulation IS cross-session OODAR)
+Label existing loops with OODARC terminology in:
+- PHILOSOPHY.md (flywheel IS OODARC)
+- Sprint skills (phase lifecycle IS sprint OODARC)
+- Agent skills (per-turn reasoning IS turn OODARC)
+- Interspect docs (evidence accumulation IS cross-session OODARC)
 
 ### Strengths
 
@@ -224,24 +224,24 @@ Label existing loops with OODAR terminology in:
 
 ### Weaknesses
 
-- **No formal abstraction.** Each level's OODAR is ad-hoc; no guarantee they compose well.
+- **No formal abstraction.** Each level's OODARC is ad-hoc; no guarantee they compose well.
 - **Harder to add new loops.** Adding a 5th timescale (e.g., cross-project) means building another bespoke implementation.
 - **Orient remains mostly LLM-driven.** Situation assessments improve LLM inputs but don't formalize orientation as a primitive.
 - **Technical debt accumulates.** More contracts layered on existing code = more coupling to maintain.
 
 ---
 
-## Approach B: Top-Down — Design the OODAR Primitive First
+## Approach B: Top-Down — Design the OODARC Primitive First
 
 ### Philosophy
 
-Define a generic `OODARLoop` abstraction in intercore. Design the interface first, then implement it at each level. Existing infrastructure becomes concrete implementations of abstract interfaces. Gridfire's Controller<S,M,A> extended to Controller<S,M,A,R>.
+Define a generic `OODARCLoop` abstraction in intercore. Design the interface first, then implement it at each level. Existing infrastructure becomes concrete implementations of abstract interfaces. Gridfire's Controller<S,M,A> extended to Controller<S,M,A,R>.
 
-### The OODAR Primitive
+### The OODARC Primitive
 
 ```go
-// The generic OODAR loop interface
-type OODARLoop[S Sensor, O Orientation, D Decision, A Action, R Reflection] interface {
+// The generic OODARC loop interface
+type OODARCLoop[S Sensor, O Orientation, D Decision, A Action, R Reflection] interface {
     // Observe: gather raw data from the environment
     Observe(ctx context.Context, sensor S) (Observation, error)
 
@@ -257,7 +257,7 @@ type OODARLoop[S Sensor, O Orientation, D Decision, A Action, R Reflection] inte
     // Reflect: learn from the outcome (inline or async based on significance)
     Reflect(ctx context.Context, outcome Outcome, significance float64) (R, error)
 
-    // Run: execute one full OODAR cycle
+    // Run: execute one full OODARC cycle
     Cycle(ctx context.Context) error
 
     // RunLoop: continuously execute cycles until stopped
@@ -286,7 +286,7 @@ type SignificanceClassifier interface {
 ### Instantiation at Each Level
 
 ```go
-// Per-Turn OODAR
+// Per-Turn OODARC
 type TurnLoop struct {
     sensor    ToolResultSensor      // observes tool call results
     models    SessionContextModels  // mental models = session context + cached assessments
@@ -295,7 +295,7 @@ type TurnLoop struct {
     classifier SignalScoreClassifier // signal_score threshold
 }
 
-// Sprint OODAR
+// Sprint OODARC
 type SprintLoop struct {
     sensor    PhaseStateSensor      // observes phase state + gate results
     models    SprintModels          // mental models = sprint state + phase_actions
@@ -304,7 +304,7 @@ type SprintLoop struct {
     classifier PhaseSignificanceClassifier
 }
 
-// Multi-Agent OODAR
+// Multi-Agent OODARC
 type CoordinationLoop struct {
     sensor    AgentStateSensor      // observes agent heartbeats, locks, dispatch
     models    CoordinationModels    // mental models = who's doing what, conflict history
@@ -313,7 +313,7 @@ type CoordinationLoop struct {
     classifier ConflictSignificanceClassifier
 }
 
-// Cross-Session OODAR
+// Cross-Session OODARC
 type LearningLoop struct {
     sensor    EvidenceSensor        // observes interspect evidence
     models    RoutingModels         // mental models = agent trust scores, routing overrides
@@ -327,7 +327,7 @@ type LearningLoop struct {
 
 #### Step 1: Define Core Interfaces in Intercore
 
-Create `internal/oodar/` package with the generic interface, shared types (Observation, Outcome, Model, Pattern), and the ObservationStore / ModelStore contracts.
+Create `internal/oodarc/` package with the generic interface, shared types (Observation, Outcome, Model, Pattern), and the ObservationStore / ModelStore contracts.
 
 #### Step 2: Implement ObservationStore (Shared Observation Layer)
 
@@ -335,7 +335,7 @@ Same as Approach A's Step 1 — unified snapshot over event bus + interspect + p
 
 #### Step 3: Implement SprintLoop First (Most Mature)
 
-The sprint phase lifecycle is the most fully implemented OODAR loop today. Wrap existing phase machine + sprint library in the `OODARLoop` interface:
+The sprint phase lifecycle is the most fully implemented OODARC loop today. Wrap existing phase machine + sprint library in the `OODARCLoop` interface:
 - Sensor: wraps `ic phase show` + `ic events tail`
 - Orient: wraps `sprint_read_state()` → produces `SituationAssessment`
 - Decide: wraps `phase_actions` table lookup (fast) + LLM phase planning (deliberate)
@@ -344,7 +344,7 @@ The sprint phase lifecycle is the most fully implemented OODAR loop today. Wrap 
 
 #### Step 4: Implement TurnLoop Second
 
-Per-turn OODAR wraps around the agent's tool-call cycle:
+Per-turn OODARC wraps around the agent's tool-call cycle:
 - Sensor: tool result + file diff + test output
 - Orient: structured situation assessment (cached across turns)
 - Decide: routing table lookup (fast) + LLM reasoning (deliberate)
@@ -368,7 +368,7 @@ Multi-agent coordination is the least developed; implementing it last lets the i
 
 - **Formal composability.** Adding a new loop level (e.g., cross-project, cross-team) means implementing the interface, not building from scratch.
 - **Type safety.** Go generics enforce that each level's Sensor/Model/Actuator/Reflector are type-compatible.
-- **Testable in isolation.** Each OODAR component can be unit-tested with mock sensors/actuators.
+- **Testable in isolation.** Each OODARC component can be unit-tested with mock sensors/actuators.
 - **Gridfire alignment.** Directly extends Controller<S,M,A> with R, advancing the Gridfire roadmap.
 - **Principled Orient.** Orient becomes a first-class interface method, not ad-hoc LLM reasoning.
 
@@ -377,26 +377,26 @@ Multi-agent coordination is the least developed; implementing it last lets the i
 - **Premature abstraction risk.** If the four levels differ more than expected, the generic interface becomes a straitjacket.
 - **Higher upfront cost.** Interface design + 4 implementations before full value.
 - **Abstraction overhead.** Indirection layers add complexity for contributors to navigate.
-- **May over-formalize.** Per-turn OODAR might fight against LLM-native reasoning patterns rather than complement them.
+- **May over-formalize.** Per-turn OODARC might fight against LLM-native reasoning patterns rather than complement them.
 
 ---
 
 ## Key Decisions Made
 
-1. **OODAR, not OODA.** The Reflect phase is explicit — too important for AI agents to leave implicit.
+1. **OODARC, not OODA.** The Reflect phase is explicit — too important for AI agents to leave implicit.
 2. **Dual-mode Reflect.** Inline for significant actions (signal_score ≥ 4), async for routine. Preserves tempo while compounding learnings.
 3. **Hybrid communication.** Shared observation layer (any loop reads any data) + hierarchical decisions (inner loops escalate to outer loops). De-escalation via shared observation writes.
 4. **Explicit Orient primitives.** Situation assessments as structured output, not implicit LLM reasoning. Fast-path + deliberate-path decision routing.
-5. **Shared Observation Layer first.** Foundation that every other OODAR leg benefits from, regardless of approach.
+5. **Shared Observation Layer first.** Foundation that every other OODARC leg benefits from, regardless of approach.
 6. **Four nested loops.** Per-turn (ms), sprint (min), multi-agent (sec), cross-session (hrs). Each owns its timescale.
 
 ## Open Questions
 
 1. **How to handle Orient for per-turn loops without adding latency?** Caching situation assessments helps, but cache invalidation is the hard problem.
-2. **Should the OODAR primitive be in intercore (kernel) or clavain (OS)?** Mechanism vs. policy question — the loop structure is mechanism, but Orient content is policy.
-3. **How does OODAR interact with the trust ladder?** Higher trust levels should enable faster OODAR cycles (less human gating). How is this formalized?
+2. **Should the OODARC primitive be in intercore (kernel) or clavain (OS)?** Mechanism vs. policy question — the loop structure is mechanism, but Orient content is policy.
+3. **How does OODARC interact with the trust ladder?** Higher trust levels should enable faster OODARC cycles (less human gating). How is this formalized?
 4. **What are the escalation contracts?** When exactly does a per-turn loop escalate to sprint? What signals trigger it?
-5. **How do we measure OODAR tempo?** If faster loops win, we need to measure loop latency per level and optimize it.
+5. **How do we measure OODARC tempo?** If faster loops win, we need to measure loop latency per level and optimize it.
 
 ## Approach Comparison Summary
 

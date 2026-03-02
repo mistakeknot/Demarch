@@ -1,20 +1,20 @@
-# Decision Quality Review: OODAR Loops Brainstorm
+# Decision Quality Review: OODARC Loops Brainstorm
 
 **Date:** 2026-02-28
 **Reviewer:** Claude Code (Flux-drive Decision Quality Agent)
-**Document:** `docs/brainstorms/2026-02-28-oodar-loops-brainstorm.md`
+**Document:** `docs/brainstorms/2026-02-28-oodarc-loops-brainstorm.md`
 **Status:** Findings and recommendations
 
 ---
 
 ## Executive Summary
 
-The OODAR loops brainstorm presents a genuine architectural choice between two defensible approaches: **Approach A (bottom-up)** lowers risk and delivery time but accumulates ad-hoc contracts; **Approach B (top-down)** builds a formal primitive at higher upfront cost but enables systematic future extensions. However, the document exhibits five significant decision-quality gaps:
+The OODARC loops brainstorm presents a genuine architectural choice between two defensible approaches: **Approach A (bottom-up)** lowers risk and delivery time but accumulates ad-hoc contracts; **Approach B (top-down)** builds a formal primitive at higher upfront cost but enables systematic future extensions. However, the document exhibits five significant decision-quality gaps:
 
 1. **Hidden third option (Hybrid-First)** — Starting with Approach A's immediate value (Step 1: `ic situation`), then progressively formalizing into Approach B's interface without committing to either upfront.
 2. **Reversibility understated** — Approach A's contracts are not irreversible; A→B migration is cheaper than suggested.
-3. **Anchoring on Boyd's OODA** — The Reflect addition is conflated with OODAR framing; reflection patterns exist regardless of naming.
-4. **Missing tempo-cost trade-off** — No analysis of whether formal OODAR overhead (interface dispatch, type safety) violates the <100ms per-turn target.
+3. **Anchoring on Boyd's OODA** — The Reflect addition is conflated with OODARC framing; reflection patterns exist regardless of naming.
+4. **Missing tempo-cost trade-off** — No analysis of whether formal OODARC overhead (interface dispatch, type safety) violates the <100ms per-turn target.
 5. **Reflect phase ambiguity** — Conflates two distinct concepts: **within-cycle learning** (per-action reflection) vs. **cross-cycle learning** (pattern emergence across actions).
 
 The brainstorm is strong on implementation detail but weak on decision discipline. The open questions section (§ 9) hints at deeper uncertainties that aren't resolved by choosing between A and B.
@@ -35,7 +35,7 @@ The brainstorm is strong on implementation detail but weak on decision disciplin
 
 The two approaches are presented as mutually exclusive:
 - **Approach A:** Build `ic situation` (Step 1), then layered contracts on top of existing code
-- **Approach B:** Design the generic `OODARLoop<S,O,D,A,R>` interface first, then instantiate it at each level
+- **Approach B:** Design the generic `OODARCLoop<S,O,D,A,R>` interface first, then instantiate it at each level
 
 In reality, a **Hybrid-First** option exists that captures Approach A's speed advantage while unblocking Approach B's composability gains:
 
@@ -45,7 +45,7 @@ In reality, a **Hybrid-First** option exists that captures Approach A's speed ad
    - This enables next-level agent decisions TODAY and proves observation layer viability
 
 2. **Phase 2 (Weeks 3-4):** Extract interfaces from working code
-   - Once SprintLoop is proven stable, wrap it in the `OODARLoop` interface
+   - Once SprintLoop is proven stable, wrap it in the `OODARCLoop` interface
    - The interface is inferred FROM the working implementation, not imposed before
    - Risk of "premature abstraction" is eliminated — the abstraction solves a proven problem
 
@@ -77,7 +77,7 @@ In reality, a **Hybrid-First** option exists that captures Approach A's speed ad
 
 **Analysis:**
 
-Approach A lists as weakness: "**No formal abstraction.** Each level's OODAR is ad-hoc; no guarantee they compose well."
+Approach A lists as weakness: "**No formal abstraction.** Each level's OODARC is ad-hoc; no guarantee they compose well."
 Approach B lists as strength: "**Formal composability.** Adding a new loop level ... means implementing the interface, not building from scratch."
 
 This implies A→B migration is expensive. But the actual cost is overstated:
@@ -87,7 +87,7 @@ This implies A→B migration is expensive. But the actual cost is overstated:
 1. Keep all A-step implementations in place (Situation snapshots, assessment schemas, routing tables)
 2. Define the generic interface OVER them:
    ```go
-   type OODARLoop[S,O,D,A,R] interface { ... }
+   type OODARCLoop[S,O,D,A,R] interface { ... }
 
    // Wrap existing code without rewriting
    func (a *SituationSnapshot) Observe(ctx) Observation { ... }
@@ -115,7 +115,7 @@ The decision isn't "commit now or never" — it's "pay now or pay later." The la
 
 **Severity:** P2 (Missed lens — foundational assumption not examined)
 
-**Location:** Entire document, especially §1-2 ("Why OODAR, Not OODA")
+**Location:** Entire document, especially §1-2 ("Why OODARC, Not OODA")
 
 **Lens:** Anchoring Bias, Dissolving the Problem, Theory of Change
 
@@ -125,7 +125,7 @@ The document strongly anchors on Boyd's military OODA model, using it to justify
 
 > "Boyd's OODA assumes Orient implicitly incorporates learning from past cycles. For AI agents, this is too important to leave implicit ... Reflect IS the evidence-to-authority conversion."
 
-This is correct — but the anchor point obscures a deeper question: **Does the problem require OODAR framing at all, or is the real problem statement different?**
+This is correct — but the anchor point obscures a deeper question: **Does the problem require OODARC framing at all, or is the real problem statement different?**
 
 **What the document actually needs:**
 
@@ -137,7 +137,7 @@ Looking at the four loops and their gaps:
 
 The common pattern is NOT "lacking Reflect phase" — it's **"lacking structured orientation"** and **"lacking cross-loop learning signals."**
 
-**Alternative framing (not OODAR):**
+**Alternative framing (not OODARC):**
 
 Instead of extending Boyd's OODA with Reflect, the problem might be:
 1. **Structured Orient** — Every decision needs a situation assessment (not implicit LLM reasoning)
@@ -180,7 +180,7 @@ This shifts the anchor from "how do we extend a military model" to "how do we fo
 Approach B introduces formal abstraction layers:
 
 ```go
-type OODARLoop[S Sensor, O Orientation, D Decision, A Action, R Reflection] interface {
+type OODARCLoop[S Sensor, O Orientation, D Decision, A Action, R Reflection] interface {
     Observe(...) Observation
     Orient(...) O
     Decide(...) D
@@ -211,23 +211,23 @@ BUT:
 
 **The real question (unasked):**
 
-Is the overhead worth the abstraction clarity? Or is per-turn OODAR trying to formalize something that's better left as imperative LLM reasoning?
+Is the overhead worth the abstraction clarity? Or is per-turn OODARC trying to formalize something that's better left as imperative LLM reasoning?
 
-Per-turn OODAR assumes:
+Per-turn OODARC assumes:
 - Observe → Orient → Decide → Act → Reflect is the RIGHT decomposition for a tool-calling loop
 - But an LLM's native reasoning pattern is: "read context (implicit Observe+Orient) → plan next tool → call tool (Act) → read result → repeat"
 
 **The mismatch:**
 
 - LLMs don't naturally structure as O→O→D→A→R; they stream reasoning and interleave phases
-- Forcing OODAR onto per-turn MIGHT reduce latency by enabling cached Orient (good)
+- Forcing OODARC onto per-turn MIGHT reduce latency by enabling cached Orient (good)
 - OR it might add branching and formal steps where imperative code is cheaper (bad)
 
-**Approach A avoids this by not formalizing per-turn OODAR** — the LLM's reasoning remains implicit, and signal scoring (Reflect) is added post-hoc.
+**Approach A avoids this by not formalizing per-turn OODARC** — the LLM's reasoning remains implicit, and signal scoring (Reflect) is added post-hoc.
 
-**Approach B risks this by making per-turn OODAR a first-class primitive** — it may be over-formalizing a domain where LLM reasoning is already good enough.
+**Approach B risks this by making per-turn OODARC a first-class primitive** — it may be over-formalizing a domain where LLM reasoning is already good enough.
 
-**Recommendation:** Add a section analyzing whether per-turn OODAR is a constraint (must achieve <100ms) or a benefit (speeds up per-turn decisions). If it's a constraint, validate Approach B doesn't blow the budget. If it's a benefit, measure the speedup. If it's neutral or negative, question whether per-turn OODAR belongs in the interface at all.
+**Recommendation:** Add a section analyzing whether per-turn OODARC is a constraint (must achieve <100ms) or a benefit (speeds up per-turn decisions). If it's a constraint, validate Approach B doesn't blow the budget. If it's a benefit, measure the speedup. If it's neutral or negative, question whether per-turn OODARC belongs in the interface at all.
 
 ---
 
@@ -280,7 +280,7 @@ The document's dual-mode formulation is correct (inline for significant, async f
 
 **Implementation risk:**
 
-If Approach B's `OODARLoop` interface treats Reflect as a single method:
+If Approach B's `OODARCLoop` interface treats Reflect as a single method:
 ```go
 Reflect(ctx, outcome, significance) (R, error)
 ```
@@ -324,7 +324,7 @@ The interface becomes more complex but more honest about what's actually happeni
 The hybrid architecture diagram (§3) shows escalation but doesn't specify when it happens:
 
 ```
-Per-Turn OODAR → escalate → Sprint OODAR → escalate → Cross-Session OODAR
+Per-Turn OODARC → escalate → Sprint OODARC → escalate → Cross-Session OODARC
 ```
 
 Questions:
@@ -375,7 +375,7 @@ Is Orient meant to be **formalizable** (we can express it as rules/patterns), or
 
 ## Synthesis & Recommended Path
 
-**The document's core claim is correct:** Demarch needs explicit OODAR formalization to match its philosophy.
+**The document's core claim is correct:** Demarch needs explicit OODARC formalization to match its philosophy.
 
 **The document's weakness:** Presents this as a binary choice (A vs B) when the actual decision should be sequential (A→B) or parallel (do A fast, then formalize into B).
 
@@ -387,13 +387,13 @@ Instead of choosing Approach A or B now, adopt this sequence:
 - Build `ic situation snapshot` — unified observation layer
 - It's uncontroversial, immediately useful, blocking nothing
 - Cost: 1-2 weeks
-- Value: Every OODAR loop benefits, proves the observation layer works
+- Value: Every OODARC loop benefits, proves the observation layer works
 
 **Decision Point 2 (2 weeks):** Assess whether SprintLoop and per-turn patterns are stable enough to formalize
 - If yes: Extract interfaces incrementally (Approach B, step 1)
 - If no: Continue with A's layered contracts until patterns stabilize
 
-**Decision Point 3 (1 month):** Decide whether formal OODARLoop interface is worth the abstraction overhead
+**Decision Point 3 (1 month):** Decide whether formal OODARCLoop interface is worth the abstraction overhead
 - Measure: Does the interface reduce code duplication? Does it clarify new-loop-level extensions?
 - If yes: Complete B's implementation for remaining loops
 - If no: Continue with A's ad-hoc approach; it's working fine
@@ -433,7 +433,7 @@ Before implementing either approach, the document should address:
 
 ## Conclusion
 
-The OODAR loops brainstorm is **strong on architectural clarity** but **weak on decision discipline.** The core insight (Demarch needs explicit learning loops) is correct. The implementation options (A vs B) are both defensible.
+The OODARC loops brainstorm is **strong on architectural clarity** but **weak on decision discipline.** The core insight (Demarch needs explicit learning loops) is correct. The implementation options (A vs B) are both defensible.
 
 But the document presents a false choice. The real decision is **sequencing and measurement**: start with A's delivery value, then progressively formalize into B as patterns stabilize and the abstraction cost becomes clear.
 

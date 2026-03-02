@@ -1,16 +1,16 @@
-# OODAR Shared Observation Layer — Implementation Plan
+# OODARC Shared Observation Layer — Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use clavain:executing-plans to implement this plan task-by-task.
 
-**Goal:** Build `ic situation snapshot` — a unified observation command that aggregates phase state, dispatch state, events, scheduler queue, and budget into a single JSON response, enabling every OODAR loop to observe the system in one call instead of five.
+**Goal:** Build `ic situation snapshot` — a unified observation command that aggregates phase state, dispatch state, events, scheduler queue, and budget into a single JSON response, enabling every OODARC loop to observe the system in one call instead of five.
 
 **Architecture:** New `internal/observation` package following the `internal/budget` multi-store aggregation pattern. A `Collector` struct holds interface references to phase, dispatch, event, and scheduler stores, and produces a `Snapshot` struct. CLI command `ic situation snapshot` wires it up. No new DB tables — read-only aggregation of existing data.
 
 **Tech Stack:** Go 1.22, modernc.org/sqlite, standard library `testing`
 
 **Source docs:**
-- Brainstorm: `docs/brainstorms/2026-02-28-oodar-loops-brainstorm.md`
-- Synthesis: `docs/research/oodar-flux-drive-synthesis.md`
+- Brainstorm: `docs/brainstorms/2026-02-28-oodarc-loops-brainstorm.md`
+- Synthesis: `docs/research/oodarc-flux-drive-synthesis.md`
 - Intercore CLAUDE.md: `core/intercore/CLAUDE.md`
 
 ---
@@ -305,7 +305,7 @@ cd core/intercore
 git add internal/observation/observation.go internal/observation/observation_test.go
 git commit -m "feat(intercore): add observation package with Collector and Snapshot types
 
-OODAR shared observation layer — types, interfaces, and Collect()
+OODARC shared observation layer — types, interfaces, and Collect()
 aggregator following the budget.Checker multi-store pattern."
 ```
 
@@ -630,7 +630,7 @@ cd core/intercore
 git add cmd/ic/situation.go cmd/ic/main.go
 git commit -m "feat(intercore): add 'ic situation snapshot' CLI command
 
-Unified observation layer for OODAR loops — aggregates phase state,
+Unified observation layer for OODARC loops — aggregates phase state,
 dispatch state, events, scheduler queue, and budget into single JSON."
 ```
 
@@ -692,7 +692,7 @@ Add under the CLI commands section:
 ```markdown
 ### `ic situation`
 
-Unified observation layer for OODAR loops.
+Unified observation layer for OODARC loops.
 
 - `ic situation snapshot` — JSON snapshot of all active runs, dispatches, events, queue depth
 - `ic situation snapshot --run=<id>` — scoped to a specific run (includes budget)
@@ -709,27 +709,27 @@ git commit -m "docs(intercore): add ic situation to usage and AGENTS.md"
 
 ---
 
-### Task 7: Update PHILOSOPHY.md with OODAR Vocabulary
+### Task 7: Update PHILOSOPHY.md with OODARC Vocabulary
 
-Label the existing flywheel as OODAR to establish shared vocabulary across the project.
+Label the existing flywheel as OODARC to establish shared vocabulary across the project.
 
 **Files:**
 - Modify: `PHILOSOPHY.md` (root)
 
-**Step 1: Add OODAR section**
+**Step 1: Add OODARC section**
 
 After the "The Core Bet" section (line ~27), add:
 
 ```markdown
-### The OODAR Lens
+### The OODARC Lens
 
-The flywheel (authority → actions → evidence → authority) is an instance of **OODAR** — Observe, Orient, Decide, Act, Reflect — operating at nested timescales:
+The flywheel (authority → actions → evidence → authority) is an instance of **OODARC** — Observe, Orient, Decide, Act, Reflect — operating at nested timescales:
 
 - **Per-turn:** Agent observes tool results, orients on context, decides next action, acts, and reflects via signal scoring.
 - **Per-sprint:** Phase gates observe artifacts, orient on sprint state, decide phase transitions, advance phases, and reflect at sprint end.
 - **Cross-session:** Interspect observes evidence, orients via pattern classification, decides routing proposals, acts via override application, and reflects via canary monitoring.
 
-OODAR extends Boyd's OODA loop with an explicit **Reflect** phase because AI agents don't implicitly learn from experience — learning must be captured as durable evidence that earns authority.
+OODARC extends Boyd's OODA loop with an explicit **Reflect** phase because AI agents don't implicitly learn from experience — learning must be captured as durable evidence that earns authority.
 
 Situation assessments are prompt aids, not ground truth. Always verify recent evidence against cached assessments.
 ```
@@ -738,9 +738,9 @@ Situation assessments are prompt aids, not ground truth. Always verify recent ev
 
 ```bash
 git add PHILOSOPHY.md
-git commit -m "docs: add OODAR vocabulary to PHILOSOPHY.md
+git commit -m "docs: add OODARC vocabulary to PHILOSOPHY.md
 
-Labels the existing flywheel as OODAR operating at nested timescales.
+Labels the existing flywheel as OODARC operating at nested timescales.
 Establishes shared vocabulary for observation layer work."
 ```
 

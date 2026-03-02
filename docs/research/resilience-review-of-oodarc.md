@@ -1,15 +1,15 @@
-# Resilience Review: OODAR Loops for Agent Decision-Making
+# Resilience Review: OODARC Loops for Agent Decision-Making
 
 **Reviewer:** Flux-drive Adaptive Capacity Reviewer
 **Date:** 2026-02-28
-**Document reviewed:** `/home/mk/projects/Demarch/docs/brainstorms/2026-02-28-oodar-loops-brainstorm.md`
+**Document reviewed:** `/home/mk/projects/Demarch/docs/brainstorms/2026-02-28-oodarc-loops-brainstorm.md`
 **Grounding:** PHILOSOPHY.md (evidence-driven, defense in depth, earned authority), AGENTS.md (progressive trust, escalation contracts)
 
 ---
 
 ## Executive Summary
 
-The OODAR brainstorm names a critical loop structure that Demarch already executes informally. The design is philosophically sound but has **three critical resilience blindspots**: the shared observation layer is an undefended single point of failure, failure propagation paths between loops are unmapped, and Reflect's dual-mode structure doesn't guarantee that inline reflections actually improve decision quality before re-entering the cycle. These gaps are not architectural errors — they're design decisions that should be explicit rather than emergent.
+The OODARC brainstorm names a critical loop structure that Demarch already executes informally. The design is philosophically sound but has **three critical resilience blindspots**: the shared observation layer is an undefended single point of failure, failure propagation paths between loops are unmapped, and Reflect's dual-mode structure doesn't guarantee that inline reflections actually improve decision quality before re-entering the cycle. These gaps are not architectural errors — they're design decisions that should be explicit rather than emergent.
 
 **Severity:** P2 (Missed Lens) for all findings except #3, which is P1 (Blind Spot).
 
@@ -19,7 +19,7 @@ The OODAR brainstorm names a critical loop structure that Demarch already execut
 
 **Location:** Brainstorm §Loop Communication, "Shared Observation Layer"; Approach A §Step 1, "ic situation snapshot"; Approach B §Step 2, "ObservationStore interface"
 
-**The issue:** The design proposes a unified snapshot (`ic situation snapshot`) that **all four OODAR loops** depend on:
+**The issue:** The design proposes a unified snapshot (`ic situation snapshot`) that **all four OODARC loops** depend on:
 
 - Per-turn loops read it to understand current phase state
 - Sprint loops read it to assess gate readiness
@@ -170,17 +170,17 @@ This ensures PHILOSOPHY.md's principle holds: evidence must earn authority throu
 
 **Location:** Brainstorm §Loop Communication "hierarchical decisions + shared observations"; Approach A+B "escalation contracts"
 
-**The issue:** The OODAR framework enforces a strict **observe → orient → decide → act → reflect** sequence at every level. This is powerful for reproducibility but may prevent agents from taking useful shortcuts that violate the sequence.
+**The issue:** The OODARC framework enforces a strict **observe → orient → decide → act → reflect** sequence at every level. This is powerful for reproducibility but may prevent agents from taking useful shortcuts that violate the sequence.
 
-Examples of useful shortcuts that OODAR blocks:
+Examples of useful shortcuts that OODARC blocks:
 
 1. **Omit Observe if the answer is obvious.** "I see the test is failing; I've seen this 100 times; just fix it immediately" — per-turn loop must observe first, then decide. Observable check might take 200ms; agent could have acted in 10ms.
 
-2. **Decide before Orienting if the trust is high.** "I have 99% confidence this decision is right; skip expensive Orient, just Act immediately" — but OODAR forces Orient to run.
+2. **Decide before Orienting if the trust is high.** "I have 99% confidence this decision is right; skip expensive Orient, just Act immediately" — but OODARC forces Orient to run.
 
 3. **Skip Reflect if low signal.** "This routine code fix is boring; don't Reflect; just continue" — inline Reflect is triggered by signal_score ≥ 4, but some agents may want to force-skip Reflect even for significant outcomes.
 
-The brainstorm acknowledges this implicitly: "Tempo target: <100ms overhead per turn for fast-path decisions" (§Loop 1). But there's no explicit mechanism to **bypass or compress OODAR phases when confidence is high enough**.
+The brainstorm acknowledges this implicitly: "Tempo target: <100ms overhead per turn for fast-path decisions" (§Loop 1). But there's no explicit mechanism to **bypass or compress OODARC phases when confidence is high enough**.
 
 **Resilience lens: Creative Constraints as Design Tools**
 
@@ -190,11 +190,11 @@ Constraints are valuable for safety (forcing deliberation) but should be **earne
 - Trivial decisions: compress observe+orient into <10ms
 - Verified-safe actions: act before reflect (reflect async instead of inline)
 
-**Recommendation:** Add an "Earned Deviations from OODAR Sequence" section:
+**Recommendation:** Add an "Earned Deviations from OODARC Sequence" section:
 
 ```
 Condition: Agent trust_score > 0.95 for this decision type
-Action: Compress OODAR phases
+Action: Compress OODARC phases
 - Observe + Orient: combine into <10ms lookup (skip expensive data gathering)
 - Decide: use routing table (skip LLM deliberation)
 - Act: proceed immediately
@@ -207,10 +207,10 @@ Action: Proposal path
 - Escalate to human for approval (earned authority, not assumed)
 - If approved: add to agent's default policy; if rejected: document why for future reference
 
-Safety net: If shortcut confidence degrades (success < 90%), revert to full OODAR
+Safety net: If shortcut confidence degrades (success < 90%), revert to full OODARC
 ```
 
-This preserves the benefits of OODAR (structure, reproducibility, safety) while allowing agents to prove they can operate faster when they've earned it.
+This preserves the benefits of OODARC (structure, reproducibility, safety) while allowing agents to prove they can operate faster when they've earned it.
 
 ---
 
@@ -287,7 +287,7 @@ The brainstorm doesn't specify:
 
 **Resilience lens: Graceful Degradation + Antifragility**
 
-Deadlock is a classic system failure. The OODAR design should explicitly handle it:
+Deadlock is a classic system failure. The OODARC design should explicitly handle it:
 
 1. **Detection:** Lock wait timeout > 5s = probable deadlock
 2. **Diagnosis:** Multi-agent loop queries both agents' lock state; confirms circular dependency
@@ -323,7 +323,7 @@ Monitoring:
 
 ## Finding 7: Tempo Measurement Lacks Tolerance for Outliers (P3 — Consider Also)
 
-**Location:** All four loop descriptions; brainstorm §Open Questions "How do we measure OODAR tempo?"
+**Location:** All four loop descriptions; brainstorm §Open Questions "How do we measure OODARC tempo?"
 
 **The issue:** The brainstorm proposes tempo targets:
 - Per-turn: <100ms
@@ -343,21 +343,21 @@ The brainstorm doesn't specify. This matters for resilience: if the target is a 
 **Resilience lens: Graceful Degradation Under Tail Load**
 
 When tempo targets are exceeded, loops should:
-1. Emit a "slow OODAR cycle" event
+1. Emit a "slow OODARC cycle" event
 2. Raise confidence cost (decisions using stale Orient are less confident)
 3. Escalate if repeated (3 consecutive slow cycles = escalate to human)
 
 **Recommendation:** Specify tempo targets as percentiles with fallback behavior:
 
 ```
-Per-turn OODAR tempo:
+Per-turn OODARC tempo:
 - Target: <100ms at P95 (95% of cycles complete in 100ms or less)
 - Outlier handling: if cycle > 500ms, emit "slow_cycle" event
   - If 1 slow cycle: continue, no action
   - If 3 consecutive slow cycles: escalate to sprint loop (investigate)
 - Grace period: first 5 cycles of a session are exempt (cold start)
 
-Sprint OODAR tempo:
+Sprint OODARC tempo:
 - Target: <5s at P95
 - Outlier: if phase advance > 30s, escalate to human (gate may be blocked)
 
@@ -387,7 +387,7 @@ This makes tempo expectations explicit and gives operators a way to diagnose slo
 From a resilience standpoint, **Approach A (bottom-up) is lower-risk for the next 6 months**, because:
 - It ships value immediately (`ic situation` alone improves all loops)
 - It's reversible (contracts over existing code; removal doesn't break anything)
-- It doesn't commit to premature abstraction (Approach B's `OODARLoop[S,O,D,A,R]` assumes composition)
+- It doesn't commit to premature abstraction (Approach B's `OODARCLoop[S,O,D,A,R]` assumes composition)
 
 Approach B is a better long-term architecture (testability, type safety, Gridfire alignment) but requires higher upfront investment and risks over-generalizing from 4 loops.
 
@@ -409,7 +409,7 @@ Sprint N+3 (planned): Evaluation and decision
 - Decision gate: if contracts are stable, proceed to Approach B; otherwise, extend A
 
 Sprint N+6: Implement Approach B (if decision gate passes)
-- Define OODARLoop interface
+- Define OODARCLoop interface
 - Wrap SprintLoop (most mature) first
 - Wrap TurnLoop, LearningLoop second
 - CoordinationLoop last (least mature)
@@ -427,7 +427,7 @@ This approach combines the benefits: ship value now (A) without foreclosing bett
 | 1 | Single Point of Failure | P1 | Shared observation layer lacks failover path | Add degradation paths per loop; circuit breaker for snapshot timeout |
 | 2 | Graceful Degradation | P2 | Failure propagation between loops is unmapped | Define failure detection, escalation, and circuit-breaker per level |
 | 3 | Antifragility / Earned Authority | **P1** | Reflect phase doesn't verify lessons before reuse | Verify lessons through 2-stage reflection (tentative → verified); audit loop |
-| 4 | Creative Constraints | P3 | OODAR sequence may block useful shortcuts | Add earned-deviation mechanism for high-trust agents |
+| 4 | Creative Constraints | P3 | OODARC sequence may block useful shortcuts | Add earned-deviation mechanism for high-trust agents |
 | 5 | Recovery Time | P2 | Cross-session loop recovery is slow for catastrophic failures | Add anomaly fast-path with auto-revert for >20% canary failure rate |
 | 6 | Graceful Degradation | P2 | Multi-agent loop lacks deadlock prevention | Add lock ordering + deadlock detection + resolution strategies |
 | 7 | Graceful Degradation | P3 | Tempo targets lack outlier handling | Specify as percentiles (P95); escalate on repeated slow cycles |
@@ -445,7 +445,7 @@ This approach combines the benefits: ship value now (A) without foreclosing bett
 
 **Finding 6** (deadlock prevention) relates to "Governance → Polycentric: multiple independent evaluation authorities." If deadlock occurs, resolution must involve escalation to the next authority level (sprint loop or human).
 
-All findings are resolvable through architectural amendments to the brainstorm; none require invalidating the core OODAR concept.
+All findings are resolvable through architectural amendments to the brainstorm; none require invalidating the core OODARC concept.
 
 ---
 

@@ -1,7 +1,7 @@
-# OODAR Loops Synthesis Report
+# OODARC Loops Synthesis Report
 
 **Date:** 2026-02-28
-**Document synthesized:** `docs/brainstorms/2026-02-28-oodar-loops-brainstorm.md`
+**Document synthesized:** `docs/brainstorms/2026-02-28-oodarc-loops-brainstorm.md`
 **Reviewers:** 6 flux-drive agents (Architecture, Systems Thinking, Decision Quality, User/Product, Resilience, Sensemaking)
 **Status:** Pre-plan review synthesis
 **Verdict:** **NEEDS CHANGES** — Design is sound, but critical gaps block implementation
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-The OODAR (Observe → Orient → Decide → Act → Reflect) framework names something real in Demarch's architecture and is philosophically grounded in PHILOSOPHY.md's evidence-driven flywheel. The brainstorm demonstrates strong architectural thinking and correctly identifies the Reflect phase as the missing explicit layer.
+The OODARC (Observe → Orient → Decide → Act → Reflect) framework names something real in Demarch's architecture and is philosophically grounded in PHILOSOPHY.md's evidence-driven flywheel. The brainstorm demonstrates strong architectural thinking and correctly identifies the Reflect phase as the missing explicit layer.
 
 **Verdict:** The design is architecturally defensible and philosophically correct, but has **five critical blind spots** that must be resolved before implementation can begin. The primary recommendation is **Approach A (bottom-up)**, starting immediately with the Shared Observation Layer, but with mandatory design amendments to address resilience, temporal reasoning, and sensemaking concerns identified across reviews.
 
@@ -25,7 +25,7 @@ The OODAR (Observe → Orient → Decide → Act → Reflect) framework names so
 All six agents identified `ic situation snapshot` as the highest-priority, immediately deployable component:
 
 - **Architecture:** "Single round-trip instead of five CLI queries"
-- **Systems:** "Foundation that every other OODAR leg benefits from"
+- **Systems:** "Foundation that every other OODARC leg benefits from"
 - **Decision Quality:** "Uncontroversial, immediately useful"
 - **User/Product:** "Clear beneficiary: every agent running a sprint"
 - **Resilience:** "Wraps existing sources; independently useful"
@@ -45,7 +45,7 @@ All agents identified Loop 3 as architecturally premature:
 - **Resilience:** "Explicit deadlock prevention unspecified"; "lowest maturity"
 - **Sensemaking:** "Least mature yet framed as parallel peer"; "should be spiked separately"
 
-**Convergent recommendation:** Do not implement Loop 3 as a full OODAR cycle in the initial plan. Defer formal Loop 3 implementation to N+6 or later. Spike a minimal coordination model separately if needed for concurrent sprints.
+**Convergent recommendation:** Do not implement Loop 3 as a full OODARC cycle in the initial plan. Defer formal Loop 3 implementation to N+6 or later. Spike a minimal coordination model separately if needed for concurrent sprints.
 
 ---
 
@@ -63,7 +63,7 @@ Three agents independently identified the same ambiguity:
 
 ---
 
-### CONVERGENCE 4: Per-Turn OODAR Tempo Budget Is Tight, Risky (Severity: P2 — Performance Risk, 4/6 agents)
+### CONVERGENCE 4: Per-Turn OODARC Tempo Budget Is Tight, Risky (Severity: P2 — Performance Risk, 4/6 agents)
 
 Four agents flag the <100ms per-turn overhead target as a hard constraint that may not be achievable:
 
@@ -72,9 +72,9 @@ Four agents flag the <100ms per-turn overhead target as a hard constraint that m
 - **User/Product:** "Latency risk; fights LLM-native reasoning"
 - **Sensemaking:** Notes temporal discounting risk (fast-path speed could disable multi-agent safety)
 
-**Convergent problem:** Per-turn OODAR assumes Orient can be cached and run in <100ms. But LLM-driven Orient is inherently non-deterministic, and cache invalidation is the hard problem (noted as open question 1).
+**Convergent problem:** Per-turn OODARC assumes Orient can be cached and run in <100ms. But LLM-driven Orient is inherently non-deterministic, and cache invalidation is the hard problem (noted as open question 1).
 
-**Convergent recommendation:** Do not commit to per-turn OODAR formalization until after `ic situation snapshot` is proven and its actual latency is measured. If measured latency is >50ms, the <100ms target is infeasible and per-turn formalization should be deferredor redesigned.
+**Convergent recommendation:** Do not commit to per-turn OODARC formalization until after `ic situation snapshot` is proven and its actual latency is measured. If measured latency is >50ms, the <100ms target is infeasible and per-turn formalization should be deferredor redesigned.
 
 ---
 
@@ -108,7 +108,7 @@ Five agents identified the same undefined contract:
 **Location:** "Finding 1: Shared Observation Layer is a Single Point of Failure"
 **Severity:** P1 — Blind Spot
 
-The design proposes all four OODAR loops depend on `ic situation snapshot`, but provides no failure mode or fallback:
+The design proposes all four OODARC loops depend on `ic situation snapshot`, but provides no failure mode or fallback:
 
 - What happens when snapshot is slow (>50ms)?
 - What's the SLA and timeout policy?
@@ -164,7 +164,7 @@ The brainstorm describes Orient producing "structured situation assessments" wit
 
 **Impact:** Agents develop overconfidence in their cached assessments, missing anomalies outside the schema's fields. The JSON becomes the territory, not a map of it.
 
-**Recommendation:** Before formalizing OODAR loops:
+**Recommendation:** Before formalizing OODARC loops:
 1. Specify the mental model update mechanism (e.g., "Reflect computes delta_from_expectation and writes to evidence store; Orient reads evidence since last session to adjust priors")
 2. Define success/failure criteria for a model (e.g., "model is valid if predictions match outcomes on last 10 similar situations")
 3. Add a guard in Orient: "SituationAssessment is a prompt aid, not ground truth. Always verify recent evidence against cached assessment."
@@ -318,7 +318,7 @@ The document describes escalation and de-escalation but does not define:
 - Whether de-escalation is binding or advisory
 - What inner loop does if it disagrees with de-escalation
 
-**Example scenario:** Per-turn OODAR produces signal_score = 6 (wants inline Reflect), but sprint OODAR is mid-phase-transition. Does per-turn Reflect pause mid-transition? Does sprint subsume per-turn Reflect?
+**Example scenario:** Per-turn OODARC produces signal_score = 6 (wants inline Reflect), but sprint OODARC is mid-phase-transition. Does per-turn Reflect pause mid-transition? Does sprint subsume per-turn Reflect?
 
 **Recommendation:** Define conflict resolution protocol:
 1. Priority ordering: when loops want different actions, which wins?
@@ -336,11 +336,11 @@ The document describes escalation and de-escalation but does not define:
 The document defines tempo targets but provides no measurable success criteria:
 
 - Leading indicator (observable within 2 sprints): Does `ic situation snapshot` reduce CLI calls before first action?
-- Lagging indicator (observable in 30 days): Does per-sprint OODAR reduce mid-sprint course corrections?
+- Lagging indicator (observable in 30 days): Does per-sprint OODARC reduce mid-sprint course corrections?
 - Quality indicator: Does Reflect increase signal_score distribution?
-- Cost indicator: Does OODAR reduce cost per landable change?
+- Cost indicator: Does OODARC reduce cost per landable change?
 
-**Impact:** Plan has no completion criterion beyond "it ships." Without metrics, can't measure whether OODAR is working or causing regression.
+**Impact:** Plan has no completion criterion beyond "it ships." Without metrics, can't measure whether OODARC is working or causing regression.
 
 **Recommendation:** Define before planning:
 1. One leading indicator measurable within 2 sprints
@@ -484,7 +484,7 @@ The document describes system at steady-state, not temporal trajectory:
 
 ### Architecture Review Unique Insights
 
-1. **Module boundary must be explicit:** `ObservationStore` and `ic situation` belong in intercore. `OODARLoop` generic interface does NOT belong in intercore public surface—should live in `intercore/internal/oodar/` or `sdk/interbase/`.
+1. **Module boundary must be explicit:** `ObservationStore` and `ic situation` belong in intercore. `OODARCLoop` generic interface does NOT belong in intercore public surface—should live in `intercore/internal/oodarc/` or `sdk/interbase/`.
 
 2. **Interspect's layer affiliation unclear:** Is interspect L1 (kernel service) or L2 (OS)? This must be resolved before designing shared observation layer, or `ic situation` will violate layer boundaries.
 
@@ -504,14 +504,14 @@ The document describes system at steady-state, not temporal trajectory:
 
 ### User/Product Review Unique Insights
 
-1. **Scope creep risk:** Document proposes shipping all 4 loops, 2 approaches, dual-mode reflect, significance classifiers simultaneously. 80% case is: `ic situation` + per-sprint OODAR. Multi-agent and cross-session should be deferred.
+1. **Scope creep risk:** Document proposes shipping all 4 loops, 2 approaches, dual-mode reflect, significance classifiers simultaneously. 80% case is: `ic situation` + per-sprint OODARC. Multi-agent and cross-session should be deferred.
 
 2. **Bundled work items:** Five distinct work items conflated:
    - `ic situation snapshot` (standalone, ship independently)
    - Situation assessment schema (with Loop 2)
-   - Decision contracts (useful without OODAR)
+   - Decision contracts (useful without OODARC)
    - Dual-mode reflect formalization (extends iv-8jpf)
-   - OODAR vocabulary in docs (zero-cost, pure clarification)
+   - OODARC vocabulary in docs (zero-cost, pure clarification)
 
 3. **Loop conflict protocol undefined:** When per-turn and sprint loops disagree, which wins? De-escalation binding or advisory?
 
@@ -537,7 +537,7 @@ The document describes system at steady-state, not temporal trajectory:
 
 ### Overall Assessment: **NEEDS CHANGES**
 
-**The OODAR design is architecturally sound and philosophically grounded, but has critical gaps that must be resolved before implementation. The primary recommendation is Approach A (bottom-up), starting immediately with the Shared Observation Layer.**
+**The OODARC design is architecturally sound and philosophically grounded, but has critical gaps that must be resolved before implementation. The primary recommendation is Approach A (bottom-up), starting immediately with the Shared Observation Layer.**
 
 **Verdict breakdown by approach:**
 
@@ -560,7 +560,7 @@ The document describes system at steady-state, not temporal trajectory:
 
 ## Critical Blockers (Must Resolve Before Plan)
 
-The following must be addressed in planning phase before any OODAR implementation begins:
+The following must be addressed in planning phase before any OODARC implementation begins:
 
 ### BLOCKER 1: Resolve Interspect's Layer Affiliation
 **Severity:** P1 — Blocks observation layer design
@@ -571,7 +571,7 @@ The following must be addressed in planning phase before any OODAR implementatio
 **Action:** Define when loops escalate (what signal? what thresholds?), what de-escalation means (binding vs advisory?), and what happens when loops disagree.
 
 ### BLOCKER 3: Verify Per-Turn Tempo Budget
-**Severity:** P2 — Blocks per-turn OODAR formalization
+**Severity:** P2 — Blocks per-turn OODARC formalization
 **Action:** Measure `ic situation snapshot` latency and Orient caching costs with realistic data. If total > 50ms, the <100ms target is infeasible.
 
 ### BLOCKER 4: Design Reflect Verification Mechanism
@@ -602,7 +602,7 @@ The following must be addressed in planning phase before any OODAR implementatio
 - Monitoring: snapshot latency, cache hit rate, timeout events
 
 **Success criteria:**
-- Every OODAR loop can call `ic situation snapshot` instead of 5+ separate CLI queries
+- Every OODARC loop can call `ic situation snapshot` instead of 5+ separate CLI queries
 - Snapshot latency <50ms at P95 (required for per-turn budget)
 - Zero unhandled snapshot timeouts (circuit breaker working)
 
@@ -614,7 +614,7 @@ The following must be addressed in planning phase before any OODAR implementatio
 **Scope:** Approach A, Steps 3-4
 - Extract routing tables to queryable JSON (fast-path decision mechanism)
 - Formalize Reflect dual-mode (inline vs async) with verification mechanism
-- Add OODAR vocabulary to PHILOSOPHY.md, sprint skills, Interspect docs (zero-effort, high clarification value)
+- Add OODARC vocabulary to PHILOSOPHY.md, sprint skills, Interspect docs (zero-effort, high clarification value)
 
 **Blockers to resolve:** Escalation contracts, Reflect verification mechanism, mental model update spec
 
@@ -622,10 +622,10 @@ The following must be addressed in planning phase before any OODAR implementatio
 - Routing tables JSON schema + query interface
 - Situation assessment schema (refined from Phase 1)
 - Reflect contract: inline (tentative lesson, low confidence) vs async (verified, high confidence)
-- Documentation: OODAR vocabulary in existing docs
+- Documentation: OODARC vocabulary in existing docs
 
 **Success criteria:**
-- Per-sprint OODAR loop successfully uses routing tables (fast-path confidence >= 0.8)
+- Per-sprint OODARC loop successfully uses routing tables (fast-path confidence >= 0.8)
 - Inline Reflect fires for signal_score >= 4, emits tentative lesson with confidence < 1.0
 - Async Reflect accumulates evidence and verifies lessons (no bad lessons deployed)
 
@@ -633,14 +633,14 @@ The following must be addressed in planning phase before any OODAR implementatio
 
 ### **Phase 3 (Weeks 5-8): Interface Extraction (If Justified)**
 
-**Goal:** Evaluate whether generic `OODARLoop` interface adds value; extract if justified
+**Goal:** Evaluate whether generic `OODARCLoop` interface adds value; extract if justified
 **Scope:** Conditional on Phase 1-2 proving contracts are stable
 - Measure: How many times did situation assessment schema need revision? How many decision routing conflicts?
 - Measure: Is there >20% code duplication between sprint and per-turn loop implementation?
 - Decision gate: If contracts stable AND duplication present, proceed to interface extraction
 
 **If gate passes:**
-- Define generic `OODARLoop` interface in `sdk/interbase/` (not intercore public surface)
+- Define generic `OODARCLoop` interface in `sdk/interbase/` (not intercore public surface)
 - Implement for SprintLoop first (most mature)
 - Plan TurnLoop next; CoordinationLoop last (least mature)
 
@@ -696,7 +696,7 @@ The following must be addressed in planning phase before any OODAR implementatio
 4. **Verify per-turn tempo budget**
    - Measure `ic situation snapshot` actual latency with production data
    - Measure LLM Orient latency (inference + caching overhead)
-   - If combined < 50ms achievable, proceed to Phase 1. If not, redesign or defer per-turn OODAR.
+   - If combined < 50ms achievable, proceed to Phase 1. If not, redesign or defer per-turn OODARC.
 
 5. **Define mental model update mechanism**
    - Specify how agents acquire, update, validate models
@@ -734,8 +734,8 @@ The following must be addressed in planning phase before any OODAR implementatio
    - Add health check: `ic situation health`
 
 10. **Update PHILOSOPHY.md**
-    - Add OODAR vocabulary section
-    - Clarify evidence → authority → actions cycle IS OODAR at nested timescales
+    - Add OODARC vocabulary section
+    - Clarify evidence → authority → actions cycle IS OODARC at nested timescales
     - Add reification guard: "SituationAssessment is a prompt aid, not ground truth"
 
 ---
@@ -757,7 +757,7 @@ The following must be addressed in planning phase before any OODAR implementatio
 
 ## Summary for Next Phase
 
-The OODAR brainstorm is **ready for planning with amendments**. Do NOT proceed to detailed implementation without resolving the five blockers listed above.
+The OODARC brainstorm is **ready for planning with amendments**. Do NOT proceed to detailed implementation without resolving the five blockers listed above.
 
 **Recommended next step:** Convene planning session with findings from this synthesis. Allocate 3-4 days to:
 1. Resolve five blockers (decision, design, or documented rationale)
