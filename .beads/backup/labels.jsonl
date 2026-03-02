@@ -2989,6 +2989,10 @@
 {"issue_id":"iv-hfu6l","label":"research:repo"}
 {"issue_id":"iv-hfu6l","label":"source:dicklesworthstone"}
 {"issue_id":"iv-hfu6l","label":"theme:research"}
+{"issue_id":"iv-hj4jl","label":"complexity:3"}
+{"issue_id":"iv-hj4jl","label":"ic_run_id:8ensozso"}
+{"issue_id":"iv-hj4jl","label":"sprint:true"}
+{"issue_id":"iv-hj4jl","label":"token_budget:250000"}
 {"issue_id":"iv-hjb","label":"mod:intermute"}
 {"issue_id":"iv-hjb","label":"theme:research"}
 {"issue_id":"iv-hjb","label":"theme:security"}
@@ -4033,6 +4037,7 @@
 {"issue_id":"iv-nqu","label":"mod:interject"}
 {"issue_id":"iv-nrdh","label":"mod:clavain"}
 {"issue_id":"iv-nrdh","label":"mod:demarch"}
+{"issue_id":"iv-nrjbp","label":"complexity:3"}
 {"issue_id":"iv-nrnh","label":"mod:interspect"}
 {"issue_id":"iv-nrnh","label":"theme:coordination"}
 {"issue_id":"iv-nrnh","label":"theme:dx"}
