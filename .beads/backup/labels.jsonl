@@ -4655,6 +4655,9 @@
 {"issue_id":"iv-rarpb","label":"research:repo"}
 {"issue_id":"iv-rarpb","label":"source:dicklesworthstone"}
 {"issue_id":"iv-rarpb","label":"theme:research"}
+{"issue_id":"iv-rbf44","label":"ic_run_id:h92w1d14"}
+{"issue_id":"iv-rbf44","label":"sprint:true"}
+{"issue_id":"iv-rbf44","label":"token_budget:250000"}
 {"issue_id":"iv-re4l","label":"theme:coordination"}
 {"issue_id":"iv-rjz3","label":"complexity:2"}
 {"issue_id":"iv-rjz3","label":"mod:intercore"}
