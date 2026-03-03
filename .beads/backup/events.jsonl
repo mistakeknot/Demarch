@@ -2759,3 +2759,4 @@
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-02T12:59:57Z","event_type":"closed","id":2760,"issue_id":"iv-lzyfp","new_value":"Implemented all 7 reliability fixes. All 157 tests pass.","old_value":""}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-02T12:59:58Z","event_type":"closed","id":2761,"issue_id":"iv-22kzq","new_value":"Implemented all 7 reliability fixes. All 157 tests pass.","old_value":""}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-02T12:59:58Z","event_type":"closed","id":2762,"issue_id":"iv-zmsaa","new_value":"Implemented all 7 reliability fixes. All 157 tests pass.","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-02T13:00:06Z","event_type":"closed","id":2763,"issue_id":"iv-nrjbp","new_value":"All 7 children closed: IPC counter, group_folder validation, schedule validation, transactional log+update, atomic claim, PgPool eviction, DB timeouts","old_value":""}
