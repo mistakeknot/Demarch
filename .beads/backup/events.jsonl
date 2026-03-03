@@ -2840,3 +2840,5 @@
 {"actor":"mistakeknot","comment":"Removed label: claimed_at:1772506863","created_at":"2026-03-02T19:02:03Z","event_type":"label_removed","id":2841,"issue_id":"iv-r6u9q","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":"Added label: claimed_at:1772506923","created_at":"2026-03-02T19:02:03Z","event_type":"label_added","id":2842,"issue_id":"iv-r6u9q","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-02T19:13:36Z","event_type":"closed","id":2843,"issue_id":"iv-r6u9q","new_value":"Promoted redaction to pkg/, added 6 Hermes patterns, wired into all 13 INSERT paths across intercore+autarch","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-02T23:59:34Z","event_type":"created","id":2844,"issue_id":"iv-i198.1","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Added label: complexity:3","created_at":"2026-03-02T23:59:34Z","event_type":"label_added","id":2845,"issue_id":"iv-i198","new_value":null,"old_value":null}
