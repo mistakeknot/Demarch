@@ -57,10 +57,13 @@ def test_plugin_json_valid(plugin_json):
 
 
 def test_plugin_json_skills_paths(plugin_root, plugin_json):
-    """Every skill path in plugin.json must resolve to a directory with SKILL.md."""
+    """Every skill path in plugin.json must resolve to a directory with SKILL.md.
+
+    Skills paths in plugin.json are relative to the plugin root (parent of .claude-plugin/),
+    not relative to plugin.json itself.
+    """
     for skill_path in plugin_json["skills"]:
-        resolved = plugin_root / ".claude-plugin" / skill_path
-        resolved = resolved.resolve()
+        resolved = (plugin_root / skill_path).resolve()
         assert resolved.is_dir(), f"Skill path does not resolve to directory: {skill_path} -> {resolved}"
         assert (resolved / "SKILL.md").exists(), f"Missing SKILL.md in {resolved}"
 
