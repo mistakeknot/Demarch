@@ -2992,6 +2992,8 @@
 {"issue_id":"iv-hfu6l","label":"research:repo"}
 {"issue_id":"iv-hfu6l","label":"source:dicklesworthstone"}
 {"issue_id":"iv-hfu6l","label":"theme:research"}
+{"issue_id":"iv-hj4jl","label":"claimed_at:1772562709"}
+{"issue_id":"iv-hj4jl","label":"claimed_by:unknown"}
 {"issue_id":"iv-hj4jl","label":"complexity:3"}
 {"issue_id":"iv-hj4jl","label":"ic_run_id:8ensozso"}
 {"issue_id":"iv-hj4jl","label":"sprint:true"}
@@ -4696,6 +4698,9 @@
 {"issue_id":"iv-rrc2","label":"phase:strategized"}
 {"issue_id":"iv-rrnn","label":"mod:interslack"}
 {"issue_id":"iv-rrnn","label":"theme:ux"}
+{"issue_id":"iv-rttr5","label":"claimed_at:0"}
+{"issue_id":"iv-rttr5","label":"claimed_by:released"}
+{"issue_id":"iv-rttr5","label":"complexity:3"}
 {"issue_id":"iv-rtwl","label":"mod:autarch"}
 {"issue_id":"iv-rtwl","label":"mod:intermute"}
 {"issue_id":"iv-rtwl","label":"theme:coordination"}
