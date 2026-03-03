@@ -880,6 +880,7 @@
 {"created_at":"2026-02-15T12:47:16Z","created_by":"mk","depends_on_id":"iv-nkak","issue_id":"iv-gkj9","type":"blocks"}
 {"created_at":"2026-02-15T10:33:10Z","created_by":"mk","depends_on_id":"iv-ty1f","issue_id":"iv-glxa","type":"blocks"}
 {"created_at":"2026-03-01T16:58:48Z","created_by":"mistakeknot","depends_on_id":"iv-fwwhl","issue_id":"iv-goiyq","type":"blocks"}
+{"created_at":"2026-03-03T12:23:44Z","created_by":"mistakeknot","depends_on_id":"iv-gs4vo","issue_id":"iv-gs4vo.1","type":"parent-child"}
 {"created_at":"2026-02-20T15:45:34Z","created_by":"mk","depends_on_id":"iv-ishl","issue_id":"iv-gv7i","type":"blocks"}
 {"created_at":"2026-02-20T15:45:37Z","created_by":"mk","depends_on_id":"iv-lemf","issue_id":"iv-gv7i","type":"blocks"}
 {"created_at":"2026-02-20T15:45:51Z","created_by":"mk","depends_on_id":"iv-gv7i","issue_id":"iv-gv7i.1","type":"parent-child"}
