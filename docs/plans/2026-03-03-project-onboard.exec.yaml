@@ -1,0 +1,50 @@
+version: 1
+mode: all-sequential
+tier: deep
+max_parallel: 1
+timeout_per_task: 300
+
+stages:
+  - name: "Core skill"
+    tasks:
+      - id: task-1
+        title: "Create skill directory and SKILL.md"
+        files: [os/clavain/skills/project-onboard/SKILL.md]
+        depends: []
+
+  - name: "Templates"
+    tasks:
+      - id: task-2
+        title: "Create CLAUDE.md template"
+        files: [os/clavain/skills/project-onboard/templates/CLAUDE.md.tmpl]
+        depends: []
+      - id: task-3
+        title: "Create AGENTS.md template"
+        files: [os/clavain/skills/project-onboard/templates/AGENTS.md.tmpl]
+        depends: []
+      - id: task-4
+        title: "Create PHILOSOPHY.md and CONVENTIONS.md templates"
+        files: [os/clavain/skills/project-onboard/templates/PHILOSOPHY.md.tmpl, os/clavain/skills/project-onboard/templates/CONVENTIONS.md.tmpl]
+        depends: []
+      - id: task-5
+        title: "Create interwatch template"
+        files: [os/clavain/skills/project-onboard/templates/watchables.yaml.tmpl]
+        depends: []
+
+  - name: "Registration"
+    tasks:
+      - id: task-6
+        title: "Register skill in plugin.json"
+        files: [os/clavain/.claude-plugin/plugin.json]
+        depends: []
+      - id: task-7
+        title: "Update Clavain CLAUDE.md skill count"
+        files: [os/clavain/CLAUDE.md]
+        depends: []
+
+  - name: "Compact generation"
+    tasks:
+      - id: task-8
+        title: "Generate SKILL-compact.md"
+        files: [os/clavain/skills/project-onboard/SKILL-compact.md]
+        depends: [task-1]
