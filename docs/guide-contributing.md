@@ -133,6 +133,16 @@ your-plugin/
 | `agent-rig.json` | Plugin companion/dependency declarations |
 | `.beads/` | Issue tracking database |
 
+## Setting up a new subproject
+
+If you're creating a new module or subproject within Demarch, run:
+
+```
+/clavain:project-onboard
+```
+
+This sets up beads tracking, CLAUDE.md/AGENTS.md, docs/ structure, observability, and seeds initial content. It introspects the repo first, so it works on both fresh and existing projects.
+
 ## What's next
 
 Read the [Power User Guide](guide-power-user.md) for advanced workflows.

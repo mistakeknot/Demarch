@@ -35,11 +35,7 @@ Verify:
 bd version
 ```
 
-Initialize in your project:
-```bash
-cd your-project
-bd init
-```
+You don't need to run `bd init` manually — `/clavain:project-onboard` handles it (see Step 8).
 
 ## Step 3: Build Intercore (orchestration kernel)
 
@@ -133,6 +129,16 @@ Run the full health check:
 ```
 
 Expected: all checks green. The output includes plugin version, MCP connections, beads CLI, companion plugin count, and hook status.
+
+## Step 8: Set up your project
+
+With everything installed, set up your project with full automation:
+
+```
+/clavain:project-onboard
+```
+
+This initializes beads tracking, generates CLAUDE.md/AGENTS.md, creates the docs/ structure, configures observability (drift detection), and seeds a vision doc, PRD, and roadmap from your goals. Safe to re-run on partially set up projects.
 
 ## What's next
 

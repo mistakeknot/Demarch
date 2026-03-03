@@ -20,6 +20,20 @@ This installs 26 companion plugins (required + recommended) for code review, pha
 
 ## Your first session
 
+### Set up your project
+
+```
+/clavain:project-onboard
+```
+
+Run this once in any project to get full Demarch-level automation. It:
+- Scans the repo and reports what infrastructure exists
+- Asks a few questions (name, goals, build commands — skips what it can infer)
+- Initializes beads tracking, CLAUDE.md, AGENTS.md, docs/ structure, and observability
+- Seeds a vision doc, PRD, and roadmap from your stated goals via interpath
+
+Safe to re-run — skips anything that already exists.
+
 ### Finding work
 
 ```
@@ -52,6 +66,7 @@ Clavain's sprint is a disciplined lifecycle that ensures you think before you co
 
 | Command | What It Does |
 |---------|-------------|
+| `/clavain:project-onboard` | Set up a project with full automation |
 | `/clavain:route` | Entry point: discover work or resume sprint |
 | `/clavain:sprint` | Full lifecycle from brainstorm to ship |
 | `/clavain:work <plan>` | Execute an existing plan |
