@@ -4,7 +4,7 @@
 
 intersight is an Interverse plugin that extracts design systems from live websites. It has NO MCP server — all extraction happens via:
 
-1. **Playwright MCP** (peer dependency) — `browser_evaluate` runs JS extraction scripts in the page context
+1. **Playwright MCP** (peer dependency) — `browser_evaluate` runs JS extraction scripts in the page context. Start with `--snapshot-mode none` to avoid ~70-80% token waste on auto-appended accessibility snapshots (only Phase 4's `browser_snapshot` needs them)
 2. **Dembrandt CLI** (hard dependency) — `npx dembrandt <url> --dtcg --json-only` provides baseline token extraction
 3. **Claude vision** (implicit) — screenshot analysis for layout patterns
 4. **intercache MCP** (optional) — per-URL caching with content-hash invalidation

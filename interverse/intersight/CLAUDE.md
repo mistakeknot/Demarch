@@ -27,3 +27,4 @@ ls scripts/extraction/*.js | wc -l  # expect 9
 - W3C DTCG 2025.10 output format with `intersight:*` extension namespace
 - 9 focused extraction scripts (not fewer combined scripts) — modularity over fewer round-trips
 - robots.txt compliance mandatory — Phase 0 checks before any extraction
+- Playwright MCP `--snapshot-mode none` recommended — only Phase 4 (`browser_snapshot`) needs the accessibility tree; all other ~15 tool calls discard it. Saves ~70-80% tokens per action

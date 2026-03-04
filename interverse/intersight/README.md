@@ -24,7 +24,7 @@ Automated UI/UX design analysis for Claude Code. Extracts W3C DTCG design tokens
 
 ## Requirements
 
-- **Playwright MCP server** — Must be configured in Claude Code MCP settings
+- **Playwright MCP server** — Must be configured in Claude Code MCP settings. For best token efficiency, start with `--snapshot-mode none` (saves ~70-80% tokens per action).
 - **Dembrandt** — `npx dembrandt` must work (Node.js required)
 - **intercache** (optional) — Enables per-URL caching
 
