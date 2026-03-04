@@ -1226,7 +1226,7 @@
 {"issue_id":"iv-6ikc","label":"theme:dx"}
 {"issue_id":"iv-6iu","label":"mod:autarch"}
 {"issue_id":"iv-6iu","label":"theme:ux"}
-{"issue_id":"iv-6ixw","label":"claimed_at:1772658787"}
+{"issue_id":"iv-6ixw","label":"claimed_at:1772666671"}
 {"issue_id":"iv-6ixw","label":"claimed_by:unknown"}
 {"issue_id":"iv-6ixw","label":"complexity:5"}
 {"issue_id":"iv-6ixw","label":"mod:clavain"}
@@ -3339,6 +3339,8 @@
 {"issue_id":"iv-jmua","label":"theme:docs"}
 {"issue_id":"iv-jmua","label":"theme:observability"}
 {"issue_id":"iv-jmua","label":"theme:research"}
+{"issue_id":"iv-jntjbo","label":"claimed_at:1772667098"}
+{"issue_id":"iv-jntjbo","label":"claimed_by:unknown"}
 {"issue_id":"iv-jo3i","label":"mod:interspect"}
 {"issue_id":"iv-jocaw","label":"complexity:4"}
 {"issue_id":"iv-jocaw","label":"mod:autarch"}
@@ -5284,6 +5286,9 @@
 {"issue_id":"iv-v5z6z","label":"recovered"}
 {"issue_id":"iv-v5z6z","label":"roadmap-missing"}
 {"issue_id":"iv-v5z6z","label":"theme:docs"}
+{"issue_id":"iv-v6cjc","label":"bug"}
+{"issue_id":"iv-v6cjc","label":"complexity:5"}
+{"issue_id":"iv-v6cjc","label":"epic"}
 {"issue_id":"iv-v7n4","label":"phase:strategized"}
 {"issue_id":"iv-v7n4","label":"theme:architecture"}
 {"issue_id":"iv-v7n4.1","label":"theme:docs"}
