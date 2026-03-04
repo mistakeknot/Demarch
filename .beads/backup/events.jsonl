@@ -3102,3 +3102,16 @@
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T14:35:49Z","event_type":"created","id":3103,"issue_id":"iv-nh3d7","new_value":"","old_value":""}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:31:52Z","event_type":"created","id":3104,"issue_id":"iv-240m.21","new_value":"","old_value":""}
 {"actor":"mistakeknot","comment":"Added label: phase:executing","created_at":"2026-03-03T17:31:52Z","event_type":"label_added","id":3105,"issue_id":"iv-240m","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:39:29Z","event_type":"created","id":3106,"issue_id":"iv-240m.22","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: phase:executing","created_at":"2026-03-03T17:39:29Z","event_type":"label_removed","id":3107,"issue_id":"iv-240m","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: phase:shipping","created_at":"2026-03-03T17:39:29Z","event_type":"label_added","id":3108,"issue_id":"iv-240m","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:39:32Z","event_type":"created","id":3109,"issue_id":"iv-240m.23","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: phase:shipping","created_at":"2026-03-03T17:39:32Z","event_type":"label_removed","id":3110,"issue_id":"iv-240m","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: phase:reflect","created_at":"2026-03-03T17:39:32Z","event_type":"label_added","id":3111,"issue_id":"iv-240m","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:40:39Z","event_type":"created","id":3112,"issue_id":"iv-240m.24","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: phase:reflect","created_at":"2026-03-03T17:40:39Z","event_type":"label_removed","id":3113,"issue_id":"iv-240m","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: phase:done","created_at":"2026-03-03T17:40:39Z","event_type":"label_added","id":3114,"issue_id":"iv-240m","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:40:51Z","event_type":"closed","id":3115,"issue_id":"iv-240m","new_value":"C3 Composer shipped: compose.go + tests + shell bridge + consumer wiring","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:40:55Z","event_type":"closed","id":3116,"issue_id":"iv-5qxae","new_value":"Shipped with parent sprint iv-240m","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:40:55Z","event_type":"closed","id":3117,"issue_id":"iv-d4wk0","new_value":"Shipped with parent sprint iv-240m","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-03T17:40:55Z","event_type":"closed","id":3118,"issue_id":"iv-w6cpu","new_value":"Shipped with parent sprint iv-240m","old_value":""}

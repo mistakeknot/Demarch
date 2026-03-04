@@ -483,7 +483,7 @@
 {"issue_id":"iv-240m","label":"complexity:4"}
 {"issue_id":"iv-240m","label":"mod:clavain"}
 {"issue_id":"iv-240m","label":"mod:interflux"}
-{"issue_id":"iv-240m","label":"phase:executing"}
+{"issue_id":"iv-240m","label":"phase:done"}
 {"issue_id":"iv-240m","label":"sprint:true"}
 {"issue_id":"iv-240m","label":"theme:coordination"}
 {"issue_id":"iv-240m","label":"theme:docs"}
