@@ -620,6 +620,7 @@
 {"created_at":"2026-02-14T19:16:03Z","created_by":"mk","depends_on_id":"iv-0hp","issue_id":"iv-bbu","type":"blocks"}
 {"created_at":"2026-02-14T19:16:04Z","created_by":"mk","depends_on_id":"iv-65k","issue_id":"iv-bbu","type":"blocks"}
 {"created_at":"2026-02-14T19:16:01Z","created_by":"mk","depends_on_id":"iv-i82","issue_id":"iv-bbu","type":"blocks"}
+{"created_at":"2026-03-03T23:20:47Z","created_by":"mistakeknot","depends_on_id":"iv-bco0o","issue_id":"iv-bco0o.1","type":"parent-child"}
 {"created_at":"2026-03-01T23:26:46Z","created_by":"mistakeknot","depends_on_id":"iv-x7rlv","issue_id":"iv-bdjun","type":"blocks"}
 {"created_at":"2026-03-01T20:29:22Z","created_by":"mistakeknot","depends_on_id":"iv-5ztam","issue_id":"iv-bj0w","type":"blocks"}
 {"created_at":"2026-02-15T01:35:06Z","created_by":"mk","depends_on_id":"iv-rafa","issue_id":"iv-bj0w","type":"blocks"}
