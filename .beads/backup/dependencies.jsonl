@@ -415,6 +415,11 @@
 {"created_at":"2026-02-20T09:28:08Z","created_by":"mk","depends_on_id":"iv-1vny","issue_id":"iv-6ixw","type":"blocks"}
 {"created_at":"2026-02-20T09:28:08Z","created_by":"mk","depends_on_id":"iv-240m","issue_id":"iv-6ixw","type":"blocks"}
 {"created_at":"2026-02-20T09:28:08Z","created_by":"mk","depends_on_id":"iv-r9j2","issue_id":"iv-6ixw","type":"blocks"}
+{"created_at":"2026-03-04T13:11:52Z","created_by":"mistakeknot","depends_on_id":"iv-6ixw","issue_id":"iv-6ixw.1","type":"parent-child"}
+{"created_at":"2026-03-04T13:11:52Z","created_by":"mistakeknot","depends_on_id":"iv-6ixw","issue_id":"iv-6ixw.2","type":"parent-child"}
+{"created_at":"2026-03-04T13:11:53Z","created_by":"mistakeknot","depends_on_id":"iv-6ixw","issue_id":"iv-6ixw.3","type":"parent-child"}
+{"created_at":"2026-03-04T13:11:53Z","created_by":"mistakeknot","depends_on_id":"iv-6ixw","issue_id":"iv-6ixw.4","type":"parent-child"}
+{"created_at":"2026-03-04T13:13:07Z","created_by":"mistakeknot","depends_on_id":"iv-6ixw","issue_id":"iv-6ixw.5","type":"parent-child"}
 {"created_at":"2026-02-19T07:54:02Z","created_by":"mk","depends_on_id":"iv-6kay","issue_id":"iv-6kay.1","type":"parent-child"}
 {"created_at":"2026-02-19T07:54:02Z","created_by":"mk","depends_on_id":"iv-6kay","issue_id":"iv-6kay.2","type":"parent-child"}
 {"created_at":"2026-02-19T07:54:02Z","created_by":"mk","depends_on_id":"iv-6kay","issue_id":"iv-6kay.3","type":"parent-child"}
