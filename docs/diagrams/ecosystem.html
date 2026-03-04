@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Interverse Ecosystem</title>
+<title>Demarch Ecosystem</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -167,15 +167,32 @@ body {
 .node circle { cursor: pointer; transition: opacity 0.2s; }
 .node circle:hover { filter: brightness(1.3); }
 .node text { font-size: 10px; fill: #8b949e; pointer-events: none; user-select: none; }
+.node.leaf-node text { opacity: 0; transition: opacity 0.15s; }
+.node.leaf-node:hover text { opacity: 1; }
+.node.leaf-node.highlighted text { opacity: 1; }
 
-.link { stroke-opacity: 0.3; transition: stroke-opacity 0.2s; }
+.link { stroke-opacity: 0.12; transition: stroke-opacity 0.2s; }
 .link.provides-skill { stroke: #50C878; }
 .link.provides-agent { stroke: #FF8C42; }
 .link.provides-mcp { stroke: #9B59B6; stroke-dasharray: 4 2; }
 .link.fires-hook { stroke: #E74C3C; stroke-dasharray: 2 2; }
-.link.companion-of { stroke: #F39C12; stroke-dasharray: 6 3; stroke-width: 2; }
-.link.depends-on { stroke: #1ABC9C; stroke-dasharray: 4 4; }
-.link.part-of { stroke: #30363d; }
+.link.companion-of { stroke: #F39C12; stroke-dasharray: 6 3; stroke-width: 2; stroke-opacity: 0.3; }
+.link.depends-on { stroke: #1ABC9C; stroke-dasharray: 4 4; stroke-opacity: 0.3; }
+.link.part-of { stroke: #30363d; stroke-opacity: 0.2; }
+
+.phase-arc {
+  fill: none;
+  stroke-width: 6;
+  stroke-opacity: 0.5;
+  stroke-linecap: round;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px var(--arc-color));
+}
+.phase-arc-dot {
+  stroke: none;
+  opacity: 0.7;
+  pointer-events: none;
+}
 
 .domain-hull {
   fill-opacity: 0.08;
@@ -200,7 +217,7 @@ body {
 
 .dimmed circle { opacity: 0.1; }
 .dimmed text { opacity: 0.1; }
-.link.dimmed { stroke-opacity: 0.03; }
+.link.dimmed { stroke-opacity: 0.02; }
 
 .highlighted circle { filter: brightness(1.4) drop-shadow(0 0 6px var(--glow)); }
 .highlighted text { fill: #f0f6fc; font-weight: 600; }
@@ -313,16 +330,126 @@ body {
   filter: drop-shadow(0 0 4px rgba(69, 183, 209, 0.5));
 }
 
+/* Workflow container — native scroll overlay for swimlane/sankey */
+#workflow-container {
+  position: fixed;
+  top: 44px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  background: #0d1117;
+  z-index: 10;
+}
+#workflow-container svg {
+  display: block;
+}
+
+/* Workflow view selectors */
+.workflow-select {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  outline: none;
+}
+.workflow-select:focus { border-color: #58a6ff; }
+.workflow-select-label {
+  font-size: 10px;
+  color: #8b949e;
+  margin-right: 2px;
+}
+
+/* Sequence/Swimlane view */
+.sequence-header text { font-size: 12px; font-weight: 600; fill: #f0f6fc; }
+.sequence-header rect { rx: 4; ry: 4; }
+.sequence-row-label { font-size: 10px; fill: #c9d1d9; cursor: pointer; }
+.sequence-row-label:hover { fill: #58a6ff; }
+.sequence-cell { cursor: pointer; transition: r 0.15s; }
+.sequence-cell:hover { filter: brightness(1.4); }
+.sequence-artifact-arrow {
+  fill: none;
+  stroke: #F39C12;
+  stroke-width: 1.5;
+  stroke-opacity: 0.6;
+  marker-end: url(#artifact-arrow);
+}
+.sequence-artifact-label { font-size: 8px; fill: #F39C12; fill-opacity: 0.7; }
+.sequence-group-label { font-size: 9px; fill: #8b949e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.sequence-hook-badge {
+  font-size: 7px; fill: #E74C3C; font-weight: 600;
+}
+.sequence-grid-line { stroke: #21262d; stroke-width: 1; }
+
+/* Sankey flow view */
+.sankey-band { cursor: pointer; transition: fill-opacity 0.15s; }
+.sankey-band:hover { fill-opacity: 0.9; }
+.sankey-flow { pointer-events: none; }
+.sankey-flow:hover { fill-opacity: 0.4; pointer-events: auto; }
+.sankey-column-header text { font-size: 12px; font-weight: 600; fill: #f0f6fc; }
+.sankey-column-header rect { rx: 4; ry: 4; }
+.sankey-entity-label { font-size: 9px; fill: #c9d1d9; pointer-events: none; }
+
+/* State machine view */
+.sm-phase-node rect { cursor: pointer; transition: filter 0.15s; }
+.sm-phase-node rect:hover { filter: brightness(1.3); }
+.sm-phase-node text { pointer-events: none; user-select: none; }
+.sm-phase-node.sm-active rect {
+  filter: drop-shadow(0 0 12px rgba(88, 166, 255, 0.6));
+}
+.sm-transition {
+  fill: none;
+  stroke: #58a6ff;
+  stroke-width: 2;
+  marker-end: url(#sprint-arrow);
+}
+.sm-transition-animated {
+  stroke-dasharray: 8 4;
+  animation: sm-flow-pulse 1.5s linear infinite;
+}
+.sm-skip-arc {
+  fill: none;
+  stroke: #F39C12;
+  stroke-width: 2;
+  stroke-dasharray: 6 3;
+  marker-end: url(#sprint-skip-arrow);
+}
+.sm-gate { pointer-events: none; }
+.sm-entity-satellite { cursor: pointer; transition: opacity 0.15s; }
+.sm-entity-satellite:hover { opacity: 1 !important; }
+.sm-entity-line { stroke: #30363d; stroke-width: 1; stroke-dasharray: 2 2; pointer-events: none; }
+@keyframes sm-flow-pulse {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -24; }
+}
+
 </style>
 </head>
 <body>
 
 <div id="toolbar">
-  <span class="title">Interverse</span>
+  <span class="title">Demarch</span>
   <div id="toggle-bar">
     <button class="toggle-btn active" id="toggle-ecosystem" onclick="toggleLayer('ecosystem')">Ecosystem</button>
-    <button class="toggle-btn" id="toggle-sprint" onclick="toggleLayer('sprint')">Sprint</button>
+    <button class="toggle-btn active" id="toggle-sprint" onclick="toggleLayer('sprint')">Sprint</button>
+    <button class="toggle-btn" id="toggle-hooks" onclick="toggleHookEdges()" style="font-size:11px;padding:4px 8px;opacity:0.6">Hooks</button>
   </div>
+  <span class="workflow-select-label" id="view-mode-label">View:</span>
+  <select class="workflow-select" id="view-mode" onchange="changeViewMode(this.value)">
+    <option value="force">Force Graph</option>
+    <option value="sequence" selected>Swimlane</option>
+    <option value="sankey">Sankey Flow</option>
+    <option value="statemachine">State Machine</option>
+  </select>
+  <span class="workflow-select-label" id="depth-label">Depth:</span>
+  <select class="workflow-select" id="depth-level" onchange="changeDepth(parseInt(this.value))">
+    <option value="1">1 — Plugins</option>
+    <option value="2" selected>2 — Skills/Agents</option>
+    <option value="3">3 — Full Trace</option>
+  </select>
   <span class="stats" id="stats"></span>
   <input type="text" id="search-box" placeholder="Search nodes..." oninput="onSearch(this.value)">
 </div>
@@ -341,7 +468,7 @@ body {
     <button class="filter-btn meta" onclick="hideAllDomains()">None</button>
   </div>
   <div id="domain-list"></div>
-  <div id="phase-filter-section" style="display:none">
+  <div id="phase-filter-section">
     <div class="sidebar-title" style="margin-top: 12px">Sprint Phases</div>
     <div class="meta-row">
       <button class="filter-btn meta" onclick="showAllPhases()">All</button>
@@ -352,6 +479,7 @@ body {
 </div>
 
 <div id="graph"></div>
+<div id="workflow-container" style="display:none"></div>
 
 <div id="detail-panel">
   <button class="close-btn" onclick="closePanel()">&times;</button>
@@ -362,18 +490,19 @@ body {
 <script>
 // DATA_PLACEHOLDER is replaced by the generator with scanned JSON
 const data = {
-  "generated": "2026-02-21T09:16:08.227Z",
+  "generated": "2026-03-04T20:51:31.551Z",
   "stats": {
-    "nodes": 124,
-    "edges": 186,
-    "overlaps": 36,
+    "nodes": 188,
+    "edges": 262,
+    "overlaps": 39,
     "byType": {
       "monorepo": 1,
-      "plugin": 32,
-      "skill": 48,
-      "hook-event": 5,
-      "agent": 21,
-      "mcp-server": 12,
+      "ecosystem": 1,
+      "plugin": 50,
+      "mcp-server": 17,
+      "skill": 78,
+      "hook-event": 6,
+      "agent": 30,
       "hub": 1,
       "kernel": 1,
       "service": 1,
@@ -383,12 +512,44 @@ const data = {
   },
   "nodes": [
     {
-      "id": "interverse",
+      "id": "demarch",
       "type": "monorepo",
       "label": "Demarch",
-      "description": "Autonomous software agency — Interverse plugin ecosystem",
+      "description": "Open-source autonomous software development agency platform",
       "meta": {
         "repoUrl": "https://github.com/mistakeknot/Demarch"
+      }
+    },
+    {
+      "id": "interverse",
+      "type": "ecosystem",
+      "label": "Interverse",
+      "description": "Companion plugin ecosystem (33+ plugins)",
+      "meta": {
+        "repoUrl": "https://github.com/mistakeknot/Interverse"
+      }
+    },
+    {
+      "id": "intercache",
+      "type": "plugin",
+      "label": "intercache",
+      "description": "Cross-session semantic cache for Claude Code. Content-addressed blob storage, per-project manifests, and session",
+      "meta": {
+        "version": "0.2.0",
+        "path": "interverse/intercache",
+        "repoUrl": "https://github.com/mistakeknot/intercache"
+      }
+    },
+    {
+      "id": "mcp:intercache:intercache",
+      "type": "mcp-server",
+      "label": "intercache",
+      "description": "MCP server for intercache — provides intercache tools via stdio",
+      "meta": {
+        "plugin": "intercache",
+        "type": "stdio",
+        "command": "bash",
+        "repoUrl": "https://github.com/mistakeknot/intercache"
       }
     },
     {
@@ -406,7 +567,7 @@ const data = {
       "id": "intercheck:status",
       "type": "skill",
       "label": "status",
-      "description": "",
+      "description": "Session health dashboard — plugin errors, MCP status, hook failures",
       "meta": {
         "plugin": "intercheck",
         "path": "interverse/intercheck/skills/status",
@@ -417,7 +578,7 @@ const data = {
       "id": "hook:PostToolUse",
       "type": "hook-event",
       "label": "PostToolUse",
-      "description": "Hook event: PostToolUse",
+      "description": "Fires after a tool executes — audit results, trigger follow-up actions",
       "meta": {
         "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
       }
@@ -428,7 +589,7 @@ const data = {
       "label": "intercraft",
       "description": "Agent-native architecture patterns — design, review, and audit for agent-first applications.",
       "meta": {
-        "version": "0.1.0",
+        "version": "0.1.2",
         "path": "interverse/intercraft",
         "repoUrl": "https://github.com/mistakeknot/intercraft",
         "commandCount": 1
@@ -438,7 +599,7 @@ const data = {
       "id": "intercraft:agent-native-architecture",
       "type": "skill",
       "label": "agent-native-architecture",
-      "description": "Build applications where agents are first-class citizens. Use this skill when designing autonomous agents, creating MCP tools, implementing self-modifying systems, or building apps where features are outcomes achieved by agents operating in a loop.",
+      "description": "Build applications where agents are first-class citizens. Use this skill when designing autonomous agents, creating MCP",
       "meta": {
         "plugin": "intercraft",
         "path": "interverse/intercraft/skills/agent-native-architecture",
@@ -449,7 +610,7 @@ const data = {
       "id": "intercraft:agent:agent-native-reviewer",
       "type": "agent",
       "label": "agent-native-reviewer",
-      "description": "",
+      "description": "Reviews code to ensure agent-native parity — any action a user can take, an agent can also take. Use after adding UI",
       "meta": {
         "plugin": "intercraft",
         "path": "./agents/review/agent-native-reviewer.md",
@@ -457,10 +618,77 @@ const data = {
       }
     },
     {
+      "id": "interdeep",
+      "type": "plugin",
+      "label": "interdeep",
+      "description": "Deep research plugin — content extraction and research orchestration via MCP tools.",
+      "meta": {
+        "version": "0.1.5",
+        "path": "interverse/interdeep",
+        "repoUrl": "https://github.com/mistakeknot/interdeep",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "interdeep:deep-research",
+      "type": "skill",
+      "label": "deep-research",
+      "description": "Orchestrate a multi-phase deep research session using MCP tools and companion plugins",
+      "meta": {
+        "plugin": "interdeep",
+        "path": "interverse/interdeep/skills/deep-research",
+        "repoUrl": "https://github.com/mistakeknot/interdeep"
+      }
+    },
+    {
+      "id": "interdeep:agent:research-planner",
+      "type": "agent",
+      "label": "research-planner",
+      "description": "Decompose a research query into targeted sub-queries with source routing",
+      "meta": {
+        "plugin": "interdeep",
+        "path": "./agents/research-planner.md",
+        "repoUrl": "https://github.com/mistakeknot/interdeep"
+      }
+    },
+    {
+      "id": "interdeep:agent:source-evaluator",
+      "type": "agent",
+      "label": "source-evaluator",
+      "description": "Assess source credibility and relevance for research findings",
+      "meta": {
+        "plugin": "interdeep",
+        "path": "./agents/source-evaluator.md",
+        "repoUrl": "https://github.com/mistakeknot/interdeep"
+      }
+    },
+    {
+      "id": "interdeep:agent:report-compiler",
+      "type": "agent",
+      "label": "report-compiler",
+      "description": "Assemble evaluated research findings into a structured markdown report",
+      "meta": {
+        "plugin": "interdeep",
+        "path": "./agents/report-compiler.md",
+        "repoUrl": "https://github.com/mistakeknot/interdeep"
+      }
+    },
+    {
+      "id": "mcp:interdeep:interdeep",
+      "type": "mcp-server",
+      "label": "interdeep",
+      "description": "MCP server for interdeep — provides interdeep tools via stdio",
+      "meta": {
+        "plugin": "interdeep",
+        "command": "${CLAUDE_PLUGIN_ROOT}/scripts/launch-mcp.sh",
+        "repoUrl": "https://github.com/mistakeknot/interdeep"
+      }
+    },
+    {
       "id": "interdev",
       "type": "plugin",
       "label": "interdev",
-      "description": "Developer tooling for Claude Code — MCP CLI interaction, skill authoring, plugin development, and Claude Code reference.",
+      "description": "Developer tooling for Claude Code — MCP CLI interaction and Claude Code reference.",
       "meta": {
         "version": "0.2.0",
         "path": "interverse/interdev",
@@ -471,7 +699,7 @@ const data = {
       "id": "interdev:mcp-cli",
       "type": "skill",
       "label": "mcp-cli",
-      "description": "Use when interacting with MCP servers on-demand via the mcp CLI tool — discover tools, resources, and prompts without polluting context with pre-loaded integrations",
+      "description": "Interacting with MCP servers on-demand via the mcp CLI tool — discover tools, resources, and prompts without polluting",
       "meta": {
         "plugin": "interdev",
         "path": "interverse/interdev/skills/mcp-cli",
@@ -482,7 +710,7 @@ const data = {
       "id": "interdev:working-with-claude-code",
       "type": "skill",
       "label": "working-with-claude-code",
-      "description": "Use when working with Claude Code CLI, plugins, hooks, MCP servers, skills, configuration, or any Claude Code feature - provides comprehensive official documentation for all aspects of Claude Code",
+      "description": "Working with Claude Code CLI, plugins, hooks, MCP servers, skills, configuration, or any Claude Code feature - provides",
       "meta": {
         "plugin": "interdev",
         "path": "interverse/interdev/skills/working-with-claude-code",
@@ -490,45 +718,12 @@ const data = {
       }
     },
     {
-      "id": "interdev:developing-claude-code-plugins",
-      "type": "skill",
-      "label": "developing-claude-code-plugins",
-      "description": "Use when working on Claude Code plugins (creating, modifying, testing, releasing, or maintaining) - provides streamlined workflows, patterns, and examples for the complete plugin lifecycle",
-      "meta": {
-        "plugin": "interdev",
-        "path": "interverse/interdev/skills/developing-claude-code-plugins",
-        "repoUrl": "https://github.com/mistakeknot/interdev"
-      }
-    },
-    {
-      "id": "interdev:create-agent-skills",
-      "type": "skill",
-      "label": "create-agent-skills",
-      "description": "Expert guidance for creating Claude Code skills and slash commands. Use when working with SKILL.md files, authoring new skills, improving existing skills, creating slash commands, or understanding skill structure and best practices.",
-      "meta": {
-        "plugin": "interdev",
-        "path": "interverse/interdev/skills/create-agent-skills",
-        "repoUrl": "https://github.com/mistakeknot/interdev"
-      }
-    },
-    {
-      "id": "interdev:writing-skills",
-      "type": "skill",
-      "label": "writing-skills",
-      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment",
-      "meta": {
-        "plugin": "interdev",
-        "path": "interverse/interdev/skills/writing-skills",
-        "repoUrl": "https://github.com/mistakeknot/interdev"
-      }
-    },
-    {
       "id": "interdoc",
       "type": "plugin",
       "label": "interdoc",
-      "description": "Recursive AGENTS.md generator with integrated GPT 5.2 Pro critique, CLAUDE.md harmonization, incremental updates, diff previews, and smart monorepo scoping. Cross-AI compatible.",
+      "description": "Recursive AGENTS.md generator with integrated GPT 5.2 Pro critique, CLAUDE.md harmonization, incremental updates, diff",
       "meta": {
-        "version": "5.1.1",
+        "version": "5.1.2",
         "path": "interverse/interdoc",
         "repoUrl": "https://github.com/mistakeknot/interdoc",
         "commandCount": 1
@@ -538,7 +733,7 @@ const data = {
       "id": "interdoc:interdoc",
       "type": "skill",
       "label": "interdoc",
-      "description": "Generate, update, and review AGENTS.md with GPT 5.2 Pro critique. Use when asked to \"generate AGENTS.md\", \"update AGENTS.md\", \"document this repo\", \"document this codebase\", \"review docs\", \"critique docs\", \"fix stale references\", \"fix docs\", \"interdoc fix\", or \"auracoil\".",
+      "description": "Generate, update, and review AGENTS.md with GPT 5.2 Pro critique. Use when asked to \"generate AGENTS.md\", \"update",
       "meta": {
         "plugin": "interdoc",
         "path": "interverse/interdoc/skills/interdoc",
@@ -549,22 +744,66 @@ const data = {
       "id": "interfluence",
       "type": "plugin",
       "label": "interfluence",
-      "description": "Analyze your writing style and adapt Claude's output to sound like you. Ingest writing samples, build a voice profile, and apply it to any human-facing documentation or copy.",
+      "description": "Analyze your writing style and adapt Claude's output to sound like you. Ingest writing samples, build a voice profile",
       "meta": {
-        "version": "0.2.5",
+        "version": "0.2.8",
         "path": "interverse/interfluence",
         "repoUrl": "https://github.com/mistakeknot/interfluence",
         "commandCount": 1
       }
     },
     {
-      "id": "interfluence:skills",
+      "id": "interfluence:analyze",
       "type": "skill",
-      "label": "skills",
-      "description": "",
+      "label": "analyze",
+      "description": "Generate or update a voice profile from the writing corpus. Use when the user says \"analyze my writing\", \"build voice",
       "meta": {
         "plugin": "interfluence",
-        "path": "interverse/interfluence/skills",
+        "path": "interverse/interfluence/skills/analyze",
+        "repoUrl": "https://github.com/mistakeknot/interfluence"
+      }
+    },
+    {
+      "id": "interfluence:apply",
+      "type": "skill",
+      "label": "apply",
+      "description": "Rewrite a file or text in the user's voice using the voice profile. Use when the user says \"apply my voice\", \"rewrite in",
+      "meta": {
+        "plugin": "interfluence",
+        "path": "interverse/interfluence/skills/apply",
+        "repoUrl": "https://github.com/mistakeknot/interfluence"
+      }
+    },
+    {
+      "id": "interfluence:compare",
+      "type": "skill",
+      "label": "compare",
+      "description": "Compare AI-generated text against the user's voice profile. Use when the user says \"compare\", \"does this sound like me\"",
+      "meta": {
+        "plugin": "interfluence",
+        "path": "interverse/interfluence/skills/compare",
+        "repoUrl": "https://github.com/mistakeknot/interfluence"
+      }
+    },
+    {
+      "id": "interfluence:ingest",
+      "type": "skill",
+      "label": "ingest",
+      "description": "Add writing samples to the interfluence corpus. Use when the user says \"ingest\", \"add writing sample\", \"analyze my",
+      "meta": {
+        "plugin": "interfluence",
+        "path": "interverse/interfluence/skills/ingest",
+        "repoUrl": "https://github.com/mistakeknot/interfluence"
+      }
+    },
+    {
+      "id": "interfluence:refine",
+      "type": "skill",
+      "label": "refine",
+      "description": "Review and refine the voice profile interactively. Use when the user says \"refine my voice profile\", \"update voice",
+      "meta": {
+        "plugin": "interfluence",
+        "path": "interverse/interfluence/skills/refine",
         "repoUrl": "https://github.com/mistakeknot/interfluence"
       }
     },
@@ -572,7 +811,7 @@ const data = {
       "id": "interfluence:agent:voice-analyzer",
       "type": "agent",
       "label": "voice-analyzer",
-      "description": "",
+      "description": "Deep analysis agent for generating voice profiles from writing corpora. Use when analyzing writing samples to produce or",
       "meta": {
         "plugin": "interfluence",
         "path": "./agents/voice-analyzer.md",
@@ -583,7 +822,7 @@ const data = {
       "id": "mcp:interfluence:interfluence",
       "type": "mcp-server",
       "label": "interfluence",
-      "description": "MCP server: stdio",
+      "description": "MCP server for interfluence — provides interfluence tools via stdio",
       "meta": {
         "plugin": "interfluence",
         "type": "stdio",
@@ -595,19 +834,19 @@ const data = {
       "id": "interflux",
       "type": "plugin",
       "label": "interflux",
-      "description": "Multi-agent review and research with scored triage, domain detection, content slicing, and knowledge injection. 17 agents (12 review + 5 research), 3 commands, 2 skills, 2 MCP servers. Companion plugin for Clavain.",
+      "description": "Multi-agent review and research with scored triage, domain detection, content slicing, intermediate finding sharing, and",
       "meta": {
-        "version": "0.2.19",
+        "version": "0.2.36",
         "path": "interverse/interflux",
         "repoUrl": "https://github.com/mistakeknot/interflux",
-        "commandCount": 3
+        "commandCount": 4
       }
     },
     {
       "id": "interflux:flux-drive",
       "type": "skill",
       "label": "flux-drive",
-      "description": "Use when reviewing documents or codebases with multi-agent analysis — triages relevant agents from roster, launches only what matters in background mode",
+      "description": "Reviewing documents or codebases with multi-agent analysis, or researching topics with multi-agent research — triages",
       "meta": {
         "plugin": "interflux",
         "path": "interverse/interflux/skills/flux-drive",
@@ -615,21 +854,10 @@ const data = {
       }
     },
     {
-      "id": "interflux:flux-research",
-      "type": "skill",
-      "label": "flux-research",
-      "description": "Use when researching a topic with multi-agent analysis — triages relevant research agents, dispatches in parallel, synthesizes answer with source attribution",
-      "meta": {
-        "plugin": "interflux",
-        "path": "interverse/interflux/skills/flux-research",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
       "id": "interflux:agent:fd-architecture",
       "type": "agent",
       "label": "fd-architecture",
-      "description": "",
+      "description": "Flux-drive Architecture & Design reviewer — evaluates module boundaries, coupling, design patterns, anti-patterns, code",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-architecture.md",
@@ -640,7 +868,7 @@ const data = {
       "id": "interflux:agent:fd-safety",
       "type": "agent",
       "label": "fd-safety",
-      "description": "",
+      "description": "Flux-drive Safety reviewer — evaluates security threats, credential handling, trust boundaries, deployment risk",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-safety.md",
@@ -651,7 +879,7 @@ const data = {
       "id": "interflux:agent:fd-correctness",
       "type": "agent",
       "label": "fd-correctness",
-      "description": "",
+      "description": "Flux-drive Correctness reviewer — evaluates data consistency, transaction safety, race conditions, async bugs, and",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-correctness.md",
@@ -662,7 +890,7 @@ const data = {
       "id": "interflux:agent:fd-user-product",
       "type": "agent",
       "label": "fd-user-product",
-      "description": "",
+      "description": "Flux-drive User & Product reviewer — evaluates user flows, UX friction, value proposition, problem validation, scope",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-user-product.md",
@@ -673,7 +901,7 @@ const data = {
       "id": "interflux:agent:fd-quality",
       "type": "agent",
       "label": "fd-quality",
-      "description": "",
+      "description": "Flux-drive Quality & Style reviewer — evaluates naming, conventions, test approach, error handling, and",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-quality.md",
@@ -684,7 +912,7 @@ const data = {
       "id": "interflux:agent:fd-game-design",
       "type": "agent",
       "label": "fd-game-design",
-      "description": "",
+      "description": "Flux-drive Game Design reviewer — evaluates balance, pacing, player psychology, feedback loops, emergent behavior, and",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-game-design.md",
@@ -695,7 +923,7 @@ const data = {
       "id": "interflux:agent:fd-performance",
       "type": "agent",
       "label": "fd-performance",
-      "description": "",
+      "description": "Flux-drive Performance reviewer — evaluates rendering bottlenecks, data access patterns, algorithmic complexity, memory",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-performance.md",
@@ -706,7 +934,7 @@ const data = {
       "id": "interflux:agent:fd-systems",
       "type": "agent",
       "label": "fd-systems",
-      "description": "",
+      "description": "Flux-drive Systems Thinking reviewer — evaluates feedback loops, emergence, causal reasoning, unintended consequences",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-systems.md",
@@ -717,7 +945,7 @@ const data = {
       "id": "interflux:agent:fd-decisions",
       "type": "agent",
       "label": "fd-decisions",
-      "description": "",
+      "description": "Flux-drive Decision Quality reviewer — evaluates decision traps, cognitive biases, uncertainty handling, strategic",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-decisions.md",
@@ -728,7 +956,7 @@ const data = {
       "id": "interflux:agent:fd-people",
       "type": "agent",
       "label": "fd-people",
-      "description": "",
+      "description": "Flux-drive Human Systems reviewer — evaluates trust dynamics, power structures, communication patterns, team culture",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-people.md",
@@ -739,7 +967,7 @@ const data = {
       "id": "interflux:agent:fd-resilience",
       "type": "agent",
       "label": "fd-resilience",
-      "description": "",
+      "description": "Flux-drive Adaptive Capacity reviewer — evaluates antifragility, creative constraints, resource allocation, innovation",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-resilience.md",
@@ -750,7 +978,7 @@ const data = {
       "id": "interflux:agent:fd-perception",
       "type": "agent",
       "label": "fd-perception",
-      "description": "",
+      "description": "Flux-drive Sensemaking reviewer — evaluates mental models, information quality, temporal reasoning, and perceptual blind",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/review/fd-perception.md",
@@ -761,7 +989,7 @@ const data = {
       "id": "interflux:agent:framework-docs-researcher",
       "type": "agent",
       "label": "framework-docs-researcher",
-      "description": "",
+      "description": "Gathers comprehensive documentation and best practices for frameworks, libraries, or dependencies. Use when you need",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/research/framework-docs-researcher.md",
@@ -772,7 +1000,7 @@ const data = {
       "id": "interflux:agent:repo-research-analyst",
       "type": "agent",
       "label": "repo-research-analyst",
-      "description": "",
+      "description": "Conducts thorough research on repository structure, documentation, conventions, and implementation patterns. Use when",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/research/repo-research-analyst.md",
@@ -783,7 +1011,7 @@ const data = {
       "id": "interflux:agent:git-history-analyzer",
       "type": "agent",
       "label": "git-history-analyzer",
-      "description": "",
+      "description": "Performs archaeological analysis of git history to trace code evolution, identify contributors, and understand why code",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/research/git-history-analyzer.md",
@@ -794,7 +1022,7 @@ const data = {
       "id": "interflux:agent:learnings-researcher",
       "type": "agent",
       "label": "learnings-researcher",
-      "description": "",
+      "description": "Searches docs/solutions/ for relevant past solutions by frontmatter metadata. Use before implementing features or fixing",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/research/learnings-researcher.md",
@@ -805,7 +1033,7 @@ const data = {
       "id": "interflux:agent:best-practices-researcher",
       "type": "agent",
       "label": "best-practices-researcher",
-      "description": "",
+      "description": "Researches and synthesizes external best practices, documentation, and examples for any technology or framework. Use",
       "meta": {
         "plugin": "interflux",
         "path": "./agents/research/best-practices-researcher.md",
@@ -813,26 +1041,14 @@ const data = {
       }
     },
     {
-      "id": "mcp:interflux:qmd",
-      "type": "mcp-server",
-      "label": "qmd",
-      "description": "MCP server: stdio",
-      "meta": {
-        "plugin": "interflux",
-        "type": "stdio",
-        "command": "qmd",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
       "id": "mcp:interflux:exa",
       "type": "mcp-server",
       "label": "exa",
-      "description": "MCP server: stdio",
+      "description": "MCP server for interflux — provides exa tools via stdio",
       "meta": {
         "plugin": "interflux",
         "type": "stdio",
-        "command": "npx",
+        "command": "${CLAUDE_PLUGIN_ROOT}/scripts/launch-exa.sh",
         "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
@@ -840,7 +1056,7 @@ const data = {
       "id": "hook:SessionStart",
       "type": "hook-event",
       "label": "SessionStart",
-      "description": "Hook event: SessionStart",
+      "description": "Fires when a Claude Code session begins — initialize state, check prerequisites, load context",
       "meta": {
         "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
       }
@@ -860,7 +1076,7 @@ const data = {
       "id": "interform:distinctive-design",
       "type": "skill",
       "label": "distinctive-design",
-      "description": "Use when creating distinctive, production-grade interfaces with high design quality — web, TUI, native, or print. Generates creative, polished output that avoids generic AI aesthetics.",
+      "description": "Creating distinctive, production-grade interfaces with high design quality — web, TUI, native, or print. Generates",
       "meta": {
         "plugin": "interform",
         "path": "interverse/interform/skills/distinctive-design",
@@ -871,21 +1087,65 @@ const data = {
       "id": "interject",
       "type": "plugin",
       "label": "interject",
-      "description": "Ambient discovery and research engine. Continuously scans arXiv, Hacker News, GitHub, and Anthropic docs for new capabilities, workflows, and tools relevant to your engineering ecosystem. Creates beads with briefings and draft plans based on a learned recommendation model.",
+      "description": "Ambient discovery and research engine. Continuously scans arXiv, Hacker News, GitHub, and Anthropic docs for new",
       "meta": {
-        "version": "0.1.6",
+        "version": "0.1.9",
         "path": "interverse/interject",
         "repoUrl": "https://github.com/mistakeknot/interject"
       }
     },
     {
-      "id": "interject:skills",
+      "id": "interject:discover",
       "type": "skill",
-      "label": "skills",
-      "description": "",
+      "label": "discover",
+      "description": "Deep dive on a specific topic across all sources",
       "meta": {
         "plugin": "interject",
-        "path": "interverse/interject/skills",
+        "path": "interverse/interject/skills/discover",
+        "repoUrl": "https://github.com/mistakeknot/interject"
+      }
+    },
+    {
+      "id": "interject:inbox",
+      "type": "skill",
+      "label": "inbox",
+      "description": "Review pending discoveries — promote or dismiss interactively",
+      "meta": {
+        "plugin": "interject",
+        "path": "interverse/interject/skills/inbox",
+        "repoUrl": "https://github.com/mistakeknot/interject"
+      }
+    },
+    {
+      "id": "interject:profile",
+      "type": "skill",
+      "label": "profile",
+      "description": "View and tune your Interject interest profile",
+      "meta": {
+        "plugin": "interject",
+        "path": "interverse/interject/skills/profile",
+        "repoUrl": "https://github.com/mistakeknot/interject"
+      }
+    },
+    {
+      "id": "interject:scan",
+      "type": "skill",
+      "label": "scan",
+      "description": "Run a full scan across all sources or a specific source for new discoveries",
+      "meta": {
+        "plugin": "interject",
+        "path": "interverse/interject/skills/scan",
+        "repoUrl": "https://github.com/mistakeknot/interject"
+      }
+    },
+    {
+      "id": "interject:status",
+      "type": "skill",
+      "label": "status",
+      "description": "Dashboard of scan health, recommendation stats, and adapter status",
+      "meta": {
+        "plugin": "interject",
+        "path": "interverse/interject/skills/status",
         "repoUrl": "https://github.com/mistakeknot/interject"
       }
     },
@@ -893,11 +1153,11 @@ const data = {
       "id": "mcp:interject:interject",
       "type": "mcp-server",
       "label": "interject",
-      "description": "MCP server: stdio",
+      "description": "MCP server for interject — provides interject tools via stdio",
       "meta": {
         "plugin": "interject",
         "type": "stdio",
-        "command": "uv",
+        "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh",
         "repoUrl": "https://github.com/mistakeknot/interject"
       }
     },
@@ -905,30 +1165,19 @@ const data = {
       "id": "interkasten",
       "type": "plugin",
       "label": "interkasten",
-      "description": "Living bridge between your projects folder and Notion — bidirectional sync with adaptive AI documentation and pagent workflow automation",
+      "description": "Living bridge between your projects folder and Notion — bidirectional sync with adaptive AI documentation and pagent",
       "meta": {
-        "version": "0.4.3",
+        "version": "0.4.6",
         "path": "interverse/interkasten",
         "repoUrl": "https://github.com/mistakeknot/interkasten",
-        "commandCount": 2
-      }
-    },
-    {
-      "id": "interkasten:layout",
-      "type": "skill",
-      "label": "layout",
-      "description": "",
-      "meta": {
-        "plugin": "interkasten",
-        "path": "interverse/interkasten/skills/layout",
-        "repoUrl": "https://github.com/mistakeknot/interkasten"
+        "commandCount": 3
       }
     },
     {
       "id": "interkasten:onboard",
       "type": "skill",
       "label": "onboard",
-      "description": "",
+      "description": "Notion workspace onboarding — connect databases, configure sync mappings",
       "meta": {
         "plugin": "interkasten",
         "path": "interverse/interkasten/skills/onboard",
@@ -939,7 +1188,7 @@ const data = {
       "id": "interkasten:doctor",
       "type": "skill",
       "label": "doctor",
-      "description": "",
+      "description": "Notion sync diagnostics — check connection health, resolve sync conflicts",
       "meta": {
         "plugin": "interkasten",
         "path": "interverse/interkasten/skills/doctor",
@@ -947,10 +1196,21 @@ const data = {
       }
     },
     {
+      "id": "interkasten:webhook-setup",
+      "type": "skill",
+      "label": "webhook-setup",
+      "description": "Webhook Setup — Configure Notion webhook sync",
+      "meta": {
+        "plugin": "interkasten",
+        "path": "interverse/interkasten/skills/webhook-setup",
+        "repoUrl": "https://github.com/mistakeknot/interkasten"
+      }
+    },
+    {
       "id": "mcp:interkasten:interkasten",
       "type": "mcp-server",
       "label": "interkasten",
-      "description": "MCP server: stdio",
+      "description": "MCP server for interkasten — provides interkasten tools via stdio",
       "meta": {
         "plugin": "interkasten",
         "type": "stdio",
@@ -962,16 +1222,61 @@ const data = {
       "id": "hook:Stop",
       "type": "hook-event",
       "label": "Stop",
-      "description": "Hook event: Stop",
+      "description": "Fires when Claude Code stops — handoff checks, session summaries, final sync",
       "meta": {
         "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
+      }
+    },
+    {
+      "id": "interknow",
+      "type": "plugin",
+      "label": "interknow",
+      "description": "Knowledge compounding — durable pattern repository with provenance tracking, temporal decay, and semantic retrieval via",
+      "meta": {
+        "version": "0.1.2",
+        "path": "interverse/interknow",
+        "repoUrl": "https://github.com/mistakeknot/interknow"
+      }
+    },
+    {
+      "id": "interknow:compound",
+      "type": "skill",
+      "label": "compound",
+      "description": "Knowledge Compounding",
+      "meta": {
+        "plugin": "interknow",
+        "path": "interverse/interknow/skills/compound",
+        "repoUrl": "https://github.com/mistakeknot/interknow"
+      }
+    },
+    {
+      "id": "interknow:recall",
+      "type": "skill",
+      "label": "recall",
+      "description": "Knowledge Recall",
+      "meta": {
+        "plugin": "interknow",
+        "path": "interverse/interknow/skills/recall",
+        "repoUrl": "https://github.com/mistakeknot/interknow"
+      }
+    },
+    {
+      "id": "mcp:interknow:qmd",
+      "type": "mcp-server",
+      "label": "qmd",
+      "description": "MCP server for interknow — provides qmd tools via stdio",
+      "meta": {
+        "plugin": "interknow",
+        "type": "stdio",
+        "command": "${CLAUDE_PLUGIN_ROOT}/scripts/launch-qmd.sh",
+        "repoUrl": "https://github.com/mistakeknot/interknow"
       }
     },
     {
       "id": "interlearn",
       "type": "plugin",
       "label": "interlearn",
-      "description": "Cross-repo institutional knowledge index — indexes solution docs across the Interverse monorepo, enables unified search, and audits reflect coverage.",
+      "description": "Cross-repo institutional knowledge index — indexes solution docs across the Interverse monorepo, enables unified search",
       "meta": {
         "version": "0.1.0",
         "path": "interverse/interlearn",
@@ -982,7 +1287,7 @@ const data = {
       "id": "interlearn:interlearn",
       "type": "skill",
       "label": "interlearn",
-      "description": "Cross-repo institutional knowledge — index solution docs, search across all modules, and audit reflect coverage for closed beads.",
+      "description": "Cross-repo institutional knowledge — index solution docs, search across all modules, and audit reflect coverage for",
       "meta": {
         "plugin": "interlearn",
         "path": "interverse/interlearn/skills/interlearn",
@@ -993,7 +1298,7 @@ const data = {
       "id": "hook:SessionEnd",
       "type": "hook-event",
       "label": "SessionEnd",
-      "description": "Hook event: SessionEnd",
+      "description": "Fires when a session ends — persist state, sync data, clean up resources",
       "meta": {
         "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
       }
@@ -1013,7 +1318,7 @@ const data = {
       "id": "interleave:interleave",
       "type": "skill",
       "label": "interleave",
-      "description": "",
+      "description": "Template-driven document generation — deterministic skeleton with LLM-filled islands",
       "meta": {
         "plugin": "interleave",
         "path": "interverse/interleave/skills/interleave",
@@ -1024,7 +1329,7 @@ const data = {
       "id": "interlens",
       "type": "plugin",
       "label": "interlens",
-      "description": "288 FLUX cognitive lenses for structured thinking — MCP server with lens search, thinking mode workflows, belief statement generation, quality evaluation, and solution synthesis.",
+      "description": "288 FLUX cognitive lenses for structured thinking — MCP server with lens search, thinking mode workflows, belief",
       "meta": {
         "version": "2.2.4",
         "path": "interverse/interlens",
@@ -1035,7 +1340,7 @@ const data = {
       "id": "mcp:interlens:interlens",
       "type": "mcp-server",
       "label": "interlens",
-      "description": "MCP server: stdio",
+      "description": "MCP server for interlens — provides interlens tools via stdio",
       "meta": {
         "plugin": "interlens",
         "type": "stdio",
@@ -1047,21 +1352,45 @@ const data = {
       "id": "interline",
       "type": "plugin",
       "label": "interline",
-      "description": "Dynamic statusline for Claude Code — shows workflow phase, bead context, and Codex dispatch state. Integrates with Clavain and interphase.",
+      "description": "Dynamic statusline for Claude Code — shows workflow phase, bead context, and Codex dispatch state. Integrates with",
       "meta": {
         "version": "0.2.6",
         "path": "interverse/interline",
-        "repoUrl": "https://github.com/mistakeknot/interline"
+        "repoUrl": "https://github.com/mistakeknot/interline",
+        "commandCount": 1
       }
     },
     {
       "id": "interlock",
       "type": "plugin",
       "label": "interlock",
-      "description": "MCP server for intermute file reservation and agent coordination. 11 tools: reserve, release, conflict check, messaging, agent listing, negotiation. Companion plugin for Clavain.",
+      "description": "MCP server for intermute file reservation and agent coordination. 12 tools: reserve, release, conflict check, messaging",
       "meta": {
-        "version": "0.2.1",
+        "version": "0.2.7",
         "path": "interverse/interlock",
+        "repoUrl": "https://github.com/mistakeknot/interlock",
+        "commandCount": 4
+      }
+    },
+    {
+      "id": "interlock:conflict-recovery",
+      "type": "skill",
+      "label": "conflict-recovery",
+      "description": "A file edit is blocked because another agent holds a reservation — guides recovery from check status through escalation",
+      "meta": {
+        "plugin": "interlock",
+        "path": "interverse/interlock/skills/conflict-recovery",
+        "repoUrl": "https://github.com/mistakeknot/interlock"
+      }
+    },
+    {
+      "id": "interlock:coordination-protocol",
+      "type": "skill",
+      "label": "coordination-protocol",
+      "description": "Multiple agents are editing the same repository — guides the reserve-work-release workflow to prevent file conflicts and",
+      "meta": {
+        "plugin": "interlock",
+        "path": "interverse/interlock/skills/coordination-protocol",
         "repoUrl": "https://github.com/mistakeknot/interlock"
       }
     },
@@ -1069,7 +1398,7 @@ const data = {
       "id": "mcp:interlock:interlock",
       "type": "mcp-server",
       "label": "interlock",
-      "description": "MCP server: stdio",
+      "description": "MCP server for interlock — provides interlock tools via stdio",
       "meta": {
         "plugin": "interlock",
         "type": "stdio",
@@ -1081,7 +1410,7 @@ const data = {
       "id": "hook:PreToolUse",
       "type": "hook-event",
       "label": "PreToolUse",
-      "description": "Hook event: PreToolUse",
+      "description": "Fires before a tool executes — validate, intercept, or modify tool calls",
       "meta": {
         "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
       }
@@ -1090,9 +1419,9 @@ const data = {
       "id": "intermap",
       "type": "plugin",
       "label": "intermap",
-      "description": "Project-level code mapping: project registry, call graphs, architecture analysis, agent overlay. MCP server with 6 tools.",
+      "description": "Project-level code mapping: project registry, call graphs, architecture analysis, agent overlay, cross-project",
       "meta": {
-        "version": "0.1.3",
+        "version": "0.1.5",
         "path": "interverse/intermap",
         "repoUrl": "https://github.com/mistakeknot/intermap"
       }
@@ -1101,7 +1430,7 @@ const data = {
       "id": "intermap:skills",
       "type": "skill",
       "label": "skills",
-      "description": "",
+      "description": "Code architecture mapping — call graphs, module boundaries, dependency analysis",
       "meta": {
         "plugin": "intermap",
         "path": "interverse/intermap/skills",
@@ -1112,7 +1441,7 @@ const data = {
       "id": "mcp:intermap:intermap",
       "type": "mcp-server",
       "label": "intermap",
-      "description": "MCP server: stdio",
+      "description": "MCP server for intermap — provides intermap tools via stdio",
       "meta": {
         "plugin": "intermap",
         "type": "stdio",
@@ -1126,7 +1455,7 @@ const data = {
       "label": "intermem",
       "description": "Memory synthesis — graduates stable auto-memory facts to AGENTS.md/CLAUDE.md",
       "meta": {
-        "version": "0.2.2",
+        "version": "0.2.3",
         "path": "interverse/intermem",
         "repoUrl": "https://github.com/mistakeknot/intermem"
       }
@@ -1135,11 +1464,44 @@ const data = {
       "id": "intermem:synthesize",
       "type": "skill",
       "label": "synthesize",
-      "description": "",
+      "description": "Memory synthesis — graduate stable auto-memory facts to AGENTS.md and CLAUDE.md",
       "meta": {
         "plugin": "intermem",
         "path": "interverse/intermem/skills/synthesize",
         "repoUrl": "https://github.com/mistakeknot/intermem"
+      }
+    },
+    {
+      "id": "intermem:tidy",
+      "type": "skill",
+      "label": "tidy",
+      "description": "Tidy memory files — extract oversized sections, detect stale counts",
+      "meta": {
+        "plugin": "intermem",
+        "path": "interverse/intermem/skills/tidy",
+        "repoUrl": "https://github.com/mistakeknot/intermem"
+      }
+    },
+    {
+      "id": "intermonk",
+      "type": "plugin",
+      "label": "intermonk",
+      "description": "Hegelian dialectic reasoning — Electric Monk subagents for structured contradiction analysis and synthesis",
+      "meta": {
+        "version": "0.1.1",
+        "path": "interverse/intermonk",
+        "repoUrl": "https://github.com/mistakeknot/intermonk"
+      }
+    },
+    {
+      "id": "intermonk:dialectic",
+      "type": "skill",
+      "label": "dialectic",
+      "description": "Hegelian dialectic reasoning — Electric Monk subagents for structured contradiction analysis and synthesis. Use when the",
+      "meta": {
+        "plugin": "intermonk",
+        "path": "interverse/intermonk/skills/dialectic",
+        "repoUrl": "https://github.com/mistakeknot/intermonk"
       }
     },
     {
@@ -1148,7 +1510,7 @@ const data = {
       "label": "intermux",
       "description": "Agent activity visibility -- tmux monitoring, activity feeds, health detection. Enriches intermute with live context.",
       "meta": {
-        "version": "0.1.1",
+        "version": "0.1.2",
         "path": "interverse/intermux",
         "repoUrl": "https://github.com/mistakeknot/intermux"
       }
@@ -1157,7 +1519,7 @@ const data = {
       "id": "intermux:status",
       "type": "skill",
       "label": "status",
-      "description": "",
+      "description": "Agent activity dashboard — tmux sessions, heartbeats, resource usage",
       "meta": {
         "plugin": "intermux",
         "path": "interverse/intermux/skills/status",
@@ -1168,7 +1530,7 @@ const data = {
       "id": "mcp:intermux:intermux",
       "type": "mcp-server",
       "label": "intermux",
-      "description": "MCP server: stdio",
+      "description": "MCP server for intermux — provides intermux tools via stdio",
       "meta": {
         "plugin": "intermux",
         "type": "stdio",
@@ -1177,12 +1539,24 @@ const data = {
       }
     },
     {
+      "id": "intername",
+      "type": "plugin",
+      "label": "intername",
+      "description": "Agent and agency naming for legible orchestration — memorable, deterministic identities across all surfaces.",
+      "meta": {
+        "version": "0.1.1",
+        "path": "interverse/intername",
+        "repoUrl": "https://github.com/mistakeknot/intername",
+        "commandCount": 2
+      }
+    },
+    {
       "id": "internext",
       "type": "plugin",
       "label": "internext",
       "description": "Work prioritization and next-task analysis for Claude Code — tradeoff-aware recommendations from project state.",
       "meta": {
-        "version": "0.1.2",
+        "version": "0.1.4",
         "path": "interverse/internext",
         "repoUrl": "https://github.com/mistakeknot/internext"
       }
@@ -1191,7 +1565,7 @@ const data = {
       "id": "internext:next-work",
       "type": "skill",
       "label": "next-work",
-      "description": "Analyze project state and recommend what to work on next — surfaces tradeoffs between options, scores by impact/effort/risk, and gives an opinionated recommendation.",
+      "description": "Analyze project state and recommend what to work on next — surfaces tradeoffs between options, scores by",
       "meta": {
         "plugin": "internext",
         "path": "interverse/internext/skills/next-work",
@@ -1202,10 +1576,22 @@ const data = {
       "id": "interpath",
       "type": "plugin",
       "label": "interpath",
-      "description": "Product artifact generator — roadmaps, PRDs, vision docs, changelogs, and status reports from beads, brainstorms, and project state. Companion plugin for Clavain.",
+      "description": "Product artifact generator — roadmaps, PRDs, vision docs, changelogs, and status reports from beads, brainstorms, and",
       "meta": {
-        "version": "0.2.2",
+        "version": "0.2.3",
         "path": "interverse/interpath",
+        "repoUrl": "https://github.com/mistakeknot/interpath",
+        "commandCount": 7
+      }
+    },
+    {
+      "id": "interpath:artifact-gen",
+      "type": "skill",
+      "label": "artifact-gen",
+      "description": "Generate product artifacts (roadmaps, PRDs, vision docs, changelogs, status reports) from beads state, brainstorms, and",
+      "meta": {
+        "plugin": "interpath",
+        "path": "interverse/interpath/skills/artifact-gen",
         "repoUrl": "https://github.com/mistakeknot/interpath"
       }
     },
@@ -1217,14 +1603,15 @@ const data = {
       "meta": {
         "version": "0.1.0",
         "path": "interverse/interpeer",
-        "repoUrl": "https://github.com/mistakeknot/interpeer"
+        "repoUrl": "https://github.com/mistakeknot/interpeer",
+        "commandCount": 1
       }
     },
     {
       "id": "interpeer:interpeer",
       "type": "skill",
       "label": "interpeer",
-      "description": "Cross-AI peer review with escalation modes — quick (Claude↔Codex), deep (reviewed Oracle query, formerly prompterpeer), council (multi-model synthesis, formerly winterpeer), mine (disagreement extraction, formerly splinterpeer). Auto-detects host agent.",
+      "description": "Cross-AI peer review with escalation modes — quick (Claude↔Codex), deep (reviewed Oracle query, formerly prompterpeer)",
       "meta": {
         "plugin": "interpeer",
         "path": "interverse/interpeer/skills/interpeer",
@@ -1235,11 +1622,66 @@ const data = {
       "id": "interphase",
       "type": "plugin",
       "label": "interphase",
-      "description": "Phase tracking, gate validation, and work discovery for the Beads issue tracker. Companion plugin for Clavain — adds lifecycle state management on top of the core beads plugin.",
+      "description": "Phase tracking, gate validation, and work discovery for the Beads issue tracker. Companion plugin for Clavain — adds",
       "meta": {
-        "version": "0.3.2",
+        "version": "0.3.13",
         "path": "interverse/interphase",
         "repoUrl": "https://github.com/mistakeknot/interphase"
+      }
+    },
+    {
+      "id": "interphase:beads-workflow",
+      "type": "skill",
+      "label": "beads-workflow",
+      "description": "Tracking work across sessions with Beads issue tracking — guides the bd CLI workflow for creating, managing, and closing",
+      "meta": {
+        "plugin": "interphase",
+        "path": "interverse/interphase/skills/beads-workflow",
+        "repoUrl": "https://github.com/mistakeknot/interphase"
+      }
+    },
+    {
+      "id": "interplug",
+      "type": "plugin",
+      "label": "interplug",
+      "description": "Plugin development toolkit — lifecycle management, structure validation, and troubleshooting for Claude Code plugins",
+      "meta": {
+        "version": "0.1.0",
+        "path": "interverse/interplug",
+        "repoUrl": "https://github.com/mistakeknot/interplug"
+      }
+    },
+    {
+      "id": "interplug:create",
+      "type": "skill",
+      "label": "create",
+      "description": "Creating a new Claude Code plugin from scratch, adding components to an existing plugin, setting up a development",
+      "meta": {
+        "plugin": "interplug",
+        "path": "interverse/interplug/skills/create",
+        "repoUrl": "https://github.com/mistakeknot/interplug"
+      }
+    },
+    {
+      "id": "interplug:validate",
+      "type": "skill",
+      "label": "validate",
+      "description": "Verifying a plugin is correctly structured before testing or publishing — checks plugin.json schema, directory layout",
+      "meta": {
+        "plugin": "interplug",
+        "path": "interverse/interplug/skills/validate",
+        "repoUrl": "https://github.com/mistakeknot/interplug"
+      }
+    },
+    {
+      "id": "interplug:troubleshoot",
+      "type": "skill",
+      "label": "troubleshoot",
+      "description": "A Claude Code plugin is not working — plugin not loading, skill not triggering, command not appearing, MCP server not",
+      "meta": {
+        "plugin": "interplug",
+        "path": "interverse/interplug/skills/troubleshoot",
+        "repoUrl": "https://github.com/mistakeknot/interplug"
       }
     },
     {
@@ -1248,30 +1690,119 @@ const data = {
       "label": "interpub",
       "description": "Safe plugin publishing — bumps all version locations, validates sync, commits and pushes with confirmation.",
       "meta": {
-        "version": "0.1.3",
+        "version": "0.1.7",
         "path": "interverse/interpub",
         "repoUrl": "https://github.com/mistakeknot/interpub",
-        "commandCount": 1
+        "commandCount": 2
+      }
+    },
+    {
+      "id": "interpulse",
+      "type": "plugin",
+      "label": "interpulse",
+      "description": "Session context monitoring — pressure tracking, token estimation, threshold warnings",
+      "meta": {
+        "version": "0.1.3",
+        "path": "interverse/interpulse",
+        "repoUrl": "https://github.com/mistakeknot/interpulse"
+      }
+    },
+    {
+      "id": "interpulse:status",
+      "type": "skill",
+      "label": "status",
+      "description": "Show current session pressure dashboard",
+      "meta": {
+        "plugin": "interpulse",
+        "path": "interverse/interpulse/skills/status",
+        "repoUrl": "https://github.com/mistakeknot/interpulse"
+      }
+    },
+    {
+      "id": "interrank",
+      "type": "plugin",
+      "label": "interrank",
+      "description": "Snapshot-backed model/benchmark ranking MCP server for AgMoDB",
+      "meta": {
+        "version": "0.1.0",
+        "path": "interverse/interrank",
+        "repoUrl": "https://github.com/mistakeknot/interrank"
+      }
+    },
+    {
+      "id": "mcp:interrank:interrank",
+      "type": "mcp-server",
+      "label": "interrank",
+      "description": "MCP server for interrank — provides interrank tools via stdio",
+      "meta": {
+        "plugin": "interrank",
+        "type": "stdio",
+        "command": "bash",
+        "repoUrl": "https://github.com/mistakeknot/interrank"
+      }
+    },
+    {
+      "id": "interscribe",
+      "type": "plugin",
+      "label": "interscribe",
+      "description": "Documentation quality toolkit — enforces CLAUDE.md/AGENTS.md boundaries, applies progressive disclosure, deduplicates",
+      "meta": {
+        "version": "0.1.1",
+        "path": "interverse/interscribe",
+        "repoUrl": "https://github.com/mistakeknot/interscribe"
+      }
+    },
+    {
+      "id": "interscribe:interscribe",
+      "type": "skill",
+      "label": "interscribe",
+      "description": "Documentation quality toolkit — audit doc health, refactor for progressive disclosure, consolidate duplicates. Enforces",
+      "meta": {
+        "plugin": "interscribe",
+        "path": "interverse/interscribe/skills/interscribe",
+        "repoUrl": "https://github.com/mistakeknot/interscribe"
       }
     },
     {
       "id": "intersearch",
       "type": "plugin",
       "label": "intersearch",
-      "description": "Shared embedding and search infrastructure for the Interverse ecosystem — sentence-transformer embeddings and Exa web search.",
+      "description": "Shared embedding and search infrastructure for the Interverse ecosystem — sentence-transformer embeddings, persistent",
       "meta": {
-        "version": "0.1.1",
+        "version": "0.2.0",
         "path": "interverse/intersearch",
         "repoUrl": "https://github.com/mistakeknot/intersearch"
+      }
+    },
+    {
+      "id": "mcp:intersearch:intersearch",
+      "type": "mcp-server",
+      "label": "intersearch",
+      "description": "MCP server for intersearch — provides intersearch tools via stdio",
+      "meta": {
+        "plugin": "intersearch",
+        "command": "uv",
+        "repoUrl": "https://github.com/mistakeknot/intersearch"
+      }
+    },
+    {
+      "id": "intersense",
+      "type": "plugin",
+      "label": "intersense",
+      "description": "Domain detection — classifies projects by signals (directories, manifests, dependencies, keywords) into domains for",
+      "meta": {
+        "version": "0.1.0",
+        "path": "interverse/intersense",
+        "repoUrl": "https://github.com/mistakeknot/intersense"
       }
     },
     {
       "id": "interserve",
       "type": "plugin",
       "label": "interserve",
-      "description": "Interserve — Codex spark classifier and context compression via MCP",
+      "description": "Codex spark classifier and context compression via MCP",
       "meta": {
-        "version": "0.1.4",
+        "version": "0.1.5",
         "path": "interverse/interserve",
         "repoUrl": "https://github.com/mistakeknot/interserve"
       }
@@ -1280,12 +1811,79 @@ const data = {
       "id": "mcp:interserve:interserve",
       "type": "mcp-server",
       "label": "interserve",
-      "description": "MCP server: stdio",
+      "description": "MCP server for interserve — provides interserve tools via stdio",
       "meta": {
         "plugin": "interserve",
         "type": "stdio",
         "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh",
         "repoUrl": "https://github.com/mistakeknot/interserve"
+      }
+    },
+    {
+      "id": "intership",
+      "type": "plugin",
+      "label": "intership",
+      "description": "Culture ship names as Claude Code spinner verbs. Because why would you settle for 'Thinking...' when you could have",
+      "meta": {
+        "version": "0.3.0",
+        "path": "interverse/intership",
+        "repoUrl": "https://github.com/mistakeknot/intership",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "intersight",
+      "type": "plugin",
+      "label": "intersight",
+      "description": "Automated UI/UX design analysis — extracts W3C DTCG tokens, component inventory, and layout analysis from any URL.",
+      "meta": {
+        "version": "0.1.3",
+        "path": "interverse/intersight",
+        "repoUrl": "https://github.com/mistakeknot/intersight"
+      }
+    },
+    {
+      "id": "intersight:analyze",
+      "type": "skill",
+      "label": "analyze",
+      "description": "Analyze a website's design system — extracts W3C DTCG tokens, component inventory, and layout analysis",
+      "meta": {
+        "plugin": "intersight",
+        "path": "interverse/intersight/skills/analyze",
+        "repoUrl": "https://github.com/mistakeknot/intersight"
+      }
+    },
+    {
+      "id": "interskill",
+      "type": "plugin",
+      "label": "interskill",
+      "description": "Skill authoring toolkit — unified skill creation, TDD-adapted testing, and audit. Consolidated from interdev's",
+      "meta": {
+        "version": "0.1.1",
+        "path": "interverse/interskill",
+        "repoUrl": "https://github.com/mistakeknot/interskill"
+      }
+    },
+    {
+      "id": "interskill:create",
+      "type": "skill",
+      "label": "create",
+      "description": "Expert guidance for creating Claude Code skills and slash commands. Use when working with SKILL.md files, authoring new",
+      "meta": {
+        "plugin": "interskill",
+        "path": "interverse/interskill/skills/create",
+        "repoUrl": "https://github.com/mistakeknot/interskill"
+      }
+    },
+    {
+      "id": "interskill:audit",
+      "type": "skill",
+      "label": "audit",
+      "description": "Audit an existing skill against best practices — checks structure, frontmatter, invocation control, description quality",
+      "meta": {
+        "plugin": "interskill",
+        "path": "interverse/interskill/skills/audit",
+        "repoUrl": "https://github.com/mistakeknot/interskill"
       }
     },
     {
@@ -1303,11 +1901,22 @@ const data = {
       "id": "interslack:slack-messaging",
       "type": "skill",
       "label": "slack-messaging",
-      "description": "Use when asked to send or read Slack messages, check Slack channels, test Slack integrations, or interact with a Slack workspace from the command line.",
+      "description": "Asked to send or read Slack messages, check Slack channels, test Slack integrations, or interact with a Slack workspace",
       "meta": {
         "plugin": "interslack",
         "path": "interverse/interslack/skills/slack-messaging",
         "repoUrl": "https://github.com/mistakeknot/interslack"
+      }
+    },
+    {
+      "id": "interspect",
+      "type": "plugin",
+      "label": "interspect",
+      "description": "Agent performance profiler and routing optimizer. Collects evidence about flux-drive agent accuracy, proposes routing",
+      "meta": {
+        "version": "0.1.6",
+        "path": "interverse/interspect",
+        "repoUrl": "https://github.com/mistakeknot/interspect"
       }
     },
     {
@@ -1316,29 +1925,60 @@ const data = {
       "label": "interstat",
       "description": "Token efficiency benchmarking for agent workflows",
       "meta": {
-        "version": "0.2.5",
+        "version": "0.2.14",
         "path": "interverse/interstat",
         "repoUrl": "https://github.com/mistakeknot/interstat"
       }
     },
     {
-      "id": "interstat:skills",
+      "id": "interstat:analyze",
       "type": "skill",
-      "label": "skills",
-      "description": "",
+      "label": "analyze",
+      "description": "Parse conversation JSONL files and backfill token counts into SQLite",
       "meta": {
         "plugin": "interstat",
-        "path": "interverse/interstat/skills",
+        "path": "interverse/interstat/skills/analyze",
         "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "interstat:report",
+      "type": "skill",
+      "label": "report",
+      "description": "Show token efficiency analysis and decision gate verdict",
+      "meta": {
+        "plugin": "interstat",
+        "path": "interverse/interstat/skills/report",
+        "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "interstat:status",
+      "type": "skill",
+      "label": "status",
+      "description": "Show collection progress and pending parse status",
+      "meta": {
+        "plugin": "interstat",
+        "path": "interverse/interstat/skills/status",
+        "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "hook:PostToolUseFailure",
+      "type": "hook-event",
+      "label": "PostToolUseFailure",
+      "description": "Hook event: PostToolUseFailure",
+      "meta": {
+        "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
       }
     },
     {
       "id": "intersynth",
       "type": "plugin",
       "label": "intersynth",
-      "description": "Multi-agent synthesis engine — collects findings from parallel review/research agents, deduplicates, writes verdicts, produces compact summaries. Keeps agent output out of the host context.",
+      "description": "Multi-agent synthesis engine — collects findings from parallel review/research agents, deduplicates, writes verdicts",
       "meta": {
-        "version": "0.1.3",
+        "version": "0.1.6",
         "path": "interverse/intersynth",
         "repoUrl": "https://github.com/mistakeknot/intersynth"
       }
@@ -1347,7 +1987,7 @@ const data = {
       "id": "intersynth:agent:synthesize-review",
       "type": "agent",
       "label": "synthesize-review",
-      "description": "",
+      "description": "Synthesis agent for multi-agent code reviews — reads agent output files, validates structure, deduplicates findings",
       "meta": {
         "plugin": "intersynth",
         "path": "./agents/synthesize-review.md",
@@ -1358,10 +1998,21 @@ const data = {
       "id": "intersynth:agent:synthesize-research",
       "type": "agent",
       "label": "synthesize-research",
-      "description": "",
+      "description": "Synthesis agent for multi-agent research — reads research agent output files, merges findings with source attribution",
       "meta": {
         "plugin": "intersynth",
         "path": "./agents/synthesize-research.md",
+        "repoUrl": "https://github.com/mistakeknot/intersynth"
+      }
+    },
+    {
+      "id": "intersynth:agent:synthesize-documents",
+      "type": "agent",
+      "label": "synthesize-documents",
+      "description": "'Synthesizes multiple related documents (compound, reflect, research) into categorized docs/solutions/ entries.'",
+      "meta": {
+        "plugin": "intersynth",
+        "path": "./agents/synthesize-documents.md",
         "repoUrl": "https://github.com/mistakeknot/intersynth"
       }
     },
@@ -1371,7 +2022,7 @@ const data = {
       "label": "intertest",
       "description": "Engineering quality disciplines — systematic debugging, test-driven development, and verification gates.",
       "meta": {
-        "version": "0.1.1",
+        "version": "0.1.2",
         "path": "interverse/intertest",
         "repoUrl": "https://github.com/mistakeknot/intertest"
       }
@@ -1380,7 +2031,7 @@ const data = {
       "id": "intertest:systematic-debugging",
       "type": "skill",
       "label": "systematic-debugging",
-      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes",
+      "description": "Encountering any bug, test failure, or unexpected behavior, before proposing fixes",
       "meta": {
         "plugin": "intertest",
         "path": "interverse/intertest/skills/systematic-debugging",
@@ -1391,7 +2042,7 @@ const data = {
       "id": "intertest:test-driven-development",
       "type": "skill",
       "label": "test-driven-development",
-      "description": "Use when implementing any feature or bugfix, before writing implementation code",
+      "description": "Implementing any feature or bugfix, before writing implementation code",
       "meta": {
         "plugin": "intertest",
         "path": "interverse/intertest/skills/test-driven-development",
@@ -1402,7 +2053,7 @@ const data = {
       "id": "intertest:verification-before-completion",
       "type": "skill",
       "label": "verification-before-completion",
-      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always",
+      "description": "About to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification",
       "meta": {
         "plugin": "intertest",
         "path": "interverse/intertest/skills/verification-before-completion",
@@ -1410,13 +2061,125 @@ const data = {
       }
     },
     {
+      "id": "intertrace",
+      "type": "plugin",
+      "label": "intertrace",
+      "description": "Cross-module integration gap tracer — traces data flows from shipped features to find unverified consumer edges.",
+      "meta": {
+        "version": "0.1.2",
+        "path": "interverse/intertrace",
+        "repoUrl": "https://github.com/mistakeknot/intertrace"
+      }
+    },
+    {
+      "id": "intertrace:intertrace",
+      "type": "skill",
+      "label": "intertrace",
+      "description": "Cross-module integration gap tracer. Given a bead ID, traces data flows from changed files to find unverified consumer",
+      "meta": {
+        "plugin": "intertrace",
+        "path": "interverse/intertrace/skills/intertrace",
+        "repoUrl": "https://github.com/mistakeknot/intertrace"
+      }
+    },
+    {
+      "id": "intertrace:agent:fd-integration",
+      "type": "agent",
+      "label": "fd-integration",
+      "description": "Flux-drive Integration reviewer — evaluates cross-module data flow completeness, event consumer registration, contract",
+      "meta": {
+        "plugin": "intertrace",
+        "path": "./agents/review/fd-integration.md",
+        "repoUrl": "https://github.com/mistakeknot/intertrace"
+      }
+    },
+    {
+      "id": "intertrack",
+      "type": "plugin",
+      "label": "intertrack",
+      "description": "Feature-level success metric tracking for Demarch",
+      "meta": {
+        "version": "0.1.0",
+        "path": "interverse/intertrack",
+        "repoUrl": "https://github.com/mistakeknot/intertrack"
+      }
+    },
+    {
+      "id": "intertrack:report",
+      "type": "skill",
+      "label": "report",
+      "description": "Detailed metric analysis for a specific feature or all features.",
+      "meta": {
+        "plugin": "intertrack",
+        "path": "interverse/intertrack/skills/report",
+        "repoUrl": "https://github.com/mistakeknot/intertrack"
+      }
+    },
+    {
+      "id": "intertrack:status",
+      "type": "skill",
+      "label": "status",
+      "description": "Show the current state of all tracked feature metrics.",
+      "meta": {
+        "plugin": "intertrack",
+        "path": "interverse/intertrack/skills/status",
+        "repoUrl": "https://github.com/mistakeknot/intertrack"
+      }
+    },
+    {
+      "id": "intertree",
+      "type": "plugin",
+      "label": "intertree",
+      "description": "Project hierarchy management — filesystem discovery, parent-child relationships, tagging, and layout orchestration",
+      "meta": {
+        "version": "0.1.0",
+        "path": "interverse/intertree",
+        "repoUrl": "https://github.com/mistakeknot/intertree"
+      }
+    },
+    {
+      "id": "intertree:layout",
+      "type": "skill",
+      "label": "layout",
+      "description": "Organizing projects — interactive project discovery, hierarchy review, classification, tagging, and Notion registration",
+      "meta": {
+        "plugin": "intertree",
+        "path": "interverse/intertree/skills/layout",
+        "repoUrl": "https://github.com/mistakeknot/intertree"
+      }
+    },
+    {
+      "id": "intertrust",
+      "type": "plugin",
+      "label": "intertrust",
+      "description": "Agent trust scoring — reputation tracking, severity-weighted decay, and suppression candidates.",
+      "meta": {
+        "version": "0.1.2",
+        "path": "interverse/intertrust",
+        "repoUrl": "https://github.com/mistakeknot/intertrust",
+        "commandCount": 1
+      }
+    },
+    {
       "id": "interwatch",
       "type": "plugin",
       "label": "interwatch",
-      "description": "Doc freshness monitoring — drift detection, confidence scoring, and auto-refresh orchestration across product artifacts and code docs. Companion plugin for Clavain.",
+      "description": "Doc freshness and correctness monitoring — auto-discovers watchable docs, detects drift via 14 signal types, scores",
       "meta": {
-        "version": "0.1.2",
+        "version": "0.1.13",
         "path": "interverse/interwatch",
+        "repoUrl": "https://github.com/mistakeknot/interwatch",
+        "commandCount": 4
+      }
+    },
+    {
+      "id": "interwatch:doc-watch",
+      "type": "skill",
+      "label": "doc-watch",
+      "description": "Detect documentation drift, score confidence, and orchestrate refresh via generator plugins (interpath for product docs",
+      "meta": {
+        "plugin": "interwatch",
+        "path": "interverse/interwatch/skills/doc-watch",
         "repoUrl": "https://github.com/mistakeknot/interwatch"
       }
     },
@@ -1424,9 +2187,9 @@ const data = {
       "id": "tldr-swinton",
       "type": "plugin",
       "label": "tldr-swinton",
-      "description": "Token-efficient code reconnaissance for LLMs. Autonomous skills save 48-85% tokens via diff-context, semantic search, structural patterns, and symbol analysis. Includes MCP server for direct tool integration.",
+      "description": "Token-efficient code reconnaissance for LLMs. Autonomous skills save 48-85% tokens via diff-context, semantic search",
       "meta": {
-        "version": "0.7.14",
+        "version": "0.7.17",
         "path": "interverse/tldr-swinton",
         "repoUrl": "https://github.com/mistakeknot/tldr-swinton",
         "commandCount": 6
@@ -1436,7 +2199,7 @@ const data = {
       "id": "tldr-swinton:tldrs-session-start",
       "type": "skill",
       "label": "tldrs-session-start",
-      "description": "\"Use when starting any coding task: fix bugs, debug, implement features, refactor, write tests, review code, migrate, port, or explore a codebase. Also use when resuming a previous session, onboarding to a repo, or before reading code files in a new conversation. Provides diff-focused context that saves 48-73% tokens.\"",
+      "description": "Starting any coding task: fix bugs, debug, implement features, refactor, write tests, review code, migrate, port, or",
       "meta": {
         "plugin": "tldr-swinton",
         "path": "interverse/tldr-swinton/.claude-plugin/skills/tldrs-session-start",
@@ -1447,7 +2210,7 @@ const data = {
       "id": "tldr-swinton:tldrs-map-codebase",
       "type": "skill",
       "label": "tldrs-map-codebase",
-      "description": "\"Use when asked to understand a codebase's architecture, explore an unfamiliar project, onboard to a new repo, identify which modules exist, find entry points, or get a bird's-eye view before diving into code. Also use when the user says 'what does this project do' or 'show me the structure'. Provides structural overview without reading individual files.\"",
+      "description": "Asked to understand a codebase's architecture, explore an unfamiliar project, onboard to a new repo, identify which",
       "meta": {
         "plugin": "tldr-swinton",
         "path": "interverse/tldr-swinton/.claude-plugin/skills/tldrs-map-codebase",
@@ -1458,7 +2221,7 @@ const data = {
       "id": "tldr-swinton:tldrs-interbench-sync",
       "type": "skill",
       "label": "tldrs-interbench-sync",
-      "description": "\"Sync interbench eval coverage with tldrs capabilities. Run when tldrs gains new formats, flags, or commands. Reads the tldrs manifest as ground truth and generates minimal targeted edits to 4 interbench files.\"",
+      "description": "Sync interbench eval coverage with tldrs capabilities. Run when tldrs gains new formats, flags, or commands. Reads the",
       "meta": {
         "plugin": "tldr-swinton",
         "path": "interverse/tldr-swinton/.claude-plugin/skills/tldrs-interbench-sync",
@@ -1469,7 +2232,7 @@ const data = {
       "id": "tldr-swinton:finding-duplicate-functions",
       "type": "skill",
       "label": "finding-duplicate-functions",
-      "description": "Use when auditing a codebase for semantic duplication - functions that do the same thing but have different names or implementations. Especially useful for LLM-generated codebases where new functions are often created rather than reusing existing ones.",
+      "description": "Auditing a codebase for semantic duplication - functions that do the same thing but have different names or",
       "meta": {
         "plugin": "tldr-swinton",
         "path": "interverse/tldr-swinton/.claude-plugin/skills/finding-duplicate-functions",
@@ -1480,11 +2243,11 @@ const data = {
       "id": "mcp:tldr-swinton:tldr-code",
       "type": "mcp-server",
       "label": "tldr-code",
-      "description": "MCP server: stdio",
+      "description": "MCP server for tldr-swinton — provides tldr-code tools via stdio",
       "meta": {
         "plugin": "tldr-swinton",
         "type": "stdio",
-        "command": "tldr-mcp",
+        "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh",
         "repoUrl": "https://github.com/mistakeknot/tldr-swinton"
       }
     },
@@ -1492,10 +2255,21 @@ const data = {
       "id": "tool-time",
       "type": "plugin",
       "label": "tool-time",
-      "description": "Tool usage analytics for Claude Code. Tracks tool patterns via hooks, detects inefficiencies, and offers community comparison with anonymized data.",
+      "description": "Tool usage analytics for Claude Code. Tracks tool patterns via hooks, detects inefficiencies, and offers community",
       "meta": {
         "version": "0.3.5",
         "path": "interverse/tool-time",
+        "repoUrl": "https://github.com/mistakeknot/tool-time"
+      }
+    },
+    {
+      "id": "tool-time:tool-time",
+      "type": "skill",
+      "label": "tool-time",
+      "description": "Analyze tool usage patterns and suggest improvements to your workflow",
+      "meta": {
+        "plugin": "tool-time",
+        "path": "interverse/tool-time/skills/tool-time",
         "repoUrl": "https://github.com/mistakeknot/tool-time"
       }
     },
@@ -1505,8 +2279,31 @@ const data = {
       "label": "tuivision",
       "description": "TUI automation and visual testing - Playwright for terminal applications. Spawn, interact with, and screenshot TUI apps.",
       "meta": {
-        "version": "0.1.4",
+        "version": "0.1.6",
         "path": "interverse/tuivision",
+        "repoUrl": "https://github.com/mistakeknot/tuivision"
+      }
+    },
+    {
+      "id": "tuivision:tui-test",
+      "type": "skill",
+      "label": "tui-test",
+      "description": "Guided TUI automation and visual testing workflow. Use when testing terminal applications, validating TUI layouts, or",
+      "meta": {
+        "plugin": "tuivision",
+        "path": "interverse/tuivision/skills/tui-test",
+        "repoUrl": "https://github.com/mistakeknot/tuivision"
+      }
+    },
+    {
+      "id": "mcp:tuivision:tuivision",
+      "type": "mcp-server",
+      "label": "tuivision",
+      "description": "MCP server for tuivision — provides tuivision tools via stdio",
+      "meta": {
+        "plugin": "tuivision",
+        "type": "stdio",
+        "command": "node",
         "repoUrl": "https://github.com/mistakeknot/tuivision"
       }
     },
@@ -1514,29 +2311,19 @@ const data = {
       "id": "clavain",
       "type": "hub",
       "label": "clavain",
-      "description": "Self-improving agent rig — codifies product and engineering discipline into composable workflows from brainstorm to ship. Compounds knowledge, generates domain agents, and monitors its own docs. Orchestrates Claude, Codex, and GPT-5.2 Pro through 15 skills, 4 agents, 52 commands, 12 hooks. Companions: interphase, interline, interflux, interpath, interwatch, interslack, interform, intercraft, interdev, interpeer, intertest.",
+      "description": "Self-improving agent rig: codifies product and engineering discipline into composable workflows from brainstorm to ship",
       "meta": {
-        "version": "0.6.59",
+        "version": "0.6.139",
         "path": "os/clavain",
-        "repoUrl": "https://github.com/mistakeknot/Clavain"
-      }
-    },
-    {
-      "id": "clavain:brainstorming",
-      "type": "skill",
-      "label": "brainstorming",
-      "description": "Freeform brainstorming mode — loads collaborative dialogue style (one question at a time, multiple choice, incremental design). Use for open-ended exploration without structured phases. For a guided workflow with repo research, use /brainstorm instead.",
-      "meta": {
-        "plugin": "clavain",
-        "path": "os/clavain/skills/brainstorming",
-        "repoUrl": "https://github.com/mistakeknot/Clavain"
+        "repoUrl": "https://github.com/mistakeknot/Clavain",
+        "commandCount": 45
       }
     },
     {
       "id": "clavain:code-review-discipline",
       "type": "skill",
       "label": "code-review-discipline",
-      "description": "Use when requesting or receiving code review — covers dispatching reviewer subagents, handling feedback with technical rigor, and avoiding performative agreement",
+      "description": "Requesting or receiving code review — covers dispatching reviewer subagents, handling feedback with technical rigor, and",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/code-review-discipline",
@@ -1547,7 +2334,7 @@ const data = {
       "id": "clavain:dispatching-parallel-agents",
       "type": "skill",
       "label": "dispatching-parallel-agents",
-      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+      "description": "Facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/dispatching-parallel-agents",
@@ -1558,7 +2345,7 @@ const data = {
       "id": "clavain:engineering-docs",
       "type": "skill",
       "label": "engineering-docs",
-      "description": "Use when capturing a solved problem as categorized documentation with YAML frontmatter for fast lookup",
+      "description": "Capturing a solved problem as categorized documentation with YAML frontmatter for fast lookup",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/engineering-docs",
@@ -1569,7 +2356,7 @@ const data = {
       "id": "clavain:executing-plans",
       "type": "skill",
       "label": "executing-plans",
-      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints",
+      "description": "You have a written implementation plan to execute in a separate session with review checkpoints",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/executing-plans",
@@ -1580,7 +2367,7 @@ const data = {
       "id": "clavain:file-todos",
       "type": "skill",
       "label": "file-todos",
-      "description": "This skill should be used when managing the file-based todo tracking system in the todos/ directory. It provides workflows for creating todos, managing status and dependencies, conducting triage, and integrating with slash commands and code review processes.",
+      "description": "Managing the file-based todo tracking system in the todos/ directory. It provides workflows for creating todos, managing",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/file-todos",
@@ -1602,7 +2389,7 @@ const data = {
       "id": "clavain:interserve",
       "type": "skill",
       "label": "interserve",
-      "description": "Dispatch tasks to Codex CLI agents — single megaprompt for one task, parallel delegation for many. Includes structured debate triggers and Oracle escalation.",
+      "description": "Dispatch tasks to Codex CLI agents — single megaprompt for one task, parallel delegation for many. Includes structured",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/interserve",
@@ -1613,7 +2400,7 @@ const data = {
       "id": "clavain:landing-a-change",
       "type": "skill",
       "label": "landing-a-change",
-      "description": "Use when implementation is complete and all tests pass — guides the disciplined process of verifying, documenting, and landing a change on trunk",
+      "description": "Implementation is complete and all tests pass — guides the disciplined process of verifying, documenting, and landing a",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/landing-a-change",
@@ -1632,10 +2419,21 @@ const data = {
       }
     },
     {
+      "id": "clavain:project-onboard",
+      "type": "skill",
+      "label": "project-onboard",
+      "description": "Onboarding a new or existing project into the Demarch ecosystem — introspects infrastructure, conducts guided interview",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/project-onboard",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
       "id": "clavain:refactor-safely",
       "type": "skill",
       "label": "refactor-safely",
-      "description": "Use when performing significant refactoring — guides a disciplined process that leverages duplication detection, characterization tests, staged execution, and continuous simplicity review",
+      "description": "Performing significant refactoring — guides a disciplined process that leverages duplication detection, characterization",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/refactor-safely",
@@ -1646,7 +2444,7 @@ const data = {
       "id": "clavain:subagent-driven-development",
       "type": "skill",
       "label": "subagent-driven-development",
-      "description": "Use when executing implementation plans with independent tasks in the current session",
+      "description": "Executing implementation plans with independent tasks in the current session",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/subagent-driven-development",
@@ -1657,7 +2455,7 @@ const data = {
       "id": "clavain:upstream-sync",
       "type": "skill",
       "label": "upstream-sync",
-      "description": "Use when checking for updates from upstream tool repos (beads, oracle, superpowers, compound-engineering) or when the /clavain:upstream-sync command is invoked",
+      "description": "Checking for updates from upstream tool repos (beads, oracle, superpowers, compound-engineering) or when the",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/upstream-sync",
@@ -1668,7 +2466,7 @@ const data = {
       "id": "clavain:using-clavain",
       "type": "skill",
       "label": "using-clavain",
-      "description": "Use when starting any conversation - establishes how to find and use skills, agents, and commands, requiring Skill tool invocation before ANY response including clarifying questions",
+      "description": "Starting any conversation - establishes how to find and use skills, agents, and commands, requiring Skill tool",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/using-clavain",
@@ -1679,7 +2477,7 @@ const data = {
       "id": "clavain:using-tmux-for-interactive-commands",
       "type": "skill",
       "label": "using-tmux-for-interactive-commands",
-      "description": "Use when you need to run interactive CLI tools (vim, git rebase -i, Python REPL, etc.) that require real-time input/output - provides tmux-based approach for controlling interactive sessions through detached sessions and send-keys",
+      "description": "You need to run interactive CLI tools (vim, git rebase -i, Python REPL, etc.) that require real-time input/output -",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/using-tmux-for-interactive-commands",
@@ -1690,7 +2488,7 @@ const data = {
       "id": "clavain:writing-plans",
       "type": "skill",
       "label": "writing-plans",
-      "description": "Use when you have a spec or requirements for a multi-step task, before touching code",
+      "description": "You have a spec or requirements for a multi-step task, before touching code",
       "meta": {
         "plugin": "clavain",
         "path": "os/clavain/skills/writing-plans",
@@ -1698,10 +2496,54 @@ const data = {
       }
     },
     {
+      "id": "clavain:agent:data-migration-expert",
+      "type": "agent",
+      "label": "data-migration-expert",
+      "description": "Validates data migrations, backfills, and production data transformations against reality. Use when PRs involve ID",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/review/data-migration-expert.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:plan-reviewer",
+      "type": "agent",
+      "label": "plan-reviewer",
+      "description": "Use this agent when a major project step has been completed and needs to be reviewed against the original plan and",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/review/plan-reviewer.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:bug-reproduction-validator",
+      "type": "agent",
+      "label": "bug-reproduction-validator",
+      "description": "Systematically reproduces and validates bug reports to confirm whether reported behavior is an actual bug. Use when you",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/workflow/bug-reproduction-validator.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:pr-comment-resolver",
+      "type": "agent",
+      "label": "pr-comment-resolver",
+      "description": "Addresses PR review comments by implementing requested changes and reporting resolutions. Use when code review feedback",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/workflow/pr-comment-resolver.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
       "id": "mcp:clavain:context7",
       "type": "mcp-server",
       "label": "context7",
-      "description": "MCP server: http",
+      "description": "MCP server for clavain — provides context7 tools via http",
       "meta": {
         "plugin": "clavain",
         "type": "http",
@@ -1742,14 +2584,23 @@ const data = {
       "id": "autarch",
       "type": "tui",
       "label": "Autarch",
-      "description": "TUI frontend — desktop application for the agent rig",
+      "description": "TUI frontend (external)",
       "meta": {
-        "path": "Interforge",
         "repoUrl": "https://github.com/mistakeknot/Autarch"
       }
     }
   ],
   "edges": [
+    {
+      "source": "interverse",
+      "target": "demarch",
+      "type": "part-of"
+    },
+    {
+      "source": "intercache",
+      "target": "mcp:intercache:intercache",
+      "type": "provides-mcp"
+    },
     {
       "source": "intercheck",
       "target": "intercheck:status",
@@ -1771,6 +2622,31 @@ const data = {
       "type": "provides-agent"
     },
     {
+      "source": "interdeep",
+      "target": "interdeep:deep-research",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interdeep",
+      "target": "interdeep:agent:research-planner",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interdeep",
+      "target": "interdeep:agent:source-evaluator",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interdeep",
+      "target": "interdeep:agent:report-compiler",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interdeep",
+      "target": "mcp:interdeep:interdeep",
+      "type": "provides-mcp"
+    },
+    {
       "source": "interdev",
       "target": "interdev:mcp-cli",
       "type": "provides-skill"
@@ -1781,28 +2657,33 @@ const data = {
       "type": "provides-skill"
     },
     {
-      "source": "interdev",
-      "target": "interdev:developing-claude-code-plugins",
-      "type": "provides-skill"
-    },
-    {
-      "source": "interdev",
-      "target": "interdev:create-agent-skills",
-      "type": "provides-skill"
-    },
-    {
-      "source": "interdev",
-      "target": "interdev:writing-skills",
-      "type": "provides-skill"
-    },
-    {
       "source": "interdoc",
       "target": "interdoc:interdoc",
       "type": "provides-skill"
     },
     {
       "source": "interfluence",
-      "target": "interfluence:skills",
+      "target": "interfluence:analyze",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interfluence",
+      "target": "interfluence:apply",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interfluence",
+      "target": "interfluence:compare",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interfluence",
+      "target": "interfluence:ingest",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interfluence",
+      "target": "interfluence:refine",
       "type": "provides-skill"
     },
     {
@@ -1823,11 +2704,6 @@ const data = {
     {
       "source": "interflux",
       "target": "interflux:flux-drive",
-      "type": "provides-skill"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:flux-research",
       "type": "provides-skill"
     },
     {
@@ -1917,11 +2793,6 @@ const data = {
     },
     {
       "source": "interflux",
-      "target": "mcp:interflux:qmd",
-      "type": "provides-mcp"
-    },
-    {
-      "source": "interflux",
       "target": "mcp:interflux:exa",
       "type": "provides-mcp"
     },
@@ -1942,7 +2813,27 @@ const data = {
     },
     {
       "source": "interject",
-      "target": "interject:skills",
+      "target": "interject:discover",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interject",
+      "target": "interject:inbox",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interject",
+      "target": "interject:profile",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interject",
+      "target": "interject:scan",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interject",
+      "target": "interject:status",
       "type": "provides-skill"
     },
     {
@@ -1957,17 +2848,17 @@ const data = {
     },
     {
       "source": "interkasten",
-      "target": "interkasten:layout",
-      "type": "provides-skill"
-    },
-    {
-      "source": "interkasten",
       "target": "interkasten:onboard",
       "type": "provides-skill"
     },
     {
       "source": "interkasten",
       "target": "interkasten:doctor",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interkasten",
+      "target": "interkasten:webhook-setup",
       "type": "provides-skill"
     },
     {
@@ -1983,6 +2874,26 @@ const data = {
     {
       "source": "interkasten",
       "target": "hook:Stop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interknow",
+      "target": "interknow:compound",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interknow",
+      "target": "interknow:recall",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interknow",
+      "target": "mcp:interknow:qmd",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interknow",
+      "target": "hook:SessionStart",
       "type": "fires-hook"
     },
     {
@@ -2009,6 +2920,16 @@ const data = {
       "source": "interline",
       "target": "hook:SessionStart",
       "type": "fires-hook"
+    },
+    {
+      "source": "interlock",
+      "target": "interlock:conflict-recovery",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interlock",
+      "target": "interlock:coordination-protocol",
+      "type": "provides-skill"
     },
     {
       "source": "interlock",
@@ -2052,8 +2973,18 @@ const data = {
     },
     {
       "source": "intermem",
+      "target": "intermem:tidy",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intermem",
       "target": "hook:SessionStart",
       "type": "fires-hook"
+    },
+    {
+      "source": "intermonk",
+      "target": "intermonk:dialectic",
+      "type": "provides-skill"
     },
     {
       "source": "intermux",
@@ -2077,6 +3008,11 @@ const data = {
     },
     {
       "source": "interpath",
+      "target": "interpath:artifact-gen",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interpath",
       "target": "clavain",
       "type": "companion-of"
     },
@@ -2087,8 +3023,63 @@ const data = {
     },
     {
       "source": "interphase",
+      "target": "interphase:beads-workflow",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interphase",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interphase",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interphase",
       "target": "clavain",
       "type": "companion-of"
+    },
+    {
+      "source": "interplug",
+      "target": "interplug:create",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interplug",
+      "target": "interplug:validate",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interplug",
+      "target": "interplug:troubleshoot",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interpulse",
+      "target": "interpulse:status",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interpulse",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interrank",
+      "target": "mcp:interrank:interrank",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interscribe",
+      "target": "interscribe:interscribe",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intersearch",
+      "target": "mcp:intersearch:intersearch",
+      "type": "provides-mcp"
     },
     {
       "source": "interserve",
@@ -2101,18 +3092,78 @@ const data = {
       "type": "fires-hook"
     },
     {
+      "source": "intership",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intersight",
+      "target": "intersight:analyze",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interskill",
+      "target": "interskill:create",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interskill",
+      "target": "interskill:audit",
+      "type": "provides-skill"
+    },
+    {
       "source": "interslack",
       "target": "interslack:slack-messaging",
       "type": "provides-skill"
     },
     {
+      "source": "interspect",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interspect",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interspect",
+      "target": "hook:Stop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interspect",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
       "source": "interstat",
-      "target": "interstat:skills",
+      "target": "interstat:analyze",
       "type": "provides-skill"
     },
     {
       "source": "interstat",
+      "target": "interstat:report",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "interstat:status",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interstat",
       "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:PostToolUseFailure",
       "type": "fires-hook"
     },
     {
@@ -2128,6 +3179,11 @@ const data = {
     {
       "source": "intersynth",
       "target": "intersynth:agent:synthesize-research",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intersynth",
+      "target": "intersynth:agent:synthesize-documents",
       "type": "provides-agent"
     },
     {
@@ -2148,6 +3204,41 @@ const data = {
     {
       "source": "intertest",
       "target": "intertest:verification-before-completion",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrace",
+      "target": "intertrace:intertrace",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrace",
+      "target": "intertrace:agent:fd-integration",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intertrack",
+      "target": "intertrack:report",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrack",
+      "target": "intertrack:status",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrack",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intertree",
+      "target": "intertree:layout",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interwatch",
+      "target": "interwatch:doc-watch",
       "type": "provides-skill"
     },
     {
@@ -2182,6 +3273,11 @@ const data = {
     },
     {
       "source": "tool-time",
+      "target": "tool-time:tool-time",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tool-time",
       "target": "hook:PreToolUse",
       "type": "fires-hook"
     },
@@ -2201,9 +3297,14 @@ const data = {
       "type": "fires-hook"
     },
     {
-      "source": "clavain",
-      "target": "clavain:brainstorming",
+      "source": "tuivision",
+      "target": "tuivision:tui-test",
       "type": "provides-skill"
+    },
+    {
+      "source": "tuivision",
+      "target": "mcp:tuivision:tuivision",
+      "type": "provides-mcp"
     },
     {
       "source": "clavain",
@@ -2252,6 +3353,11 @@ const data = {
     },
     {
       "source": "clavain",
+      "target": "clavain:project-onboard",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
       "target": "clavain:refactor-safely",
       "type": "provides-skill"
     },
@@ -2282,6 +3388,26 @@ const data = {
     },
     {
       "source": "clavain",
+      "target": "clavain:agent:data-migration-expert",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:plan-reviewer",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:bug-reproduction-validator",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:pr-comment-resolver",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
       "target": "mcp:clavain:context7",
       "type": "provides-mcp"
     },
@@ -2307,38 +3433,33 @@ const data = {
     },
     {
       "source": "intercore",
-      "target": "interverse",
+      "target": "demarch",
       "type": "part-of"
     },
     {
       "source": "intermute-service",
-      "target": "interverse",
+      "target": "demarch",
       "type": "part-of"
     },
     {
       "source": "interbase-sdk",
-      "target": "interverse",
+      "target": "demarch",
       "type": "part-of"
-    },
-    {
-      "source": "autarch",
-      "target": "interverse",
-      "type": "part-of"
-    },
-    {
-      "source": "autarch",
-      "target": "intercore",
-      "type": "depends-on"
     },
     {
       "source": "clavain",
-      "target": "interverse",
+      "target": "demarch",
       "type": "part-of"
     },
     {
       "source": "clavain",
       "target": "intercore",
       "type": "depends-on"
+    },
+    {
+      "source": "intercache",
+      "target": "interverse",
+      "type": "part-of"
     },
     {
       "source": "intercheck",
@@ -2347,6 +3468,11 @@ const data = {
     },
     {
       "source": "intercraft",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interdeep",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2386,6 +3512,11 @@ const data = {
       "type": "part-of"
     },
     {
+      "source": "interknow",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
       "source": "interlearn",
       "target": "interverse",
       "type": "part-of"
@@ -2421,7 +3552,17 @@ const data = {
       "type": "part-of"
     },
     {
+      "source": "intermonk",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
       "source": "intermux",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intername",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2446,7 +3587,27 @@ const data = {
       "type": "part-of"
     },
     {
+      "source": "interplug",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
       "source": "interpub",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interpulse",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interrank",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interscribe",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2456,12 +3617,37 @@ const data = {
       "type": "part-of"
     },
     {
+      "source": "intersense",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
       "source": "interserve",
       "target": "interverse",
       "type": "part-of"
     },
     {
+      "source": "intership",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intersight",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interskill",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
       "source": "interslack",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interspect",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2477,6 +3663,26 @@ const data = {
     },
     {
       "source": "intertest",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertrace",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertrack",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertree",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertrust",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2641,6 +3847,18 @@ const data = {
     },
     {
       "source": "interflux",
+      "target": "intersense",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "quality-review",
+          "discovery-research"
+        ]
+      }
+    },
+    {
+      "source": "interflux",
       "target": "intersynth",
       "type": "overlaps-with",
       "meta": {
@@ -2760,6 +3978,18 @@ const data = {
     },
     {
       "source": "interlens",
+      "target": "intersense",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "quality-review",
+          "discovery-research"
+        ]
+      }
+    },
+    {
+      "source": "interlens",
       "target": "intersynth",
       "type": "overlaps-with",
       "meta": {
@@ -2767,6 +3997,18 @@ const data = {
         "domains": [
           "quality-review",
           "discovery-research"
+        ]
+      }
+    },
+    {
+      "source": "interline",
+      "target": "interwatch",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.2,
+        "domains": [
+          "analytics-observability",
+          "coordination-dispatch"
         ]
       }
     },
@@ -2833,10 +4075,9 @@ const data = {
       "target": "interwatch",
       "type": "overlaps-with",
       "meta": {
-        "score": 2.9,
+        "score": 2,
         "domains": [
           "docs-artifacts",
-          "design-product",
           "doc-lifecycle-stack"
         ]
       }
@@ -2889,6 +4130,18 @@ const data = {
       }
     },
     {
+      "source": "intersense",
+      "target": "intersynth",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "quality-review",
+          "discovery-research"
+        ]
+      }
+    },
+    {
       "source": "interstat",
       "target": "tool-time",
       "type": "overlaps-with",
@@ -2897,18 +4150,6 @@ const data = {
         "domains": [
           "analytics-observability",
           "analytics-quality-stack"
-        ]
-      }
-    },
-    {
-      "source": "interwatch",
-      "target": "clavain",
-      "type": "overlaps-with",
-      "meta": {
-        "score": 2,
-        "domains": [
-          "docs-artifacts",
-          "design-product"
         ]
       }
     },
@@ -2925,18 +4166,6 @@ const data = {
     }
   ],
   "overlaps": [
-    {
-      "source": "interpath",
-      "sourceLabel": "interpath",
-      "target": "interwatch",
-      "targetLabel": "interwatch",
-      "score": 2.9,
-      "domains": [
-        "docs-artifacts",
-        "design-product",
-        "doc-lifecycle-stack"
-      ]
-    },
     {
       "source": "interphase",
       "sourceLabel": "interphase",
@@ -2984,8 +4213,30 @@ const data = {
     {
       "source": "interflux",
       "sourceLabel": "interflux",
+      "target": "intersense",
+      "targetLabel": "intersense",
+      "score": 2.3,
+      "domains": [
+        "quality-review",
+        "discovery-research"
+      ]
+    },
+    {
+      "source": "interflux",
+      "sourceLabel": "interflux",
       "target": "intersynth",
       "targetLabel": "intersynth",
+      "score": 2.3,
+      "domains": [
+        "quality-review",
+        "discovery-research"
+      ]
+    },
+    {
+      "source": "interlens",
+      "sourceLabel": "interlens",
+      "target": "intersense",
+      "targetLabel": "intersense",
       "score": 2.3,
       "domains": [
         "quality-review",
@@ -3015,6 +4266,17 @@ const data = {
       ]
     },
     {
+      "source": "intersense",
+      "sourceLabel": "intersense",
+      "target": "intersynth",
+      "targetLabel": "intersynth",
+      "score": 2.3,
+      "domains": [
+        "quality-review",
+        "discovery-research"
+      ]
+    },
+    {
       "source": "interstat",
       "sourceLabel": "interstat",
       "target": "tool-time",
@@ -3034,6 +4296,17 @@ const data = {
       "domains": [
         "docs-artifacts",
         "discovery-research"
+      ]
+    },
+    {
+      "source": "interline",
+      "sourceLabel": "interline",
+      "target": "interwatch",
+      "targetLabel": "interwatch",
+      "score": 2.2,
+      "domains": [
+        "analytics-observability",
+        "coordination-dispatch"
       ]
     },
     {
@@ -3127,17 +4400,17 @@ const data = {
     {
       "source": "interpath",
       "sourceLabel": "interpath",
-      "target": "clavain",
-      "targetLabel": "clavain",
+      "target": "interwatch",
+      "targetLabel": "interwatch",
       "score": 2,
       "domains": [
         "docs-artifacts",
-        "design-product"
+        "doc-lifecycle-stack"
       ]
     },
     {
-      "source": "interwatch",
-      "sourceLabel": "interwatch",
+      "source": "interpath",
+      "sourceLabel": "interpath",
       "target": "clavain",
       "targetLabel": "clavain",
       "score": 2,
@@ -3319,18 +4592,18 @@ const TYPE_COLORS = {
   'plugin': '#4A90D9', 'skill': '#50C878', 'agent': '#FF8C42',
   'mcp-server': '#9B59B6', 'hook-event': '#E74C3C', 'hub': '#F39C12',
   'kernel': '#1ABC9C', 'service': '#E74C3C', 'sdk': '#95A5A6',
-  'tui': '#E91E63', 'monorepo': '#58a6ff'
+  'tui': '#E91E63', 'monorepo': '#58a6ff', 'ecosystem': '#7C3AED'
 };
 
 const TYPE_SIZES = {
-  'monorepo': 24, 'hub': 20, 'kernel': 16, 'service': 14, 'tui': 14,
+  'monorepo': 24, 'ecosystem': 20, 'hub': 20, 'kernel': 16, 'service': 14, 'tui': 14,
   'sdk': 12, 'plugin': 12, 'skill': 6, 'agent': 6, 'mcp-server': 7, 'hook-event': 7
 };
 
 const TYPE_LABELS = {
   'plugin': 'Plugin', 'skill': 'Skill', 'agent': 'Agent', 'mcp-server': 'MCP Server',
   'hook-event': 'Hook Event', 'hub': 'Hub', 'kernel': 'Kernel', 'service': 'Service',
-  'sdk': 'SDK', 'tui': 'TUI', 'monorepo': 'Monorepo'
+  'sdk': 'SDK', 'tui': 'TUI', 'monorepo': 'Monorepo', 'ecosystem': 'Ecosystem'
 };
 
 // State
@@ -3435,22 +4708,44 @@ domainNames.forEach(function(domain) {
 var simulation = d3.forceSimulation(graphNodes)
   .force('link', d3.forceLink(graphLinks).id(function(d) { return d.id; }).distance(function(d) {
     if (d.type === 'participates-in') return 280;
-    if (d.type === 'part-of') return 100;
-    if (d.type === 'companion-of') return 120;
-    if (d.type === 'overlaps-with') return 90;
-    if (d.type === 'provides-skill' || d.type === 'provides-agent') return 50;
-    return 80;
+    if (d.type === 'part-of') return 140;
+    if (d.type === 'companion-of') return 160;
+    if (d.type === 'fires-hook') return 180;
+    if (d.type === 'provides-skill' || d.type === 'provides-agent') return 140;
+    if (d.type === 'provides-mcp') return 120;
+    return 120;
+  }).strength(function(d) {
+    // Weaken pull for high-density edge types so nodes spread more
+    if (d.type === 'provides-skill' || d.type === 'fires-hook') return 0.08;
+    if (d.type === 'provides-agent' || d.type === 'provides-mcp') return 0.1;
+    if (d.type === 'part-of') return 0.3;
+    return 0.2;
   }))
   .force('charge', d3.forceManyBody().strength(function(d) {
     if (d.type === 'sprint-phase') return -800;
-    if (d.type === 'monorepo' || d.type === 'hub') return -400;
-    if (d.type === 'plugin' || d.type === 'kernel') return -200;
-    return -60;
+    if (d.type === 'monorepo' || d.type === 'ecosystem') return -1200;
+    if (d.type === 'hub') return -900;
+    if (d.type === 'plugin' || d.type === 'kernel') return -400;
+    return -120;
+  }).distanceMax(600))
+  .force('center', d3.forceCenter(width / 2, height / 2).strength(0.02))
+  .force('radial', d3.forceRadial(function(d) {
+    // Concentric rings: core anchors stay center, plugins mid-ring, leaves outer
+    if (d.type === 'monorepo' || d.type === 'ecosystem' || d.type === 'hub') return 0;
+    if (d.type === 'sprint-phase') return 0; // pinned by fx/fy
+    if (d.type === 'plugin' || d.type === 'kernel' || d.type === 'service') return Math.min(width, height) * 0.22;
+    return Math.min(width, height) * 0.35;
+  }, width / 2, height / 2).strength(function(d) {
+    if (d.type === 'monorepo' || d.type === 'ecosystem' || d.type === 'hub') return 0;
+    if (d.type === 'sprint-phase') return 0;
+    if (d.type === 'plugin' || d.type === 'kernel' || d.type === 'service') return 0.4;
+    return 0.5;
   }))
-  .force('center', d3.forceCenter(width / 2, height / 2).strength(0.05))
   .force('collision', d3.forceCollide().radius(function(d) {
     if (d.type === 'sprint-phase') return 120;
-    return (TYPE_SIZES[d.type] || 8) + 4;
+    if (d.type === 'monorepo' || d.type === 'ecosystem' || d.type === 'hub') return 35;
+    if (d.type === 'plugin' || d.type === 'kernel') return 20;
+    return (TYPE_SIZES[d.type] || 8) + 8;
   }));
 
 // Draw links
@@ -3460,9 +4755,10 @@ var link = linkGroup.selectAll('line').data(graphLinks).join('line')
   .attr('stroke-width', function(d) { return d.type === 'companion-of' ? 2 : 1; });
 
 // Draw nodes
+var CORE_TYPES = { monorepo: 1, ecosystem: 1, hub: 1, plugin: 1, kernel: 1, service: 1 };
 var nodeGroup_eco = g.append('g').attr('class', 'nodes');
 var node = nodeGroup_eco.selectAll('g').data(graphNodes).join('g')
-  .attr('class', 'node')
+  .attr('class', function(d) { return 'node' + (CORE_TYPES[d.type] ? '' : ' leaf-node'); })
   .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
 
 node.append('circle')
@@ -3476,7 +4772,7 @@ node.append('text')
   .attr('dy', 3)
   .text(function(d) { return d.label; })
   .style('font-size', function(d) {
-    if (d.type === 'monorepo' || d.type === 'hub') return '13px';
+    if (d.type === 'monorepo' || d.type === 'ecosystem' || d.type === 'hub') return '13px';
     if (d.type === 'plugin' || d.type === 'kernel' || d.type === 'service') return '11px';
     return '9px';
   });
@@ -3575,6 +4871,8 @@ simulation.on('tick', function() {
   updateSpotlightPaths();
 });
 
+// Note: initial rebuildGraph() call is after sprint infrastructure is set up (below)
+
 // --- Interaction ---
 
 function getNodeId(n) { return typeof n === 'object' ? n.id : n; }
@@ -3597,6 +4895,8 @@ function selectNode(d) {
     sprintNodeGroup.selectAll('.sprint-phase-node')
       .classed('highlighted', function() { return connectedIds.has(d3.select(this).attr('data-id')); })
       .classed('dimmed', function() { return !connectedIds.has(d3.select(this).attr('data-id')); });
+    // Draw arc highlights showing which phases this node participates in
+    drawPhaseArcs(d.id);
   }
 
   showDetailPanel(d);
@@ -3607,6 +4907,7 @@ function deselectAll() {
   node.classed('highlighted', false).classed('dimmed', false);
   link.classed('highlighted', false).classed('dimmed', false);
   spotlightGroup.selectAll('*').remove();
+  clearPhaseArcs();
   if (sprintActive) {
     sprintNodeGroup.selectAll('.sprint-phase-node')
       .classed('highlighted', false).classed('dimmed', false);
@@ -3904,6 +5205,7 @@ function applyFilters() {
     }
     // Regular ecosystem edges
     if (!ecosystemActive) return 'none';
+    if (l.type === 'fires-hook' && !hooksVisible) return 'none';
     if (!activeFilters.has(sn.type) || !activeFilters.has(tn.type)) return 'none';
     return null;
   });
@@ -4090,6 +5392,69 @@ var PHASE_SKILLS = {
   'ship':          { skills: ['clavain:landing-a-change'], agents: [], mcp: [] }
 };
 
+// ═══════════════════════════════════════════════════════
+// WORKFLOW DEPTH DATA + HELPERS
+// ═══════════════════════════════════════════════════════
+
+var WORKFLOW_DEPTH = 2; // 1=plugins, 2=skills/agents/mcp, 3=full trace
+
+// Depth-3 trace data: hooks, artifact I/O, MCP tools, data contracts per phase
+var WORKFLOW_TRACE = {
+  'brainstorm':    { hooks: ['PreToolUse', 'PostToolUse'], artifactIn: null, artifactOut: 'brainstorm doc', mcpTools: [], dataContracts: ['docs/brainstorms/*.md'] },
+  'strategize':    { hooks: ['PreToolUse'], artifactIn: 'brainstorm doc', artifactOut: 'PRD + feature beads', mcpTools: ['interkasten:interkasten_sync'], dataContracts: ['docs/prd/*.md', '.beads/'] },
+  'write-plan':    { hooks: ['PreToolUse'], artifactIn: 'PRD', artifactOut: 'implementation plan', mcpTools: [], dataContracts: ['docs/plans/*.md'] },
+  'review-plan':   { hooks: ['PostToolUse', 'PreToolUse'], artifactIn: 'implementation plan', artifactOut: 'review verdict', mcpTools: ['interspect:review_events'], dataContracts: ['.claude/reviews/*.md'] },
+  'execute':       { hooks: ['PreToolUse', 'PostToolUse', 'SessionStart'], artifactIn: 'implementation plan', artifactOut: 'code changes', mcpTools: ['interlock:reserve_files', 'interlock:release_files'], dataContracts: ['source files', '.beads/'] },
+  'test':          { hooks: ['PostToolUse'], artifactIn: 'code changes', artifactOut: 'test results', mcpTools: [], dataContracts: ['test output', 'coverage reports'] },
+  'quality-gates': { hooks: ['PostToolUse', 'PreToolUse'], artifactIn: 'code changes + test results', artifactOut: 'review reports', mcpTools: ['interspect:review_events', 'intercheck:status'], dataContracts: ['.claude/reviews/*.md', 'findings JSON'] },
+  'resolve':       { hooks: ['PreToolUse'], artifactIn: 'review reports', artifactOut: 'resolved findings', mcpTools: [], dataContracts: ['source files'] },
+  'reflect':       { hooks: ['PostToolUse'], artifactIn: 'resolved findings', artifactOut: 'learnings doc', mcpTools: ['interfluence:corpus_add'], dataContracts: ['docs/solutions/*.md', 'memory files'] },
+  'ship':          { hooks: ['PostToolUse', 'SessionStart'], artifactIn: 'learnings doc', artifactOut: 'merged commits', mcpTools: ['interlock:release_all'], dataContracts: ['git log', '.beads/'] }
+};
+
+// Get entities for a phase at the given depth level
+function getPhaseEntities(phaseId, depth) {
+  var result = { plugins: [], skills: [], agents: [], mcp: [], hooks: [], artifacts: { in: null, out: null }, contracts: [] };
+  // Depth 1: plugins only
+  if (PHASE_PLUGINS[phaseId]) {
+    result.plugins = PHASE_PLUGINS[phaseId].slice();
+  }
+  // Depth 2: add skills, agents, MCP servers
+  if (depth >= 2 && PHASE_SKILLS[phaseId]) {
+    var entry = PHASE_SKILLS[phaseId];
+    result.skills = entry.skills.slice();
+    result.agents = entry.agents.slice();
+    result.mcp = entry.mcp.slice();
+  }
+  // Depth 3: add hooks, artifacts, MCP tools, data contracts
+  if (depth >= 3 && WORKFLOW_TRACE[phaseId]) {
+    var trace = WORKFLOW_TRACE[phaseId];
+    result.hooks = trace.hooks.slice();
+    result.artifacts = { in: trace.artifactIn, out: trace.artifactOut };
+    result.mcp = result.mcp.concat(trace.mcpTools);
+    result.contracts = trace.dataContracts.slice();
+  }
+  return result;
+}
+
+// Get all unique entities across all phases for row computation
+function getAllWorkflowEntities(depth) {
+  var all = { plugins: [], skills: [], agents: [], mcp: [], hooks: [] };
+  var seen = { plugins: {}, skills: {}, agents: {}, mcp: {}, hooks: {} };
+  SPRINT_PHASES.forEach(function(phase) {
+    var entities = getPhaseEntities(phase.id, depth);
+    ['plugins', 'skills', 'agents', 'mcp', 'hooks'].forEach(function(key) {
+      entities[key].forEach(function(id) {
+        if (!seen[key][id]) {
+          seen[key][id] = true;
+          all[key].push(id);
+        }
+      });
+    });
+  });
+  return all;
+}
+
 // Reverse lookup: nodeId -> [phaseId, ...] (from both PHASE_PLUGINS and PHASE_SKILLS)
 var nodeToPhases = {};
 function addNodePhase(nodeId, phaseId) {
@@ -4108,7 +5473,7 @@ Object.keys(PHASE_SKILLS).forEach(function(phaseId) {
 
 // Toggle state
 var ecosystemActive = true;
-var sprintActive = false;
+var sprintActive = true;
 var activePhases = new Set(SPRINT_PHASES.map(function(p) { return p.id; }));
 
 // Sprint phase nodes and edges that get injected into the simulation
@@ -4117,8 +5482,93 @@ var sprintLinks = [];
 
 // SVG layers for sprint-specific rendering
 var sprintFlowGroup = g.append('g').attr('class', 'sprint-flow-layer');
+var phaseArcGroup = g.append('g').attr('class', 'phase-arc-layer');
 var sprintNodeGroup = g.append('g').attr('class', 'sprint-node-layer');
 var spotlightGroup = g.append('g').attr('class', 'spotlight-layer');
+
+// ── Phase arc highlights — show which sprint phases a plugin participates in ──
+
+function clearPhaseArcs() { phaseArcGroup.selectAll('*').remove(); }
+
+function drawPhaseArcs(nodeId) {
+  clearPhaseArcs();
+  if (!sprintActive || !nodeToPhases[nodeId]) return;
+
+  var phases = nodeToPhases[nodeId];
+  // Map phase IDs to their indices in SPRINT_PHASES
+  var indices = [];
+  phases.forEach(function(pid) {
+    var idx = SPRINT_PHASES.findIndex(function(p) { return p.id === pid; });
+    if (idx >= 0 && activePhases.has(pid)) indices.push(idx);
+  });
+  if (indices.length === 0) return;
+  indices.sort(function(a, b) { return a - b; });
+
+  // Find contiguous spans
+  var spans = [];
+  var spanStart = indices[0], spanEnd = indices[0];
+  for (var i = 1; i < indices.length; i++) {
+    if (indices[i] === spanEnd + 1) {
+      spanEnd = indices[i];
+    } else {
+      spans.push([spanStart, spanEnd]);
+      spanStart = spanEnd = indices[i];
+    }
+  }
+  spans.push([spanStart, spanEnd]);
+
+  // Get the plugin node color for the arc
+  var pluginNode = nodeById[nodeId];
+  var arcColor = pluginNode ? (TYPE_COLORS[pluginNode.type] || '#58a6ff') : '#58a6ff';
+
+  // Draw each span as an SVG elliptical arc
+  var n = SPRINT_PHASES.length;
+  var cx = width * 0.5, cy = height * 0.5;
+  // Arc sits slightly outside the sprint ring
+  var arcRx = width * 0.40 + 20;
+  var arcRy = height * 0.40 + 20;
+
+  spans.forEach(function(span) {
+    var startIdx = span[0], endIdx = span[1];
+    if (startIdx === endIdx) {
+      // Single phase: draw a dot instead of an arc
+      var angle = -Math.PI / 2 + (startIdx / n) * 2 * Math.PI;
+      phaseArcGroup.append('circle')
+        .attr('class', 'phase-arc-dot')
+        .attr('cx', cx + arcRx * Math.cos(angle))
+        .attr('cy', cy + arcRy * Math.sin(angle))
+        .attr('r', 6)
+        .attr('fill', arcColor)
+        .style('--arc-color', arcColor)
+        .attr('opacity', 0)
+        .transition().duration(300).attr('opacity', 0.7);
+      return;
+    }
+
+    // Multi-phase arc: draw along the ellipse
+    var startAngle = -Math.PI / 2 + (startIdx / n) * 2 * Math.PI;
+    var endAngle = -Math.PI / 2 + (endIdx / n) * 2 * Math.PI;
+
+    // Build arc path using elliptical arc command
+    var x1 = cx + arcRx * Math.cos(startAngle);
+    var y1 = cy + arcRy * Math.sin(startAngle);
+    var x2 = cx + arcRx * Math.cos(endAngle);
+    var y2 = cy + arcRy * Math.sin(endAngle);
+
+    // Large arc flag: if span covers more than half the circle
+    var angleDiff = endAngle - startAngle;
+    var largeArc = angleDiff > Math.PI ? 1 : 0;
+
+    phaseArcGroup.append('path')
+      .attr('class', 'phase-arc')
+      .attr('d', 'M' + x1 + ',' + y1 +
+        ' A' + arcRx + ',' + arcRy + ' 0 ' + largeArc + ',1 ' + x2 + ',' + y2)
+      .attr('stroke', arcColor)
+      .style('--arc-color', arcColor)
+      .attr('stroke-opacity', 0)
+      .transition().duration(300).attr('stroke-opacity', 0.5);
+  });
+}
 
 // Compute pinned positions for sprint phases — elliptical ring around ecosystem
 function computePhasePositions() {
@@ -4195,6 +5645,9 @@ defs.append('marker')
   .attr('d', 'M0,0 L10,3 L0,6 Z')
   .attr('fill', '#F39C12');
 
+// ── Initial render — build both layers ──
+rebuildGraph();
+
 // ── Toggle layer function ──
 
 function toggleLayer(layerName) {
@@ -4221,6 +5674,15 @@ function toggleLayer(layerName) {
 
   // If nothing is active, do nothing special — just empty graph
   rebuildGraph();
+}
+
+var hooksVisible = false;
+function toggleHookEdges() {
+  hooksVisible = !hooksVisible;
+  var btn = document.getElementById('toggle-hooks');
+  btn.classList.toggle('active', hooksVisible);
+  btn.style.opacity = hooksVisible ? '1' : '0.6';
+  applyFilters();
 }
 
 function rebuildGraph() {
@@ -4326,7 +5788,7 @@ function rebuildSimulation() {
   );
   node.exit().remove();
   var nodeEnter = node.enter().append('g')
-    .attr('class', 'node')
+    .attr('class', function(d) { return 'node' + (CORE_TYPES[d.type] ? '' : ' leaf-node'); })
     .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
   nodeEnter.append('circle')
     .attr('r', function(d) { return TYPE_SIZES[d.type] || 8; })
@@ -4338,7 +5800,7 @@ function rebuildSimulation() {
     .attr('dy', 3)
     .text(function(d) { return d.label; })
     .style('font-size', function(d) {
-      if (d.type === 'monorepo' || d.type === 'hub') return '13px';
+      if (d.type === 'monorepo' || d.type === 'ecosystem' || d.type === 'hub') return '13px';
       if (d.type === 'plugin' || d.type === 'kernel' || d.type === 'service') return '11px';
       return '9px';
     });
@@ -4749,6 +6211,821 @@ function showSprintDetail(phase) {
 
   panel.classList.add('open');
 }
+
+// ═══════════════════════════════════════════════════════
+// WORKFLOW VISUALIZATION VIEWS
+// ═══════════════════════════════════════════════════════
+
+var currentViewMode = 'sequence'; // 'force', 'sequence', 'sankey', 'statemachine'
+
+// SVG layer for state machine view (rendered in main SVG with zoom/pan)
+var stateMachineGroup = g.append('g').attr('class', 'statemachine-layer');
+
+// Artifact arrow marker
+defs.append('marker')
+  .attr('id', 'artifact-arrow')
+  .attr('viewBox', '0 0 10 6')
+  .attr('refX', 10).attr('refY', 3)
+  .attr('markerWidth', 8).attr('markerHeight', 5)
+  .attr('orient', 'auto')
+  .append('path')
+  .attr('d', 'M0,0 L10,3 L0,6 Z')
+  .attr('fill', '#F39C12');
+
+function changeViewMode(mode) {
+  currentViewMode = mode;
+  document.getElementById('view-mode').value = mode;
+  rebuildGraph();
+}
+
+function changeDepth(level) {
+  WORKFLOW_DEPTH = level;
+  document.getElementById('depth-level').value = level;
+  rebuildGraph();
+}
+
+// Show/hide workflow selectors based on sprint state
+function updateWorkflowSelectors() {
+  var show = sprintActive;
+  ['view-mode-label', 'view-mode', 'depth-label', 'depth-level'].forEach(function(id) {
+    document.getElementById(id).style.display = show ? '' : 'none';
+  });
+}
+
+// ── Patch toggleLayer to show/hide workflow selectors ──
+var _origToggleLayer = toggleLayer;
+toggleLayer = function(layerName) {
+  _origToggleLayer(layerName);
+  updateWorkflowSelectors();
+};
+updateWorkflowSelectors(); // initial state
+
+// ── Patch rebuildGraph to dispatch to workflow renderers ──
+var workflowContainer = document.getElementById('workflow-container');
+var graphDiv = document.getElementById('graph');
+var _origRebuildGraph = rebuildGraph;
+
+function clearWorkflowContainer() {
+  while (workflowContainer.firstChild) workflowContainer.removeChild(workflowContainer.firstChild);
+}
+
+rebuildGraph = function() {
+  // Always clear workflow view layers
+  stateMachineGroup.selectAll('*').remove();
+  clearWorkflowContainer();
+  workflowContainer.style.display = 'none';
+
+  if (!sprintActive || currentViewMode === 'force') {
+    // Use original force graph path
+    graphDiv.style.display = '';
+    _origRebuildGraph();
+    linkGroup.style('display', null);
+    nodeGroup_eco.style('display', ecosystemActive ? null : 'none');
+    sprintNodeGroup.style('display', sprintActive ? null : 'none');
+    sprintFlowGroup.style('display', sprintActive ? null : 'none');
+    return;
+  }
+
+  // Hide force graph elements for non-force views
+  sprintNodeGroup.selectAll('*').remove();
+  sprintFlowGroup.selectAll('*').remove();
+  linkGroup.style('display', 'none');
+  nodeGroup_eco.style('display', 'none');
+  sprintNodeGroup.style('display', 'none');
+  sprintFlowGroup.style('display', 'none');
+  hullGroup.style('display', 'none');
+  hullLabelGroup.style('display', 'none');
+  spotlightGroup.selectAll('*').remove();
+
+  // Remove old sprint data from simulation
+  for (var i = graphNodes.length - 1; i >= 0; i--) {
+    if (graphNodes[i]._sprint) graphNodes.splice(i, 1);
+  }
+  for (var i = graphLinks.length - 1; i >= 0; i--) {
+    if (graphLinks[i]._sprint) graphLinks.splice(i, 1);
+  }
+  SPRINT_PHASES.forEach(function(p) { delete nodeById['sprint-' + p.id]; });
+  sprintNodes = [];
+  sprintLinks = [];
+
+  // Stop simulation for static views
+  simulation.stop();
+  svg.call(zoomBehavior.transform, d3.zoomIdentity);
+
+  // Swimlane and Sankey render into the scroll container; State Machine uses the SVG
+  var useContainer = (currentViewMode === 'sequence' || currentViewMode === 'sankey');
+  if (useContainer) {
+    graphDiv.style.display = 'none';
+    workflowContainer.style.display = 'block';
+  } else {
+    graphDiv.style.display = '';
+  }
+
+  try {
+    if (currentViewMode === 'sequence') renderSequenceView();
+    else if (currentViewMode === 'sankey') renderSankeyView();
+    else if (currentViewMode === 'statemachine') renderStateMachineView();
+  } catch (e) {
+    console.error('Workflow view error:', e);
+    currentViewMode = 'force';
+    document.getElementById('view-mode').value = 'force';
+    workflowContainer.style.display = 'none';
+    graphDiv.style.display = '';
+    linkGroup.style('display', null);
+    nodeGroup_eco.style('display', ecosystemActive ? null : 'none');
+    hullGroup.style('display', null);
+    hullLabelGroup.style('display', null);
+    _origRebuildGraph();
+  }
+};
+
+// Restore hull visibility when switching back to force
+var _origRebuildGraph2 = _origRebuildGraph;
+_origRebuildGraph = function() {
+  hullGroup.style('display', null);
+  hullLabelGroup.style('display', null);
+  _origRebuildGraph2();
+};
+
+// ── Re-render with patched rebuildGraph to activate default workflow view ──
+rebuildGraph();
+
+// ═══════════════════════════════════════════════════════
+// SEQUENCE / SWIMLANE VIEW
+// ═══════════════════════════════════════════════════════
+
+function renderSequenceView() {
+  var depth = WORKFLOW_DEPTH;
+  var allEntities = getAllWorkflowEntities(depth);
+  var phases = SPRINT_PHASES.filter(function(p) { return activePhases.has(p.id); });
+  if (phases.length === 0) return;
+
+  // Layout constants — size to content, not viewport
+  var margin = { top: 80, left: 180, right: 40, bottom: 40 };
+  var minColWidth = 130;
+  var colWidth = Math.max(minColWidth, (width - margin.left - margin.right) / phases.length);
+  var rowHeight = 22;
+
+  // Build row list: grouped by type
+  var rows = [];
+  var typeOrder = ['plugins', 'skills', 'agents', 'mcp', 'hooks'];
+  var typeLabels = { plugins: 'Plugins', skills: 'Skills', agents: 'Agents', mcp: 'MCP', hooks: 'Hooks' };
+  var typeColors = { plugins: '#4A90D9', skills: '#50C878', agents: '#FF8C42', mcp: '#9B59B6', hooks: '#E74C3C' };
+
+  typeOrder.forEach(function(type) {
+    if (allEntities[type].length === 0) return;
+    rows.push({ type: 'group-label', label: typeLabels[type], entityType: type });
+    allEntities[type].forEach(function(id) {
+      var label = id;
+      var n = nodeById[id];
+      if (n) label = n.label;
+      rows.push({ type: 'entity', id: id, label: label, entityType: type });
+    });
+  });
+
+  var totalWidth = margin.left + phases.length * colWidth + margin.right;
+  var totalHeight = margin.top + rows.length * rowHeight + margin.bottom;
+
+  // Create a fresh SVG sized to content inside the scroll container
+  var seqSvg = d3.select(workflowContainer).append('svg')
+    .attr('width', totalWidth).attr('height', totalHeight);
+
+  // Arrow marker for this SVG
+  var seqDefs = seqSvg.append('defs');
+  seqDefs.append('marker')
+    .attr('id', 'seq-artifact-arrow')
+    .attr('viewBox', '0 0 10 6')
+    .attr('refX', 10).attr('refY', 3)
+    .attr('markerWidth', 8).attr('markerHeight', 5)
+    .attr('orient', 'auto')
+    .append('path').attr('d', 'M0,0 L10,3 L0,6 Z').attr('fill', '#F39C12');
+
+  var sg = seqSvg.append('g');
+
+  // Background
+  sg.append('rect')
+    .attr('width', totalWidth).attr('height', totalHeight)
+    .attr('fill', '#0d1117');
+
+  // Column headers
+  phases.forEach(function(phase, ci) {
+    var cx = margin.left + ci * colWidth + colWidth / 2;
+    var color = PHASE_COLORS[phase.phase] || '#8b949e';
+    var headerG = sg.append('g').attr('class', 'sequence-header');
+
+    headerG.append('rect')
+      .attr('x', cx - colWidth / 2 + 4).attr('y', 10)
+      .attr('width', colWidth - 8).attr('height', 50)
+      .attr('fill', color + '18').attr('stroke', color).attr('stroke-width', 1);
+
+    headerG.append('rect')
+      .attr('x', cx - colWidth / 2 + 4).attr('y', 10)
+      .attr('width', colWidth - 8).attr('height', 4)
+      .attr('fill', color);
+
+    headerG.append('text')
+      .attr('x', cx).attr('y', 32)
+      .attr('text-anchor', 'middle')
+      .text(phase.step + '. ' + phase.label);
+
+    headerG.append('text')
+      .attr('x', cx).attr('y', 48)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '9px').attr('fill', color).attr('opacity', 0.7)
+      .text(phase.phase);
+
+    headerG.style('cursor', 'pointer').on('click', function(event) {
+      event.stopPropagation();
+      showSprintDetail(phase);
+    });
+
+    // Vertical grid line
+    sg.append('line')
+      .attr('class', 'sequence-grid-line')
+      .attr('x1', margin.left + ci * colWidth).attr('y1', margin.top - 10)
+      .attr('x2', margin.left + ci * colWidth).attr('y2', totalHeight);
+  });
+
+  // Row labels and cells
+  rows.forEach(function(row, ri) {
+    var ry = margin.top + ri * rowHeight;
+
+    if (row.type === 'group-label') {
+      sg.append('text')
+        .attr('class', 'sequence-group-label')
+        .attr('x', 10).attr('y', ry + 15)
+        .text(row.label);
+
+      sg.append('line')
+        .attr('class', 'sequence-grid-line')
+        .attr('x1', 0).attr('y1', ry + 2)
+        .attr('x2', totalWidth).attr('y2', ry + 2);
+      return;
+    }
+
+    var labelText = sg.append('text')
+      .attr('class', 'sequence-row-label')
+      .attr('x', 20).attr('y', ry + 15)
+      .text(row.label.length > 22 ? row.label.substring(0, 20) + '...' : row.label);
+
+    labelText.on('click', function(event) {
+      event.stopPropagation();
+      if (nodeById[row.id]) {
+        changeViewMode('force');
+        setTimeout(function() { navigateTo(row.id); }, 100);
+      }
+    });
+
+    labelText.append('title').text(row.label);
+
+    var color = typeColors[row.entityType] || '#8b949e';
+    phases.forEach(function(phase, ci) {
+      var entities = getPhaseEntities(phase.id, depth);
+      var list = entities[row.entityType] || [];
+      var participates = list.indexOf(row.id) !== -1;
+      if (!participates) return;
+
+      var cx = margin.left + ci * colWidth + colWidth / 2;
+      var cell = sg.append('circle')
+        .attr('class', 'sequence-cell')
+        .attr('cx', cx).attr('cy', ry + 11)
+        .attr('r', 5)
+        .attr('fill', color).attr('opacity', 0.8);
+
+      cell.on('click', function(event) {
+        event.stopPropagation();
+        showSprintDetail(phase);
+      });
+
+      cell.append('title').text(row.label + ' \u2192 ' + phase.label);
+    });
+  });
+
+  // Artifact flow arrows (depth 2+)
+  if (depth >= 2) {
+    for (var i = 0; i < phases.length - 1; i++) {
+      var fromPhase = phases[i];
+      var toPhase = phases[i + 1];
+      var trace = WORKFLOW_TRACE[fromPhase.id];
+      if (!trace || !trace.artifactOut) continue;
+
+      var x1 = margin.left + i * colWidth + colWidth / 2 + 20;
+      var x2 = margin.left + (i + 1) * colWidth + colWidth / 2 - 20;
+      var arrowY = 64;
+      var midX = (x1 + x2) / 2;
+
+      sg.append('path')
+        .attr('class', 'sequence-artifact-arrow')
+        .attr('d', 'M' + x1 + ',' + arrowY + ' Q' + midX + ',' + (arrowY - 12) + ' ' + x2 + ',' + arrowY)
+        .attr('marker-end', 'url(#seq-artifact-arrow)');
+
+      sg.append('text')
+        .attr('class', 'sequence-artifact-label')
+        .attr('x', midX).attr('y', arrowY - 14)
+        .attr('text-anchor', 'middle')
+        .text(trace.artifactOut);
+    }
+  }
+
+  // Depth 3: hook badges
+  if (depth >= 3) {
+    phases.forEach(function(phase, ci) {
+      var trace = WORKFLOW_TRACE[phase.id];
+      if (!trace || trace.hooks.length === 0) return;
+      var cx = margin.left + ci * colWidth + colWidth / 2;
+      sg.append('text')
+        .attr('class', 'sequence-hook-badge')
+        .attr('x', cx).attr('y', margin.top - 4)
+        .attr('text-anchor', 'middle')
+        .text(trace.hooks.join(', '));
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SANKEY FLOW VIEW
+// ═══════════════════════════════════════════════════════
+
+function renderSankeyView() {
+  var depth = WORKFLOW_DEPTH;
+  var phases = SPRINT_PHASES.filter(function(p) { return activePhases.has(p.id); });
+  if (phases.length === 0) return;
+
+  var margin = { top: 80, left: 40, right: 40, bottom: 40 };
+  var minColWidth = 130;
+  var colWidth = Math.max(minColWidth, (width - margin.left - margin.right) / phases.length);
+  var totalWidth = margin.left + phases.length * colWidth + margin.right;
+  var totalHeight = Math.max(height, 600);
+  var availHeight = totalHeight - margin.top - margin.bottom;
+  var bandPadding = 3;
+
+  // Create fresh SVG in scroll container
+  var skSvg = d3.select(workflowContainer).append('svg')
+    .attr('width', totalWidth).attr('height', totalHeight);
+  var skg = skSvg.append('g');
+
+  // Background
+  skg.append('rect')
+    .attr('width', totalWidth).attr('height', totalHeight)
+    .attr('fill', '#0d1117');
+
+  // Compute entity weights per phase
+  var phaseData = phases.map(function(phase) {
+    var entities = getPhaseEntities(phase.id, depth);
+    var bands = [];
+    var typeOrder = ['plugins', 'skills', 'agents', 'mcp', 'hooks'];
+    var typeColors = { plugins: '#4A90D9', skills: '#50C878', agents: '#FF8C42', mcp: '#9B59B6', hooks: '#E74C3C' };
+
+    typeOrder.forEach(function(type) {
+      entities[type].forEach(function(id) {
+        var weight = 1;
+        if (depth >= 2 && type === 'plugins' && PHASE_SKILLS[phase.id]) {
+          var sk = PHASE_SKILLS[phase.id];
+          weight = 1 + sk.skills.length + sk.agents.length + sk.mcp.length;
+        }
+        var label = id;
+        var n = nodeById[id];
+        if (n) label = n.label;
+        bands.push({ id: id, label: label, type: type, weight: weight, color: typeColors[type] || '#8b949e' });
+      });
+    });
+    return { phase: phase, bands: bands };
+  });
+
+  // Normalize: compute y positions for bands in each column
+  phaseData.forEach(function(pd, ci) {
+    var totalWeight = 0;
+    pd.bands.forEach(function(b) { totalWeight += b.weight; });
+    if (totalWeight === 0) totalWeight = 1;
+
+    var yScale = (availHeight - pd.bands.length * bandPadding) / totalWeight;
+    var cy = margin.top;
+    pd.bands.forEach(function(b) {
+      b.y = cy;
+      b.h = Math.max(4, b.weight * yScale);
+      b.x = margin.left + ci * colWidth + 10;
+      b.w = colWidth - 20;
+      cy += b.h + bandPadding;
+    });
+  });
+
+  // Draw column headers
+  phases.forEach(function(phase, ci) {
+    var cx = margin.left + ci * colWidth + colWidth / 2;
+    var color = PHASE_COLORS[phase.phase] || '#8b949e';
+    var headerG = skg.append('g').attr('class', 'sankey-column-header');
+
+    headerG.append('rect')
+      .attr('x', cx - colWidth / 2 + 4).attr('y', 10)
+      .attr('width', colWidth - 8).attr('height', 50)
+      .attr('fill', color + '18').attr('stroke', color).attr('stroke-width', 1);
+
+    headerG.append('rect')
+      .attr('x', cx - colWidth / 2 + 4).attr('y', 10)
+      .attr('width', colWidth - 8).attr('height', 4)
+      .attr('fill', color);
+
+    headerG.append('text')
+      .attr('x', cx).attr('y', 32)
+      .attr('text-anchor', 'middle')
+      .text(phase.step + '. ' + phase.label);
+
+    headerG.append('text')
+      .attr('x', cx).attr('y', 48)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '9px').attr('fill', color).attr('opacity', 0.7)
+      .text(phase.phase);
+
+    headerG.style('cursor', 'pointer').on('click', function(event) {
+      event.stopPropagation();
+      showSprintDetail(phase);
+    });
+  });
+
+  // Draw bands
+  phaseData.forEach(function(pd) {
+    pd.bands.forEach(function(b) {
+      var bandG = skg.append('g').attr('class', 'sankey-band');
+
+      bandG.append('rect')
+        .attr('x', b.x).attr('y', b.y)
+        .attr('width', b.w).attr('height', b.h)
+        .attr('fill', b.color).attr('fill-opacity', 0.7)
+        .attr('rx', 2);
+
+      if (b.h >= 12) {
+        bandG.append('text')
+          .attr('class', 'sankey-entity-label')
+          .attr('x', b.x + 6).attr('y', b.y + b.h / 2 + 3)
+          .text(b.label.length > 18 ? b.label.substring(0, 16) + '..' : b.label);
+      }
+
+      bandG.append('title').text(b.label + ' (' + b.type + ')');
+
+      bandG.on('click', function(event) {
+        event.stopPropagation();
+        if (nodeById[b.id]) {
+          changeViewMode('force');
+          setTimeout(function() { navigateTo(b.id); }, 100);
+        }
+      });
+
+      // Hover: highlight all bands with same ID
+      bandG.on('mouseenter', function() {
+        skg.selectAll('.sankey-band rect').attr('fill-opacity', function() {
+          var rect = d3.select(this.parentNode);
+          return rect.select('title').text().indexOf(b.label) === 0 ? 0.9 : 0.3;
+        });
+        skg.selectAll('.sankey-flow').attr('fill-opacity', function() {
+          return d3.select(this).attr('data-id') === b.id ? 0.35 : 0.05;
+        });
+      });
+      bandG.on('mouseleave', function() {
+        skg.selectAll('.sankey-band rect').attr('fill-opacity', 0.7);
+        skg.selectAll('.sankey-flow').attr('fill-opacity', 0.15);
+      });
+    });
+  });
+
+  // Draw flow paths between adjacent columns
+  for (var ci = 0; ci < phaseData.length - 1; ci++) {
+    var fromCol = phaseData[ci];
+    var toCol = phaseData[ci + 1];
+
+    fromCol.bands.forEach(function(fromBand) {
+      var toBand = null;
+      toCol.bands.forEach(function(b) { if (b.id === fromBand.id) toBand = b; });
+      if (!toBand) return;
+
+      var x0 = fromBand.x + fromBand.w;
+      var x1 = toBand.x;
+      var y0top = fromBand.y;
+      var y0bot = fromBand.y + fromBand.h;
+      var y1top = toBand.y;
+      var y1bot = toBand.y + toBand.h;
+      var mx = (x0 + x1) / 2;
+
+      var pathD = 'M' + x0 + ',' + y0top +
+        ' C' + mx + ',' + y0top + ' ' + mx + ',' + y1top + ' ' + x1 + ',' + y1top +
+        ' L' + x1 + ',' + y1bot +
+        ' C' + mx + ',' + y1bot + ' ' + mx + ',' + y0bot + ' ' + x0 + ',' + y0bot +
+        ' Z';
+
+      skg.append('path')
+        .attr('class', 'sankey-flow')
+        .attr('d', pathD)
+        .attr('fill', fromBand.color)
+        .attr('fill-opacity', 0.15)
+        .attr('data-id', fromBand.id);
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// STATE MACHINE VIEW
+// ═══════════════════════════════════════════════════════
+
+var smActivePhase = null; // currently expanded phase in state machine view
+
+function renderStateMachineView() {
+  var depth = WORKFLOW_DEPTH;
+  var phases = SPRINT_PHASES.filter(function(p) { return activePhases.has(p.id); });
+  if (phases.length === 0) return;
+
+  smActivePhase = null;
+
+  // Background
+  stateMachineGroup.append('rect')
+    .attr('width', width).attr('height', height)
+    .attr('fill', '#0d1117');
+
+  // Elliptical layout — larger radius than force graph
+  var cx = width / 2;
+  var cy = height / 2;
+  var rx = Math.min(width * 0.38, 500);
+  var ry = Math.min(height * 0.35, 350);
+  var nodeW = 200, nodeH = 80;
+
+  // Compute positions for active phases
+  var phasePos = {};
+  var n = phases.length;
+  phases.forEach(function(phase, i) {
+    var angle = -Math.PI / 2 + (i / n) * 2 * Math.PI;
+    phasePos[phase.id] = {
+      x: cx + rx * Math.cos(angle),
+      y: cy + ry * Math.sin(angle),
+      angle: angle
+    };
+  });
+
+  // Draw transition arrows between consecutive phases
+  for (var i = 0; i < phases.length - 1; i++) {
+    var from = phasePos[phases[i].id];
+    var to = phasePos[phases[i + 1].id];
+    var dx = to.x - from.x;
+    var dy = to.y - from.y;
+    var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    var nx = dx / dist, ny = dy / dist;
+
+    var sx = from.x + nx * (nodeW / 2 + 8);
+    var sy = from.y + ny * (nodeH / 2 + 8);
+    var ex = to.x - nx * (nodeW / 2 + 8);
+    var ey = to.y - ny * (nodeH / 2 + 8);
+
+    stateMachineGroup.append('line')
+      .attr('class', 'sm-transition sm-transition-animated')
+      .attr('x1', sx).attr('y1', sy)
+      .attr('x2', ex).attr('y2', ey);
+
+    // Gate diamond
+    if (phases[i + 1].gate) {
+      var gateColor = phases[i + 1].gate.type === 'hard' ? '#E74C3C' : '#F39C12';
+      var gx = (sx + ex) / 2;
+      var gy = (sy + ey) / 2;
+      var ds = 10;
+      var gateG = stateMachineGroup.append('g').attr('class', 'sm-gate');
+      gateG.append('path')
+        .attr('d', 'M' + gx + ',' + (gy - ds) +
+          ' L' + (gx + ds) + ',' + gy +
+          ' L' + gx + ',' + (gy + ds) +
+          ' L' + (gx - ds) + ',' + gy + ' Z')
+        .attr('fill', gateColor).attr('stroke', '#0d1117').attr('stroke-width', 1);
+      gateG.append('text')
+        .attr('x', gx).attr('y', gy - ds - 6)
+        .attr('text-anchor', 'middle')
+        .attr('fill', gateColor).attr('font-size', '8px')
+        .text(phases[i + 1].gate.label);
+    }
+  }
+
+  // Skip arc: Brainstorm → Write Plan
+  var skipFrom = phasePos['brainstorm'];
+  var skipTo = phasePos['write-plan'];
+  if (skipFrom && skipTo) {
+    var midX = (skipFrom.x + skipTo.x) / 2 + (cx - (skipFrom.x + skipTo.x) / 2) * 0.5;
+    var midY = (skipFrom.y + skipTo.y) / 2 + (cy - (skipFrom.y + skipTo.y) / 2) * 0.5;
+    stateMachineGroup.append('path')
+      .attr('class', 'sm-skip-arc')
+      .attr('d', 'M' + skipFrom.x + ',' + skipFrom.y +
+        ' Q' + midX + ',' + midY + ' ' + skipTo.x + ',' + skipTo.y);
+
+    stateMachineGroup.append('text')
+      .attr('x', midX).attr('y', midY - 10)
+      .attr('text-anchor', 'middle')
+      .attr('fill', '#F39C12').attr('font-size', '9px')
+      .text('skip (trivial)');
+  }
+
+  // Draw phase nodes
+  phases.forEach(function(phase) {
+    var pos = phasePos[phase.id];
+    var color = PHASE_COLORS[phase.phase] || '#8b949e';
+
+    var gNode = stateMachineGroup.append('g')
+      .attr('class', 'sm-phase-node')
+      .attr('data-phase', phase.id)
+      .attr('transform', 'translate(' + (pos.x - nodeW / 2) + ',' + (pos.y - nodeH / 2) + ')');
+
+    // Rounded rect
+    gNode.append('rect')
+      .attr('width', nodeW).attr('height', nodeH)
+      .attr('rx', 12).attr('ry', 12)
+      .attr('fill', '#161b22')
+      .attr('stroke', color).attr('stroke-width', 2.5);
+
+    // Step number
+    gNode.append('circle')
+      .attr('cx', 24).attr('cy', 28).attr('r', 14)
+      .attr('fill', color).attr('opacity', 0.2);
+    gNode.append('text')
+      .attr('x', 24).attr('y', 33)
+      .attr('text-anchor', 'middle')
+      .attr('fill', color).attr('font-size', '14px').attr('font-weight', '700')
+      .text(phase.step);
+
+    // Label
+    gNode.append('text')
+      .attr('x', 46).attr('y', 33)
+      .attr('fill', '#f0f6fc').attr('font-size', '14px').attr('font-weight', '600')
+      .text(phase.label);
+
+    // Phase + artifact
+    gNode.append('text')
+      .attr('x', 14).attr('y', 58)
+      .attr('fill', color).attr('font-size', '10px').attr('opacity', 0.7)
+      .text(phase.phase);
+    gNode.append('text')
+      .attr('x', nodeW - 10).attr('y', 58)
+      .attr('text-anchor', 'end')
+      .attr('fill', '#8b949e').attr('font-size', '9px')
+      .text(phase.artifact);
+
+    // Depth-3 hook badges
+    if (depth >= 3 && WORKFLOW_TRACE[phase.id]) {
+      var hooks = WORKFLOW_TRACE[phase.id].hooks;
+      if (hooks.length > 0) {
+        gNode.append('text')
+          .attr('x', nodeW - 10).attr('y', 72)
+          .attr('text-anchor', 'end')
+          .attr('fill', '#E74C3C').attr('font-size', '7px')
+          .text(hooks.join(', '));
+      }
+    }
+
+    // Click to drill down
+    gNode.style('cursor', 'pointer').on('click', function(event) {
+      event.stopPropagation();
+      smDrillDown(phase);
+    });
+  });
+
+  // Click background to close drill-down
+  stateMachineGroup.select('rect').on('click', function() {
+    smCloseDrillDown();
+    closePanel();
+  });
+}
+
+function smDrillDown(phase) {
+  var depth = WORKFLOW_DEPTH;
+  var pos = null;
+
+  // Find position from rendered node
+  stateMachineGroup.selectAll('.sm-phase-node').each(function() {
+    var el = d3.select(this);
+    if (el.attr('data-phase') === phase.id) {
+      var t = el.attr('transform');
+      var match = t.match(/translate\(([^,]+),([^)]+)\)/);
+      if (match) {
+        pos = { x: parseFloat(match[1]) + 100, y: parseFloat(match[2]) + 40 };
+      }
+    }
+  });
+  if (!pos) return;
+
+  // Clear previous drill-down
+  stateMachineGroup.selectAll('.sm-entity-satellite, .sm-entity-line').remove();
+
+  // Highlight active phase
+  stateMachineGroup.selectAll('.sm-phase-node')
+    .classed('sm-active', function() { return d3.select(this).attr('data-phase') === phase.id; });
+
+  // Get entities for this phase at current depth
+  var entities = getPhaseEntities(phase.id, depth);
+  var allIds = [];
+  var typeColors = { plugins: '#4A90D9', skills: '#50C878', agents: '#FF8C42', mcp: '#9B59B6', hooks: '#E74C3C' };
+  var typeOrder = ['plugins', 'skills', 'agents', 'mcp', 'hooks'];
+
+  typeOrder.forEach(function(type) {
+    entities[type].forEach(function(id) {
+      allIds.push({ id: id, type: type, color: typeColors[type] });
+    });
+  });
+
+  if (allIds.length === 0) {
+    showSprintDetail(phase);
+    return;
+  }
+
+  // Fan out entities radially around the phase
+  var fanRadius = 120;
+  var angleStep = (2 * Math.PI) / Math.max(allIds.length, 1);
+  var startAngle = -Math.PI / 2;
+
+  allIds.forEach(function(item, i) {
+    var angle = startAngle + i * angleStep;
+    var ex = pos.x + fanRadius * Math.cos(angle);
+    var ey = pos.y + fanRadius * Math.sin(angle);
+    var label = item.id;
+    var n = nodeById[item.id];
+    if (n) label = n.label;
+
+    // Connecting line
+    stateMachineGroup.append('line')
+      .attr('class', 'sm-entity-line')
+      .attr('x1', pos.x).attr('y1', pos.y)
+      .attr('x2', ex).attr('y2', ey);
+
+    // Entity circle
+    var satG = stateMachineGroup.append('g')
+      .attr('class', 'sm-entity-satellite')
+      .attr('transform', 'translate(' + ex + ',' + ey + ')')
+      .attr('opacity', 0)
+      .on('click', function(event) {
+        event.stopPropagation();
+        if (nodeById[item.id]) {
+          // Switch to force view and navigate
+          changeViewMode('force');
+          setTimeout(function() { navigateTo(item.id); }, 100);
+        }
+      });
+
+    satG.append('circle')
+      .attr('r', depth === 1 ? 10 : 7)
+      .attr('fill', item.color).attr('opacity', 0.8);
+
+    satG.append('text')
+      .attr('dx', depth === 1 ? 14 : 10).attr('dy', 4)
+      .attr('fill', '#c9d1d9').attr('font-size', depth === 1 ? '10px' : '8px')
+      .text(label.length > 20 ? label.substring(0, 18) + '..' : label);
+
+    satG.append('title').text(label + ' (' + item.type + ')');
+
+    // Animate in
+    satG.transition().duration(300).delay(i * 30)
+      .attr('opacity', 0.85);
+  });
+
+  // Show detail panel
+  showSprintDetail(phase);
+  smActivePhase = phase.id;
+}
+
+function smCloseDrillDown() {
+  stateMachineGroup.selectAll('.sm-entity-satellite, .sm-entity-line').remove();
+  stateMachineGroup.selectAll('.sm-phase-node').classed('sm-active', false);
+  smActivePhase = null;
+}
+
+// ═══════════════════════════════════════════════════════
+// WORKFLOW VIEW INTEGRATION
+// ═══════════════════════════════════════════════════════
+
+// Patch deselectAll to clear workflow highlights
+var _origDeselectAll = deselectAll;
+deselectAll = function() {
+  _origDeselectAll();
+  if (currentViewMode === 'statemachine') smCloseDrillDown();
+};
+
+// Patch onSearch to highlight in workflow views
+var _origOnSearch = onSearch;
+onSearch = function(query) {
+  if (!sprintActive || currentViewMode === 'force') {
+    _origOnSearch(query);
+    return;
+  }
+  searchQuery = query.toLowerCase().trim();
+  if (!searchQuery) return;
+
+  var wc = d3.select(workflowContainer);
+  if (currentViewMode === 'sequence') {
+    wc.selectAll('.sequence-row-label')
+      .attr('fill', function() {
+        var text = d3.select(this).text().toLowerCase();
+        return text.includes(searchQuery) ? '#58a6ff' : '#c9d1d9';
+      })
+      .attr('font-weight', function() {
+        var text = d3.select(this).text().toLowerCase();
+        return text.includes(searchQuery) ? '700' : 'normal';
+      });
+  } else if (currentViewMode === 'sankey') {
+    wc.selectAll('.sankey-band rect').attr('fill-opacity', function() {
+      var title = d3.select(this.parentNode).select('title').text().toLowerCase();
+      return title.includes(searchQuery) ? 0.9 : 0.2;
+    });
+  }
+};
 </script>
 </body>
 </html>

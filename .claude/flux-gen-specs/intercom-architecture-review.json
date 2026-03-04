@@ -1,0 +1,127 @@
+[
+  {
+    "name": "fd-dual-database-state-divergence",
+    "focus": "State consistency between SQLite (Node host) and Postgres (Rust daemon) across all entity types",
+    "persona": "A distributed systems engineer who specializes in dual-write patterns, eventual consistency, and the failure modes that emerge when two independent databases hold overlapping state. Approaches every write path asking: what happens if only one side succeeds?",
+    "decision_lens": "Prioritizes findings where silent divergence causes behavioral differences — especially where one database is the source of truth for decisions (e.g., routing, trigger matching) but writes to it are not confirmed. Escalates any path where container_config, containerConfig, or requiresTrigger can be set in SQLite but not propagated to Postgres or vice versa.",
+    "review_areas": [
+      "Trace the register_group IPC flow end-to-end: Node calls setRegisteredGroup (SQLite only via db.ts), does it also call the intercomd /v1/db/registered-groups endpoint or writeToOutbox? Confirm whether container_config reaches Postgres.",
+      "Audit every callsite of setRegisteredGroup in db.ts — check whether the Postgres dual-write path is invoked for group registration, and whether containerConfig/runtime/model columns are included in the dual-write payload.",
+      "Check the outbox payload schema: writeToOutbox only handles 'message' and 'chat_metadata' payload types. Identify all entity types written to SQLite but with no outbox path and assess whether Rust reads authoritative data from Postgres or falls back to Node.",
+      "Examine the Telegram ingress path in intercomd: when Rust handles /v1/telegram/ingress, it reads registered groups from its own Postgres pool. Verify whether that Postgres table is populated for groups registered via Node IPC.",
+      "Inspect the fallback path when Postgres is unavailable: dualWriteToPostgres fires fire-and-forget HTTP. Confirm these endpoints exist and are wired in main.rs.",
+      "Check for schema drift: SQLite uses ALTER TABLE migrations; Postgres uses separate DDL. Confirm both schemas are in sync for container_config, context_mode, runtime, model columns."
+    ],
+    "success_hints": [
+      "Every entity write path has an outbox entry or documented reason why Postgres does not need it.",
+      "container_config is confirmed to reach Postgres for all registration paths.",
+      "The Rust daemon's registered_groups Postgres table is populated at startup or on group registration."
+    ],
+    "task_context": "Intercom is a dual-process system: a Node host handles WhatsApp/Telegram channels and writes to SQLite, while the Rust daemon (intercomd) handles orchestration and reads/writes Postgres. Known bugs include container_config only being stored in one database and the mount allowlist never being loaded in certain code paths.",
+    "anti_overlap": [
+      "fd-queue-delivery-reliability covers how pending messages are drained from the queue after database writes succeed.",
+      "fd-container-lifecycle-management covers what happens to a running container when group configuration is stale.",
+      "fd-mount-security-wiring covers the allowlist load path and validation logic."
+    ]
+  },
+  {
+    "name": "fd-queue-delivery-reliability",
+    "focus": "End-to-end message delivery from inbound receipt through outbox drain to GroupQueue dispatch, with emphasis on pending-message drain failures",
+    "persona": "A reliability engineer who traces message flows through async systems and looks for places where a message can be acknowledged but never processed, or where a retry loop can starve or permanently drop work. Reads code with queuing theory intuitions: what is the source of truth for 'pending', and who clears it?",
+    "decision_lens": "Prioritizes paths where pendingMessages=true is set but the drain that clears it is never triggered, or where the outbox drain calls queue.enqueue_message_check but the group has no registered process_messages_fn yet. Treats any silent drop after max retries as high-severity.",
+    "review_areas": [
+      "Audit the Rust retry path in queue.rs run_for_group: on failure, the retry spawns an async task that sets state.pending_messages=true after a delay — confirm whether this deferred flag will ever be picked up without a new inbound message.",
+      "Check the Node GroupQueue retry path: after MAX_RETRIES, retryCount resets and function returns. Verify whether a group can get stuck with no further retry trigger.",
+      "Trace the outbox drain signal path: LISTEN/NOTIFY to drain_tx to enqueue_message_check. Verify process_messages_fn is wired before the outbox drain starts in main.rs startup ordering.",
+      "Examine drain_pending (queue.rs): after reset_group, does it correctly iterate all groups with pending work? Check for concurrency limit enforcement mid-loop.",
+      "Check the DRAIN_FALLBACK_INTERVAL vs STALE_RECOVERY_INTERVAL timing: confirm 30-second fallback polling actually fires drain cycles that call enqueue_message_check.",
+      "Inspect Node GroupQueue shutdown behavior: shuttingDown=true prevents new enqueues, but pending retries (setTimeout) may fire after shutdown. Confirm callbacks guard against shuttingDown."
+    ],
+    "success_hints": [
+      "Every pending_messages=true transition has a guaranteed corresponding drain trigger.",
+      "After max-retry exhaustion, there is a defined recovery path that does not require a new inbound message.",
+      "process_messages_fn is confirmed wired before the outbox drain loop starts."
+    ],
+    "task_context": "Intercom is a dual-process system with a known bug where the queue does not drain pending messages in certain failure scenarios after container completion.",
+    "anti_overlap": [
+      "fd-dual-database-state-divergence covers whether message rows reach Postgres at all.",
+      "fd-container-lifecycle-management covers container spawn failures and cleanup.",
+      "fd-mount-security-wiring covers allowlist loading and mount validation."
+    ]
+  },
+  {
+    "name": "fd-container-lifecycle-management",
+    "focus": "Container spawn, process registration, idle/timeout handling, and cleanup across Node and Rust execution paths",
+    "persona": "A systems programmer who tracks process state machines and looks for places where a container is spawned but the parent loses track of it, or where cleanup is assumed but never confirmed.",
+    "decision_lens": "Prioritizes findings where a container exits but active=true remains in the GroupQueue (preventing new spawns), or where a timeout fires after results but kills anyway. Escalates any path where a container holding a lock exits without releasing it.",
+    "review_areas": [
+      "Audit the onProcess callback in container-runner.ts: verify registerProcess is always called before the container can exit. If it crashes immediately after spawn, does GroupQueue still reset active=false?",
+      "Check the Node timeout path: if stopContainer fails and SIGKILL is sent, confirm the finally block always executes and decrements activeCount.",
+      "Inspect Rust GroupQueue.reset_group: verify it is called in all terminal paths of run_for_group and run_task — specifically in panic/error cases and retry-schedule paths.",
+      "Check drain_pending (queue.rs): it collects candidates then checks active_count. If multiple groups become runnable and max_concurrent is reached mid-loop, confirm no over-spawn past the limit.",
+      "Examine container timeout defaults: if container_config is absent (known bug), what does the timeout fall back to? Is the fallback safe?",
+      "Check kill_group implementation: confirm container_name is set atomically with active=true — if a race allows kill_group before register_process, it finds no container_name and returns false silently."
+    ],
+    "success_hints": [
+      "active=true / active_count++ always has corresponding active=false / active_count-- in every terminal path.",
+      "Container names are registered before any code path can call kill_group.",
+      "Container timeout is safe even when containerConfig is absent from both databases."
+    ],
+    "task_context": "Intercom's dual-process architecture spawns containers from the Rust daemon. Known bugs include container_config only set in one database, affecting timeout values.",
+    "anti_overlap": [
+      "fd-dual-database-state-divergence covers whether containerConfig reaches both databases.",
+      "fd-queue-delivery-reliability covers message dispatch into the queue.",
+      "fd-mount-security-wiring covers mount validation before container argument construction."
+    ]
+  },
+  {
+    "name": "fd-mount-security-wiring",
+    "focus": "End-to-end wiring of the mount allowlist — from load at startup through validation to container argument construction",
+    "persona": "A security engineer who audits filesystem isolation boundaries in containerized systems. Traces every code path from additionalMounts to the final docker run -v argument, asking whether the allowlist is always consulted.",
+    "decision_lens": "Prioritizes findings where the allowlist is optional but its absence silently allows or blocks mounts without alerting the operator, where symlink resolution can be gamed, and where Node-side and Rust-side implementations diverge in security rules.",
+    "review_areas": [
+      "Trace the allowlist load path in Node (mount-security.ts): loadMountAllowlist() uses module-level cache. If file does not exist at start, all mounts are blocked forever. Verify whether MOUNT_ALLOWLIST_PATH resolves correctly in systemd service context.",
+      "Compare Node vs Rust allowlist load paths: confirm both use the same file path. Does Rust load at spawn time or daemon startup?",
+      "Audit blocked-pattern matching in both implementations: Node uses substring match (part.includes(pattern)). Confirm this is intentional and does not over-block legitimate paths.",
+      "Check containerPath validation: both reject '..' and absolute paths. If containerPath defaults to basename(hostPath), verify basename cannot be empty or a dotfile bypassing blocked-pattern checks.",
+      "Examine the exclude/tmpfs overlay mechanism: for excluded subdirs, verify values are validated against path traversal before being passed as tmpfs destination arguments.",
+      "Verify Rust runner invokes validate_additional_mounts before building docker args, and that Postgres containerConfig flows from group registration through to the runner."
+    ],
+    "success_hints": [
+      "Allowlist file path resolves correctly under the systemd service user's HOME.",
+      "Exclude subdir values in additionalMounts are validated for path traversal.",
+      "Node and Rust mount validation apply the same rules in the same order."
+    ],
+    "task_context": "A known bug is that the mount allowlist was never loaded in main.rs (hardcoded to None), causing all additional mounts to be silently blocked.",
+    "anti_overlap": [
+      "fd-dual-database-state-divergence covers whether containerConfig reaches both databases.",
+      "fd-container-lifecycle-management covers container spawn after mount args are built.",
+      "fd-queue-delivery-reliability covers queue dispatch."
+    ]
+  },
+  {
+    "name": "fd-ipc-authorization-boundary",
+    "focus": "IPC authorization model: whether group identity derived from filesystem path is enforced consistently across Node and Rust, and whether cross-group privilege escalation is possible",
+    "persona": "A security researcher who specializes in confused deputy attacks and authorization boundary bypasses in filesystem-based IPC systems. Asks: what proves identity, and can that proof be forged?",
+    "decision_lens": "Prioritizes findings where Rust and Node apply different authorization rules for the same IPC operation, where sourceGroup identity can be spoofed, and where main-group privileges can be exercised by a non-main group.",
+    "review_areas": [
+      "Audit Node IPC watcher identity model (ipc.ts): sourceGroup is derived from the directory name. Verify no code path mounts the entire DATA_DIR/ipc/ directory, which would let a container write to other groups' subdirectories.",
+      "Check register_group IPC handler: only main can register. But the handler writes to SQLite without writing to Postgres. Confirm whether this creates a SQLite-only group invisible to the Rust daemon.",
+      "Examine whether intercomd has its own IPC file poller or relies on Node host-callback. If Rust polls IPC directly, confirm it applies the same sourceGroup identity checks.",
+      "Inspect host-callback /v1/ipc/forward-task: Rust passes is_main as a boolean. Verify intercomd derives is_main from its own group registry, not from a container-influenced field.",
+      "Check cross-group message authorization (ipc.ts): non-main can only message their own group. Verify registeredGroups() is called fresh, not from stale cache.",
+      "Audit schedule_task authorization: non-main can only schedule for themselves. Confirm folder uniqueness is enforced at registration time to prevent cross-group scheduling via folder collision."
+    ],
+    "success_hints": [
+      "IPC directory mount per group is confirmed — no container can write to another group's IPC namespace.",
+      "is_main is derived from Rust's own registry, never from container IPC payload.",
+      "Group folder uniqueness enforced by UNIQUE constraint in both databases."
+    ],
+    "task_context": "Boundary-crossing failures have been found at IPC, database, and mount layers. This agent focuses on whether authorization rules at the IPC layer are applied consistently by both processes.",
+    "anti_overlap": [
+      "fd-dual-database-state-divergence covers whether registrations reach both databases.",
+      "fd-mount-security-wiring covers filesystem mount isolation underlying IPC namespace separation.",
+      "fd-queue-delivery-reliability covers message dispatch after authorization passes."
+    ]
+  }
+]

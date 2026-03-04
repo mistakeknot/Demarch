@@ -1,0 +1,337 @@
+{
+  "reviewed": "2026-03-04",
+  "agents_launched": [
+    "fd-dual-database-state-divergence",
+    "fd-queue-delivery-reliability",
+    "fd-container-lifecycle-management",
+    "fd-mount-security-wiring",
+    "fd-ipc-authorization-boundary"
+  ],
+  "agents_completed": [
+    "fd-dual-database-state-divergence",
+    "fd-queue-delivery-reliability",
+    "fd-container-lifecycle-management",
+    "fd-mount-security-wiring",
+    "fd-ipc-authorization-boundary"
+  ],
+  "agents_failed": [],
+  "findings": [
+    {
+      "id": "P0-A",
+      "severity": "P0",
+      "category": "Data Consistency",
+      "title": "Registered groups never propagate from Node to Rust",
+      "agents": [
+        "fd-dual-database-state-divergence",
+        "fd-ipc-authorization-boundary"
+      ],
+      "convergence": 2,
+      "section": "Critical Blockers",
+      "file_refs": [
+        "apps/intercom/src/index.ts:67-89",
+        "apps/intercom/src/db.ts:686-703",
+        "apps/intercom/src/ipc.ts:400-431",
+        "apps/intercom/rust/intercomd/src/main.rs:253-277",
+        "apps/intercom/rust/intercomd/src/process_group.rs:98-104"
+      ],
+      "description": "When a container registers a new group via IPC (register_group task), Node calls setRegisteredGroup() which writes only to SQLite. There is no dual-write to Postgres via dualWriteToPostgres(), no outbox call, and no HTTP POST to Rust's /v1/db/groups/set. The Rust daemon loads groups from Postgres at startup and caches them in Arc<RwLock<Groups>>. A newly registered group never enters Rust's in-memory map or Postgres until manual intervention.",
+      "impact": "Blocks all group registration workflows in Rust mode. Messages for newly registered groups are silently dropped.",
+      "complexity": "Medium - requires dual-write plumbing plus in-memory map update"
+    },
+    {
+      "id": "P0-B",
+      "severity": "P0",
+      "category": "Queue Liveness",
+      "title": "Retry deferred flag never drained without external stimulus",
+      "agents": [
+        "fd-queue-delivery-reliability",
+        "fd-container-lifecycle-management"
+      ],
+      "convergence": 2,
+      "section": "Critical Blockers",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/queue.rs:424-441",
+        "apps/intercom/src/group-queue.ts:287-291"
+      ],
+      "description": "When run_for_group fails with retry_count <= MAX_RETRIES, the code spawns an async task that sleeps for delay_ms then sets state.pending_messages = true. However, reset_group and drain_pending execute immediately after the spawn (lines 454-455), BEFORE the deferred task fires. When the deferred task finally sets the flag, nobody calls drain_pending or enqueue_message_check afterward. The flag sits inert until an unrelated event (new inbound message, or another group finishing) happens to trigger processing.",
+      "impact": "Blocks message recovery after transient failures in single-group scenarios. Groups stuck indefinitely after processing failures.",
+      "complexity": "Low - requires spawning enqueue_message_check instead of flag-set"
+    },
+    {
+      "id": "P1-A",
+      "severity": "P1",
+      "category": "Task Execution",
+      "title": "Rust drain_pending dispatches tasks to wrong function, tasks never execute",
+      "agents": [
+        "fd-queue-delivery-reliability",
+        "fd-container-lifecycle-management"
+      ],
+      "convergence": 2,
+      "section": "Important",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/queue.rs:459-503",
+        "apps/intercom/src/group-queue.ts:294-318"
+      ],
+      "description": "drain_pending() scans groups for pending_messages || !pending_tasks.is_empty(), marks them active, and spawns run_for_group(). But run_for_group only calls process_messages_fn -- it never pops from pending_tasks or calls run_task. The Node version (drainGroup line 294-318) explicitly checks pendingTasks.length > 0, pops the first task, and calls this.runTask().",
+      "impact": "Disables all task scheduling in Rust. Tasks queue up but infinite loop of empty message processing runs instead.",
+      "complexity": "Medium - requires conditional logic to pop and dispatch tasks separately"
+    },
+    {
+      "id": "P1-B",
+      "severity": "P1",
+      "category": "Container Lifecycle",
+      "title": "Rust register_process never called - container_name and group_folder always None",
+      "agents": [
+        "fd-container-lifecycle-management"
+      ],
+      "convergence": 1,
+      "section": "Important",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/queue.rs:236",
+        "apps/intercom/rust/intercomd/src/process_group.rs",
+        "apps/intercom/rust/intercomd/src/scheduler_wiring.rs",
+        "apps/intercom/src/container-runner.ts:356"
+      ],
+      "description": "GroupQueue::register_process() is defined at line 236 but has zero callers in the entire Rust codebase. Neither process_group.rs (the message path) nor scheduler_wiring.rs (the task path) calls it after spawning a container. Every container spawned by Rust has container_name = None and group_folder = None.",
+      "impact": "Breaks all container lifecycle operations: kill_group (can't kill containers), send_message (can't send IPC), close_stdin (no signal), notify_idle (no preemption), shutdown (wrong metrics).",
+      "complexity": "Low - requires two add-after-spawn lines in message and task paths"
+    },
+    {
+      "id": "P1-C",
+      "severity": "P1",
+      "category": "Authorization",
+      "title": "Dual IPC polling creates authorization race conditions",
+      "agents": [
+        "fd-ipc-authorization-boundary"
+      ],
+      "convergence": 1,
+      "section": "Important",
+      "file_refs": [
+        "apps/intercom/src/ipc.ts:45-198",
+        "apps/intercom/rust/intercomd/src/ipc.rs:234-258",
+        "apps/intercom/src/ipc.ts:79-82",
+        "apps/intercom/rust/intercomd/src/ipc.rs:279"
+      ],
+      "description": "Both Node (startIpcWatcher) and Rust (IpcWatcher::run) poll the same data/ipc/ directory tree on 1-second intervals. Both read, process, and unlink files. For messages, Node applies registeredGroups[data.chatJid] check (in-memory, always fresh) while Rust applies GroupRegistry::folder_for_jid() check (up to 10s stale). For tasks, Node applies full authorization checks while Rust applies zero authorization and delegates blindly to Node.",
+      "impact": "Security model not enforced consistently. Authorization decisions become non-deterministic based on polling race winner.",
+      "complexity": "High - requires architectural decision (exclusive poller or separate IPC directories)"
+    },
+    {
+      "id": "P1-D",
+      "severity": "P1",
+      "category": "Authorization",
+      "title": "Rust has no task authorization; task operations unprotected",
+      "agents": [
+        "fd-ipc-authorization-boundary"
+      ],
+      "convergence": 1,
+      "section": "Important",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/ipc.rs:308-329",
+        "apps/intercom/rust/intercomd/src/ipc.rs:66"
+      ],
+      "description": "process_tasks() parses the IPC task file and forwards it to Node via delegate.forward_task() without performing any authorization check. This creates an implicit contract: if Rust ever progresses the strangler-fig migration and handles tasks natively (without Node callback), there is no Rust-side authorization layer for schedule_task, pause_task, resume_task, cancel_task, or register_group.",
+      "impact": "Security model incomplete; blocks native Rust task handling. Non-main container could execute all task operations against any group.",
+      "complexity": "Medium - requires authorization checks mirroring Node"
+    },
+    {
+      "id": "P1-E",
+      "severity": "P1",
+      "category": "Durability",
+      "title": "Outbox rows with attempts >= 5 become zombie 'pending' rows",
+      "agents": [
+        "fd-queue-delivery-reliability"
+      ],
+      "convergence": 1,
+      "section": "Important",
+      "file_refs": [
+        "apps/intercom/rust/intercom-core/src/persistence.rs:1241",
+        "apps/intercom/rust/intercom-core/src/persistence.rs:1296-1311"
+      ],
+      "description": "claim_outbox_rows selects rows WHERE status = 'pending' AND attempts < 5. When mark_outbox_retry is called after the 5th transient failure, attempts remains 5 and the row is reset to status='pending'. The row is now invisible to claim_outbox_rows (fails the attempts < 5 predicate) but is never transitioned to status='failed'. It stays as status='pending' forever.",
+      "impact": "Blocks message delivery indefinitely; affects observability. Metrics show 'pending' when rows are actually stuck.",
+      "complexity": "Low - requires single conditional check in mark_outbox_retry"
+    },
+    {
+      "id": "P1-F",
+      "severity": "P1",
+      "category": "Authorization",
+      "title": "Rust IPC watcher has 10-second authorization staleness window",
+      "agents": [
+        "fd-ipc-authorization-boundary"
+      ],
+      "convergence": 1,
+      "section": "Important",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/ipc.rs:694-750",
+        "apps/intercom/rust/intercomd/src/ipc.rs:578-583"
+      ],
+      "description": "The Rust GroupRegistry is populated by sync_registry_loop(), which fetches registered groups from Node every 10 seconds. Between sync cycles, a newly registered group exists in Node's in-memory state and SQLite but not in Rust's GroupRegistry. During this window, Rust would deny legitimate messages from the new group if it polls the IPC file first. An empty registry means is_authorized_target() returns false for all non-main messages, and messages are discarded with file deleted (not moved to errors).",
+      "impact": "Message loss window during group registration. Silent loss; no indication in logs.",
+      "complexity": "Medium - requires push-based update or fallback logic"
+    },
+    {
+      "id": "P1-G",
+      "severity": "P1",
+      "category": "Security",
+      "title": "Exclude values in AdditionalMount not validated against path injection",
+      "agents": [
+        "fd-mount-security-wiring"
+      ],
+      "convergence": 1,
+      "section": "Important",
+      "file_refs": [
+        "apps/intercom/src/container-runner.ts:291-293",
+        "apps/intercom/rust/intercomd/src/container/secrets.rs:153-159"
+      ],
+      "description": "The exclude array from AdditionalMount is passed through validateAdditionalMounts without any validation. Raw strings are interpolated into --mount type=tmpfs,destination={containerPath}/{subdir},tmpfs-size=0. An exclude value containing .. or , could perform path traversal out of mount point or inject Docker mount options.",
+      "impact": "Security boundary violation; path traversal + injection possible.",
+      "complexity": "Low - requires validation matching isValidContainerPath"
+    },
+    {
+      "id": "P2-A",
+      "severity": "P2",
+      "category": "Configuration",
+      "title": "Container timeout defaults create false semantics (Rust vs Node)",
+      "agents": [
+        "fd-container-lifecycle-management"
+      ],
+      "convergence": 1,
+      "section": "Nice-to-Have",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/container/runner.rs:33,145-147",
+        "apps/intercom/src/config.ts:118"
+      ],
+      "description": "Rust DEFAULT_TIMEOUT_MS (line 33) is 300,000ms (5 minutes), but actual timeout calculation is container_timeout.max(config.idle_timeout_ms + 30_000). With idle default of 1,800,000ms, effective timeout is always 30+ minutes. The 5-minute default is never applied.",
+      "impact": "False semantics, potential for surprising behavior if defaults change.",
+      "complexity": "Low - align Rust DEFAULT_TIMEOUT_MS with Node (1,800,000ms)"
+    },
+    {
+      "id": "P2-B",
+      "severity": "P2",
+      "category": "Observability",
+      "title": "Rust silently skips mounts when allowlist is missing; Node logs per-mount",
+      "agents": [
+        "fd-mount-security-wiring"
+      ],
+      "convergence": 1,
+      "section": "Nice-to-Have",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/container/mounts.rs:169-189",
+        "apps/intercom/src/mount-security.ts:249-257"
+      ],
+      "description": "When allowlist is absent: Node logs WARN per requested mount with reason; Rust logs DEBUG once generically. An operator cannot tell which specific mounts were dropped in Rust.",
+      "impact": "Observability gap; affects operational debugging.",
+      "complexity": "Low - elevate log level and enumerate mounts"
+    },
+    {
+      "id": "P2-C",
+      "severity": "P2",
+      "category": "Configuration",
+      "title": "Node allowlist cache prevents runtime updates without restart",
+      "agents": [
+        "fd-mount-security-wiring"
+      ],
+      "convergence": 1,
+      "section": "Nice-to-Have",
+      "file_refs": [
+        "apps/intercom/src/mount-security.ts:22-24,62-65"
+      ],
+      "description": "Module-level cachedAllowlist and allowlistLoadError cache the result permanently. If the allowlist file doesn't exist at startup, allowlistLoadError is set non-null, and all subsequent calls return null immediately without re-checking the filesystem.",
+      "impact": "Operational friction; silent failure after config provision.",
+      "complexity": "Low - remove negative cache, only cache successful loads"
+    },
+    {
+      "id": "P2-D",
+      "severity": "P2",
+      "category": "Data Consistency",
+      "title": "Session writes from Node are SQLite-only, Rust session state can diverge",
+      "agents": [
+        "fd-dual-database-state-divergence"
+      ],
+      "convergence": 1,
+      "section": "Nice-to-Have",
+      "file_refs": [
+        "apps/intercom/src/db.ts:621-625",
+        "apps/intercom/src/index.ts:128-151"
+      ],
+      "description": "When Node clears a session (e.g., via /reset command), it writes to SQLite only. Rust maintains its own session state in Arc<RwLock<Sessions>> loaded from Postgres and persists updates to Postgres. If Node clears a session, Postgres and Rust's in-memory cache retain the old session ID.",
+      "impact": "Conversation state divergence; user sees stale session.",
+      "complexity": "Medium - requires routing WhatsApp commands through Rust endpoint"
+    },
+    {
+      "id": "P2-E",
+      "severity": "P2",
+      "category": "Data Consistency",
+      "title": "Rust /v1/db/groups/set endpoint does not update in-memory groups map",
+      "agents": [
+        "fd-dual-database-state-divergence"
+      ],
+      "convergence": 1,
+      "section": "Nice-to-Have",
+      "file_refs": [
+        "apps/intercom/rust/intercomd/src/db.rs:524-536",
+        "apps/intercom/rust/intercomd/src/main.rs:494"
+      ],
+      "description": "The DB routes nest uses Option<PgPool> as state, not the full AppState. When /v1/db/groups/set is called (which it will be if P0-A fix is applied), the handler writes to Postgres but does NOT update AppState.groups in-memory.",
+      "impact": "P0-A fix doesn't work unless P2-E is also fixed. Messages still silently skipped.",
+      "complexity": "Medium - requires either routing change or periodic refresh"
+    },
+    {
+      "id": "P2-F",
+      "severity": "P2",
+      "category": "Data Consistency",
+      "title": "Task mutations (pause/resume/cancel) via Node IPC are SQLite-only",
+      "agents": [
+        "fd-dual-database-state-divergence"
+      ],
+      "convergence": 1,
+      "section": "Nice-to-Have",
+      "file_refs": [
+        "apps/intercom/src/ipc.ts:322-374",
+        "apps/intercom/src/db.ts:506-551"
+      ],
+      "description": "Task status changes (pause, resume, cancel) via Node IPC write only to SQLite. The Rust scheduler reads from Postgres and will continue executing tasks that Node believes are paused or deleted.",
+      "impact": "Task state divergence; automation sees wrong state.",
+      "complexity": "Medium - requires dual-write or Rust-side mutation endpoints"
+    },
+    {
+      "id": "P2-G",
+      "severity": "P2",
+      "category": "Performance",
+      "title": "Outbox mark_outbox_retry does not fire NOTIFY; retried rows wait 30 seconds",
+      "agents": [
+        "fd-queue-delivery-reliability"
+      ],
+      "convergence": 1,
+      "section": "Nice-to-Have",
+      "file_refs": [
+        "apps/intercom/rust/intercom-core/src/persistence.rs:1296-1311"
+      ],
+      "description": "mark_outbox_retry resets a row to status='pending' via UPDATE, but the Postgres trigger trg_outbox_notify only fires on INSERT. The LISTEN loop doesn't see the retried row. The row waits for the 30-second DRAIN_FALLBACK_INTERVAL poll to be re-claimed.",
+      "impact": "Latency amplification on transient failures. Up to 2.5 minutes delay over 5 retries.",
+      "complexity": "Low - add explicit NOTIFY after UPDATE"
+    }
+  ],
+  "improvements": [],
+  "verdict": "needs-changes",
+  "verdict_reason": "2 P0 blockers (message processing broken, retry queue stuck) + 8 P1 findings (task processing disabled, authorization incomplete, container lifecycle missing). Not production-ready.",
+  "summary": {
+    "p0_count": 2,
+    "p1_count": 8,
+    "p2_count": 7,
+    "total_findings": 17,
+    "agent_convergence": {
+      "p0_convergence": "2 agents converge on P0-A, 2 agents converge on P0-B",
+      "p1_convergence": "2 agents converge on P1-A, 2 agents converge on P1-B"
+    },
+    "critical_path": "Fix P0-B + P0-A + P1-A + P1-B first (8-10 hours). Then P1-E + P1-G (3-4 hours). Then P1-D + P1-C + P1-F (13-19 hours).",
+    "root_causes": [
+      "Dual database asymmetry: groups/tasks/sessions written to SQLite-only, not Postgres",
+      "Task processing disabled: drain_pending dispatches to wrong function",
+      "Container lifecycle not registered: register_process never called",
+      "Dual IPC polling: both Node and Rust poll same directories with different authorization",
+      "Authorization incomplete: Rust applies zero checks to task operations"
+    ]
+  }
+}

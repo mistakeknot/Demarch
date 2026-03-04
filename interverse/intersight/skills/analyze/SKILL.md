@@ -55,14 +55,14 @@ command -v npx >/dev/null 2>&1 && npx dembrandt --version 2>/dev/null
 **Check Playwright MCP:**
 Attempt: `browser_navigate` to `about:blank`
 - If fails (tool not found or connection error): ABORT with error:
-  > "intersight requires Playwright MCP server to analyze websites. Install: `npx @anthropic-ai/mcp-playwright` and add it to your Claude Code MCP settings (Settings > MCP Servers)."
+  > "intersight requires Playwright MCP server to analyze websites. Install: `claude mcp add playwright npx @playwright/mcp@latest --snapshot-mode none` and add it to your Claude Code MCP settings (Settings > MCP Servers)."
 - This is a hard requirement — cannot proceed without browser.
 
 **Token optimization check:**
 After confirming Playwright MCP is available, check whether the server was started with `--snapshot-mode none`. If every tool response includes a large accessibility snapshot (thousands of tokens of ARIA tree), warn the user:
 > "Playwright MCP is running with default snapshot mode. For significantly lower token usage (~70-80% reduction per action), restart with `--snapshot-mode none`. The `browser_snapshot` tool still works independently — this only suppresses the auto-appended snapshots on every other tool response."
 
-This optimization is strongly recommended because Intersight's pipeline makes ~15-20 Playwright tool calls per analysis, and only Phase 4's `browser_snapshot` needs the accessibility tree. All other calls (`browser_navigate`, `browser_resize`, `browser_evaluate`, `browser_take_screenshot`, `browser_hover`) discard the snapshot.
+This optimization is strongly recommended because Intersight's pipeline makes 16-40 Playwright tool calls per analysis (depending on depth), and only Phase 4's `browser_snapshot` needs the accessibility tree. All other calls (`browser_navigate`, `browser_resize`, `browser_evaluate`, `browser_take_screenshot`, `browser_hover`) discard the snapshot.
 
 ### 0b: robots.txt compliance (mandatory)
 

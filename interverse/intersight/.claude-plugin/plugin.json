@@ -1,6 +1,6 @@
 {
   "name": "intersight",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Automated UI/UX design analysis — extracts W3C DTCG tokens, component inventory, and layout analysis from any URL.",
   "author": {
     "name": "mistakeknot"

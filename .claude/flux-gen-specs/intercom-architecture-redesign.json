@@ -1,0 +1,127 @@
+[
+  {
+    "name": "fd-delivery-guarantee-model",
+    "focus": "Reviews the end-to-end message delivery contract: what guarantees exist, where messages can be lost, and which redesign option closes each gap",
+    "persona": "Distributed systems engineer who specializes in message durability and at-least-once delivery semantics. Approaches the codebase by mapping every write path to its failure modes and asking what happens on process crash at each step.",
+    "decision_lens": "Prioritizes changes that close the known fire-and-forget gaps before optimizing for latency. A slower reliable path beats a fast lossy one.",
+    "review_areas": [
+      "Trace HttpDelegate fire-and-forget path — identify every message that can be silently dropped",
+      "Examine dual-cursor crash window in message_loop.rs between save_cursor() and enqueue_message_check()",
+      "Assess recover_pending_messages() completeness after crash",
+      "Evaluate outbox pattern as fix for HttpDelegate loss window",
+      "Compare LISTEN/NOTIFY vs polling for at-least-once risk on connection drop",
+      "Identify whether single-process collapse eliminates dual-write gap or just moves it"
+    ],
+    "success_hints": [
+      "Every message can be proven to reach container input or be retried",
+      "Crash recovery correctly re-enqueues messages whose per-group cursor trails global cursor",
+      "Chosen IPC has explicit ack or at-least-once retry rather than fire-and-forget"
+    ],
+    "task_context": "Intercom dual-process (Node+Rust) message delivery pipeline redesign — replacing polling and fire-and-forget HTTP with reliable event-driven IPC.",
+    "anti_overlap": [
+      "fd-ipc-transport-design covers wire-level transport tradeoffs",
+      "fd-process-boundary-collapse covers merging Node and Rust",
+      "fd-container-output-extraction covers stdout marker parsing"
+    ]
+  },
+  {
+    "name": "fd-ipc-transport-design",
+    "focus": "Reviews wire-level IPC options between Rust orchestrator and Node host, evaluating each for latency, backpressure, and connection lifecycle",
+    "persona": "Systems programmer with deep experience in Unix IPC primitives, tokio networking, and Postgres LISTEN/NOTIFY at scale.",
+    "decision_lens": "Prioritizes connection lifecycle correctness over raw latency numbers. A transport requiring manual reconnect handling is a reliability hazard.",
+    "review_areas": [
+      "Assess Postgres LISTEN/NOTIFY: persistent connection, reconnect, 8KB payload limit",
+      "Evaluate Unix domain socket IPC vs HTTP callbacks",
+      "Review filesystem IPC watcher poll interval vs inotify alternatives",
+      "Examine container stdout protocol alternatives (UDS, named pipe)",
+      "Analyze group registry sync loop startup race",
+      "Compare unidirectional vs bidirectional socket IPC"
+    ],
+    "success_hints": [
+      "Transport handles Node restart without losing in-flight IPC messages",
+      "Container output doesn't depend on stdout sentinel markers",
+      "LISTEN/NOTIFY includes reconnect with backoff and fallback poll"
+    ],
+    "task_context": "Intercom dual-process (Node+Rust) message delivery pipeline redesign — replacing polling and fire-and-forget HTTP with reliable event-driven IPC.",
+    "anti_overlap": [
+      "fd-delivery-guarantee-model covers application-level message loss",
+      "fd-process-boundary-collapse covers eliminating the Node/Rust split",
+      "fd-container-output-extraction covers stdout parsing in runner.rs"
+    ]
+  },
+  {
+    "name": "fd-container-output-extraction",
+    "focus": "Reviews container stdout sentinel marker protocol and streaming output path for correctness, truncation risks, and latency",
+    "persona": "Infrastructure engineer who has debugged subprocess output parsing, backpressure in async stdout readers, and Docker stdout buffering.",
+    "decision_lens": "Any output path where partial marker or truncation silently produces wrong ContainerOutput is a P0 defect. Latency secondary to correctness.",
+    "review_areas": [
+      "Audit extract_output_markers for multi-buffer marker boundary handling",
+      "Review BufReader loop for long-line handling and MAX_OUTPUT_SIZE interaction",
+      "Examine streaming callback ordering for partial/out-of-order events",
+      "Evaluate session ID race with timeout watchdog",
+      "Assess container-internal IPC input latency compounding",
+      "Identify Docker stdout buffer behavior on container crash"
+    ],
+    "success_hints": [
+      "Marker boundaries handled without silent drops or duplicates",
+      "Streaming path and final RunResult agree on session ID",
+      "Container IPC input latency bounded and measurable"
+    ],
+    "task_context": "Intercom dual-process (Node+Rust) message delivery pipeline redesign — replacing polling and fire-and-forget HTTP with reliable event-driven IPC.",
+    "anti_overlap": [
+      "fd-delivery-guarantee-model covers Postgres-level message loss",
+      "fd-ipc-transport-design covers Rust↔Node transport options",
+      "fd-process-boundary-collapse covers migration implications"
+    ]
+  },
+  {
+    "name": "fd-process-boundary-collapse",
+    "focus": "Reviews feasibility, risks, and migration path of collapsing dual-process into single Rust process (or moving orchestration to Node)",
+    "persona": "Senior engineer who has led strangler-fig migrations on production systems. Evaluates migration plans by reversibility of each step.",
+    "decision_lens": "Prioritizes rollback-safe migration steps over big-bang rewrites. Any step requiring coordinated downtime is a coordination hazard.",
+    "review_areas": [
+      "Map Node-only capabilities with no Rust equivalent (Grammy, Baileys, summarizer, stream-accumulator)",
+      "Review orchestrator.enabled sidecar fallback granularity",
+      "Classify every Node↔Rust endpoint as redundant, migration-only, or permanent",
+      "Assess SQLite↔Postgres dual-persistence cutover path",
+      "Review systemd service startup ordering implications",
+      "Evaluate partial collapse cost-benefit (keep both + LISTEN/NOTIFY)"
+    ],
+    "success_hints": [
+      "Each migration step deployable independently with rollback",
+      "Post-collapse IPC channel count strictly less than before",
+      "SQLite dual-write eliminated before Node removed"
+    ],
+    "task_context": "Intercom dual-process (Node+Rust) message delivery pipeline redesign — replacing polling and fire-and-forget HTTP with reliable event-driven IPC.",
+    "anti_overlap": [
+      "fd-delivery-guarantee-model covers polling loop message loss",
+      "fd-ipc-transport-design covers wire-level transport options",
+      "fd-container-output-extraction covers container stdout correctness"
+    ]
+  },
+  {
+    "name": "fd-group-isolation-under-redesign",
+    "focus": "Reviews whether per-group isolation guarantees (namespace separation, authorization, queue fairness) are preserved under each redesign option",
+    "persona": "Security-minded backend engineer who treats multi-tenant isolation as first-class correctness. Asks whether group A can affect group B's state, queue, or output.",
+    "decision_lens": "Any design where a slow group delays another group's messages is a regression. Authorization checks must survive transport changes.",
+    "review_areas": [
+      "Review GroupQueue isolation under shared LISTEN/NOTIFY channel",
+      "Verify is_authorized_target check survives transport change",
+      "Assess outbox multi-tenant behavior (slow consumer blocking)",
+      "Review per-group cursor concurrency under shared channels",
+      "Examine late group registration race with LISTEN subscriptions",
+      "Assess write restriction enforcement in redesigned IPC"
+    ],
+    "success_hints": [
+      "One group's backpressure cannot delay another — fairness preserved",
+      "Authorization checks enforced at same or earlier point",
+      "Write restriction uses same group identity signal in new path"
+    ],
+    "task_context": "Intercom dual-process (Node+Rust) message delivery pipeline redesign — replacing polling and fire-and-forget HTTP with reliable event-driven IPC.",
+    "anti_overlap": [
+      "fd-delivery-guarantee-model covers delivery contract, not group isolation",
+      "fd-ipc-transport-design covers transport without multi-tenant focus",
+      "fd-process-boundary-collapse covers migration path, not per-group invariants"
+    ]
+  }
+]
