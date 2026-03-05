@@ -4189,6 +4189,8 @@
 {"issue_id":"iv-ohmv8","label":"ic_run_id:yjhaxp14"}
 {"issue_id":"iv-ohmv8","label":"sprint:true"}
 {"issue_id":"iv-ohmv8","label":"token_budget:250000"}
+{"issue_id":"iv-ohvcg","label":"claimed_at:1772731392"}
+{"issue_id":"iv-ohvcg","label":"claimed_by:b7bbe7d0-3c3b-49d1-9ad9-05b830edb5bc"}
 {"issue_id":"iv-oi2g","label":"beads"}
 {"issue_id":"iv-oi2g","label":"compatibility"}
 {"issue_id":"iv-oi2g","label":"mod:clavain"}
@@ -4343,6 +4345,8 @@
 {"issue_id":"iv-pqdr6","label":"research:repo"}
 {"issue_id":"iv-pqdr6","label":"source:dicklesworthstone"}
 {"issue_id":"iv-pqdr6","label":"theme:research"}
+{"issue_id":"iv-prng6","label":"claimed_at:1772731178"}
+{"issue_id":"iv-prng6","label":"claimed_by:b7bbe7d0-3c3b-49d1-9ad9-05b830edb5bc"}
 {"issue_id":"iv-psf2","label":"mod:clavain"}
 {"issue_id":"iv-psf2.1","label":"mod:interdoc"}
 {"issue_id":"iv-psf2.1","label":"mod:interflux"}
