@@ -3299,3 +3299,4 @@
 {"actor":"mistakeknot","comment":"Added label: claimed_at:1772673113","created_at":"2026-03-04T17:11:53Z","event_type":"label_added","id":3300,"issue_id":"iv-3kpfu","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-04T17:11:54Z","event_type":"created","id":3301,"issue_id":"iv-3kpfu.3","new_value":"","old_value":""}
 {"actor":"mistakeknot","comment":"Added label: complexity:2","created_at":"2026-03-04T17:11:54Z","event_type":"label_added","id":3302,"issue_id":"iv-3kpfu","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-04T17:33:43Z","event_type":"closed","id":3303,"issue_id":"iv-3kpfu","new_value":"Shipped: tool-surface command + tool-composition.yaml + session-start hook injection","old_value":""}
