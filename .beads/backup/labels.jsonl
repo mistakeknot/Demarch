@@ -2690,8 +2690,6 @@
 {"issue_id":"iv-fj20z","label":"placeholder"}
 {"issue_id":"iv-fj20z","label":"recovered"}
 {"issue_id":"iv-fj20z","label":"theme:coordination"}
-{"issue_id":"iv-fkq60","label":"claimed_at:1772669994"}
-{"issue_id":"iv-fkq60","label":"claimed_by:unknown"}
 {"issue_id":"iv-fn1","label":"mod:interject"}
 {"issue_id":"iv-fn1","label":"theme:dx"}
 {"issue_id":"iv-fnfa","label":"mod:intercore"}
@@ -3793,8 +3791,6 @@
 {"issue_id":"iv-m4cu","label":"theme:docs"}
 {"issue_id":"iv-m4cu","label":"theme:dx"}
 {"issue_id":"iv-m4cu","label":"theme:infra"}
-{"issue_id":"iv-m5zw2","label":"claimed_at:1772681002"}
-{"issue_id":"iv-m5zw2","label":"claimed_by:unknown"}
 {"issue_id":"iv-m5zw2","label":"complexity:3"}
 {"issue_id":"iv-m5zw2","label":"mod:clavain"}
 {"issue_id":"iv-m5zw2","label":"research:repo"}
@@ -5136,8 +5132,6 @@
 {"issue_id":"iv-u2pd","label":"mod:clavain"}
 {"issue_id":"iv-u2pd","label":"theme:dx"}
 {"issue_id":"iv-u2pd","label":"theme:ux"}
-{"issue_id":"iv-u74sq","label":"claimed_at:1772682167"}
-{"issue_id":"iv-u74sq","label":"claimed_by:bf5a312e-8a2c-4e08-801f-ebadf57cefd8"}
 {"issue_id":"iv-u74sq","label":"complexity:3"}
 {"issue_id":"iv-u80a","label":"mod:interspect"}
 {"issue_id":"iv-u8bc","label":"mod:interflux"}
