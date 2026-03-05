@@ -748,6 +748,9 @@
 {"issue_id":"iv-3kee","label":"theme:coordination"}
 {"issue_id":"iv-3kee","label":"theme:infra"}
 {"issue_id":"iv-3kee","label":"theme:research"}
+{"issue_id":"iv-3kpfu","label":"claimed_at:1772673113"}
+{"issue_id":"iv-3kpfu","label":"claimed_by:24ab7817-0982-4888-a298-49deb10a8332"}
+{"issue_id":"iv-3kpfu","label":"complexity:2"}
 {"issue_id":"iv-3kz0v","label":"mod:intermap"}
 {"issue_id":"iv-3kz0v","label":"mod:interpath"}
 {"issue_id":"iv-3kz0v","label":"theme:docs"}
