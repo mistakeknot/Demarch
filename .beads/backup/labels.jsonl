@@ -3919,6 +3919,9 @@
 {"issue_id":"iv-mqy4c","label":"theme:performance"}
 {"issue_id":"iv-mt7l","label":"mod:demarch"}
 {"issue_id":"iv-mt7l","label":"mod:interflux"}
+{"issue_id":"iv-mtf12","label":"claimed_at:1772692073"}
+{"issue_id":"iv-mtf12","label":"claimed_by:54fd6f3d-38f0-418b-a0be-da4ca86405a3"}
+{"issue_id":"iv-mtf12","label":"complexity:3"}
 {"issue_id":"iv-mu5zd","label":"mod:autarch"}
 {"issue_id":"iv-mu5zd","label":"research:repo"}
 {"issue_id":"iv-mu5zd","label":"source:dicklesworthstone"}
@@ -4005,7 +4008,7 @@
 {"issue_id":"iv-ngvy.2","label":"theme:docs"}
 {"issue_id":"iv-ngvy.2","label":"theme:dx"}
 {"issue_id":"iv-ngvy.2","label":"theme:research"}
-{"issue_id":"iv-nh3d7","label":"claimed_at:1772690516"}
+{"issue_id":"iv-nh3d7","label":"claimed_at:1772691734"}
 {"issue_id":"iv-nh3d7","label":"claimed_by:967a90c1-eaf1-473a-b228-7706024d1d46"}
 {"issue_id":"iv-nh3d7","label":"complexity:3"}
 {"issue_id":"iv-niu3a","label":"mod:demarch"}
