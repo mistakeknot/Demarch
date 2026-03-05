@@ -3452,3 +3452,9 @@
 {"actor":"mistakeknot","comment":"Removed label: claimed_at:1772692013","created_at":"2026-03-04T22:27:53Z","event_type":"label_removed","id":3453,"issue_id":"iv-mtf12","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":"Added label: claimed_at:1772692073","created_at":"2026-03-04T22:27:53Z","event_type":"label_added","id":3454,"issue_id":"iv-mtf12","new_value":null,"old_value":null}
 {"actor":"967a90c1","comment":null,"created_at":"2026-03-04T22:36:09Z","event_type":"closed","id":3455,"issue_id":"iv-nh3d7","new_value":"F4 Consumer Wiring shipped: lib-compose.sh extended, flux-drive launch.md updated, SessionStart env var injection added, 13 bats tests passing","old_value":""}
+{"actor":"967a90c1","comment":null,"created_at":"2026-03-04T22:36:15Z","event_type":"closed","id":3456,"issue_id":"iv-muap9","new_value":"Shipped with parent iv-nh3d7","old_value":""}
+{"actor":"967a90c1","comment":null,"created_at":"2026-03-04T22:36:16Z","event_type":"closed","id":3457,"issue_id":"iv-oiigq","new_value":"Shipped with parent iv-nh3d7","old_value":""}
+{"actor":"967a90c1","comment":null,"created_at":"2026-03-04T22:36:16Z","event_type":"closed","id":3458,"issue_id":"iv-p03jw","new_value":"Shipped with parent iv-nh3d7","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-05T08:02:51Z","event_type":"created","id":3459,"issue_id":"iv-mtf12.14","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":"Removed label: claimed_at:1772692073","created_at":"2026-03-05T08:02:51Z","event_type":"label_removed","id":3460,"issue_id":"iv-mtf12","new_value":null,"old_value":null}
+{"actor":"mistakeknot","comment":"Added label: claimed_at:1772726571","created_at":"2026-03-05T08:02:51Z","event_type":"label_added","id":3461,"issue_id":"iv-mtf12","new_value":null,"old_value":null}
