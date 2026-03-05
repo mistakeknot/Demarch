@@ -3462,3 +3462,7 @@
 {"actor":"mistakeknot","comment":"Removed label: claimed_at:1772726571","created_at":"2026-03-05T08:09:44Z","event_type":"label_removed","id":3463,"issue_id":"iv-mtf12","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":"Added label: claimed_at:1772726983","created_at":"2026-03-05T08:09:44Z","event_type":"label_added","id":3464,"issue_id":"iv-mtf12","new_value":null,"old_value":null}
 {"actor":"mistakeknot","comment":null,"created_at":"2026-03-05T08:24:38Z","event_type":"created","id":3465,"issue_id":"iv-zdrpo","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-05T08:24:41Z","event_type":"created","id":3466,"issue_id":"iv-xpktq","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-05T08:24:42Z","event_type":"created","id":3467,"issue_id":"iv-f49po","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-05T08:24:42Z","event_type":"created","id":3468,"issue_id":"iv-dmgi5","new_value":"","old_value":""}
+{"actor":"mistakeknot","comment":null,"created_at":"2026-03-05T09:01:30Z","event_type":"closed","id":3469,"issue_id":"iv-mtf12","new_value":"Shipped: expanded tool-composition.yaml from 4 to 14 hints (7 sequencing + 7 disambiguation). Pipeline audit found 14 uncovered multi-tool pipelines. Consolidation checklist added — no merges needed.","old_value":""}
