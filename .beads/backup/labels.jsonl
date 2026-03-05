@@ -3050,6 +3050,7 @@
 {"issue_id":"iv-ho3","label":"mod:autarch"}
 {"issue_id":"iv-ho3","label":"mod:clavain"}
 {"issue_id":"iv-ho3","label":"mod:interflux"}
+{"issue_id":"iv-ho3","label":"phase:strategized"}
 {"issue_id":"iv-ho3","label":"theme:docs"}
 {"issue_id":"iv-ho3","label":"theme:dx"}
 {"issue_id":"iv-ho3","label":"theme:infra"}
@@ -4513,6 +4514,7 @@
 {"issue_id":"iv-qg1r0","label":"claimed_by:90e09241-3cf1-4bf3-afcd-9d083a988071"}
 {"issue_id":"iv-qg1r0","label":"complexity:5"}
 {"issue_id":"iv-qg1r0","label":"ic_run_id:ru047zyu"}
+{"issue_id":"iv-qg1r0","label":"phase:strategized"}
 {"issue_id":"iv-qg1r0","label":"sprint:true"}
 {"issue_id":"iv-qg1r0","label":"token_budget:250000"}
 {"issue_id":"iv-qgz00","label":"mod:intercore"}
