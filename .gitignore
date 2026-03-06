@@ -57,6 +57,7 @@ research/*
 !research/AGENTS.md
 !research/REPO_INDEX.md
 docs/research/*/
+!docs/research/dialectics/
 
 # Dolt database files (added by bd init)
 .dolt/
