@@ -1410,6 +1410,9 @@
 {"created_at":"2026-02-20T21:29:42Z","created_by":"mk","depends_on_id":"iv-log2","issue_id":"iv-log2.7","type":"parent-child"}
 {"created_at":"2026-02-20T21:29:43Z","created_by":"mk","depends_on_id":"iv-log2","issue_id":"iv-log2.8","type":"parent-child"}
 {"created_at":"2026-02-20T21:30:04Z","created_by":"mk","depends_on_id":"iv-log2","issue_id":"iv-log2.9","type":"parent-child"}
+{"created_at":"2026-03-06T11:14:08Z","created_by":"2b59431b","depends_on_id":"iv-lpfin","issue_id":"iv-lpfin.1","type":"parent-child"}
+{"created_at":"2026-03-06T11:14:20Z","created_by":"2b59431b","depends_on_id":"iv-lpfin","issue_id":"iv-lpfin.2","type":"parent-child"}
+{"created_at":"2026-03-06T11:14:21Z","created_by":"2b59431b","depends_on_id":"iv-lpfin","issue_id":"iv-lpfin.3","type":"parent-child"}
 {"created_at":"2026-03-03T14:35:55Z","created_by":"mistakeknot","depends_on_id":"iv-5qxae","issue_id":"iv-lptay","type":"blocks"}
 {"created_at":"2026-03-03T14:35:55Z","created_by":"mistakeknot","depends_on_id":"iv-w6cpu","issue_id":"iv-lptay","type":"blocks"}
 {"created_at":"2026-03-04T19:43:00Z","created_by":"mistakeknot","depends_on_id":"iv-lptay","issue_id":"iv-lptay.1","type":"parent-child"}

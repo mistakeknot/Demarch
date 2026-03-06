@@ -3822,6 +3822,9 @@
 {"issue_id":"iv-log2.6","label":"theme:ux"}
 {"issue_id":"iv-log2.9","label":"theme:research"}
 {"issue_id":"iv-lp83","label":"theme:docs"}
+{"issue_id":"iv-lpfin","label":"claimed_at:1772824460"}
+{"issue_id":"iv-lpfin","label":"claimed_by:2b59431b-a488-42f5-8cca-e195b1120f7d"}
+{"issue_id":"iv-lpfin","label":"complexity:3"}
 {"issue_id":"iv-lpfin","label":"mod:interverse"}
 {"issue_id":"iv-lpfin","label":"theme:dx"}
 {"issue_id":"iv-lpfin","label":"theme:research"}
