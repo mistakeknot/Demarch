@@ -2971,9 +2971,11 @@
 {"issue_id":"iv-gny","label":"mod:autarch"}
 {"issue_id":"iv-gny","label":"theme:docs"}
 {"issue_id":"iv-gny","label":"theme:dx"}
-{"issue_id":"iv-godia","label":"claimed_at:1772762178"}
-{"issue_id":"iv-godia","label":"claimed_by:codex-cli"}
+{"issue_id":"iv-godia","label":"auto_advance:true"}
+{"issue_id":"iv-godia","label":"claimed_at:1772814335"}
+{"issue_id":"iv-godia","label":"claimed_by:8cde8f84-f61d-42c4-921e-19d011204a87"}
 {"issue_id":"iv-godia","label":"complexity:3"}
+{"issue_id":"iv-godia","label":"sprint:true"}
 {"issue_id":"iv-gpsqk","label":"mod:intercom"}
 {"issue_id":"iv-gpsqk","label":"mod:interspect"}
 {"issue_id":"iv-gqqvm","label":"mod:intermute"}
@@ -5665,6 +5667,9 @@
 {"issue_id":"iv-wie5i.1","label":"mod:interverse"}
 {"issue_id":"iv-wie5i.1","label":"placeholder"}
 {"issue_id":"iv-wie5i.1","label":"recovered"}
+{"issue_id":"iv-wie5i.2","label":"claimed_at:1772814747"}
+{"issue_id":"iv-wie5i.2","label":"claimed_by:2b59431b-a488-42f5-8cca-e195b1120f7d"}
+{"issue_id":"iv-wie5i.2","label":"complexity:3"}
 {"issue_id":"iv-wie5i.2","label":"mod:interject"}
 {"issue_id":"iv-wie5i.2","label":"mod:interspect"}
 {"issue_id":"iv-wie5i.2","label":"theme:architecture"}
