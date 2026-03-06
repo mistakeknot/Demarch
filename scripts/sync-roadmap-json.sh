@@ -508,7 +508,36 @@ declare -A SEEN_ITEM=()
 declare -A ID_TO_MODULE=()
 declare -A SEEN_CROSS=()
 
-for base in "$ROOT_DIR/apps" "$ROOT_DIR/os" "$ROOT_DIR/core" "$ROOT_DIR/interverse"; do
+# Auto-detect module directories: scan top-level dirs containing at least one
+# subdir with .claude-plugin/plugin.json. Override with ROADMAP_SCAN_DIRS.
+if [ -n "${ROADMAP_SCAN_DIRS:-}" ]; then
+    IFS=: read -ra _scan_dirs <<< "$ROADMAP_SCAN_DIRS"
+    SCAN_BASES=()
+    for _d in "${_scan_dirs[@]}"; do
+        [[ "$_d" = /* ]] && SCAN_BASES+=("$_d") || SCAN_BASES+=("$ROOT_DIR/$_d")
+    done
+else
+    SCAN_BASES=()
+    for _candidate in "$ROOT_DIR"/*/; do
+        [ -d "$_candidate" ] || continue
+        # Skip hidden dirs and docs
+        _base="$(basename "$_candidate")"
+        [[ "$_base" == .* || "$_base" == "docs" || "$_base" == "scripts" ]] && continue
+        # Include if any immediate child has a plugin manifest OR its own CLAUDE.md
+        _has_module=0
+        for _sub in "$_candidate"/*/; do
+            [ -d "$_sub" ] || continue
+            if [ -f "$_sub/.claude-plugin/plugin.json" ] || [ -f "$_sub/CLAUDE.md" ]; then
+                _has_module=1; break
+            fi
+        done
+        if [ "$_has_module" -eq 1 ]; then
+            SCAN_BASES+=("${_candidate%/}")
+        fi
+    done
+fi
+
+for base in "${SCAN_BASES[@]}"; do
     [ -d "$base" ] || continue
     while IFS= read -r -d '' module_dir; do
         module="$(basename "$module_dir")"
@@ -582,11 +611,11 @@ else
     interverse_roadmap_source="none"
 fi
 interverse_open_beads=0
-add_module "interverse" "root" "$(extract_version "$ROOT_DIR")" "$interverse_roadmap_source" "$interverse_open_beads" "active"
+add_module "$ROADMAP_PROJECT" "root" "$(extract_version "$ROOT_DIR")" "$interverse_roadmap_source" "$interverse_open_beads" "active"
 
 module_count="$(jq -s 'length' "$MODULES_FILE")"
 if [ "$module_count" -eq 0 ]; then
-    echo "No modules discovered under apps/, os/, core/, or interverse/" >&2
+    echo "No modules discovered. Set ROADMAP_SCAN_DIRS or ensure top-level dirs contain plugin.json subdirs." >&2
     exit 1
 fi
 
