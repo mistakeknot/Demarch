@@ -68,4 +68,9 @@ sync-branch: "beads-sync"
 
 sync.remote: "origin"
 
-sync.mode: "dolt-native"
+sync.mode: "dolt-native"events-export: true
+
+backup:
+  enabled: true
+  interval: 5m
+  git-push: false
