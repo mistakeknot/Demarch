@@ -1,8 +1,8 @@
 # Demarch — Vision
 
-**Version:** 3.1
-**Date:** 2026-02-27
-**Status:** Draft
+**Version:** 3.2
+**Date:** 2026-03-06
+**Status:** Active
 
 ---
 
@@ -155,7 +155,10 @@ Codex handles parallel implementation. Opus and Sonnet handle complex reasoning.
 
 Final review, deployment, and knowledge capture. The agency validates the change, lands it, and compounds what was learned.
 
-The interflux fleet deploys explicit cognitive diversity lenses during final review. Oracle provides cross-AI validation. The system never pushes code to a remote repository without human confirmation (this invariant holds regardless of autonomy level).
+The interflux fleet deploys explicit cognitive diversity lenses during final review. Oracle provides cross-AI validation. The system never pushes code to a remote repository without human confirmation. What "human confirmation" means evolves with the autonomy ladder:
+- **L0-L2 (current):** Per-change human confirmation before each push.
+- **L3:** Human sets shipping policy (which repos, which confidence thresholds, which test coverage gates). Agent pushes when policy conditions are met.
+- **L4:** Human approves the policy itself; agent pushes autonomously within policy bounds.
 
 ### Reflect
 
@@ -187,7 +190,7 @@ Two capabilities cut across the autonomy ladder rather than sitting on it:
 
 **Discovery.** The pipeline that finds work before it can be recorded. Scans sources, scores relevance, routes findings through confidence-tiered gates. Operates at any autonomy level. *(Shipped, kernel primitives landed. OS integration is the P0 frontier — wiring event-driven scan triggers and automated triage into the sprint workflow.)*
 
-**Adaptation.** Interspect reads kernel events, correlates with outcomes, and proposes configuration changes. Agents that produce false positives get downweighted. Gate rules evolve based on evidence. Operates at any autonomy level, but its value compounds as more sprints produce more data. *(In progress — evidence collection shipped; routing override chain F1-F5 is the current P0 focus.)*
+**Adaptation.** Interspect reads kernel events, correlates with outcomes, and proposes configuration changes. Agents that produce false positives get downweighted. Gate rules evolve based on evidence. Operates at any autonomy level, but its value compounds as more sprints produce more data. *(Evidence collection and routing override chain F1-F5 shipped. Next frontier: Interspect Phase 2 — evidence-driven agent selection and canary monitoring.)*
 
 **Portfolio orchestration.** The kernel manages concurrent runs across multiple projects. Token budgets prevent runaway costs. Changes in one project trigger verification in dependents. Operates at any autonomy level. *(Shipped, portfolio primitives landed.)*
 
@@ -215,7 +218,7 @@ The north star is economic because the platform play only works if other people 
 
 **Goodhart caveat:** Any stable metric becomes a target, and any target becomes gamed. Cost-per-landable-change is the north star for now, but the supporting metrics above exist to prevent tunnel vision. Rotate emphasis, diversify evaluation dimensions, and watch for agents optimizing the metric at the expense of actual quality. (See PHILOSOPHY.md § Receipts Close Loops, Measurement.)
 
-Establishing the cost-per-landable-change baseline is now a P0 priority (iv-b46xi). After 1,748 closed beads, the system has enough history to compute this number but has never measured it.
+The cost-per-landable-change baseline was established on 2026-02-28 (iv-b46xi, closed). After 2,567 closed beads, the system now measures this number and uses it to evaluate routing and agent decisions. The baseline ($1.17/landable change, Opus 95% of cost) provides the denominator for Interspect's adaptive routing flywheel.
 
 ## Audience
 
@@ -239,30 +242,37 @@ Revenue, when it matters, comes from managed hosting, enterprise support, and pr
 
 ## Where We Are
 
-As of February 2026:
+As of March 2026:
 
-- **Kernel:** 8 of 10 epics shipped (E1-E8). Runs, phases, gates, dispatches, events, discovery pipeline, rollback, portfolio orchestration, TOCTOU prevention, cost-aware scheduling, fair spawn scheduler, sandbox specs. All landed and tested. Remaining: E9 (Autarch Phase 2 — Pollard + Gurgeh migration) and E10 (Sandboxing + Autarch Phase 3).
+- **Kernel:** 8 of 10 epics shipped (E1-E8). Runs, phases, gates, dispatches, events, discovery pipeline, rollback, portfolio orchestration, TOCTOU prevention, cost-aware scheduling, fair spawn scheduler, sandbox specs, durable session attribution (v26). All landed and tested. Remaining: E9 (Autarch Phase 2 — Pollard + Gurgeh migration) and E10 (Sandboxing + Autarch Phase 3).
 - **OS:** Full sprint lifecycle (brainstorm → ship) is kernel-driven. Sprint consolidation complete (`/route → /sprint → /work` unified into adaptive single-entry workflow). For current stats: `grep -c '^##' os/clavain/skills/*/SKILL.md` (skills), `ls os/clavain/agents/` (agents).
-- **Model routing:** Static routing and complexity-aware routing (C1-C5) shipped. Adaptive routing (B3) is the next frontier, blocked on Interspect routing overrides.
+- **Model routing:** Static routing, complexity-aware routing (C1-C5), and routing override chain (F1-F5) shipped. Adaptive routing (B3) is the next frontier — evidence pipeline and canary monitoring.
 - **Review engine:** 12 specialized review agents + 5 research agents, deployed through interflux with multi-agent synthesis. Capability declarations shipped. Interoperability benchmark harness completed.
 - **Ecosystem:** Companion plugins shipped, each independently installable (`ls interverse/ | wc -l`). 11 new plugins extracted (2026-02-25) from Clavain, interflux, and interkasten to maintain single-responsibility. Total modules: `find apps os core interverse sdk -maxdepth 2 -name .git -printf '%h\n' 2>/dev/null | wc -l`.
 - **Apps:** Autarch TUI (Bigend monitoring with inline mode, Gurgeh PRD generation, Coldwine task orchestration, Pollard research). Intercom multi-runtime AI assistant bridging Claude, Gemini, and Codex (v1.1.0).
-- **Profiler:** Evidence collection shipped (override tracking, false positive rates, finding density). Routing override chain (F1-F5) is the P0 frontier for activating the adaptive routing flywheel.
-- **Self-building:** The system has been building itself for months. Current bead counts: `bd stats`.
+- **Profiler:** Evidence collection and routing override chain (F1-F5) shipped. Adaptive routing flywheel activated. Next: Interspect Phase 2 — evidence-driven agent selection, canary monitoring, and counterfactual shadow evaluation.
+- **Self-building:** The system has been building itself for months. 2,567 beads closed, 698 open (per `bd stats`, 2026-03-06).
 
 ## What's Next
 
-Four P0 priorities driving the next phase, plus three parallel tracks converging toward a self-building agency with adaptive model routing and fleet-optimized dispatch:
+Active P0 priorities driving the next phase, plus three parallel tracks converging toward a self-building agency with adaptive model routing and fleet-optimized dispatch:
 
 **P0 Priorities:**
 - **Intermap** (iv-w7bh) — Project-level code mapping. Hub for the extraction chain, blocks 9 downstream beads.
-- **Interspect routing overrides** (iv-r6mf) — The routing override chain (F1-F5) that activates adaptive model routing. The flywheel cannot turn without this.
-- **StrongDM Factory Substrate** (iv-ho3) — Validation-first infrastructure for Clavain. Blocks 9 downstream items.
-- **North star metric** (iv-b46xi) — Establish cost-per-landable-change baseline. The philosophy says "instrument first, optimize later" — the flywheel can't compound without evidence.
+- **Discovery OS integration** (iv-wie5i) — Close the research→backlog loop. Wiring event-driven scan triggers and automated triage into the sprint workflow.
+- **First-stranger experience** (iv-t712t) — README, install, clavain setup. The platform play requires other people to be able to run it.
+- **Agency specs** (iv-4xnp4) — Declarative per-stage agent/model/tool config. Unblocks Track C convergence.
+
+**Recently closed P0s:**
+- ~~Interspect routing overrides~~ (iv-r6mf) — CLOSED. F1-F5 routing override chain shipped. Adaptive routing flywheel activated.
+- ~~Session attribution~~ (iv-30zy3) — CLOSED. Durable session-bead-run attribution ledger in kernel.
+- ~~North star metric~~ (iv-b46xi) — CLOSED. Cost-per-landable-change baseline established ($1.17/change).
+
+*Note: iv-ho3 (StrongDM Factory Substrate) is tracked at P2, not P0.*
 
 **Track A: Kernel integration.** Done. Sprint is fully kernel-driven.
 
-**Track B: Model routing.** Static and complexity-aware routing done. Next: Interspect outcome data driving model selection (B3), now explicitly P0.
+**Track B: Model routing.** Static routing, complexity-aware routing, and routing override chain (F1-F5) done. Next: Interspect outcome data driving model selection (B3) — evidence pipeline and canary monitoring.
 
 **Track C: Agency architecture.** The next frontier. Declarative agency specs (C1, now P0), agent fleet registry with cost/quality profiles (C2), budget-constrained fleet composition (C3), cross-phase handoff protocol (C4), and the convergence point: a self-building loop where Clavain uses its own agency specs to run its own development sprints (C5).
 

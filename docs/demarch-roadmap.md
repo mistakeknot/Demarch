@@ -1,6 +1,6 @@
 # Demarch Roadmap
 
-**Modules:** 61 | **Open beads (root tracker):** 719 | **Blocked (root tracker):** 78 | **Last updated:** 2026-03-05
+**Modules:** 61 | **Open beads:** 698 (per `bd stats`, 2026-03-06) | **Blocked:** 68 | **Closed:** 2,567 | **Last updated:** 2026-03-06
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json)
 
@@ -57,7 +57,7 @@
 | intersight | interverse/intersight | 0.1.3 | early | no | n/a |
 | interskill | interverse/interskill | 0.1.1 | early | no | n/a |
 | interslack | interverse/interslack | 0.1.0 | active | yes | 4 |
-| interspect | interverse/interspect | 0.1.6 | early | no | n/a |
+| interspect | interverse/interspect | 0.1.6 | early | [vision](./interspect-vision.md) | n/a |
 | interstat | interverse/interstat | 0.2.15 | active | yes | 4 |
 | intersynth | interverse/intersynth | 0.1.6 | early | no | n/a |
 | intertest | interverse/intertest | 0.1.2 | early | no | n/a |
@@ -78,37 +78,51 @@
 
 ## Roadmap
 
-### Now (P0-P1)
+### Now — Frontier Priorities
 
+**8 items defining the next phase.** Full inventory in [Detailed Now Inventory](#detailed-now-inventory) below.
+
+1. **[interverse] iv-wie5i** Discovery OS integration — Close the research→backlog loop with event-driven scan triggers and automated triage. *Why frontier: completes the Discover macro-stage, unblocking autonomous problem discovery.*
+2. **[interverse] iv-t712t** First-stranger experience — README, install, clavain setup. *Why frontier: the platform play requires other people to be able to run it.*
+3. **[interverse] iv-4xnp4** C1 Agency specs — Declarative per-stage agent/model/tool config. *Why frontier: unblocks Track C convergence (C2-C5 all depend on this).*
+4. **[interverse] iv-sksfx** Interspect Phase 2 — Evidence-driven agent selection and canary monitoring. *Why frontier: the adaptive routing flywheel has the override mechanism (iv-r6mf shipped) but not yet the evidence→proposal pipeline.*
+5. **[interverse] iv-w7bh** Intermap — Project-level code mapping. *Why frontier: hub for the extraction chain, blocks 9 downstream beads.*
+6. **[intercom] iv-awny7** Intercom Rust/Postgres cutover — Finish control-plane migration (6 subtasks). *Why frontier: eliminates dual-persistence and Node scaffolding, prerequisite for Intercom reliability work.*
+7. **[intercore] iv-fo0rx** Canonical landed-change entity — Define the north-star denominator. *Why frontier: blocks iv-544dn (measurement read model) which blocks the full Interspect evidence pipeline.*
+8. **[interverse] iv-2s7k7** Codex-first routing — Auto-delegate CC work to Codex with closed-loop calibration. *Why frontier: the multi-runtime dispatch strategy for Track B.*
+
+**Recently completed:**
+- iv-r6mf — Interspect routing overrides F1-F5 (shipped, 127/127 tests passing)
+- iv-30zy3 — Durable session-bead-run attribution ledger (kernel v26)
+- iv-b46xi — North star baseline ($1.17/landable change)
+- iv-544dn — Interspect event validity and outcome attribution (research)
+- iv-iglsh — Codex installer docs and SKILL metadata refresh
+
+### Detailed Now Inventory
+
+All P0-P1 items for reference. Items marked ✓ are closed.
+
+- ✓ [intercore/interstat] **iv-30zy3** Durable session-bead-run attribution ledger
+- ✓ [interspect] **iv-r6mf** F1: routing-overrides.json schema + flux-drive reader
+- ✓ [interverse] **iv-b46xi** Measure north star — cost-per-landable-change baseline
 - [intercore] **iv-fo0rx** Define canonical landed-change entity and north-star denominator (blocks iv-544dn)
-- [intercore/interstat] **iv-30zy3** Add durable session-bead-run attribution ledger (blocks iv-544dn)
-- [intercom] **iv-awny7.6** Canonicalize architecture docs around the live Rust-first system (blocks iv-awny7)
-- [intercom] **iv-awny7.2** Make scheduled task state single-writer via Rust/Postgres (blocks iv-awny7)
-- [intercom] **iv-awny7.3** Remove legacy SQLite dependency from Rust Telegram bridge (blocked by iv-awny7.1), blocks iv-awny7
-- [intercom] **iv-awny7.4** Unify chat command handling on one command plane (blocks iv-awny7)
-- [intercom] **iv-awny7.5** Remove Node orchestration scaffolding after Rust cutover (blocked by iv-awny7.1, iv-awny7.2, iv-awny7.3, iv-awny7.4), blocks iv-awny7
-- [intercom] **iv-awny7.1** Make group registration state single-writer via Rust/Postgres (blocks iv-awny7)
-- [intercom] **iv-awny7** Finish Rust/Postgres control-plane cutover
-- [interverse] **iv-wie5i** P0: Discovery OS integration — close the research→backlog loop
-- [interverse] **iv-t712t** P0: First-stranger experience — README, install, clavain setup
-- [interverse] **iv-b46xi** P0: Measure north star — cost-per-landable-change baseline
-- [interverse] **iv-4xnp4** P0: C1 Agency specs — unblock Track C convergence
-- [interverse] **iv-sksfx** P0: Interspect Phase 2 — routing overrides (iv-r6mf chain)
-- [clavain/interphase] **iv-zsio** Integrate full discovery pipeline into sprint workflow (blocks iv-faq6)
-- [clavain] **iv-asfy** C1: Agency specs — declarative per-stage agent/model/tool config
-- [interspect] **iv-r6mf** F1: routing-overrides.json schema + flux-drive reader (blocked by iv-nkak)
-- [interverse] **iv-2s7k7** Codex-first routing: auto-delegate CC work to Codex with closed-loop calibration
-- [interspect] **iv-w3ee6** Preserve raw review semantics and source lineage in evidence ingestion (blocks iv-544dn)
-- [intercore/events] **iv-057uu** Define canonical measurement read model and typed review event contract (blocks iv-544dn)
-- [interverse] **iv-nnxzo** Research: Memory architecture convergence across Demarch
-- [interverse] **iv-wie5i.2** Research: Discovery ranking precision and source-trust calibration (blocks iv-wie5i)
-- [interverse] **iv-sksfx.1** Research: Offline routing evals and safe canary policy (blocks iv-sksfx)
-- [interverse] **iv-t712t.3** Research: First-stranger setup failure taxonomy and installer telemetry (blocks iv-t712t)
-- [interverse] **iv-g36hy** F2: Sprint execution recording in CXDB (Turn DAG + typed turns) (blocked by iv-296, iv-ho3)
-- [interverse] **iv-83du3** Intercom message delivery reliability: outbox + LISTEN/NOTIFY + UDS
+- [intercom] **iv-awny7** Finish Rust/Postgres control-plane cutover (6 subtasks: iv-awny7.1-.6)
+- [interverse] **iv-wie5i** Discovery OS integration (blocks iv-faq6)
+- [interverse] **iv-t712t** First-stranger experience
+- [interverse] **iv-4xnp4** C1 Agency specs
+- [interverse] **iv-sksfx** Interspect Phase 2 — routing overrides chain
+- [clavain/interphase] **iv-zsio** Integrate full discovery pipeline into sprint workflow
+- [clavain] **iv-asfy** C1: Agency specs — declarative per-stage config
+- [interverse] **iv-2s7k7** Codex-first routing
+- [interspect] **iv-w3ee6** Preserve raw review semantics in evidence ingestion (blocks iv-544dn)
+- [intercore/events] **iv-057uu** Define canonical measurement read model (blocks iv-544dn)
+- [interverse] **iv-nnxzo** Research: Memory architecture convergence
+- [interverse] **iv-wie5i.2** Research: Discovery ranking precision (blocks iv-wie5i)
+- [interverse] **iv-sksfx.1** Research: Offline routing evals (blocks iv-sksfx)
+- [interverse] **iv-t712t.3** Research: First-stranger setup failure taxonomy (blocks iv-t712t)
+- [interverse] **iv-g36hy** Sprint execution recording in CXDB (blocked by iv-296, iv-ho3)
+- [interverse] **iv-83du3** Intercom message delivery reliability
 - [interverse] **iv-w7bh** Intermap: Project-Level Code Mapping
-
-**Recently completed:** iv-2s7k7.11 (State change: claimed_at → 0), iv-2s7k7.9 (State change: claimed_by → released), iv-2s7k7.10 (State change: claimed_at → 0), iv-2s7k7.8 (State change: claimed_at → 1772750101), iv-2s7k7.7 (State change: claimed_at → 1772750020), iv-2s7k7.6 (State change: claimed_at → 1772749910), iv-2s7k7.5 (State change: claimed_at → 1772749828), iv-2s7k7.4 (State change: claimed_at → 1772749758), iv-ojik9.5 (State change: claimed_at → 1772749697), iv-2s7k7.3 (State change: claimed_at → 1772749697), iv-ojik9.4 (State change: claimed_by → 5b77a946-8df5-4611-aae4-b5ac1b34443a), iv-ojik9.3 (State change: claimed_at → 1772749692), iv-ojik9.2 (State change: claimed_by → unknown), iv-2s7k7.2 (State change: claimed_at → 1772749693), iv-2s7k7.1 (State change: claimed_by → unknown), iv-ojik9.1 (State change: complexity → 5), iv-544dn (Research: Interspect event validity and outcome attribution), iv-iglsh (Refresh Codex installer follow-up docs and companion SKILL metadata), iv-iglsh.3 (State change: claimed_at → 1772748866), iv-iglsh.2 (State change: claimed_by → unknown)
 
 ### Next (P2)
 
