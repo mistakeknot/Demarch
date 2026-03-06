@@ -967,6 +967,10 @@
 {"issue_id":"iv-4qap","label":"mod:interflux"}
 {"issue_id":"iv-4qap","label":"theme:tech-debt"}
 {"issue_id":"iv-4qd","label":"theme:ux"}
+{"issue_id":"iv-4qpc5","label":"claimed_at:1772819859"}
+{"issue_id":"iv-4qpc5","label":"claimed_by:8cde8f84-f61d-42c4-921e-19d011204a87"}
+{"issue_id":"iv-4qpc5","label":"complexity:4"}
+{"issue_id":"iv-4qpc5","label":"phase:executing"}
 {"issue_id":"iv-4qs","label":"mod:interject"}
 {"issue_id":"iv-4qs","label":"theme:coordination"}
 {"issue_id":"iv-4s0b","label":"theme:dx"}
@@ -3159,6 +3163,10 @@
 {"issue_id":"iv-hoqj.1","label":"theme:docs"}
 {"issue_id":"iv-hosc","label":"mod:interflux"}
 {"issue_id":"iv-hosc","label":"theme:dx"}
+{"issue_id":"iv-hqo0q","label":"claimed_at:1772819678"}
+{"issue_id":"iv-hqo0q","label":"claimed_by:8cde8f84-f61d-42c4-921e-19d011204a87"}
+{"issue_id":"iv-hqo0q","label":"complexity:2"}
+{"issue_id":"iv-hqo0q","label":"phase:executing"}
 {"issue_id":"iv-hs0","label":"mod:clavain"}
 {"issue_id":"iv-hsqd","label":"theme:research"}
 {"issue_id":"iv-ht1l","label":"mod:autarch"}
@@ -4826,6 +4834,10 @@
 {"issue_id":"iv-rbf44","label":"sprint:true"}
 {"issue_id":"iv-rbf44","label":"token_budget:250000"}
 {"issue_id":"iv-re4l","label":"theme:coordination"}
+{"issue_id":"iv-reedh","label":"claimed_at:1772819406"}
+{"issue_id":"iv-reedh","label":"claimed_by:8cde8f84-f61d-42c4-921e-19d011204a87"}
+{"issue_id":"iv-reedh","label":"complexity:3"}
+{"issue_id":"iv-reedh","label":"phase:executing"}
 {"issue_id":"iv-rjz3","label":"complexity:2"}
 {"issue_id":"iv-rjz3","label":"mod:intercore"}
 {"issue_id":"iv-rjz3","label":"theme:architecture"}
