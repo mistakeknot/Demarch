@@ -2215,6 +2215,8 @@
 {"created_at":"2026-02-16T07:59:39Z","created_by":"mk","depends_on_id":"iv-j7uy","issue_id":"iv-zrmk","type":"blocks"}
 {"created_at":"2026-02-20T15:23:46Z","created_by":"mk","depends_on_id":"iv-faq6","issue_id":"iv-zsio","type":"parent-child"}
 {"created_at":"2026-03-06T09:30:56Z","created_by":"2b59431b","depends_on_id":"iv-zsio","issue_id":"iv-zsio.1","type":"parent-child"}
+{"created_at":"2026-03-06T09:31:11Z","created_by":"2b59431b","depends_on_id":"iv-zsio","issue_id":"iv-zsio.2","type":"parent-child"}
+{"created_at":"2026-03-06T09:31:11Z","created_by":"2b59431b","depends_on_id":"iv-zsio","issue_id":"iv-zsio.3","type":"parent-child"}
 {"created_at":"2026-02-14T19:12:53Z","created_by":"mk","depends_on_id":"iv-wb8","issue_id":"iv-zun","type":"blocks"}
 {"created_at":"2026-03-04T15:46:09Z","created_by":"mistakeknot","depends_on_id":"iv-3kwc6","issue_id":"iv-zv5id","type":"blocks"}
 {"created_at":"2026-03-04T15:46:09Z","created_by":"mistakeknot","depends_on_id":"iv-6ixw","issue_id":"iv-zv5id","type":"blocks"}
