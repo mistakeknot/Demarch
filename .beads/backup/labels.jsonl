@@ -2758,6 +2758,7 @@
 {"issue_id":"iv-fo0rx","label":"claimed_at:1772762038"}
 {"issue_id":"iv-fo0rx","label":"claimed_by:915d7fe0-1688-408d-bd14-177f1e2a0ff3"}
 {"issue_id":"iv-fo0rx","label":"complexity:3"}
+{"issue_id":"iv-fo0rx","label":"phase:shipping"}
 {"issue_id":"iv-fos3","label":"mod:intercore"}
 {"issue_id":"iv-fos3","label":"phase:strategized"}
 {"issue_id":"iv-fos3","label":"theme:architecture"}
