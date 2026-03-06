@@ -6,7 +6,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
-ROOT_ROADMAP_CANONICAL="$ROOT_DOCS_DIR/demarch-roadmap.md"
+ROADMAP_PROJECT="${ROADMAP_PROJECT:-$(basename "$ROOT_DIR" | tr '[:upper:]' '[:lower:]')}"
+ROOT_ROADMAP_CANONICAL="$ROOT_DOCS_DIR/${ROADMAP_PROJECT}-roadmap.md"
 EM_DASH="—"
 
 require() {
@@ -604,8 +605,8 @@ cross_json="$(jq -s '.' "$CROSS_FILE")"
 no_roadmap_json="$(jq -s '.' "$NO_ROADMAP_FILE")"
 
 if ! jq -n \
-    --arg project "Demarch" \
-    --arg kind "demarch-monorepo-roadmap" \
+    --arg project "$ROADMAP_PROJECT" \
+    --arg kind "${ROADMAP_PROJECT}-monorepo-roadmap" \
     --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%S%:z)" \
     --argjson module_count "$module_count" \
     --argjson open_beads "$open_beads" \
