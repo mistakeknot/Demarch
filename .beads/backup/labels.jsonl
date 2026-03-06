@@ -2638,7 +2638,12 @@
 {"issue_id":"iv-exos","label":"phase:planned"}
 {"issue_id":"iv-exos","label":"theme:research"}
 {"issue_id":"iv-exos.1","label":"theme:docs"}
+{"issue_id":"iv-ey5wb","label":"auto_advance:true"}
+{"issue_id":"iv-ey5wb","label":"claimed_at:1772813490"}
+{"issue_id":"iv-ey5wb","label":"claimed_by:8cde8f84-f61d-42c4-921e-19d011204a87"}
+{"issue_id":"iv-ey5wb","label":"complexity:3"}
 {"issue_id":"iv-ey5wb","label":"mod:demarch"}
+{"issue_id":"iv-ey5wb","label":"sprint:true"}
 {"issue_id":"iv-ey5wb","label":"theme:docs"}
 {"issue_id":"iv-ey5wb","label":"theme:strategy"}
 {"issue_id":"iv-ey6s","label":"mod:interflux"}
