@@ -7721,3 +7721,5 @@
 {"actor":"8cde8f84","comment":"Added label: claimed_at:1772819859","created_at":"2026-03-06T09:57:39Z","event_type":"label_added","id":7788,"issue_id":"iv-4qpc5","new_value":null,"old_value":null}
 {"actor":"8cde8f84","comment":null,"created_at":"2026-03-06T10:07:04Z","event_type":"created","id":7789,"issue_id":"iv-4qpc5.4","new_value":"","old_value":""}
 {"actor":"8cde8f84","comment":"Added label: phase:executing","created_at":"2026-03-06T10:07:04Z","event_type":"label_added","id":7790,"issue_id":"iv-4qpc5","new_value":null,"old_value":null}
+{"actor":"8cde8f84","comment":null,"created_at":"2026-03-06T10:10:17Z","event_type":"closed","id":7791,"issue_id":"iv-4qpc5","new_value":"Shipped: cross-doc consistency in interwatch-audit.py (Option C)","old_value":""}
+{"actor":"2b59431b","comment":null,"created_at":"2026-03-06T10:11:02Z","event_type":"closed","id":7792,"issue_id":"iv-zsio","new_value":"Enriched discovery presentation: metadata extraction in lib-discovery.sh, review_discovery action in route.md, 7 BATS tests","old_value":""}
