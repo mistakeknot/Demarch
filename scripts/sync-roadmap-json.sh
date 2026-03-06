@@ -6,6 +6,16 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
+
+# Read project config from .interwatch/project.yaml if available
+_PROJECT_YAML="$ROOT_DIR/.interwatch/project.yaml"
+if [ -z "${ROADMAP_PROJECT:-}" ] && [ -f "$_PROJECT_YAML" ] && command -v yq >/dev/null 2>&1; then
+    ROADMAP_PROJECT="$(yq -r '.project // ""' "$_PROJECT_YAML")"
+    if [ -z "${ROADMAP_SCAN_DIRS:-}" ]; then
+        _yaml_dirs="$(yq -r '.roadmap.scan_dirs // [] | join(":")' "$_PROJECT_YAML")"
+        [ -n "$_yaml_dirs" ] && ROADMAP_SCAN_DIRS="$_yaml_dirs"
+    fi
+fi
 ROADMAP_PROJECT="${ROADMAP_PROJECT:-$(basename "$ROOT_DIR" | tr '[:upper:]' '[:lower:]')}"
 ROOT_ROADMAP_CANONICAL="$ROOT_DOCS_DIR/${ROADMAP_PROJECT}-roadmap.md"
 EM_DASH="—"
