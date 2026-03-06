@@ -1,0 +1,53 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 300
+
+stages:
+  - name: "Kernel helpers"
+    tasks:
+      - id: task-1
+        title: "Add _submit_to_kernel helper to OutputPipeline"
+        files: [interverse/interject/src/interject/outputs.py, interverse/interject/tests/test_outputs.py]
+        depends: []
+      - id: task-2
+        title: "Add _promote_in_kernel helper to OutputPipeline"
+        files: [interverse/interject/src/interject/outputs.py, interverse/interject/tests/test_outputs.py]
+        depends: [task-1]
+
+  - name: "Core integration"
+    tasks:
+      - id: task-3
+        title: "Modify process() for tier-gated bead creation"
+        files: [interverse/interject/src/interject/outputs.py, interverse/interject/tests/test_outputs.py]
+        depends: [task-1, task-2]
+      - id: task-4
+        title: "Update scanner to pass discovery_id to process()"
+        files: [interverse/interject/src/interject/scanner.py]
+        depends: [task-3]
+
+  - name: "Consumer features"
+    tasks:
+      - id: task-5
+        title: "Create /interject:triage skill"
+        files: [interverse/interject/skills/triage/SKILL.md]
+        depends: []
+      - id: task-6
+        title: "Write backlog sweep script"
+        files: [scripts/backlog-sweep.sh]
+        depends: []
+        tier: fast
+
+  - name: "Documentation and verification"
+    tasks:
+      - id: task-7
+        title: "Update interject CLAUDE.md for kernel-native status"
+        files: [interverse/interject/CLAUDE.md]
+        depends: []
+        tier: fast
+      - id: task-8
+        title: "Run full test suite and verify"
+        files: []
+        depends: [task-1, task-2, task-3, task-4]
+        tier: fast

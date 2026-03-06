@@ -1,98 +1,118 @@
 #!/usr/bin/env bash
-# One-time backlog sweep: defer/close stale beads to reduce open count.
-# Usage: bash scripts/backlog-sweep.sh [--apply]
-#
-# Default: dry-run mode (prints what would change, no mutations).
-# Pass --apply to execute the changes.
 set -euo pipefail
 
+# One-time backlog sweep: defer or close stale interject beads.
+# Usage: bash scripts/backlog-sweep.sh [--apply] [--stale-days=N]
+#
+# Dry-run by default. Pass --apply to execute changes.
+# Only targets beads with [interject] title prefix.
+# Never touches P0/P1 beads.
+
 APPLY=false
-STALE_DAYS=${STALE_DAYS:-30}
-INTERJECT_CLOSE_DAYS=${INTERJECT_CLOSE_DAYS:-14}
+STALE_DAYS=30
 
-if [[ "${1:-}" == "--apply" ]]; then
-    APPLY=true
-fi
+for arg in "$@"; do
+    case "$arg" in
+        --apply) APPLY=true ;;
+        --stale-days=*) STALE_DAYS="${arg#*=}" ;;
+        *) echo "Usage: $0 [--apply] [--stale-days=N]"; exit 1 ;;
+    esac
+done
 
-# Ensure bd is available
-if ! command -v bd &>/dev/null; then
-    echo "ERROR: bd CLI not found" >&2
+export BEADS_DIR="${BEADS_DIR:-$(git rev-parse --show-toplevel 2>/dev/null)/.beads}"
+
+if ! command -v bd >/dev/null 2>&1; then
+    echo "Error: bd CLI not found" >&2
     exit 1
 fi
 
-echo "Backlog sweep — stale_days=$STALE_DAYS, interject_close_days=$INTERJECT_CLOSE_DAYS"
-echo "Mode: $([ "$APPLY" = true ] && echo "APPLY" || echo "DRY-RUN")"
+echo "Backlog sweep — $(date -Iseconds)"
+echo "Mode: $( $APPLY && echo 'APPLY' || echo 'DRY-RUN' )"
+echo "Stale threshold: ${STALE_DAYS} days"
 echo "---"
 
-defer_count=0
-close_count=0
-skip_count=0
-protect_count=0
+now=$(date +%s)
+stale_threshold=$((now - STALE_DAYS * 86400))
+
+closed=0
+deferred=0
+candidates=0
+examined=0
 
 # Get all open beads as JSON
-beads_json=$(BEADS_DIR="${BEADS_DIR:-}" bd list --status=open --json 2>/dev/null) || {
-    echo "ERROR: failed to list beads" >&2
+beads_json=$(bd list --status=open --json 2>/dev/null) || {
+    echo "Error: bd list failed" >&2
     exit 1
 }
 
-bead_count=$(echo "$beads_json" | jq 'length')
-echo "Open beads: $bead_count"
+count=$(echo "$beads_json" | jq 'length')
+echo "Total open beads: $count"
 echo ""
 
-now_epoch=$(date +%s)
-stale_epoch=$((now_epoch - STALE_DAYS * 86400))
-interject_epoch=$((now_epoch - INTERJECT_CLOSE_DAYS * 86400))
+echo "$beads_json" | jq -c '.[]' | while IFS= read -r bead; do
+    title=$(echo "$bead" | jq -r '.title // ""')
+    id=$(echo "$bead" | jq -r '.id // ""')
+    priority=$(echo "$bead" | jq -r '.priority // 4')
+    updated=$(echo "$bead" | jq -r '.updated_at // ""')
 
-while IFS= read -r bead; do
-    id=$(echo "$bead" | jq -r '.id')
-    title=$(echo "$bead" | jq -r '.title')
-    priority=$(echo "$bead" | jq -r '.priority // 4 | floor')
-    updated=$(echo "$bead" | jq -r '.updated_at // .created_at // ""')
+    # Only target [interject] beads
+    case "$title" in
+        "[interject]"*) ;;
+        *) continue ;;
+    esac
 
-    # Priority guard FIRST — never sweep P0 or P1
+    examined=$((examined + 1))
+
+    # Never touch P0/P1
     if [[ "$priority" -le 1 ]]; then
-        protect_count=$((protect_count + 1))
         continue
     fi
 
-    # Parse updated_at to epoch (handle ISO format)
-    if [[ -z "$updated" ]]; then
-        continue
-    fi
-    updated_epoch=$(date -d "$updated" +%s 2>/dev/null) || continue
-
-    # Interject-originated beads with no activity: close after INTERJECT_CLOSE_DAYS
-    if [[ "$title" == "[interject]"* ]] && [[ "$updated_epoch" -lt "$interject_epoch" ]]; then
-        if [[ "$APPLY" == true ]]; then
-            bd close "$id" --reason="stale-sweep: interject item, no activity for ${INTERJECT_CLOSE_DAYS}d" 2>/dev/null && \
-                echo "CLOSED: $id — $title" || \
-                echo "FAILED to close: $id"
-        else
-            echo "WOULD CLOSE: $id — $title (interject, updated $(date -d "@$updated_epoch" +%Y-%m-%d))"
+    # Check staleness
+    if [[ -n "$updated" ]]; then
+        updated_epoch=$(date -d "$updated" +%s 2>/dev/null) || continue
+        if [[ "$updated_epoch" -gt "$stale_threshold" ]]; then
+            continue
         fi
-        close_count=$((close_count + 1))
-        continue
     fi
 
-    # General stale beads (P2+): defer after STALE_DAYS
-    if [[ "$updated_epoch" -lt "$stale_epoch" ]]; then
-        if [[ "$APPLY" == true ]]; then
-            bd update "$id" --status=deferred 2>/dev/null && \
-                echo "DEFERRED: $id — $title" || \
-                echo "FAILED to defer: $id"
+    # Check for phase state (has human interacted?)
+    phase_result=$(bd state "$id" phase 2>/dev/null) || phase_result=""
+    case "$phase_result" in
+        ""|*"no "*|*"not set"*) ;;  # No phase — candidate
+        *) continue ;;              # Has phase — skip
+    esac
+
+    candidates=$((candidates + 1))
+
+    if [[ "$priority" -ge 3 ]]; then
+        # P3+ → close
+        if $APPLY; then
+            bd close "$id" --reason="stale-sweep: ${STALE_DAYS}d inactive, no phase state" 2>/dev/null || true
+            echo "CLOSED:   $id (P${priority}) — ${title:0:80}"
         else
-            echo "WOULD DEFER: $id — $title (updated $(date -d "@$updated_epoch" +%Y-%m-%d))"
+            echo "WOULD CLOSE:  $id (P${priority}) — ${title:0:80}"
         fi
-        defer_count=$((defer_count + 1))
-        continue
+        closed=$((closed + 1))
+    else
+        # P2 → defer
+        if $APPLY; then
+            bd update "$id" --status=deferred 2>/dev/null || true
+            echo "DEFERRED: $id (P${priority}) — ${title:0:80}"
+        else
+            echo "WOULD DEFER:  $id (P${priority}) — ${title:0:80}"
+        fi
+        deferred=$((deferred + 1))
     fi
-
-    skip_count=$((skip_count + 1))
-done < <(echo "$beads_json" | jq -c '.[]')
+done
 
 echo ""
-echo "Summary:"
-echo "  Protected (P0/P1): $protect_count"
-echo "  Would close (interject stale): $close_count"
-echo "  Would defer (general stale): $defer_count"
-echo "  Kept (recent enough): $skip_count"
+echo "---"
+echo "Examined: ${examined} interject beads"
+echo "Candidates: ${candidates} (stale, no phase state)"
+echo "  Close: ${closed}"
+echo "  Defer: ${deferred}"
+if ! $APPLY; then
+    echo ""
+    echo "(dry-run — pass --apply to execute)"
+fi

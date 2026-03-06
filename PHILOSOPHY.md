@@ -121,7 +121,19 @@ Note: this is the *human delegation* ladder — how much authority the human del
 
 **Agent architecture.** Many small agents with explicit scope over monolithic generalists. Route to the best model for the job — automated measurement determines which. Multi-model diversity is an epistemic hedge: different models have different blind spots, and disagreement is signal. Routing evolves from static tiers through complexity-aware to fully adaptive, where selection becomes empirical.
 
-**Plugin ecosystem.** Keep splitting. Each plugin does one thing well. The right count is however many single-responsibility units exist. Growth is a feature. Plugins are dumb and independent (fail-open, standalone viable). The platform is smart and aware (recommends compositions, detects missing companions). Plugins declare capabilities; the platform composes them. Plugins are Actions with declared effects; the platform is the RunGraph.
+**Plugin ecosystem.** Keep splitting. Each plugin does one thing well. The right count is however many single-responsibility units exist. Growth is a feature. Plugins declare capabilities; the platform composes them. Plugins are Actions with declared effects; the platform is the RunGraph.
+
+Plugins exist in two tiers:
+
+- **Standalone plugins** (default): Fail-open, degrade gracefully without intercore. Value proposition is self-contained. The platform recommends compositions and detects missing companions, but no plugin requires another to function. Examples: interlens, interlock, interkasten, tldr-swinton.
+- **Kernel-native plugins**: May require intercore as a hard dependency. These are extensions of kernel subsystems — their value IS the kernel integration. Forcing standalone mode would create parallel stores that diverge, which is worse than the dependency. Examples: interject (discovery inflow), interspect (evidence pipeline), interphase (sprint discovery).
+
+Criteria for kernel-native designation:
+1. Plugin feeds or consumes a kernel subsystem (discovery, events, dispatch, runs).
+2. Standalone mode would require duplicating kernel state into a local store.
+3. The plugin's downstream consumers (routing, events, gates) depend on kernel integration.
+
+The bar is high — kernel-native is earned by architectural role, not convenience. Most plugins should be standalone. When in doubt, standalone wins.
 
 **External tools.** Adopt mature external tools as dependencies rather than rebuilding them. If a tool is well-maintained, useful, and not worth reinventing, install the binary and call it from Demarch — the same way `bd` (beads) works today. The verdict tiers are: adopt (wire in directly), port-partially (extract patterns or algorithms), inspire-only (borrow design ideas), skip. Source doesn't matter — evaluate the tool, not the contributor. Rebuilding a working tool is accidental complexity; composing with it is the Unix way.
 
