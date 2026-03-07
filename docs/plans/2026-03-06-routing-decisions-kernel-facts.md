@@ -42,4 +42,4 @@ stage: executing
 ### Task 5: Run tests and commit
 
 - [x] `go test ./...` passes (807 passed, 2 pre-existing failures in event package)
-- [ ] Commit from core/intercore directory
+- [x] Commit from core/intercore directory
