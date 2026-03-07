@@ -1,0 +1,36 @@
+name: Rig Drift Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "os/clavain/agent-rig.json"
+      - "interverse/**/.claude-plugin/plugin.json"
+  pull_request:
+    paths:
+      - "os/clavain/agent-rig.json"
+      - "interverse/**/.claude-plugin/plugin.json"
+  schedule:
+    - cron: "0 7 * * 1"  # Weekly Monday 7am UTC
+  workflow_dispatch:
+
+jobs:
+  check-drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check rig drift
+        run: bash scripts/check-rig-drift.sh --verbose
