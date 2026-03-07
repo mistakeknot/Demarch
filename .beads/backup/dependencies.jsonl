@@ -1203,6 +1203,9 @@
 {"created_at":"2026-02-20T07:14:41Z","created_by":"d1527394","depends_on_id":"iv-8jpf","issue_id":"iv-iih0","type":"blocks"}
 {"created_at":"2026-02-20T07:14:50Z","created_by":"d1527394","depends_on_id":"iv-iih0","issue_id":"iv-iih0.1","type":"parent-child"}
 {"created_at":"2026-03-06T18:42:37Z","created_by":"mistakeknot","depends_on_id":"iv-fkjam","issue_id":"iv-iqrv6","type":"blocks"}
+{"created_at":"2026-03-06T19:32:27Z","created_by":"mistakeknot","depends_on_id":"iv-iqrv6","issue_id":"iv-iqrv6.1","type":"parent-child"}
+{"created_at":"2026-03-06T19:32:27Z","created_by":"mistakeknot","depends_on_id":"iv-iqrv6","issue_id":"iv-iqrv6.2","type":"parent-child"}
+{"created_at":"2026-03-06T19:32:28Z","created_by":"mistakeknot","depends_on_id":"iv-iqrv6","issue_id":"iv-iqrv6.3","type":"parent-child"}
 {"created_at":"2026-02-19T07:41:17Z","created_by":"d1527394","depends_on_id":"iv-9plh","issue_id":"iv-ishl","type":"blocks"}
 {"created_at":"2026-02-19T07:41:15Z","created_by":"d1527394","depends_on_id":"iv-c6az","issue_id":"iv-ishl","type":"blocks"}
 {"created_at":"2026-02-20T10:52:41Z","created_by":"d1527394","depends_on_id":"iv-ishl","issue_id":"iv-ishl.1","type":"parent-child"}
