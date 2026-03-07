@@ -21568,3 +21568,753 @@ time="2026-03-06T18:42:14-08:00" level=info msg=ConnectionClosed connectionID=16
 time="2026-03-06T18:42:19-08:00" level=info msg=ConnectionClosed connectionID=4
 time="2026-03-06T18:42:19-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=170
 time="2026-03-06T18:42:19-08:00" level=info msg=ConnectionClosed connectionID=170
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=171
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=172
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=171
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=173
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=172
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=173
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=174
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=174
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=175
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=176
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=175
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=176
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=177
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=177
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=178
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=179
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=179
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=178
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=180
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=180
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=181
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=181
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=183
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=182
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=182
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=184
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=183
+time="2026-03-06T18:42:20-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:20.180748836 -0800 PST m=+615.338204312" connectionDb=beads_iv connectionID=184 error="nothing to commit" queryTime="2026-03-06 18:42:20.191431937 -0800 PST m=+615.348887444"
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=186
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=185
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=185
+time="2026-03-06T18:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=187
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=186
+time="2026-03-06T18:42:20-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:20.180748836 -0800 PST m=+615.338204312" connectionDb=beads_iv connectionID=184 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:20.259089325 -0800 PST m=+615.416544801"
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=184
+time="2026-03-06T18:42:20-08:00" level=info msg=ConnectionClosed connectionID=187
+time="2026-03-06T18:42:26-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=188
+time="2026-03-06T18:42:26-08:00" level=info msg=ConnectionClosed connectionID=188
+time="2026-03-06T18:42:26-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=189
+time="2026-03-06T18:42:26-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=190
+time="2026-03-06T18:42:26-08:00" level=info msg=ConnectionClosed connectionID=189
+time="2026-03-06T18:42:26-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:26.604717391 -0800 PST m=+621.762172866" connectionDb=beads_iv connectionID=190 error="nothing to commit" queryTime="2026-03-06 18:42:26.62555878 -0800 PST m=+621.783014266"
+time="2026-03-06T18:42:26-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:26.604717391 -0800 PST m=+621.762172866" connectionDb=beads_iv connectionID=190 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:26.715998527 -0800 PST m=+621.873454023"
+time="2026-03-06T18:42:26-08:00" level=info msg=ConnectionClosed connectionID=190
+time="2026-03-06T18:42:28-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=191
+time="2026-03-06T18:42:28-08:00" level=info msg=ConnectionClosed connectionID=191
+time="2026-03-06T18:42:28-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=192
+time="2026-03-06T18:42:28-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=193
+time="2026-03-06T18:42:28-08:00" level=info msg=ConnectionClosed connectionID=192
+time="2026-03-06T18:42:28-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:28.737708255 -0800 PST m=+623.895163730" connectionDb=beads_iv connectionID=193 error="nothing to commit" queryTime="2026-03-06 18:42:28.752484195 -0800 PST m=+623.909939701"
+time="2026-03-06T18:42:28-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:28.737708255 -0800 PST m=+623.895163730" connectionDb=beads_iv connectionID=193 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:28.828312771 -0800 PST m=+623.985768247"
+time="2026-03-06T18:42:28-08:00" level=info msg=ConnectionClosed connectionID=193
+time="2026-03-06T18:42:31-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=194
+time="2026-03-06T18:42:31-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=195
+time="2026-03-06T18:42:31-08:00" level=info msg=ConnectionClosed connectionID=194
+time="2026-03-06T18:42:31-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=196
+time="2026-03-06T18:42:31-08:00" level=info msg=ConnectionClosed connectionID=195
+time="2026-03-06T18:42:31-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:31.583448333 -0800 PST m=+626.740903819" connectionDb=beads_iv connectionID=196 error="nothing to commit" queryTime="2026-03-06 18:42:31.598869022 -0800 PST m=+626.756324527"
+time="2026-03-06T18:42:31-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:31.583448333 -0800 PST m=+626.740903819" connectionDb=beads_iv connectionID=196 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:31.724982574 -0800 PST m=+626.882438050"
+time="2026-03-06T18:42:31-08:00" level=info msg=ConnectionClosed connectionID=196
+time="2026-03-06T18:42:36-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=197
+time="2026-03-06T18:42:36-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=198
+time="2026-03-06T18:42:36-08:00" level=info msg=ConnectionClosed connectionID=197
+time="2026-03-06T18:42:36-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=199
+time="2026-03-06T18:42:36-08:00" level=info msg=ConnectionClosed connectionID=198
+time="2026-03-06T18:42:36-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:36.962873095 -0800 PST m=+632.120328571" connectionDb=beads_iv connectionID=199 error="nothing to commit" queryTime="2026-03-06 18:42:36.974579386 -0800 PST m=+632.132034872"
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=199
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=200
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=200
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=201
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=202
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=201
+time="2026-03-06T18:42:37-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:37.064128361 -0800 PST m=+632.221583837" connectionDb=beads_iv connectionID=202 error="nothing to commit" queryTime="2026-03-06 18:42:37.074801123 -0800 PST m=+632.232256629"
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=202
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=203
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=204
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=203
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=205
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=204
+time="2026-03-06T18:42:37-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:37.189365606 -0800 PST m=+632.346821102" connectionDb=beads_iv connectionID=205 error="nothing to commit" queryTime="2026-03-06 18:42:37.19929824 -0800 PST m=+632.356753747"
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=205
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=206
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=206
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=207
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=208
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=207
+time="2026-03-06T18:42:37-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:37.303853969 -0800 PST m=+632.461309495" connectionDb=beads_iv connectionID=208 error="nothing to commit" queryTime="2026-03-06 18:42:37.317875553 -0800 PST m=+632.475331059"
+time="2026-03-06T18:42:37-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:37.303853969 -0800 PST m=+632.461309495" connectionDb=beads_iv connectionID=208 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:37.491129599 -0800 PST m=+632.648585076"
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=208
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=209
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=209
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=210
+time="2026-03-06T18:42:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=211
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=210
+time="2026-03-06T18:42:37-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:37.537118345 -0800 PST m=+632.694573831" connectionDb=beads_iv connectionID=211 error="nothing to commit" queryTime="2026-03-06 18:42:37.54496772 -0800 PST m=+632.702423197"
+time="2026-03-06T18:42:37-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:37.537118345 -0800 PST m=+632.694573831" connectionDb=beads_iv connectionID=211 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:37.654707073 -0800 PST m=+632.812162549"
+time="2026-03-06T18:42:37-08:00" level=info msg=ConnectionClosed connectionID=211
+time="2026-03-06T18:42:41-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=212
+time="2026-03-06T18:42:41-08:00" level=info msg=ConnectionClosed connectionID=212
+time="2026-03-06T18:42:41-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=213
+time="2026-03-06T18:42:41-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=214
+time="2026-03-06T18:42:41-08:00" level=info msg=ConnectionClosed connectionID=213
+time="2026-03-06T18:42:41-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:41.561362676 -0800 PST m=+636.718818152" connectionDb=beads_iv connectionID=214 error="nothing to commit" queryTime="2026-03-06 18:42:41.580424487 -0800 PST m=+636.737879993"
+time="2026-03-06T18:42:41-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:41.561362676 -0800 PST m=+636.718818152" connectionDb=beads_iv connectionID=214 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:41.725992362 -0800 PST m=+636.883447839"
+time="2026-03-06T18:42:41-08:00" level=info msg=ConnectionClosed connectionID=214
+time="2026-03-06T18:42:41-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=215
+time="2026-03-06T18:42:41-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=216
+time="2026-03-06T18:42:41-08:00" level=info msg=ConnectionClosed connectionID=215
+time="2026-03-06T18:42:41-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=217
+time="2026-03-06T18:42:41-08:00" level=info msg=ConnectionClosed connectionID=216
+time="2026-03-06T18:42:41-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:41.784417379 -0800 PST m=+636.941872854" connectionDb=beads_iv connectionID=217 error="nothing to commit" queryTime="2026-03-06 18:42:41.794505694 -0800 PST m=+636.951961180"
+time="2026-03-06T18:42:41-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:41.784417379 -0800 PST m=+636.941872854" connectionDb=beads_iv connectionID=217 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:41.903969819 -0800 PST m=+637.061425295"
+time="2026-03-06T18:42:41-08:00" level=info msg=ConnectionClosed connectionID=217
+time="2026-03-06T18:42:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=218
+time="2026-03-06T18:42:47-08:00" level=info msg=ConnectionClosed connectionID=218
+time="2026-03-06T18:42:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=219
+time="2026-03-06T18:42:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=220
+time="2026-03-06T18:42:47-08:00" level=info msg=ConnectionClosed connectionID=219
+time="2026-03-06T18:42:47-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:47.771198789 -0800 PST m=+642.928654266" connectionDb=beads_iv connectionID=220 error="nothing to commit" queryTime="2026-03-06 18:42:47.785474851 -0800 PST m=+642.942930337"
+time="2026-03-06T18:42:47-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:47.771198789 -0800 PST m=+642.928654266" connectionDb=beads_iv connectionID=220 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:47.866133055 -0800 PST m=+643.023588531"
+time="2026-03-06T18:42:47-08:00" level=info msg=ConnectionClosed connectionID=220
+time="2026-03-06T18:42:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=221
+time="2026-03-06T18:42:50-08:00" level=info msg=ConnectionClosed connectionID=221
+time="2026-03-06T18:42:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=222
+time="2026-03-06T18:42:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=223
+time="2026-03-06T18:42:50-08:00" level=info msg=ConnectionClosed connectionID=222
+time="2026-03-06T18:42:50-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:50.620189256 -0800 PST m=+645.777644732" connectionDb=beads_iv connectionID=223 error="nothing to commit" queryTime="2026-03-06 18:42:50.631781534 -0800 PST m=+645.789237040"
+time="2026-03-06T18:42:50-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:42:50.620189256 -0800 PST m=+645.777644732" connectionDb=beads_iv connectionID=223 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:42:50.711143435 -0800 PST m=+645.868598912"
+time="2026-03-06T18:42:50-08:00" level=info msg=ConnectionClosed connectionID=223
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=224
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=224
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=225
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=226
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=225
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=226
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=228
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=227
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=227
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=229
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=228
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=229
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=230
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=230
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=231
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=232
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=231
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=232
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=233
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=233
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=234
+time="2026-03-06T18:42:54-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=235
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=234
+time="2026-03-06T18:42:54-08:00" level=info msg=ConnectionClosed connectionID=235
+time="2026-03-06T18:46:24-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=236
+time="2026-03-06T18:46:24-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=237
+time="2026-03-06T18:46:24-08:00" level=info msg=ConnectionClosed connectionID=236
+time="2026-03-06T18:46:24-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=238
+time="2026-03-06T18:46:24-08:00" level=info msg=ConnectionClosed connectionID=237
+time="2026-03-06T18:46:24-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:24.676088354 -0800 PST m=+859.833543830" connectionDb=beads_iv connectionID=238 error="nothing to commit" queryTime="2026-03-06 18:46:24.692978956 -0800 PST m=+859.850434452"
+time="2026-03-06T18:46:24-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:24.676088354 -0800 PST m=+859.833543830" connectionDb=beads_iv connectionID=238 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:46:24.780567891 -0800 PST m=+859.938023366"
+time="2026-03-06T18:46:24-08:00" level=info msg=ConnectionClosed connectionID=238
+time="2026-03-06T18:46:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=239
+time="2026-03-06T18:46:27-08:00" level=info msg=ConnectionClosed connectionID=239
+time="2026-03-06T18:46:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=240
+time="2026-03-06T18:46:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=241
+time="2026-03-06T18:46:27-08:00" level=info msg=ConnectionClosed connectionID=240
+time="2026-03-06T18:46:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:27.597249427 -0800 PST m=+862.754704903" connectionDb=beads_iv connectionID=241 error="nothing to commit" queryTime="2026-03-06 18:46:27.625398298 -0800 PST m=+862.782853794"
+time="2026-03-06T18:46:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:27.597249427 -0800 PST m=+862.754704903" connectionDb=beads_iv connectionID=241 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:46:27.772289967 -0800 PST m=+862.929745443"
+time="2026-03-06T18:46:27-08:00" level=info msg=ConnectionClosed connectionID=241
+time="2026-03-06T18:46:33-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=242
+time="2026-03-06T18:46:33-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=243
+time="2026-03-06T18:46:33-08:00" level=info msg=ConnectionClosed connectionID=242
+time="2026-03-06T18:46:33-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=244
+time="2026-03-06T18:46:33-08:00" level=info msg=ConnectionClosed connectionID=243
+time="2026-03-06T18:46:33-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:33.963002057 -0800 PST m=+869.120457533" connectionDb=beads_iv connectionID=244 error="nothing to commit" queryTime="2026-03-06 18:46:33.971746189 -0800 PST m=+869.129201675"
+time="2026-03-06T18:46:34-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:33.963002057 -0800 PST m=+869.120457533" connectionDb=beads_iv connectionID=244 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:46:34.050468201 -0800 PST m=+869.207923727"
+time="2026-03-06T18:46:34-08:00" level=info msg=ConnectionClosed connectionID=244
+time="2026-03-06T18:46:34-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=246
+time="2026-03-06T18:46:34-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=245
+time="2026-03-06T18:46:34-08:00" level=info msg=ConnectionClosed connectionID=245
+time="2026-03-06T18:46:34-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=247
+time="2026-03-06T18:46:34-08:00" level=info msg=ConnectionClosed connectionID=246
+time="2026-03-06T18:46:34-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:34.092561115 -0800 PST m=+869.250016591" connectionDb=beads_iv connectionID=247 error="nothing to commit" queryTime="2026-03-06 18:46:34.106582376 -0800 PST m=+869.264037882"
+time="2026-03-06T18:46:34-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:46:34.092561115 -0800 PST m=+869.250016591" connectionDb=beads_iv connectionID=247 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:46:34.171629156 -0800 PST m=+869.329084632"
+time="2026-03-06T18:46:34-08:00" level=info msg=ConnectionClosed connectionID=247
+time="2026-03-06T18:47:04-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=249
+time="2026-03-06T18:47:04-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=248
+time="2026-03-06T18:47:04-08:00" level=info msg=ConnectionClosed connectionID=248
+time="2026-03-06T18:47:04-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=250
+time="2026-03-06T18:47:04-08:00" level=info msg=ConnectionClosed connectionID=249
+time="2026-03-06T18:47:04-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:47:04.853871265 -0800 PST m=+900.011326742" connectionDb=beads_iv connectionID=250 error="nothing to commit" queryTime="2026-03-06 18:47:04.868293117 -0800 PST m=+900.025748603"
+time="2026-03-06T18:47:04-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:47:04.853871265 -0800 PST m=+900.011326742" connectionDb=beads_iv connectionID=250 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:47:04.923843603 -0800 PST m=+900.081299079"
+time="2026-03-06T18:47:04-08:00" level=info msg=ConnectionClosed connectionID=250
+time="2026-03-06T18:47:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=251
+time="2026-03-06T18:47:09-08:00" level=info msg=ConnectionClosed connectionID=251
+time="2026-03-06T18:47:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=252
+time="2026-03-06T18:47:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=253
+time="2026-03-06T18:47:09-08:00" level=info msg=ConnectionClosed connectionID=252
+time="2026-03-06T18:47:09-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:47:09.411178368 -0800 PST m=+904.568633844" connectionDb=beads_iv connectionID=253 error="nothing to commit" queryTime="2026-03-06 18:47:09.436160067 -0800 PST m=+904.593615563"
+time="2026-03-06T18:47:09-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:47:09.411178368 -0800 PST m=+904.568633844" connectionDb=beads_iv connectionID=253 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:47:09.653583288 -0800 PST m=+904.811038794"
+time="2026-03-06T18:47:09-08:00" level=info msg=ConnectionClosed connectionID=253
+time="2026-03-06T18:48:29-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=254
+time="2026-03-06T18:48:29-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=255
+time="2026-03-06T18:48:29-08:00" level=info msg=ConnectionClosed connectionID=254
+time="2026-03-06T18:48:29-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=256
+time="2026-03-06T18:48:29-08:00" level=info msg=ConnectionClosed connectionID=255
+time="2026-03-06T18:48:29-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:29.201887554 -0800 PST m=+984.359343031" connectionDb=beads_iv connectionID=256 error="nothing to commit" queryTime="2026-03-06 18:48:29.210980039 -0800 PST m=+984.368435544"
+time="2026-03-06T18:48:29-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:29.201887554 -0800 PST m=+984.359343031" connectionDb=beads_iv connectionID=256 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:48:29.304846428 -0800 PST m=+984.462301904"
+time="2026-03-06T18:48:29-08:00" level=info msg=ConnectionClosed connectionID=256
+time="2026-03-06T18:48:29-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=257
+time="2026-03-06T18:48:29-08:00" level=info msg=ConnectionClosed connectionID=257
+time="2026-03-06T18:48:29-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=258
+time="2026-03-06T18:48:29-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=259
+time="2026-03-06T18:48:29-08:00" level=info msg=ConnectionClosed connectionID=258
+time="2026-03-06T18:48:29-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:29.418306228 -0800 PST m=+984.575761703" connectionDb=beads_iv connectionID=259 error="nothing to commit" queryTime="2026-03-06 18:48:29.434153581 -0800 PST m=+984.591609057"
+time="2026-03-06T18:48:29-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:29.418306228 -0800 PST m=+984.575761703" connectionDb=beads_iv connectionID=259 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:48:29.506610485 -0800 PST m=+984.664065961"
+time="2026-03-06T18:48:29-08:00" level=info msg=ConnectionClosed connectionID=259
+time="2026-03-06T18:48:36-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=261
+time="2026-03-06T18:48:36-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=260
+time="2026-03-06T18:48:36-08:00" level=info msg=ConnectionClosed connectionID=260
+time="2026-03-06T18:48:36-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=262
+time="2026-03-06T18:48:36-08:00" level=info msg=ConnectionClosed connectionID=261
+time="2026-03-06T18:48:36-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:36.443033045 -0800 PST m=+991.600488521" connectionDb=beads_iv connectionID=262 error="nothing to commit" queryTime="2026-03-06 18:48:36.456722852 -0800 PST m=+991.614178359"
+time="2026-03-06T18:48:36-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:36.443033045 -0800 PST m=+991.600488521" connectionDb=beads_iv connectionID=262 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:48:36.489823117 -0800 PST m=+991.647278633"
+time="2026-03-06T18:48:36-08:00" level=info msg=ConnectionClosed connectionID=262
+time="2026-03-06T18:48:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=263
+time="2026-03-06T18:48:50-08:00" level=info msg=ConnectionClosed connectionID=263
+time="2026-03-06T18:48:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=264
+time="2026-03-06T18:48:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=265
+time="2026-03-06T18:48:50-08:00" level=info msg=ConnectionClosed connectionID=264
+time="2026-03-06T18:48:50-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:50.427778106 -0800 PST m=+1005.585233581" connectionDb=beads_iv connectionID=265 error="nothing to commit" queryTime="2026-03-06 18:48:50.437540235 -0800 PST m=+1005.594995712"
+time="2026-03-06T18:48:50-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:48:50.427778106 -0800 PST m=+1005.585233581" connectionDb=beads_iv connectionID=265 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:48:50.467578947 -0800 PST m=+1005.625034423"
+time="2026-03-06T18:48:50-08:00" level=info msg=ConnectionClosed connectionID=265
+time="2026-03-06T18:49:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=266
+time="2026-03-06T18:49:48-08:00" level=info msg=ConnectionClosed connectionID=266
+time="2026-03-06T18:49:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=267
+time="2026-03-06T18:49:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=268
+time="2026-03-06T18:49:48-08:00" level=info msg=ConnectionClosed connectionID=267
+time="2026-03-06T18:49:48-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:49:48.797355283 -0800 PST m=+1063.954810758" connectionDb=beads_iv connectionID=268 error="nothing to commit" queryTime="2026-03-06 18:49:48.809163791 -0800 PST m=+1063.966619266"
+time="2026-03-06T18:49:51-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:49:48.797355283 -0800 PST m=+1063.954810758" connectionDb=beads_iv connectionID=268 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:49:51.472903381 -0800 PST m=+1066.630358856"
+time="2026-03-06T18:49:51-08:00" level=info msg=ConnectionClosed connectionID=268
+time="2026-03-06T18:50:10-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=269
+time="2026-03-06T18:50:10-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=270
+time="2026-03-06T18:50:10-08:00" level=info msg=ConnectionClosed connectionID=269
+time="2026-03-06T18:50:10-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=271
+time="2026-03-06T18:50:10-08:00" level=info msg=ConnectionClosed connectionID=270
+time="2026-03-06T18:50:10-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:50:10.274409968 -0800 PST m=+1085.431865444" connectionDb=beads_iv connectionID=271 error="nothing to commit" queryTime="2026-03-06 18:50:10.290110475 -0800 PST m=+1085.447565972"
+time="2026-03-06T18:50:10-08:00" level=warning msg="error running query" connectTime="2026-03-06 18:50:10.274409968 -0800 PST m=+1085.431865444" connectionDb=beads_iv connectionID=271 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 18:50:10.379365239 -0800 PST m=+1085.536820715"
+time="2026-03-06T18:50:10-08:00" level=info msg=ConnectionClosed connectionID=271
+time="2026-03-06T19:02:13-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=272
+time="2026-03-06T19:02:13-08:00" level=info msg=ConnectionClosed connectionID=272
+time="2026-03-06T19:02:13-08:00" level=info msg="Server closing listener. No longer accepting connections."
+time="2026-03-06T19:02:13-08:00" level=info msg="stats stopped: context canceled"
+Starting server with Config HP="127.0.0.1:3307"|T="28800000"|R="false"|L="info"
+time="2026-03-06T19:32:11-08:00" level=info msg="Server ready. Accepting connections."
+time="2026-03-06T19:32:11-08:00" level=warning msg="secure_file_priv is set to \"\", which is insecure."
+time="2026-03-06T19:32:11-08:00" level=warning msg="Any user with GRANT FILE privileges will be able to read any file which the sql-server process can read."
+time="2026-03-06T19:32:11-08:00" level=warning msg="Please consider restarting the server with secure_file_priv set to a safe (or non-existent) directory."
+time="2026-03-06T19:32:11-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=1
+time="2026-03-06T19:32:11-08:00" level=info msg=ConnectionClosed connectionID=1
+time="2026-03-06T19:32:11-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=2
+time="2026-03-06T19:32:11-08:00" level=info msg=ConnectionClosed connectionID=2
+time="2026-03-06T19:32:11-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=3
+time="2026-03-06T19:32:11-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=4
+time="2026-03-06T19:32:11-08:00" level=info msg=ConnectionClosed connectionID=3
+time="2026-03-06T19:32:11-08:00" level=info msg=ConnectionClosed connectionID=4
+time="2026-03-06T19:32:15-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=5
+time="2026-03-06T19:32:15-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=6
+time="2026-03-06T19:32:15-08:00" level=info msg=ConnectionClosed connectionID=5
+time="2026-03-06T19:32:15-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=7
+time="2026-03-06T19:32:15-08:00" level=info msg=ConnectionClosed connectionID=6
+time="2026-03-06T19:32:15-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:15.98051458 -0800 PST m=+4.736061408" connectionDb=beads_iv connectionID=7 error="nothing to commit" queryTime="2026-03-06 19:32:15.991023842 -0800 PST m=+4.746570700"
+time="2026-03-06T19:32:18-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:15.98051458 -0800 PST m=+4.736061408" connectionDb=beads_iv connectionID=7 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:18.789513596 -0800 PST m=+7.545060424"
+time="2026-03-06T19:32:18-08:00" level=info msg=ConnectionClosed connectionID=7
+time="2026-03-06T19:32:18-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=8
+time="2026-03-06T19:32:18-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=9
+time="2026-03-06T19:32:18-08:00" level=info msg=ConnectionClosed connectionID=8
+time="2026-03-06T19:32:18-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=10
+time="2026-03-06T19:32:18-08:00" level=info msg=ConnectionClosed connectionID=9
+time="2026-03-06T19:32:18-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:18.903987738 -0800 PST m=+7.659534566" connectionDb=beads_iv connectionID=10 error="nothing to commit" queryTime="2026-03-06 19:32:18.912888804 -0800 PST m=+7.668435642"
+time="2026-03-06T19:32:18-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:18.903987738 -0800 PST m=+7.659534566" connectionDb=beads_iv connectionID=10 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:18.940566099 -0800 PST m=+7.696112928"
+time="2026-03-06T19:32:18-08:00" level=info msg=ConnectionClosed connectionID=10
+time="2026-03-06T19:32:18-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=11
+time="2026-03-06T19:32:18-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=12
+time="2026-03-06T19:32:18-08:00" level=info msg=ConnectionClosed connectionID=11
+time="2026-03-06T19:32:18-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=13
+time="2026-03-06T19:32:18-08:00" level=info msg=ConnectionClosed connectionID=12
+time="2026-03-06T19:32:18-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:18.987225639 -0800 PST m=+7.742772468" connectionDb=beads_iv connectionID=13 error="nothing to commit" queryTime="2026-03-06 19:32:18.996643084 -0800 PST m=+7.752189932"
+time="2026-03-06T19:32:19-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:18.987225639 -0800 PST m=+7.742772468" connectionDb=beads_iv connectionID=13 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:19.027931443 -0800 PST m=+7.783478271"
+time="2026-03-06T19:32:19-08:00" level=info msg=ConnectionClosed connectionID=13
+time="2026-03-06T19:32:19-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=14
+time="2026-03-06T19:32:19-08:00" level=info msg=ConnectionClosed connectionID=14
+time="2026-03-06T19:32:19-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=15
+time="2026-03-06T19:32:19-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=16
+time="2026-03-06T19:32:19-08:00" level=info msg=ConnectionClosed connectionID=15
+time="2026-03-06T19:32:19-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:19.071046134 -0800 PST m=+7.826592992" connectionDb=beads_iv connectionID=16 error="nothing to commit" queryTime="2026-03-06 19:32:19.082604144 -0800 PST m=+7.838151002"
+time="2026-03-06T19:32:19-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:19.071046134 -0800 PST m=+7.826592992" connectionDb=beads_iv connectionID=16 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:19.122111819 -0800 PST m=+7.877658647"
+time="2026-03-06T19:32:19-08:00" level=info msg=ConnectionClosed connectionID=16
+time="2026-03-06T19:32:19-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=18
+time="2026-03-06T19:32:19-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=17
+time="2026-03-06T19:32:19-08:00" level=info msg=ConnectionClosed connectionID=17
+time="2026-03-06T19:32:19-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=19
+time="2026-03-06T19:32:19-08:00" level=info msg=ConnectionClosed connectionID=18
+time="2026-03-06T19:32:19-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:19.187362381 -0800 PST m=+7.942909209" connectionDb=beads_iv connectionID=19 error="nothing to commit" queryTime="2026-03-06 19:32:19.195739855 -0800 PST m=+7.951286693"
+time="2026-03-06T19:32:19-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:19.187362381 -0800 PST m=+7.942909209" connectionDb=beads_iv connectionID=19 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:19.223419594 -0800 PST m=+7.978966423"
+time="2026-03-06T19:32:19-08:00" level=info msg=ConnectionClosed connectionID=19
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=20
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=20
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=21
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=22
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=21
+time="2026-03-06T19:32:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.345701691 -0800 PST m=+16.101248519" connectionDb=beads_iv connectionID=22 error="nothing to commit" queryTime="2026-03-06 19:32:27.361986517 -0800 PST m=+16.117533344"
+time="2026-03-06T19:32:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.345701691 -0800 PST m=+16.101248519" connectionDb=beads_iv connectionID=22 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:27.496438541 -0800 PST m=+16.251985369"
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=22
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=24
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=23
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=23
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=25
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=24
+time="2026-03-06T19:32:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.545678342 -0800 PST m=+16.301225170" connectionDb=beads_iv connectionID=25 error="nothing to commit" queryTime="2026-03-06 19:32:27.562213587 -0800 PST m=+16.317760435"
+time="2026-03-06T19:32:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.545678342 -0800 PST m=+16.301225170" connectionDb=beads_iv connectionID=25 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:27.678572965 -0800 PST m=+16.434119803"
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=25
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=26
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=26
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=27
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=28
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=27
+time="2026-03-06T19:32:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.726091026 -0800 PST m=+16.481637874" connectionDb=beads_iv connectionID=28 error="nothing to commit" queryTime="2026-03-06 19:32:27.741210396 -0800 PST m=+16.496757253"
+time="2026-03-06T19:32:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.726091026 -0800 PST m=+16.481637874" connectionDb=beads_iv connectionID=28 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:27.866571068 -0800 PST m=+16.622117896"
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=28
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=29
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=30
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=29
+time="2026-03-06T19:32:27-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=31
+time="2026-03-06T19:32:27-08:00" level=info msg=ConnectionClosed connectionID=30
+time="2026-03-06T19:32:27-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.926544682 -0800 PST m=+16.682091550" connectionDb=beads_iv connectionID=31 error="nothing to commit" queryTime="2026-03-06 19:32:27.941867383 -0800 PST m=+16.697414231"
+time="2026-03-06T19:32:28-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:32:27.926544682 -0800 PST m=+16.682091550" connectionDb=beads_iv connectionID=31 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:32:28.079166197 -0800 PST m=+16.834713025"
+time="2026-03-06T19:32:28-08:00" level=info msg=ConnectionClosed connectionID=31
+time="2026-03-06T19:32:42-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=32
+time="2026-03-06T19:32:42-08:00" level=info msg=ConnectionClosed connectionID=32
+time="2026-03-06T19:32:42-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=33
+time="2026-03-06T19:32:42-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=34
+time="2026-03-06T19:32:42-08:00" level=info msg=ConnectionClosed connectionID=33
+time="2026-03-06T19:32:42-08:00" level=info msg=ConnectionClosed connectionID=34
+time="2026-03-06T19:32:42-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=35
+time="2026-03-06T19:32:42-08:00" level=info msg=ConnectionClosed connectionID=35
+time="2026-03-06T19:32:42-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=36
+time="2026-03-06T19:32:42-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=37
+time="2026-03-06T19:32:42-08:00" level=info msg=ConnectionClosed connectionID=36
+time="2026-03-06T19:32:42-08:00" level=info msg=ConnectionClosed connectionID=37
+time="2026-03-06T19:32:46-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=38
+time="2026-03-06T19:32:46-08:00" level=info msg=ConnectionClosed connectionID=38
+time="2026-03-06T19:32:46-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=39
+time="2026-03-06T19:32:46-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=40
+time="2026-03-06T19:32:46-08:00" level=info msg=ConnectionClosed connectionID=39
+time="2026-03-06T19:32:46-08:00" level=info msg=ConnectionClosed connectionID=40
+time="2026-03-06T19:32:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=41
+time="2026-03-06T19:32:47-08:00" level=info msg=ConnectionClosed connectionID=41
+time="2026-03-06T19:32:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=42
+time="2026-03-06T19:32:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=43
+time="2026-03-06T19:32:47-08:00" level=info msg=ConnectionClosed connectionID=42
+time="2026-03-06T19:32:47-08:00" level=info msg=ConnectionClosed connectionID=43
+time="2026-03-06T19:32:53-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=45
+time="2026-03-06T19:32:53-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=44
+time="2026-03-06T19:32:53-08:00" level=info msg=ConnectionClosed connectionID=44
+time="2026-03-06T19:32:53-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=46
+time="2026-03-06T19:32:53-08:00" level=info msg=ConnectionClosed connectionID=45
+time="2026-03-06T19:32:53-08:00" level=info msg=ConnectionClosed connectionID=46
+time="2026-03-06T19:32:58-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=48
+time="2026-03-06T19:32:58-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=47
+time="2026-03-06T19:32:58-08:00" level=info msg=ConnectionClosed connectionID=47
+time="2026-03-06T19:32:58-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=49
+time="2026-03-06T19:32:58-08:00" level=info msg=ConnectionClosed connectionID=48
+time="2026-03-06T19:32:58-08:00" level=info msg=ConnectionClosed connectionID=49
+time="2026-03-06T19:33:02-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=51
+time="2026-03-06T19:33:02-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=50
+time="2026-03-06T19:33:02-08:00" level=info msg=ConnectionClosed connectionID=50
+time="2026-03-06T19:33:02-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=52
+time="2026-03-06T19:33:02-08:00" level=info msg=ConnectionClosed connectionID=51
+time="2026-03-06T19:33:02-08:00" level=info msg=ConnectionClosed connectionID=52
+time="2026-03-06T19:33:05-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=53
+time="2026-03-06T19:33:05-08:00" level=info msg=ConnectionClosed connectionID=53
+time="2026-03-06T19:33:05-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=54
+time="2026-03-06T19:33:05-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=55
+time="2026-03-06T19:33:05-08:00" level=info msg=ConnectionClosed connectionID=54
+time="2026-03-06T19:33:05-08:00" level=info msg=ConnectionClosed connectionID=55
+time="2026-03-06T19:33:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=57
+time="2026-03-06T19:33:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=56
+time="2026-03-06T19:33:48-08:00" level=info msg=ConnectionClosed connectionID=56
+time="2026-03-06T19:33:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=58
+time="2026-03-06T19:33:48-08:00" level=info msg=ConnectionClosed connectionID=57
+time="2026-03-06T19:33:48-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:33:48.530570905 -0800 PST m=+97.286117733" connectionDb=beads_iv connectionID=58 error="nothing to commit" queryTime="2026-03-06 19:33:48.541812661 -0800 PST m=+97.297359519"
+time="2026-03-06T19:33:48-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:33:48.530570905 -0800 PST m=+97.286117733" connectionDb=beads_iv connectionID=58 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:33:48.580573334 -0800 PST m=+97.336120162"
+time="2026-03-06T19:33:48-08:00" level=info msg=ConnectionClosed connectionID=58
+time="2026-03-06T19:33:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=59
+time="2026-03-06T19:33:48-08:00" level=info msg=ConnectionClosed connectionID=59
+time="2026-03-06T19:33:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=60
+time="2026-03-06T19:33:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=61
+time="2026-03-06T19:33:48-08:00" level=info msg=ConnectionClosed connectionID=60
+time="2026-03-06T19:33:48-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:33:48.638205034 -0800 PST m=+97.393751862" connectionDb=beads_iv connectionID=61 error="nothing to commit" queryTime="2026-03-06 19:33:48.646955346 -0800 PST m=+97.402502174"
+time="2026-03-06T19:33:48-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:33:48.638205034 -0800 PST m=+97.393751862" connectionDb=beads_iv connectionID=61 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:33:48.681628082 -0800 PST m=+97.437174910"
+time="2026-03-06T19:33:48-08:00" level=info msg=ConnectionClosed connectionID=61
+time="2026-03-06T19:34:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=63
+time="2026-03-06T19:34:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=62
+time="2026-03-06T19:34:09-08:00" level=info msg=ConnectionClosed connectionID=62
+time="2026-03-06T19:34:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=64
+time="2026-03-06T19:34:09-08:00" level=info msg=ConnectionClosed connectionID=63
+time="2026-03-06T19:34:09-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:09.830138642 -0800 PST m=+118.585685471" connectionDb=beads_iv connectionID=64 error="nothing to commit" queryTime="2026-03-06 19:34:09.841872121 -0800 PST m=+118.597418948"
+time="2026-03-06T19:34:09-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:09.830138642 -0800 PST m=+118.585685471" connectionDb=beads_iv connectionID=64 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:34:09.877998712 -0800 PST m=+118.633545540"
+time="2026-03-06T19:34:09-08:00" level=info msg=ConnectionClosed connectionID=64
+time="2026-03-06T19:34:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=65
+time="2026-03-06T19:34:09-08:00" level=info msg=ConnectionClosed connectionID=65
+time="2026-03-06T19:34:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=66
+time="2026-03-06T19:34:09-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=67
+time="2026-03-06T19:34:09-08:00" level=info msg=ConnectionClosed connectionID=66
+time="2026-03-06T19:34:09-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:09.930548439 -0800 PST m=+118.686095267" connectionDb=beads_iv connectionID=67 error="nothing to commit" queryTime="2026-03-06 19:34:09.941136729 -0800 PST m=+118.696683557"
+time="2026-03-06T19:34:09-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:09.930548439 -0800 PST m=+118.686095267" connectionDb=beads_iv connectionID=67 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:34:09.973021335 -0800 PST m=+118.728568163"
+time="2026-03-06T19:34:09-08:00" level=info msg=ConnectionClosed connectionID=67
+time="2026-03-06T19:34:38-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=68
+time="2026-03-06T19:34:38-08:00" level=info msg=ConnectionClosed connectionID=68
+time="2026-03-06T19:34:38-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=69
+time="2026-03-06T19:34:38-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=70
+time="2026-03-06T19:34:38-08:00" level=info msg=ConnectionClosed connectionID=69
+time="2026-03-06T19:34:38-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:38.561894221 -0800 PST m=+147.317441050" connectionDb=beads_iv connectionID=70 error="nothing to commit" queryTime="2026-03-06 19:34:38.574823693 -0800 PST m=+147.330370551"
+time="2026-03-06T19:34:38-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:38.561894221 -0800 PST m=+147.317441050" connectionDb=beads_iv connectionID=70 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:34:38.614527575 -0800 PST m=+147.370074403"
+time="2026-03-06T19:34:38-08:00" level=info msg=ConnectionClosed connectionID=70
+time="2026-03-06T19:34:38-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=71
+time="2026-03-06T19:34:38-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=72
+time="2026-03-06T19:34:38-08:00" level=info msg=ConnectionClosed connectionID=71
+time="2026-03-06T19:34:38-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=73
+time="2026-03-06T19:34:38-08:00" level=info msg=ConnectionClosed connectionID=72
+time="2026-03-06T19:34:38-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:38.659674987 -0800 PST m=+147.415221815" connectionDb=beads_iv connectionID=73 error="nothing to commit" queryTime="2026-03-06 19:34:38.672233012 -0800 PST m=+147.427779860"
+time="2026-03-06T19:34:38-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:38.659674987 -0800 PST m=+147.415221815" connectionDb=beads_iv connectionID=73 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:34:38.709646998 -0800 PST m=+147.465193826"
+time="2026-03-06T19:34:38-08:00" level=info msg=ConnectionClosed connectionID=73
+time="2026-03-06T19:34:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=74
+time="2026-03-06T19:34:48-08:00" level=info msg=ConnectionClosed connectionID=74
+time="2026-03-06T19:34:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=75
+time="2026-03-06T19:34:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=76
+time="2026-03-06T19:34:48-08:00" level=info msg=ConnectionClosed connectionID=75
+time="2026-03-06T19:34:48-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:48.783186166 -0800 PST m=+157.538732994" connectionDb=beads_iv connectionID=76 error="nothing to commit" queryTime="2026-03-06 19:34:48.796805311 -0800 PST m=+157.552352169"
+time="2026-03-06T19:34:48-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:34:48.783186166 -0800 PST m=+157.538732994" connectionDb=beads_iv connectionID=76 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:34:48.841640809 -0800 PST m=+157.597187647"
+time="2026-03-06T19:34:48-08:00" level=info msg=ConnectionClosed connectionID=76
+time="2026-03-06T19:36:28-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=77
+time="2026-03-06T19:36:28-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=78
+time="2026-03-06T19:36:28-08:00" level=info msg=ConnectionClosed connectionID=77
+time="2026-03-06T19:36:28-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=79
+time="2026-03-06T19:36:28-08:00" level=info msg=ConnectionClosed connectionID=78
+time="2026-03-06T19:36:28-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:36:28.277182993 -0800 PST m=+257.032729881" connectionDb=beads_iv connectionID=79 error="nothing to commit" queryTime="2026-03-06 19:36:28.297724833 -0800 PST m=+257.053271671"
+time="2026-03-06T19:36:28-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:36:28.277182993 -0800 PST m=+257.032729881" connectionDb=beads_iv connectionID=79 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:36:28.326840163 -0800 PST m=+257.082386991"
+time="2026-03-06T19:36:28-08:00" level=info msg=ConnectionClosed connectionID=79
+time="2026-03-06T19:36:35-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=81
+time="2026-03-06T19:36:35-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=80
+time="2026-03-06T19:36:35-08:00" level=info msg=ConnectionClosed connectionID=80
+time="2026-03-06T19:36:35-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=82
+time="2026-03-06T19:36:35-08:00" level=info msg=ConnectionClosed connectionID=81
+time="2026-03-06T19:36:35-08:00" level=info msg=ConnectionClosed connectionID=82
+time="2026-03-06T19:36:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=83
+time="2026-03-06T19:36:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=84
+time="2026-03-06T19:36:47-08:00" level=info msg=ConnectionClosed connectionID=83
+time="2026-03-06T19:36:47-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=85
+time="2026-03-06T19:36:47-08:00" level=info msg=ConnectionClosed connectionID=84
+time="2026-03-06T19:36:47-08:00" level=info msg=ConnectionClosed connectionID=85
+time="2026-03-06T19:36:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=86
+time="2026-03-06T19:36:59-08:00" level=info msg=ConnectionClosed connectionID=86
+time="2026-03-06T19:36:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=87
+time="2026-03-06T19:36:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=88
+time="2026-03-06T19:36:59-08:00" level=info msg=ConnectionClosed connectionID=87
+time="2026-03-06T19:37:05-08:00" level=info msg=ConnectionClosed connectionID=88
+time="2026-03-06T19:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=89
+time="2026-03-06T19:42:20-08:00" level=info msg=ConnectionClosed connectionID=89
+time="2026-03-06T19:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=90
+time="2026-03-06T19:42:20-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=91
+time="2026-03-06T19:42:20-08:00" level=info msg=ConnectionClosed connectionID=90
+time="2026-03-06T19:42:26-08:00" level=info msg=ConnectionClosed connectionID=91
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=93
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=92
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=92
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=94
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=93
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=96
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=95
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=95
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=94
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=97
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=96
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=97
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=98
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=98
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=99
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=100
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=99
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=100
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=101
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=101
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=102
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=103
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=102
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=103
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=104
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=104
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=105
+time="2026-03-06T19:44:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=106
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=105
+time="2026-03-06T19:44:49-08:00" level=info msg=ConnectionClosed connectionID=106
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=107
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=107
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=108
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=109
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=108
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=109
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=110
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=110
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=111
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=112
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=111
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=113
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=113
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=112
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=114
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=114
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=115
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=116
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=115
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=116
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=118
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=117
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=117
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=119
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=118
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=119
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=121
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=120
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=120
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=122
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=121
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=122
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=124
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=123
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=124
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=125
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=123
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=126
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=125
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=126
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=127
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=127
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=128
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=129
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=129
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=128
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=130
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=130
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=131
+time="2026-03-06T19:44:50-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=132
+time="2026-03-06T19:44:50-08:00" level=info msg=ConnectionClosed connectionID=131
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=132
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=133
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=133
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=134
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=135
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=134
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=137
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=136
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=136
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=138
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=137
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=135
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=138
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=140
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=139
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=139
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=141
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=140
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=142
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=142
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=143
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=144
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=141
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=143
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=144
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=145
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=146
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=145
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=147
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=146
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=147
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=148
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=148
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=149
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=150
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=149
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=150
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=151
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=151
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=152
+time="2026-03-06T19:44:51-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=153
+time="2026-03-06T19:44:51-08:00" level=info msg=ConnectionClosed connectionID=152
+time="2026-03-06T19:44:53-08:00" level=info msg=ConnectionClosed connectionID=153
+time="2026-03-06T19:44:53-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=154
+time="2026-03-06T19:44:53-08:00" level=info msg=ConnectionClosed connectionID=154
+time="2026-03-06T19:44:53-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=155
+time="2026-03-06T19:44:53-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=156
+time="2026-03-06T19:44:53-08:00" level=info msg=ConnectionClosed connectionID=155
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=156
+time="2026-03-06T19:44:55-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=157
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=157
+time="2026-03-06T19:44:55-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=158
+time="2026-03-06T19:44:55-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=159
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=158
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=159
+time="2026-03-06T19:44:55-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=160
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=160
+time="2026-03-06T19:44:55-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=161
+time="2026-03-06T19:44:55-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=162
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=161
+time="2026-03-06T19:44:55-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:44:55.263832234 -0800 PST m=+764.019379063" connectionDb=beads_iv connectionID=162 error="nothing to commit" queryTime="2026-03-06 19:44:55.274389426 -0800 PST m=+764.029936274"
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=162
+time="2026-03-06T19:44:55-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=163
+time="2026-03-06T19:44:55-08:00" level=info msg=ConnectionClosed connectionID=163
+time="2026-03-06T19:44:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=164
+time="2026-03-06T19:44:59-08:00" level=info msg=ConnectionClosed connectionID=164
+time="2026-03-06T19:44:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=165
+time="2026-03-06T19:44:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=166
+time="2026-03-06T19:44:59-08:00" level=info msg=ConnectionClosed connectionID=165
+time="2026-03-06T19:45:06-08:00" level=info msg=ConnectionClosed connectionID=166
+time="2026-03-06T19:46:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=167
+time="2026-03-06T19:46:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=168
+time="2026-03-06T19:46:37-08:00" level=info msg=ConnectionClosed connectionID=167
+time="2026-03-06T19:46:37-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=169
+time="2026-03-06T19:46:37-08:00" level=info msg=ConnectionClosed connectionID=168
+time="2026-03-06T19:46:44-08:00" level=info msg=ConnectionClosed connectionID=169
+time="2026-03-06T19:46:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=170
+time="2026-03-06T19:46:59-08:00" level=info msg=ConnectionClosed connectionID=170
+time="2026-03-06T19:46:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=171
+time="2026-03-06T19:46:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=172
+time="2026-03-06T19:46:59-08:00" level=info msg=ConnectionClosed connectionID=171
+time="2026-03-06T19:46:59-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:46:59.771852432 -0800 PST m=+888.527399260" connectionDb=beads_iv connectionID=172 error="nothing to commit" queryTime="2026-03-06 19:46:59.784090395 -0800 PST m=+888.539637244"
+time="2026-03-06T19:46:59-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:46:59.771852432 -0800 PST m=+888.527399260" connectionDb=beads_iv connectionID=172 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:46:59.826897521 -0800 PST m=+888.582444349"
+time="2026-03-06T19:46:59-08:00" level=info msg=ConnectionClosed connectionID=172
+time="2026-03-06T19:47:32-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=174
+time="2026-03-06T19:47:32-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=173
+time="2026-03-06T19:47:32-08:00" level=info msg=ConnectionClosed connectionID=173
+time="2026-03-06T19:47:32-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=175
+time="2026-03-06T19:47:32-08:00" level=info msg=ConnectionClosed connectionID=174
+time="2026-03-06T19:47:32-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:47:32.507195911 -0800 PST m=+921.262742738" connectionDb=beads_iv connectionID=175 error="nothing to commit" queryTime="2026-03-06 19:47:32.521964579 -0800 PST m=+921.277511437"
+time="2026-03-06T19:47:36-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:47:32.507195911 -0800 PST m=+921.262742738" connectionDb=beads_iv connectionID=175 error="To file:///home/mk/projects/Demarch/.beads/remote/beads_iv\n ! [rejected]            main -> main (non-fast-forward)\nerror: failed to push some refs to 'file:///home/mk/projects/Demarch/.beads/remote/beads_iv'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'dolt pull ...') before pushing again.\n" queryTime="2026-03-06 19:47:36.150382917 -0800 PST m=+924.905929744"
+time="2026-03-06T19:47:36-08:00" level=info msg=ConnectionClosed connectionID=175
+time="2026-03-06T19:56:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=176
+time="2026-03-06T19:56:59-08:00" level=info msg=ConnectionClosed connectionID=176
+time="2026-03-06T19:56:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=177
+time="2026-03-06T19:56:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=178
+time="2026-03-06T19:56:59-08:00" level=info msg=ConnectionClosed connectionID=177
+time="2026-03-06T19:56:59-08:00" level=info msg=ConnectionClosed connectionID=178
+time="2026-03-06T19:57:00-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=179
+time="2026-03-06T19:57:00-08:00" level=info msg=ConnectionClosed connectionID=179
+time="2026-03-06T19:57:00-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=180
+time="2026-03-06T19:57:00-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=181
+time="2026-03-06T19:57:00-08:00" level=info msg=ConnectionClosed connectionID=180
+time="2026-03-06T19:57:00-08:00" level=info msg=ConnectionClosed connectionID=181
+time="2026-03-06T19:57:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=182
+time="2026-03-06T19:57:48-08:00" level=info msg=ConnectionClosed connectionID=182
+time="2026-03-06T19:57:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=183
+time="2026-03-06T19:57:48-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=184
+time="2026-03-06T19:57:48-08:00" level=info msg=ConnectionClosed connectionID=183
+time="2026-03-06T19:57:48-08:00" level=info msg=ConnectionClosed connectionID=184
+time="2026-03-06T19:57:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=185
+time="2026-03-06T19:57:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=186
+time="2026-03-06T19:57:49-08:00" level=info msg=ConnectionClosed connectionID=185
+time="2026-03-06T19:57:49-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=187
+time="2026-03-06T19:57:49-08:00" level=info msg=ConnectionClosed connectionID=186
+time="2026-03-06T19:57:49-08:00" level=info msg=ConnectionClosed connectionID=187
+time="2026-03-06T19:57:57-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=188
+time="2026-03-06T19:57:57-08:00" level=info msg=ConnectionClosed connectionID=188
+time="2026-03-06T19:57:57-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=189
+time="2026-03-06T19:57:57-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=190
+time="2026-03-06T19:57:57-08:00" level=info msg=ConnectionClosed connectionID=189
+time="2026-03-06T19:57:57-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:57:57.908367669 -0800 PST m=+1546.663914497" connectionDb=beads_shadow-work connectionID=190 error="nothing to commit" queryTime="2026-03-06 19:57:57.929650622 -0800 PST m=+1546.685197460"
+time="2026-03-06T19:57:58-08:00" level=info msg=ConnectionClosed connectionID=190
+time="2026-03-06T19:57:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=191
+time="2026-03-06T19:57:59-08:00" level=info msg=ConnectionClosed connectionID=191
+time="2026-03-06T19:57:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=192
+time="2026-03-06T19:57:59-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=193
+time="2026-03-06T19:57:59-08:00" level=info msg=ConnectionClosed connectionID=192
+time="2026-03-06T19:57:59-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:57:59.907702576 -0800 PST m=+1548.663249404" connectionDb=beads_shadow-work connectionID=193 error="nothing to commit" queryTime="2026-03-06 19:57:59.925481473 -0800 PST m=+1548.681028321"
+time="2026-03-06T19:57:59-08:00" level=info msg=ConnectionClosed connectionID=193
+time="2026-03-06T19:58:07-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=194
+time="2026-03-06T19:58:07-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=195
+time="2026-03-06T19:58:07-08:00" level=info msg=ConnectionClosed connectionID=194
+time="2026-03-06T19:58:07-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=196
+time="2026-03-06T19:58:07-08:00" level=info msg=ConnectionClosed connectionID=195
+time="2026-03-06T19:58:07-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:58:07.803211618 -0800 PST m=+1556.558758446" connectionDb=beads_shadow-work connectionID=196 error="nothing to commit" queryTime="2026-03-06 19:58:07.812306663 -0800 PST m=+1556.567853521"
+time="2026-03-06T19:58:07-08:00" level=info msg=ConnectionClosed connectionID=196
+time="2026-03-06T19:58:07-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=198
+time="2026-03-06T19:58:07-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=197
+time="2026-03-06T19:58:07-08:00" level=info msg=ConnectionClosed connectionID=197
+time="2026-03-06T19:58:07-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=199
+time="2026-03-06T19:58:07-08:00" level=info msg=ConnectionClosed connectionID=198
+time="2026-03-06T19:58:07-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:58:07.923736515 -0800 PST m=+1556.679283343" connectionDb=beads_shadow-work connectionID=199 error="nothing to commit" queryTime="2026-03-06 19:58:07.939711839 -0800 PST m=+1556.695258687"
+time="2026-03-06T19:58:07-08:00" level=info msg=ConnectionClosed connectionID=199
+time="2026-03-06T19:58:13-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=200
+time="2026-03-06T19:58:13-08:00" level=info msg=ConnectionClosed connectionID=200
+time="2026-03-06T19:58:13-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=201
+time="2026-03-06T19:58:13-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=202
+time="2026-03-06T19:58:13-08:00" level=info msg=ConnectionClosed connectionID=201
+time="2026-03-06T19:58:13-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:58:13.186964076 -0800 PST m=+1561.942510904" connectionDb=beads_shadow-work connectionID=202 error="nothing to commit" queryTime="2026-03-06 19:58:13.200097417 -0800 PST m=+1561.955644265"
+time="2026-03-06T19:58:13-08:00" level=info msg=ConnectionClosed connectionID=202
+time="2026-03-06T19:58:13-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=203
+time="2026-03-06T19:58:13-08:00" level=info msg=ConnectionClosed connectionID=203
+time="2026-03-06T19:58:13-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=204
+time="2026-03-06T19:58:13-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=205
+time="2026-03-06T19:58:13-08:00" level=info msg=ConnectionClosed connectionID=204
+time="2026-03-06T19:58:13-08:00" level=warning msg="error running query" connectTime="2026-03-06 19:58:13.385312389 -0800 PST m=+1562.140859217" connectionDb=beads_shadow-work connectionID=205 error="nothing to commit" queryTime="2026-03-06 19:58:13.397484376 -0800 PST m=+1562.153031224"
+time="2026-03-06T19:58:13-08:00" level=info msg=ConnectionClosed connectionID=205
+time="2026-03-06T20:01:32-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=207
+time="2026-03-06T20:01:32-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=206
+time="2026-03-06T20:01:32-08:00" level=info msg=ConnectionClosed connectionID=206
+time="2026-03-06T20:01:32-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=208
+time="2026-03-06T20:01:32-08:00" level=info msg=ConnectionClosed connectionID=207
+time="2026-03-06T20:01:32-08:00" level=warning msg="error running query" connectTime="2026-03-06 20:01:32.432813298 -0800 PST m=+1761.188360126" connectionDb=beads_shadow-work connectionID=208 error="nothing to commit" queryTime="2026-03-06 20:01:32.44909331 -0800 PST m=+1761.204640168"
+time="2026-03-06T20:01:32-08:00" level=info msg=ConnectionClosed connectionID=208
+time="2026-03-06T20:02:18-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=209
+time="2026-03-06T20:02:18-08:00" level=info msg=ConnectionClosed connectionID=209
+time="2026-03-06T20:02:18-08:00" level=info msg="Server closing listener. No longer accepting connections."
+time="2026-03-06T20:02:18-08:00" level=info msg="stats stopped: context canceled"
+Starting server with Config HP="127.0.0.1:3307"|T="28800000"|R="false"|L="info"
+time="2026-03-06T20:10:47-08:00" level=error msg="invalid journal record length: 707284102 exceeds max allowed size of 5242880"
+possible data loss detected in journal file at offset 3511306: corrupted journal
+Starting server with Config HP="127.0.0.1:3307"|T="28800000"|R="false"|L="info"
+time="2026-03-06T20:10:59-08:00" level=error msg="invalid journal record length: 707284102 exceeds max allowed size of 5242880"
+possible data loss detected in journal file at offset 3511306: corrupted journal
+Starting server with Config HP="127.0.0.1:3307"|T="28800000"|R="false"|L="info"
+root hash doesn't exist: fmggmm6nsi60ncibj7t1pv0jv5q7icda
+Starting server with Config HP="127.0.0.1:3307"|T="28800000"|R="false"|L="info"
+time="2026-03-06T20:12:35-08:00" level=info msg="Server ready. Accepting connections."
+time="2026-03-06T20:12:35-08:00" level=warning msg="secure_file_priv is set to \"\", which is insecure."
+time="2026-03-06T20:12:35-08:00" level=warning msg="Any user with GRANT FILE privileges will be able to read any file which the sql-server process can read."
+time="2026-03-06T20:12:35-08:00" level=warning msg="Please consider restarting the server with secure_file_priv set to a safe (or non-existent) directory."
+time="2026-03-06T20:12:35-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=1
+time="2026-03-06T20:12:35-08:00" level=info msg=ConnectionClosed connectionID=1
+time="2026-03-06T20:12:35-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=3
+time="2026-03-06T20:12:35-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=2
+time="2026-03-06T20:12:35-08:00" level=info msg=ConnectionClosed connectionID=2
+time="2026-03-06T20:12:35-08:00" level=info msg=NewConnection DisableClientMultiStatements=false connectionID=4
+time="2026-03-06T20:12:35-08:00" level=info msg=ConnectionClosed connectionID=3
+time="2026-03-06T20:12:35-08:00" level=warning msg="error running query" connectTime="2026-03-06 20:12:35.865962951 -0800 PST m=+0.521684564" connectionDb=beads_iv connectionID=4 error="table not found: config" queryTime="2026-03-06 20:12:35.867651217 -0800 PST m=+0.523372861"
+time="2026-03-06T20:12:35-08:00" level=warning msg="error running query" connectTime="2026-03-06 20:12:35.865962951 -0800 PST m=+0.521684564" connectionDb=beads_iv connectionID=4 error="Duplicate key name 'idx_issues_issue_type'" queryTime="2026-03-06 20:12:35.936126687 -0800 PST m=+0.591848330"
+time="2026-03-06T20:12:35-08:00" level=warning msg="error running query" connectTime="2026-03-06 20:12:35.865962951 -0800 PST m=+0.521684564" connectionDb=beads_iv connectionID=4 error="foreign key `fk_dep_depends_on` was not found on the table `dependencies`" queryTime="2026-03-06 20:12:35.936607028 -0800 PST m=+0.592328661"
+time="2026-03-06T20:13:10-08:00" level=info msg="sqle/auto_gc: Successfully completed auto GC of database beads_iv in 355.479197ms"
+time="2026-03-06T20:14:05-08:00" level=warning msg="error running query" connectTime="2026-03-06 20:12:35.865962951 -0800 PST m=+0.521684564" connectionDb=beads_iv connectionID=4 error="nothing to commit" queryTime="2026-03-06 20:14:05.095512958 -0800 PST m=+89.751234592"
+time="2026-03-06T20:14:05-08:00" level=info msg=ConnectionClosed connectionID=4
