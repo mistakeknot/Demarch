@@ -1,92 +1,11 @@
 {
   "project": "demarch",
   "kind": "demarch-monorepo-roadmap",
-  "generated_at": "2026-03-06T00:35:59+00:00",
-  "module_count": 61,
+  "generated_at": "2026-03-07T02:49:15+00:00",
+  "module_count": 62,
   "open_beads": 95,
   "blocked": 0,
   "modules": [
-    {
-      "module": "autarch",
-      "location": "apps/autarch",
-      "version": "0.1.0",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "intercom",
-      "location": "apps/intercom",
-      "version": "1.1.0",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "clavain",
-      "location": "os/clavain",
-      "version": "0.6.155",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "agent-rig",
-      "location": "core/agent-rig",
-      "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
-      "module": "interband",
-      "location": "core/interband",
-      "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "planned"
-    },
-    {
-      "module": "interbench",
-      "location": "core/interbench",
-      "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "planned"
-    },
-    {
-      "module": "intercore",
-      "location": "core/intercore",
-      "version": "—",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "intermute",
-      "location": "core/intermute",
-      "version": "—",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "marketplace",
-      "location": "core/marketplace",
-      "version": "—",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
     {
       "module": "intercache",
       "location": "interverse/intercache",
@@ -108,7 +27,7 @@
     {
       "module": "intercheck",
       "location": "interverse/intercheck",
-      "version": "0.2.0",
+      "version": "0.2.2",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -144,7 +63,7 @@
     {
       "module": "interdoc",
       "location": "interverse/interdoc",
-      "version": "5.1.2",
+      "version": "5.2.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -189,7 +108,7 @@
     {
       "module": "interkasten",
       "location": "interverse/interkasten",
-      "version": "0.4.13",
+      "version": "0.4.19",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -234,7 +153,7 @@
     {
       "module": "interline",
       "location": "interverse/interline",
-      "version": "0.2.11",
+      "version": "0.2.12",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -279,7 +198,7 @@
     {
       "module": "intermux",
       "location": "interverse/intermux",
-      "version": "0.1.2",
+      "version": "0.1.4",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -333,7 +252,7 @@
     {
       "module": "interplug",
       "location": "interverse/interplug",
-      "version": "0.1.0",
+      "version": "0.1.3",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -351,7 +270,7 @@
     {
       "module": "interpulse",
       "location": "interverse/interpulse",
-      "version": "0.1.3",
+      "version": "0.1.5",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -423,7 +342,7 @@
     {
       "module": "interskill",
       "location": "interverse/interskill",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -441,7 +360,7 @@
     {
       "module": "interspect",
       "location": "interverse/interspect",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -450,7 +369,7 @@
     {
       "module": "interstat",
       "location": "interverse/interstat",
-      "version": "0.2.15",
+      "version": "0.2.16",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -486,7 +405,7 @@
     {
       "module": "intertrack",
       "location": "interverse/intertrack",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 0,
@@ -495,7 +414,7 @@
     {
       "module": "intertree",
       "location": "interverse/intertree",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -513,7 +432,7 @@
     {
       "module": "interwatch",
       "location": "interverse/interwatch",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 5,
@@ -547,7 +466,97 @@
       "status": "active"
     },
     {
-      "module": "interverse",
+      "module": "clavain",
+      "location": "os/clavain",
+      "version": "0.6.161",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "autarch",
+      "location": "apps/autarch",
+      "version": "0.1.0",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "intercom",
+      "location": "apps/intercom",
+      "version": "1.1.0",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "agent-rig",
+      "location": "core/agent-rig",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
+      "module": "interband",
+      "location": "core/interband",
+      "version": "—",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "planned"
+    },
+    {
+      "module": "interbench",
+      "location": "core/interbench",
+      "version": "—",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "planned"
+    },
+    {
+      "module": "intercore",
+      "location": "core/intercore",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "intermute",
+      "location": "core/intermute",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "marketplace",
+      "location": "core/marketplace",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "interbase",
+      "location": "sdk/interbase",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "demarch",
       "location": "root",
       "version": "—",
       "has_roadmap": true,
@@ -558,87 +567,6 @@
   ],
   "snapshot": [
     {
-      "module": "autarch",
-      "location": "apps/autarch",
-      "version": "0.1.0",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "intercom",
-      "location": "apps/intercom",
-      "version": "1.1.0",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "clavain",
-      "location": "os/clavain",
-      "version": "0.6.155",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "agent-rig",
-      "location": "core/agent-rig",
-      "version": "0.1.0",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "early"
-    },
-    {
-      "module": "interband",
-      "location": "core/interband",
-      "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "planned"
-    },
-    {
-      "module": "interbench",
-      "location": "core/interbench",
-      "version": "—",
-      "has_roadmap": false,
-      "roadmap_source": "none",
-      "open_beads": 0,
-      "status": "planned"
-    },
-    {
-      "module": "intercore",
-      "location": "core/intercore",
-      "version": "—",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "intermute",
-      "location": "core/intermute",
-      "version": "—",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
-      "module": "marketplace",
-      "location": "core/marketplace",
-      "version": "—",
-      "has_roadmap": true,
-      "roadmap_source": "markdown",
-      "open_beads": 0,
-      "status": "active"
-    },
-    {
       "module": "intercache",
       "location": "interverse/intercache",
       "version": "0.2.0",
@@ -659,7 +587,7 @@
     {
       "module": "intercheck",
       "location": "interverse/intercheck",
-      "version": "0.2.0",
+      "version": "0.2.2",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -695,7 +623,7 @@
     {
       "module": "interdoc",
       "location": "interverse/interdoc",
-      "version": "5.1.2",
+      "version": "5.2.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -740,7 +668,7 @@
     {
       "module": "interkasten",
       "location": "interverse/interkasten",
-      "version": "0.4.13",
+      "version": "0.4.19",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -785,7 +713,7 @@
     {
       "module": "interline",
       "location": "interverse/interline",
-      "version": "0.2.11",
+      "version": "0.2.12",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -830,7 +758,7 @@
     {
       "module": "intermux",
       "location": "interverse/intermux",
-      "version": "0.1.2",
+      "version": "0.1.4",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -884,7 +812,7 @@
     {
       "module": "interplug",
       "location": "interverse/interplug",
-      "version": "0.1.0",
+      "version": "0.1.3",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -902,7 +830,7 @@
     {
       "module": "interpulse",
       "location": "interverse/interpulse",
-      "version": "0.1.3",
+      "version": "0.1.5",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -974,7 +902,7 @@
     {
       "module": "interskill",
       "location": "interverse/interskill",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -992,7 +920,7 @@
     {
       "module": "interspect",
       "location": "interverse/interspect",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -1001,7 +929,7 @@
     {
       "module": "interstat",
       "location": "interverse/interstat",
-      "version": "0.2.15",
+      "version": "0.2.16",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 4,
@@ -1037,7 +965,7 @@
     {
       "module": "intertrack",
       "location": "interverse/intertrack",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": true,
       "roadmap_source": "markdown",
       "open_beads": 0,
@@ -1046,7 +974,7 @@
     {
       "module": "intertree",
       "location": "interverse/intertree",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -1064,7 +992,7 @@
     {
       "module": "interwatch",
       "location": "interverse/interwatch",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "has_roadmap": true,
       "roadmap_source": "json",
       "open_beads": 5,
@@ -1098,7 +1026,97 @@
       "status": "active"
     },
     {
-      "module": "interverse",
+      "module": "clavain",
+      "location": "os/clavain",
+      "version": "0.6.161",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "autarch",
+      "location": "apps/autarch",
+      "version": "0.1.0",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "intercom",
+      "location": "apps/intercom",
+      "version": "1.1.0",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "agent-rig",
+      "location": "core/agent-rig",
+      "version": "0.1.0",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "early"
+    },
+    {
+      "module": "interband",
+      "location": "core/interband",
+      "version": "—",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "planned"
+    },
+    {
+      "module": "interbench",
+      "location": "core/interbench",
+      "version": "—",
+      "has_roadmap": false,
+      "roadmap_source": "none",
+      "open_beads": 0,
+      "status": "planned"
+    },
+    {
+      "module": "intercore",
+      "location": "core/intercore",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "intermute",
+      "location": "core/intermute",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "marketplace",
+      "location": "core/marketplace",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "interbase",
+      "location": "sdk/interbase",
+      "version": "—",
+      "has_roadmap": true,
+      "roadmap_source": "markdown",
+      "open_beads": 0,
+      "status": "active"
+    },
+    {
+      "module": "demarch",
       "location": "root",
       "version": "—",
       "has_roadmap": true,
@@ -3274,114 +3292,6 @@
     ],
     "later": [
       {
-        "module": "autarch",
-        "id": "PL-autarch-EMPTY-RM",
-        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "empty-module-roadmap",
-        "source_file": "apps/autarch/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
-      },
-      {
-        "module": "intercom",
-        "id": "PL-intercom-EMPTY-RM",
-        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "empty-module-roadmap",
-        "source_file": "apps/intercom/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
-      },
-      {
-        "module": "clavain",
-        "id": "PL-clavain-EMPTY-RM",
-        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "empty-module-roadmap",
-        "source_file": "os/clavain/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
-      },
-      {
-        "module": "agent-rig",
-        "id": "PL-agent-rig-NO-RM",
-        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "core/agent-rig/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
-      },
-      {
-        "module": "interband",
-        "id": "PL-interband-NO-RM",
-        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "core/interband/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
-      },
-      {
-        "module": "interbench",
-        "id": "PL-interbench-NO-RM",
-        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "missing-module-roadmap",
-        "source_file": "core/interbench/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
-      },
-      {
-        "module": "intercore",
-        "id": "PL-intercore-EMPTY-RM",
-        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "empty-module-roadmap",
-        "source_file": "core/intercore/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
-      },
-      {
-        "module": "intermute",
-        "id": "PL-intermute-EMPTY-RM",
-        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "empty-module-roadmap",
-        "source_file": "core/intermute/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
-      },
-      {
-        "module": "marketplace",
-        "id": "PL-marketplace-EMPTY-RM",
-        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
-        "phase": "later",
-        "priority": "P4",
-        "status": "planned",
-        "source": "empty-module-roadmap",
-        "source_file": "core/marketplace/docs/roadmap.md",
-        "blocked_by": [],
-        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
-      },
-      {
         "module": "intercache",
         "id": "PL-intercache-NO-RM",
         "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
@@ -3802,6 +3712,126 @@
         "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
       },
       {
+        "module": "clavain",
+        "id": "PL-clavain-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "os/clavain/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
+        "module": "autarch",
+        "id": "PL-autarch-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "apps/autarch/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
+        "module": "intercom",
+        "id": "PL-intercom-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "apps/intercom/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
+        "module": "agent-rig",
+        "id": "PL-agent-rig-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "core/agent-rig/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "interband",
+        "id": "PL-interband-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "core/interband/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "interbench",
+        "id": "PL-interbench-NO-RM",
+        "title": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "missing-module-roadmap",
+        "source_file": "core/interbench/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap artifact missing in this module; run scripts/generate-module-roadmaps.sh to auto-generate from beads."
+      },
+      {
+        "module": "intercore",
+        "id": "PL-intercore-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "core/intercore/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
+        "module": "intermute",
+        "id": "PL-intermute-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "core/intermute/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
+        "module": "marketplace",
+        "id": "PL-marketplace-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "core/marketplace/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
+        "module": "interbase",
+        "id": "PL-interbase-EMPTY-RM",
+        "title": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json.",
+        "phase": "later",
+        "priority": "P4",
+        "status": "planned",
+        "source": "empty-module-roadmap",
+        "source_file": "sdk/interbase/docs/roadmap.md",
+        "blocked_by": [],
+        "notes": "Roadmap file exists but has no parseable roadmap entries; add Now/Next/Later items to docs/roadmap.md or docs/roadmap.json."
+      },
+      {
         "module": "interverse",
         "id": "PL-ILRN-L1",
         "title": "Platform: interlearn — Add feedback loops for low-value hits to iteratively improve ranking.",
@@ -3991,24 +4021,6 @@
   "cross_module_dependencies": [],
   "modules_without_roadmaps": [
     {
-      "module": "agent-rig",
-      "location": "core/agent-rig",
-      "version": "0.1.0",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "interband",
-      "location": "core/interband",
-      "version": "—",
-      "notes": "No docs/roadmap.md"
-    },
-    {
-      "module": "interbench",
-      "location": "core/interbench",
-      "version": "—",
-      "notes": "No docs/roadmap.md"
-    },
-    {
       "module": "intercache",
       "location": "interverse/intercache",
       "version": "0.2.0",
@@ -4029,7 +4041,7 @@
     {
       "module": "interkasten",
       "location": "interverse/interkasten",
-      "version": "0.4.13",
+      "version": "0.4.19",
       "notes": "No docs/roadmap.md"
     },
     {
@@ -4065,13 +4077,13 @@
     {
       "module": "interplug",
       "location": "interverse/interplug",
-      "version": "0.1.0",
+      "version": "0.1.3",
       "notes": "No docs/roadmap.md"
     },
     {
       "module": "interpulse",
       "location": "interverse/interpulse",
-      "version": "0.1.3",
+      "version": "0.1.5",
       "notes": "No docs/roadmap.md"
     },
     {
@@ -4107,13 +4119,13 @@
     {
       "module": "interskill",
       "location": "interverse/interskill",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "notes": "No docs/roadmap.md"
     },
     {
       "module": "interspect",
       "location": "interverse/interspect",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "notes": "No docs/roadmap.md"
     },
     {
@@ -4137,13 +4149,31 @@
     {
       "module": "intertree",
       "location": "interverse/intertree",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "notes": "No docs/roadmap.md"
     },
     {
       "module": "intertrust",
       "location": "interverse/intertrust",
       "version": "0.1.2",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "agent-rig",
+      "location": "core/agent-rig",
+      "version": "0.1.0",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "interband",
+      "location": "core/interband",
+      "version": "—",
+      "notes": "No docs/roadmap.md"
+    },
+    {
+      "module": "interbench",
+      "location": "core/interbench",
+      "version": "—",
       "notes": "No docs/roadmap.md"
     }
   ],

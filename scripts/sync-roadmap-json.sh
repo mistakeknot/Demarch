@@ -476,6 +476,38 @@ collect_interverse_roadmap_from_markdown() {
                 "P2"
         fi
     done < "$source_file"
+
+    # Also scan docs/backlog.md if it exists (iv-ey5wb moved P2/P3 items there)
+    local backlog_file="$ROOT_DOCS_DIR/backlog.md"
+    if [ -f "$backlog_file" ]; then
+        local bl_line bl_phase="next"
+        while IFS= read -r bl_line || [ -n "${bl_line:-}" ]; do
+            bl_line="$(trim "${bl_line//$'\r'/}")"
+            [ -z "$bl_line" ] && continue
+
+            if [[ "$bl_line" =~ ^#{2,3}[[:space:]].*P2 ]]; then
+                bl_phase="next"
+                continue
+            fi
+            if [[ "$bl_line" =~ ^#{2,3}[[:space:]].*P3 ]]; then
+                bl_phase="later"
+                continue
+            fi
+
+            if [[ "$bl_line" =~ ^-[[:space:]]*\[([^\]]+)\][[:space:]]+\*\*([A-Za-z][A-Za-z0-9._-]*-[A-Za-z0-9._-]+)\*\*[[:space:]]*(.*)$ ]]; then
+                add_synthetic_roadmap_item \
+                    "interverse" \
+                    "${BASH_REMATCH[2]}" \
+                    "$bl_phase" \
+                    "${BASH_REMATCH[1]}" \
+                    "${BASH_REMATCH[3]}" \
+                    "$backlog_file" \
+                    "interverse-rollup" \
+                    "planned" \
+                    "P2"
+            fi
+        done < "$backlog_file"
+    fi
 }
 
 append_cross_dependencies() {
