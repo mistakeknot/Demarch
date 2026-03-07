@@ -87,7 +87,7 @@ hooks:
 | Linear adapter | Beads (native); no external tracker adapter | **Gap**: iv-sym02 proposes this |
 | Orchestrator state machine | `ic dispatch` + `ic run` (SQLite-backed) | Exists but durable, not in-memory |
 | Concurrency control | `ic dispatch --max-concurrent` | Exists |
-| Per-issue workspace isolation | Single repo, claim-based logical isolation | **Gap**: iv-sym05 proposes worktrees |
+| Per-issue workspace isolation | Single repo + interlock file reservation | Exists (interlock is strictly better — see §3) |
 | Workspace hooks | Claude Code hooks (SessionStart, PostToolUse, etc.) | Exists (different model) |
 | `WORKFLOW.md` (prompt + config) | CLAUDE.md + SKILL.md + AGENTS.md | Exists (distributed, not unified) |
 | Retry with backoff | `ic dispatch` has retry logic | Exists but iv-sym03 proposes enhancement |
@@ -119,7 +119,16 @@ Symphony treats Linear as the authoritative work source. The orchestrator only r
 
 Symphony creates a physical directory per ticket (`<root>/<sanitized_identifier>`), persists it across retries, and cleans it when the issue reaches terminal state. This provides true filesystem isolation between concurrent agents.
 
-**Assessment:** Demarch currently runs all agents in the same repo with claim-based coordination (interlock). Physical workspace isolation would eliminate claim conflicts entirely and enable true parallel execution. **Adopt** — iv-sym05 (git worktree per task) is the right vehicle. Symphony's workspace manager patterns (sanitized keys, hook lifecycle, root containment validation) are directly portable.
+**Assessment:** Worktrees are the industry default (Codex, Cursor, Copilot, Augment all use them) because those systems have **no coordination layer** — isolation is all they've got. But worktrees trade edit-time safety for merge-time conflict discovery, and the research shows this is a bad trade:
+
+- **CooperBench** (600+ tasks): agents in isolated workspaces achieve **30-50% worse success rates** than a single agent. Failure modes: overlapping work (33%), divergent architecture (30%), dependency conflicts.
+- **Cursor** accumulated 140GB from 20 worktrees in one week (dependencies per worktree). VS Code background agents caused data loss when worktrees with uncommitted work were auto-removed.
+- **Git stash is globally shared** across worktrees — documented cross-agent data corruption vector.
+- Every worktree must eventually merge back. Conflicts are discovered late instead of prevented early.
+
+Demarch's interlock model (file-level reservation with negotiated release) is **strictly better** for overlapping work: conflicts are prevented at edit time, all agents see each other's committed work immediately via trunk-based development, and there's zero merge overhead. The one thing worktrees enable — concurrent filesystem writes to different files — is a narrow problem solvable with an index lock, not a whole isolation layer.
+
+**Skip** — worktrees solve a problem (uncoordinated agents colliding on files) that interlock already solves better. Adopting them would regress context sharing between agents and break trunk-based development.
 
 ### 4. WORKFLOW.md Unified Config
 
@@ -141,7 +150,6 @@ Symphony's agent runner supports up to `max_turns` per worker session, re-checki
 
 | Pattern | Target | Why |
 |---------|--------|-----|
-| **Workspace isolation via git worktree** | iv-sym05 | Eliminates claim conflicts, enables true parallelism. Symphony's sanitized workspace keys, root containment validation, and hook lifecycle are directly portable. |
 | **Exponential backoff with capped retry** | iv-sym03 | `min(10s * 2^(attempt-1), max_backoff)` is a clean formula. Demarch's retry logic exists but lacks backoff cap configuration. Integrate with intercore's durable retry tracking (not in-memory like Symphony). |
 | **Stall detection as reconciliation** | intercore (enhance existing heartbeat) | Kill + retry on inactivity timeout. Demarch's heartbeat model (45-min claimed_at window) is similar but coarser; per-agent event-based stall detection is tighter. No dedicated bead — enhancement to existing `ic dispatch` reconciliation loop. |
 | **Workspace lifecycle hooks** (after_create, before_run, after_run, before_remove) | iv-sym08 | Clean separation of concerns. Demarch has session-level hooks but no workspace-level hooks. The 4-hook model with failure semantics (fatal vs best-effort) is well-designed. |
@@ -166,6 +174,7 @@ Symphony's agent runner supports up to `max_turns` per worker session, re-checki
 | **Read-only tracker contract** | Demarch needs tracker writes for discovery pipeline (bd create, bd close), cascade-close, and dependency management. |
 | **Codex app-server protocol** | Demarch uses Claude Code's native subprocess model, which is simpler (no JSON-RPC handshake). The app-server protocol is Codex-specific. |
 | **Dynamic config file watching** | Claude Code sessions are ephemeral (minutes to hours). Live reload within a session adds complexity for minimal benefit. |
+| **Per-issue workspace isolation (worktrees)** | Demarch's interlock provides real-time file-level coordination, which prevents conflicts at edit time. Worktrees defer conflicts to merge time, fragment agent context (CooperBench: 30-50% worse outcomes), and break trunk-based development. The industry uses worktrees because they lack coordination layers, not because isolation is optimal. |
 
 ---
 
@@ -178,7 +187,7 @@ This assessment enables concrete scoping for the 7 downstream beads:
 | iv-sym02 | Adapt | Adapter interface: `fetch_candidates()`, `fetch_states_by_ids()`, `fetch_by_states()`. Normalize to beads issue model. |
 | iv-sym03 | Adopt | `min(10s * 2^(attempt-1), config.max_retry_backoff_ms)` in `ic dispatch`. Continuation retry = 1s fixed. |
 | iv-sym04 | Adapt | Poll-dispatch-reconcile loop as `ic daemon`. Durable state, not in-memory. Watch beads, not Linear. |
-| iv-sym05 | Adopt | `git worktree add` per bead. Sanitize workspace key from bead ID. Root containment validation. 4 hooks. |
+| iv-sym05 | Skip | Worktrees fragment agent context and break trunk-based development. Interlock already provides better conflict prevention. Close or defer this bead. |
 | iv-sym06 | Adapt | Turn-count cap (`max_turns`) + inter-turn bead state refresh from Symphony. Token budget enforcement is a separate concern (interstat). Both mechanisms needed. |
 | iv-sym07 | Adapt | Pre-dispatch health gate: repo clean, CLAUDE.md exists, hooks registered, no zombie processes. |
 | iv-sym08 | Adopt | Hook lifecycle: after_create (fatal), before_run (fatal), after_run (best-effort), before_remove (best-effort). Timeout per hook. |
@@ -187,4 +196,4 @@ This assessment enables concrete scoping for the 7 downstream beads:
 
 ## Verdict: `adapt-selectively`
 
-**Rationale:** Symphony's spec is well-engineered and covers orchestration concerns comprehensively. However, Demarch already has most of the equivalent infrastructure across intercore + Clavain + interstat, and three of Symphony's core design bets (stateless orchestrator, external tracker as truth, unified config file) conflict with Demarch's architecture. The valuable patterns to adopt are workspace isolation (worktrees), exponential retry backoff, workspace lifecycle hooks, and stall detection — all of which map cleanly to existing Demarch beads (iv-sym03, iv-sym05, iv-sym08). The adapter interface for external trackers (iv-sym02) is worth building as an optional sync layer, not a primary work source.
+**Rationale:** Symphony's spec is well-engineered and covers orchestration concerns comprehensively. However, Demarch already has most of the equivalent infrastructure across intercore + Clavain + interstat, and four of Symphony's core design bets (stateless orchestrator, external tracker as truth, unified config file, workspace isolation via worktrees) conflict with Demarch's architecture. The valuable patterns to adopt are exponential retry backoff, workspace lifecycle hooks, and stall detection — which map cleanly to existing Demarch beads (iv-sym03, iv-sym08). Workspace isolation (iv-sym05) was initially marked Adopt but downgraded to Skip after deeper research showed that Demarch's interlock + trunk-based model provides strictly better conflict prevention with zero merge overhead, while worktrees fragment agent context (CooperBench: 30-50% worse outcomes in isolated agents). The adapter interface for external trackers (iv-sym02) is worth building as an optional sync layer, not a primary work source.
