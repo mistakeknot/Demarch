@@ -1,3 +1,15 @@
+{"issue_id":"Demarch-3v6","label":"claimed_at:1772865116"}
+{"issue_id":"Demarch-3v6","label":"claimed_by:a2ac6b77-94ad-4526-8b84-efa6edf28c8d"}
+{"issue_id":"Demarch-3v6","label":"complexity:3"}
+{"issue_id":"Demarch-7xs","label":"claimed_at:1772898152"}
+{"issue_id":"Demarch-7xs","label":"claimed_by:2d7c7517-af90-446e-b999-e417af862a09"}
+{"issue_id":"Demarch-7xs","label":"complexity:3"}
+{"issue_id":"Demarch-sgh","label":"claimed_at:1772896799"}
+{"issue_id":"Demarch-sgh","label":"claimed_by:2d7c7517-af90-446e-b999-e417af862a09"}
+{"issue_id":"Demarch-sgh","label":"complexity:1"}
+{"issue_id":"Demarch-wdq","label":"claimed_at:1772865968"}
+{"issue_id":"Demarch-wdq","label":"claimed_by:a2ac6b77-94ad-4526-8b84-efa6edf28c8d"}
+{"issue_id":"Demarch-wdq","label":"complexity:3"}
 {"issue_id":"iv-003t","label":"mod:interspect"}
 {"issue_id":"iv-00liv","label":"mod:demarch"}
 {"issue_id":"iv-00liv","label":"mod:intermute"}
@@ -628,8 +640,9 @@
 {"issue_id":"iv-2p6sm","label":"source:dicklesworthstone"}
 {"issue_id":"iv-2p6sm","label":"theme:research"}
 {"issue_id":"iv-2p8","label":"theme:research"}
-{"issue_id":"iv-2s7k7","label":"claimed_at:0"}
-{"issue_id":"iv-2s7k7","label":"claimed_by:released"}
+{"issue_id":"iv-2s7k7","label":"claimed_at:1772898320"}
+{"issue_id":"iv-2s7k7","label":"claimed_by:d1527394-3280-4482-9f25-e4c4ef7ee8eb"}
+{"issue_id":"iv-2s7k7","label":"complexity:3"}
 {"issue_id":"iv-2sm4","label":"mod:clavain"}
 {"issue_id":"iv-2sm4","label":"theme:coordination"}
 {"issue_id":"iv-2sm4","label":"theme:dx"}
@@ -1394,7 +1407,7 @@
 {"issue_id":"iv-7i7","label":"mod:interject"}
 {"issue_id":"iv-7i7","label":"theme:docs"}
 {"issue_id":"iv-7i7","label":"theme:dx"}
-{"issue_id":"iv-7iy1i","label":"claimed_at:1772812472"}
+{"issue_id":"iv-7iy1i","label":"claimed_at:1772898158"}
 {"issue_id":"iv-7iy1i","label":"claimed_by:b7bbe7d0-3c3b-49d1-9ad9-05b830edb5bc"}
 {"issue_id":"iv-7iy1i","label":"complexity:3"}
 {"issue_id":"iv-7kg37","label":"mod:demarch"}
@@ -2159,6 +2172,9 @@
 {"issue_id":"iv-c4nc","label":"theme:architecture"}
 {"issue_id":"iv-c4nc","label":"theme:docs"}
 {"issue_id":"iv-c4q","label":"mod:interject"}
+{"issue_id":"iv-c60c5","label":"claimed_at:1772869229"}
+{"issue_id":"iv-c60c5","label":"claimed_by:51d64d87-cf60-4c63-b47c-e76d444006bb"}
+{"issue_id":"iv-c60c5","label":"complexity:3"}
 {"issue_id":"iv-c6az","label":"mod:intercore"}
 {"issue_id":"iv-c6az","label":"phase:done"}
 {"issue_id":"iv-c6az","label":"phase_history:{\n  \"brainstorm_at\": \"2026-02-19T15:38:48Z\",\n  \"strategized_at\": \"2026-02-19T15:41:31Z\",\n  \"done_at\": \"2026-02-19T15:43:32Z\"\n}"}
@@ -2338,6 +2354,9 @@
 {"issue_id":"iv-d03","label":"theme:docs"}
 {"issue_id":"iv-d03","label":"theme:dx"}
 {"issue_id":"iv-d03","label":"theme:research"}
+{"issue_id":"iv-d0c60","label":"claimed_at:1772896412"}
+{"issue_id":"iv-d0c60","label":"claimed_by:51d64d87-cf60-4c63-b47c-e76d444006bb"}
+{"issue_id":"iv-d0c60","label":"complexity:3"}
 {"issue_id":"iv-d0kh","label":"mod:intercore"}
 {"issue_id":"iv-d1mcu","label":"claimed_at:1772409784"}
 {"issue_id":"iv-d1mcu","label":"claimed_by:unknown"}
@@ -2966,8 +2985,8 @@
 {"issue_id":"iv-gny","label":"mod:autarch"}
 {"issue_id":"iv-gny","label":"theme:docs"}
 {"issue_id":"iv-gny","label":"theme:dx"}
-{"issue_id":"iv-godia","label":"claimed_at:1772762178"}
-{"issue_id":"iv-godia","label":"claimed_by:codex-cli"}
+{"issue_id":"iv-godia","label":"claimed_at:1772898179"}
+{"issue_id":"iv-godia","label":"claimed_by:d1527394-3280-4482-9f25-e4c4ef7ee8eb"}
 {"issue_id":"iv-godia","label":"complexity:3"}
 {"issue_id":"iv-gpsqk","label":"mod:intercom"}
 {"issue_id":"iv-gpsqk","label":"mod:interspect"}
@@ -4147,6 +4166,9 @@
 {"issue_id":"iv-nkqs","label":"theme:coordination"}
 {"issue_id":"iv-nkqs","label":"theme:dx"}
 {"issue_id":"iv-nlq2","label":"mod:autarch"}
+{"issue_id":"iv-nnxzo","label":"claimed_at:1772869140"}
+{"issue_id":"iv-nnxzo","label":"claimed_by:2d7c7517-af90-446e-b999-e417af862a09"}
+{"issue_id":"iv-nnxzo","label":"complexity:5"}
 {"issue_id":"iv-nnxzo","label":"mod:demarch"}
 {"issue_id":"iv-nnxzo","label":"mod:intermem"}
 {"issue_id":"iv-nnxzo","label":"theme:architecture"}
@@ -4622,11 +4644,11 @@
 {"issue_id":"iv-qfg8","label":"theme:ux"}
 {"issue_id":"iv-qftf","label":"mod:intermem"}
 {"issue_id":"iv-qftf","label":"theme:dx"}
-{"issue_id":"iv-qg1r0","label":"claimed_at:1772689559"}
+{"issue_id":"iv-qg1r0","label":"claimed_at:0"}
 {"issue_id":"iv-qg1r0","label":"claimed_at:1772745342"}
 {"issue_id":"iv-qg1r0","label":"claimed_at:1772746268"}
-{"issue_id":"iv-qg1r0","label":"claimed_by:03efeb77-2075-4836-b98b-68fca66a80a3"}
 {"issue_id":"iv-qg1r0","label":"claimed_by:90e09241-3cf1-4bf3-afcd-9d083a988071"}
+{"issue_id":"iv-qg1r0","label":"claimed_by:released"}
 {"issue_id":"iv-qg1r0","label":"complexity:5"}
 {"issue_id":"iv-qg1r0","label":"ic_run_id:ru047zyu"}
 {"issue_id":"iv-qg1r0","label":"phase:strategized"}
@@ -4851,8 +4873,8 @@
 {"issue_id":"iv-rmx0","label":"theme:coordination"}
 {"issue_id":"iv-rmx0","label":"theme:infra"}
 {"issue_id":"iv-rn81","label":"theme:dx"}
-{"issue_id":"iv-romro","label":"claimed_at:1772739785"}
-{"issue_id":"iv-romro","label":"claimed_by:b7bbe7d0-3c3b-49d1-9ad9-05b830edb5bc"}
+{"issue_id":"iv-romro","label":"claimed_at:0"}
+{"issue_id":"iv-romro","label":"claimed_by:released"}
 {"issue_id":"iv-roymw","label":"mod:interflux"}
 {"issue_id":"iv-roymw","label":"source:imbue"}
 {"issue_id":"iv-roymw","label":"theme:research"}
@@ -5125,9 +5147,12 @@
 {"issue_id":"iv-t4v6","label":"mod:autarch"}
 {"issue_id":"iv-t4v6","label":"theme:architecture"}
 {"issue_id":"iv-t66u","label":"theme:dx"}
+{"issue_id":"iv-t712t","label":"claimed_at:1772867790"}
+{"issue_id":"iv-t712t","label":"claimed_by:d1527394-3280-4482-9f25-e4c4ef7ee8eb"}
 {"issue_id":"iv-t712t","label":"complexity:4"}
 {"issue_id":"iv-t712t","label":"mod:clavain"}
 {"issue_id":"iv-t712t","label":"mod:interspect"}
+{"issue_id":"iv-t712t","label":"phase:done"}
 {"issue_id":"iv-t712t","label":"sprint:true"}
 {"issue_id":"iv-t712t","label":"theme:docs"}
 {"issue_id":"iv-t712t","label":"theme:dx"}
@@ -5660,6 +5685,8 @@
 {"issue_id":"iv-wie5i.1","label":"mod:interverse"}
 {"issue_id":"iv-wie5i.1","label":"placeholder"}
 {"issue_id":"iv-wie5i.1","label":"recovered"}
+{"issue_id":"iv-wie5i.2","label":"claimed_at:1772868520"}
+{"issue_id":"iv-wie5i.2","label":"claimed_by:2d7c7517-af90-446e-b999-e417af862a09"}
 {"issue_id":"iv-wie5i.2","label":"mod:interject"}
 {"issue_id":"iv-wie5i.2","label":"mod:interspect"}
 {"issue_id":"iv-wie5i.2","label":"theme:architecture"}
@@ -6162,8 +6189,12 @@
 {"issue_id":"iv-zrmk","label":"mod:interflux"}
 {"issue_id":"iv-zrmk","label":"phase:strategized"}
 {"issue_id":"iv-zrmk","label":"theme:docs"}
+{"issue_id":"iv-zsio","label":"claimed_at:1772868692"}
+{"issue_id":"iv-zsio","label":"claimed_by:d1527394-3280-4482-9f25-e4c4ef7ee8eb"}
+{"issue_id":"iv-zsio","label":"complexity:4"}
 {"issue_id":"iv-zsio","label":"mod:clavain"}
 {"issue_id":"iv-zsio","label":"mod:interphase"}
+{"issue_id":"iv-zsio","label":"phase:done"}
 {"issue_id":"iv-zsio","label":"theme:docs"}
 {"issue_id":"iv-zsio","label":"theme:infra"}
 {"issue_id":"iv-zt59","label":"mod:interpeer"}
