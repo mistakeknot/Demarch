@@ -65,6 +65,9 @@ docs/docs
 # ── interlore scan state (per-project, not committed) ──
 .interlore/
 
+# ── Lattice harvest cache (per-project, not committed) ──
+.lattice/
+
 # ── Generated secret scan artifacts (reports/logs) ──
 docs/reports/security/secret-scan-backfill-*/
 docs/reports/security/secret-scan-backfill-*.md
