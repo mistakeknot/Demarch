@@ -95,6 +95,7 @@ docs/research/*/
 .beads/remote/
 .claude/projects/
 .claude/scheduled_tasks.lock
+.claude/session-state.json
 .clavain/cxdb/
 .clavain/intercept/
 .codex

@@ -38,10 +38,17 @@
       "Write(.claude/flux-gen-specs/**)",
       "Write(docs/research/flux-drive/**)",
       "Write(docs/research/flux-research/**)",
+      "Write(docs/research/flux-review/**)",
       "Write(**/.claude/agents/**)",
       "Write(**/.claude/flux-gen-specs/**)",
       "Write(**/docs/research/flux-drive/**)",
       "Write(**/docs/research/flux-research/**)",
+      "Write(**/docs/research/flux-review/**)",
+      "Write(//home/mk/projects/Sylveste/.claude/agents/**)",
+      "Write(//home/mk/projects/Sylveste/.claude/flux-gen-specs/**)",
+      "Write(//home/mk/projects/Sylveste/docs/research/flux-drive/**)",
+      "Write(//home/mk/projects/Sylveste/docs/research/flux-research/**)",
+      "Write(//home/mk/projects/Sylveste/docs/research/flux-review/**)",
       "Bash(python3 */generate-agents.py*)",
       "Bash(python3 */flux-agent.py*)"
     ]
