@@ -1,1 +1,1 @@
-2026-05-06-f6a-shipped-signoff-pending.md
+2026-05-06-a5u-closed-microrouter-arch-next.md
