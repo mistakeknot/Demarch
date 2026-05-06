@@ -1,1 +1,1 @@
-2026-05-06-a5u-closed-microrouter-arch-next.md
+2026-05-06-3xl3-1-flux-explore-teams-planned-execute-deferred.md
