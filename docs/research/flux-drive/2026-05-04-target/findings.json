@@ -1,0 +1,43 @@
+{
+  "reviewed": "2026-05-04",
+  "input": "/home/mk/projects/Sylveste/docs/research/flux-review/sylveste-improvements-multi-axis/2026-05-04-target.md",
+  "track": "B-orthogonal",
+  "agents_launched": ["fd-search-engine-ranking", "fd-build-system-caching", "fd-compiler-incremental-build", "fd-ide-quick-actions"],
+  "agents_completed": ["fd-search-engine-ranking", "fd-build-system-caching", "fd-compiler-incremental-build", "fd-ide-quick-actions"],
+  "findings": [
+    {"id": "SER-01", "severity": "P1", "agent": "fd-search-engine-ranking", "axis": "ml-routing-replacement", "discipline": "two-stage retrieval+rerank", "section": "Axis 3", "title": "Agent triage scores all 679+ agents via LLM without cheap candidate-gen", "savings_estimate": "35K tok/review", "difficulty": "M"},
+    {"id": "BSC-1", "severity": "P1", "agent": "fd-build-system-caching", "axis": "token-efficiency", "discipline": "hermetic build caching (Bazel action hermeticity)", "section": "Cache Hermeticity", "title": "Timestamped OUTPUT_DIR defeats all cross-run prompt cache hits", "savings_estimate": "21K tok/session", "difficulty": "S"},
+    {"id": "IC-01", "severity": "P1", "agent": "fd-compiler-incremental-build", "axis": "token-efficiency", "discipline": "dirty-bit propagation (TypeScript watch mode)", "section": "Token-efficiency", "title": "Per-turn re-orientation burns full cost even when state unchanged", "savings_estimate": "10-16K tok/hr on idle loops", "difficulty": "S"},
+    {"id": "IDE-01", "severity": "P1", "agent": "fd-ide-quick-actions", "axis": "usability", "discipline": "IDE intent classification (IntelliJ prefix narrowing)", "section": "Intent Grouping", "title": "58 plugins share 'inter' prefix — prefix-based narrowing fails", "savings_estimate": "-5 sec/session, -50 tok/session", "difficulty": "S"},
+    {"id": "IDE-02", "severity": "P1", "agent": "fd-ide-quick-actions", "axis": "usability", "discipline": "IDE suggestion deduplication (IntelliJ action scoping)", "section": "Semantic Collision", "title": "6 distinct 'review' commands across plugins — user can't tell which to invoke", "savings_estimate": "-150 tok/session", "difficulty": "S"},
+    {"id": "IDE-03", "severity": "P1", "agent": "fd-ide-quick-actions", "axis": "usability", "discipline": "IDE context-aware action ranking (IntelliJ context actions)", "section": "Semantic Collision", "title": "6 'status' commands with no disambiguation heuristic", "savings_estimate": "-100 tok/session", "difficulty": "M"},
+    {"id": "SER-02", "severity": "P2", "agent": "fd-search-engine-ranking", "axis": "token-efficiency", "discipline": "BM25 candidate generation", "title": "Skill routing has no retrieval stage — full ~8K-token skill listing every turn", "savings_estimate": "6.5K tok/turn", "difficulty": "L"},
+    {"id": "SER-03", "severity": "P2", "agent": "fd-search-engine-ranking", "axis": "ml-routing-replacement", "discipline": "CTR as ground truth for ranker training", "title": "CASS acted-on signal not fed back into agent tier scoring", "difficulty": "M"},
+    {"id": "SER-04", "severity": "P2", "agent": "fd-search-engine-ranking", "axis": "ml-routing-replacement", "discipline": "Stale ranker retraining (LambdaMART freshness)", "title": "No freshness gate on tier scores — stale ranker problem", "difficulty": "S"},
+    {"id": "SER-05", "severity": "P2", "agent": "fd-search-engine-ranking", "axis": "usability", "discipline": "Position bias in search results", "title": "Position bias in alphabetical skill listing", "difficulty": "S"},
+    {"id": "BSC-2", "severity": "P2", "agent": "fd-build-system-caching", "axis": "token-efficiency", "discipline": "Content-addressed artifacts (Buck file identity)", "title": "Temp file paths include epoch timestamp, defeating intra-session cache", "savings_estimate": "1.5K tok/run", "difficulty": "XS"},
+    {"id": "BSC-3", "severity": "P2", "agent": "fd-build-system-caching", "axis": "token-efficiency", "discipline": "Action graph deduplication (Bazel shared reads)", "title": "Tool results (Read, git status) not shared across parallel fan-out", "savings_estimate": "10-15K tok/run", "difficulty": "M"},
+    {"id": "BSC-4", "severity": "P2", "agent": "fd-build-system-caching", "axis": "token-efficiency", "discipline": "Remote build cache (Bazel/RBE content-addressed outputs)", "title": "No cross-session findings cache keyed by content hash", "savings_estimate": "96K tok/repeat-review", "difficulty": "L"},
+    {"id": "BSC-5", "severity": "P2", "agent": "fd-build-system-caching", "axis": "usability", "discipline": "Incremental builds (Bazel change impact analysis)", "title": "Re-running /flux-drive after small fix re-executes all agents from scratch", "savings_estimate": "384K tok/incremental-rerun", "difficulty": "L"},
+    {"id": "IC-02", "severity": "P2", "agent": "fd-compiler-incremental-build", "axis": "token-efficiency", "discipline": "Dependency graph dirty-bit propagation", "title": "Module roadmap generation lacks dirty-bit propagation (63 modules rebuilt per bead change)", "savings_estimate": "95% bd-list reduction", "difficulty": "S"},
+    {"id": "IC-03", "severity": "P2", "agent": "fd-compiler-incremental-build", "axis": "token-efficiency", "discipline": "Salsa memoization (Rust salsa query caching)", "title": "Flux-drive agent triage not memoized by (target_hash, agent_hash)", "savings_estimate": "2.5K tok/iterative-review", "difficulty": "M"},
+    {"id": "IC-04", "severity": "P2", "agent": "fd-compiler-incremental-build", "axis": "usability", "discipline": "ETag/freshness headers (HTTP cache + build output manifests)", "title": "Generated artifacts lack freshness headers for staleness detection", "difficulty": "S"},
+    {"id": "IC-05", "severity": "P2", "agent": "fd-compiler-incremental-build", "axis": "ml-routing-replacement", "discipline": "Fine-grained reactivity (React virtual DOM diffing)", "title": "Bead status delta → status view is O(n) not O(delta)", "savings_estimate": "80% status token reduction", "difficulty": "M"},
+    {"id": "IDE-04", "severity": "P2", "agent": "fd-ide-quick-actions", "axis": "usability", "discipline": "Keyboard shortcut ergonomics (IntelliJ action frequency ranking)", "title": "High-frequency /interflux:flux-drive (21 chars) vs /clavain:tdd (11 chars)", "difficulty": "S"},
+    {"id": "IDE-05", "severity": "P2", "agent": "fd-ide-quick-actions", "axis": "usability", "discipline": "Context-aware ranking (VSCode Command Palette recency+context)", "title": "No sprint-phase-aware command ranking — flat alphabetical listing", "difficulty": "M"},
+    {"id": "IDE-06", "severity": "P2", "agent": "fd-ide-quick-actions", "axis": "usability", "discipline": "Progressive disclosure (IntelliJ action popup 15-item cap)", "title": "111 commands + 121 skills in flat listing — suggestion fatigue", "savings_estimate": "-500 tok/session", "difficulty": "M"},
+    {"id": "IDE-07", "severity": "P2", "agent": "fd-ide-quick-actions", "axis": "usability", "discipline": "Parameter hints (IntelliJ inline arg hints)", "title": "No <args> pattern hints at discovery time — trial-and-error required", "savings_estimate": "-100 tok/session", "difficulty": "XS"}
+  ],
+  "improvements": [
+    {"id": "SER-06", "agent": "fd-search-engine-ranking", "axis": "ml-routing-replacement", "title": "Negative-example mining from zero-finding agent runs"},
+    {"id": "IC-06", "agent": "fd-compiler-incremental-build", "axis": "token-efficiency", "title": "Generalize manifest pattern from gen-skill-compact.sh into lib-freshness.sh"},
+    {"id": "IDE-08", "agent": "fd-ide-quick-actions", "axis": "usability", "title": "Verb-based command grouping in /help (not plugin-source grouping)"}
+  ],
+  "verdict": "needs-changes",
+  "early_stop": false,
+  "convergence": [
+    {"finding_group": "agent-triage-full-llm-cost", "agents": ["fd-search-engine-ranking", "fd-compiler-incremental-build", "fd-build-system-caching"], "ids": ["SER-01", "IC-03", "BSC-4"]},
+    {"finding_group": "timestamp-non-determinism-defeats-cache", "agents": ["fd-build-system-caching", "fd-compiler-incremental-build"], "ids": ["BSC-1", "IC-01"]},
+    {"finding_group": "manifest-pattern-not-generalized", "agents": ["fd-compiler-incremental-build", "fd-build-system-caching"], "ids": ["IC-06", "BSC-2"]}
+  ]
+}

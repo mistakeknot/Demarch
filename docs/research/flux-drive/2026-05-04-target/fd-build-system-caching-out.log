@@ -1,0 +1,42 @@
+`★ Insight ─────────────────────────────────────`
+**Build System Caching as Mental Model for LLM Prompt Efficiency:**
+1. Anthropic's prompt cache is structurally identical to a remote build cache — it keys on prefix content hash. Any non-deterministic input (timestamps, session IDs, random paths) defeats it.
+2. The flux-drive pipeline injects timestamps at multiple levels: OUTPUT_DIR, REVIEW_FILE path, findings timestamps. This is analogous to embedding `$(date)` in Bazel action inputs — no action is hermetic, so no cache hits.
+3. Content-addressed paths (`sha256(content)[:12]` instead of `date +%s`) would make most prompts cache-friendly without changing semantics.
+`─────────────────────────────────────────────────`
+
+## Review Complete
+
+**Output:** `/home/mk/projects/Sylveste/docs/research/flux-drive/2026-05-04-target/fd-build-system-caching.md`
+
+### Key Findings
+
+| ID | Severity | Title | Estimated Savings |
+|----|----------|-------|-------------------|
+| BSC-1 | **P1** | Timestamped OUTPUT_DIR defeats all cross-run prompt cache | 21K tokens/run |
+| BSC-2 | P2 | Epoch timestamp in temp file paths | 1.5K tokens/run |
+| BSC-3 | P2 | Tool results not shared across parallel fan-out | 10-15K tokens/run |
+| BSC-4 | P2 | No cross-session findings cache | 96K tokens/repeat-run |
+| BSC-5 | P2 | No incremental mode for re-runs after fixes | 384K tokens/incremental |
+
+### Root Cause
+
+The flux-drive pipeline treats every run as a clean build. From a Bazel engineer's perspective:
+- **Zero hermeticity** — every action embeds runtime timestamps
+- **No content addressing** — file paths vary even when content is identical
+- **No action graph caching** — each dispatch is independent, no sharing
+
+### Quick Win (BSC-1 fix)
+
+Replace timestamp-based OUTPUT_DIR with content-addressed path:
+```bash
+# Current (SKILL.md line 112-113)
+RUN_TS = $(date +%Y%m%dT%H%M)
+OUTPUT_DIR = {OUTPUT_DIR}-{RUN_TS}
+
+# Proposed
+CONTENT_HASH = $(sha256sum "${INPUT_FILE}" | cut -c1-12)
+OUTPUT_DIR = {OUTPUT_DIR}-${CONTENT_HASH}
+```
+
+This single change would enable ~60-80% prompt cache hit rate for unchanged document reviews.

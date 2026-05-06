@@ -1,0 +1,26 @@
+`★ Insight ─────────────────────────────────────`
+**IDE Quick-Action UX Applied to Slash Commands:**
+1. **Prefix disambiguation** — IDEs expect typing 3 chars to narrow to <10 options. Sylveste's 58 `inter*` plugins violate this hard.
+2. **Progressive disclosure** — IntelliJ caps visible actions at ~15; VSCode at ~10. Sylveste lists 232 in the preamble.
+3. **Context-aware ranking** — IntelliJ shows recently-used + context-fit actions first. No ranking exists in Sylveste.
+`─────────────────────────────────────────────────`
+
+**Review complete.** Findings written to:
+- `/home/mk/projects/Sylveste/docs/research/flux-drive/2026-05-04-target/fd-ide-quick-actions.md`
+
+**Summary of findings:**
+
+| Severity | Count | Key Issue |
+|----------|-------|-----------|
+| P1 | 3 | Prefix collision (58 `inter*` plugins), semantic collision (6 `review` commands, 6 `status` commands) |
+| P2 | 4 | Keystroke cost inversion, no phase-aware ranking, 232-option suggestion fatigue, no args hints |
+| P3 | 1 | Plugin-grouped vs verb-grouped listing |
+
+**Estimated savings if addressed:**
+- ~900 tokens/session from tiered listing + disambiguation fixes
+- ~30 sec/session UX friction reduction
+
+**Highest-impact quick wins:**
+1. **XS difficulty:** Add `args_hint` to command frontmatter (~100 tok/session)
+2. **S difficulty:** Short aliases for top-10 commands (`/fd`, `/sp`, `/wk`) — better ergonomics
+3. **M difficulty:** Tiered skill listing (daily drivers → phase-relevant → search-only) — ~500 tok/session

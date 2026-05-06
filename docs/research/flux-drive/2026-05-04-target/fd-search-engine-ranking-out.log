@@ -1,0 +1,26 @@
+`★ Insight ─────────────────────────────────────`
+**Search engine ranking patterns applied to agent routing:**
+1. **Two-stage retrieval-rerank** — The core pattern. Google uses BM25 to get 1000 candidates from billions, then BERT reranks top-k. Sylveste skips stage 1 entirely, running expensive LLM judgment on 679+ agents.
+2. **CTR as ground truth** — Without "clicked" (acted-on-finding) signal feeding back to ranking, the model can't improve. CASS has the session data but it's not connected to tier scoring.
+3. **Position bias** — Well-documented in search: users click top results. LLMs have the same bias toward earlier-listed items. Alphabetical skill ordering creates implicit priority for "auth" over "verify".
+`─────────────────────────────────────────────────`
+
+---
+
+**Review complete.** Findings written to:
+`/home/mk/projects/Sylveste/docs/research/flux-drive/2026-05-04-target/fd-search-engine-ranking.md`
+
+**Verdict: needs-changes**
+
+**Key findings:**
+
+| ID | Severity | Axis | Title |
+|---|---|---|---|
+| SER-01 | **P1** | ml-routing | Agent triage scores 679+ agents via LLM — no cheap candidate-gen |
+| SER-02 | P2 | token-efficiency | Skill listing ~8K tokens/turn without retrieval |
+| SER-03 | P2 | ml-routing | CASS acted-on signal not fed into tier scoring |
+| SER-04 | P2 | ml-routing | No freshness gate on tier scores |
+| SER-05 | P2 | usability | Position bias in alphabetical skill listing |
+| SER-06 | P3 | ml-routing | No negative-example mining from zero-finding runs |
+
+**Highest-impact opportunity:** The existing `intersearch` infrastructure (nomic-embed-text-v1.5, SQLite vector storage) could provide the cheap candidate-generation layer. Embedding the document profile and retrieving top-30 agents via cosine similarity would reduce triage cost by ~85% (35K tokens/review) while the LLM reranker only scores the shortlist.

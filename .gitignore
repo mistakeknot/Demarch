@@ -80,6 +80,7 @@ docs/research/*/
 !docs/research/dialectics/
 !docs/research/flux-drive/
 !docs/research/flux-research/
+!docs/research/flux-review/
 !docs/research/f1-cypher-benchmark/
 
 # Dolt database files (added by bd init)

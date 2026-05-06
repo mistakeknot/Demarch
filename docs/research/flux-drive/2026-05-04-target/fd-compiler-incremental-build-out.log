@@ -1,0 +1,21 @@
+`★ Insight ─────────────────────────────────────`
+**Incremental compilation review complete.** The key finding is that Sylveste already HAS the right pattern in `gen-skill-compact.sh` (SHA256 manifest + `check_freshness()`), but it's isolated to one use case. Generalizing this pattern to SessionStart hooks, flux-drive triage, and artifact generation could save **10,000-30,000 tokens/hour** on active sessions.
+
+The P1 finding — idle /loop ticks paying full re-orientation cost — maps directly to the TypeScript watch mode pattern: file watchers only trigger recompilation when mtimes change. Sylveste lacks the equivalent "nothing changed" short-circuit.
+`─────────────────────────────────────────────────`
+
+**Review complete.** Findings written to:
+- `/home/mk/projects/Sylveste/docs/research/flux-drive/2026-05-04-target/fd-compiler-incremental-build.md`
+
+**Summary of findings (6 total):**
+
+| Severity | Finding | Axis | Estimated Savings |
+|----------|---------|------|-------------------|
+| **P1** | SessionStart hooks burn full cost on unchanged state | token-efficiency | 9,000-14,000 tok/hour on idle loops |
+| P2 | Module roadmap generation is O(n modules) not O(delta) | token-efficiency | ~95% reduction in propagate cost |
+| P2 | Flux-drive agent triage not memoized | token-efficiency + ML-routing | 2,000 tok/iterative-review |
+| P2 | Generated artifacts lack freshness headers | usability | Enables staleness detection |
+| P2 | Status view is O(n) not O(delta) | token-efficiency | 80% reduction |
+| P3 | Manifest pattern exists but not generalized | infrastructure | Enables all above |
+
+**Highest-leverage change:** Extract `lib-freshness.sh` from `gen-skill-compact.sh` and apply to SessionStart hooks, flux-drive triage, and artifact generation.
