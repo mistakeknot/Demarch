@@ -75,16 +75,6 @@ Twelve contracts collide on (kind, name) across two or more plugins (hooks exclu
 
 **Suggested action.** Either reserve common verbs (`status`, `setup`, `scan`, `analyze`, `doctor`) as documented namespaces with a single canonical owner, or add a structural test that flags new collisions in CI before they merge.
 
-### Resolution: triage complete (sylveste-qow6, 2026-05-06)
-
-Full triage in `docs/research/2026-05-06-collision-triage.md`. Headline: 8 of 12 lattice-reported collisions are connector false positives (it keys off filename stem, not the `name:` frontmatter field that several plugins already self-namespace via). Of the four real collisions:
-
-- `command:research`, `command:scan` — accept as cross-domain verb sharing
-- `command:status` — self-resolving via existing `interscout` deprecation
-- `command:setup` — rename `intership:setup` → `intership:customize` (sylveste-t0sz)
-
-Connector fix filed as sylveste-0usg (v0c.6). After it lands the collision detection becomes useful and a CI guard becomes worth adding alongside.
-
 ## Plugin-level dependency cycles
 
 Four cycles surface in the consume graph, all centered on clavain:
@@ -101,16 +91,6 @@ Four cycles surface in the consume graph, all centered on clavain:
 **Whether this matters.** Cycles of length two between a frontend and its peers are tolerable in markdown-reference terms but become real risks if these plugins ever import each other's code or share lifecycle dependencies. The 3-cycle (clavain → interpath → interwatch → clavain) is more interesting because it implies coupling that no two-plugin pair captures alone.
 
 **Suggested action.** Treat clavain as a known coupling hub and accept the cycle pattern, but consider whether interpath ↔ interwatch is genuinely necessary — that pair is the real coupling beneath the 3-cycle.
-
-### Resolution: interpath ↔ interwatch is intentional (sylveste-8jx0, 2026-05-06)
-
-After reading both AGENTS.md files, the back-reference is a deliberate **sensor/generator pattern**:
-
-- interwatch detects drift, writes `.interwatch/drift.json`, dispatches `interpath:artifact-gen`
-- `/interpath:all` reads `.interwatch/drift.json` to drive batch refresh
-- The shared file is a **published contract**, not a code dependency
-
-Both AGENTS.md files now carry an explicit "Architectural cycle (intentional)" note pointing back at this finding. The lattice's edge model treats markdown references as plugin-level edges, which collapses producer→artifact→consumer chains into apparent cycles. The clean fix is on the lattice side: a `FileContract` entity type would represent `.interwatch/drift.json` as a first-class node, replacing the cycle with a directed chain (interwatch → file → interpath). Filed as a v0c extension.
 
 ## Top leverage contracts
 
