@@ -27,18 +27,38 @@ input=$(cat)
 prompt=$(jq -r '.prompt // empty' <<<"$input" 2>/dev/null) || exit 0
 [[ -z "$prompt" ]] && exit 0
 
-# Extract first whitespace-delimited token. Slash commands are simple shape:
-#   /name        (top-level)
-#   /plugin:cmd  (namespaced)
-first=$(awk '{print $1; exit}' <<<"$prompt")
-case "$first" in
-    /*) ;;          # potential slash command
-    *) exit 0 ;;    # not a slash command — no hint to emit
+# Find a slash command in the prompt prefix.
+# Strategy: prefer first-token (cleanest signal), but also scan the first 200
+# chars for `/<plugin>:<cmd>` patterns. Cass-derived empirical evidence
+# (a4oj.9.2 investigation): 25 of 34 "imperative-no-opening-slash" prompts
+# embed a slash command after a discourse marker (e.g., "yes, /handoff",
+# "let's /flux-review the brainstorm"). A naive POLY-2 keyword router on
+# WORK/REVIEW/RESEARCH/MEMORY had a 95.6% false-positive rate and was
+# rejected; the slash-anywhere extension captures 25/34 with zero ambiguity.
+first_token=$(awk '{print $1; exit}' <<<"$prompt")
+match=""
+case "$first_token" in
+    /*:*) match="$first_token" ;;
+    /*)
+        # Top-level slash like /loop or /init. Use first token.
+        match="$first_token"
+        ;;
+    *)
+        # Not a leading slash — scan first 200 chars for /<plugin>:<cmd>.
+        # The pattern requires a namespace colon to keep noise low; bare
+        # `/something` mid-sentence is too ambiguous (could be a path,
+        # regex, etc.) and the cass data shows namespaced is what users
+        # write when they mean an invocation.
+        prefix=${prompt:0:200}
+        match=$(grep -oE '/[a-z][a-z0-9-]*:[a-z][a-z0-9-]+' <<<"$prefix" | head -1) || match=""
+        ;;
 esac
+[[ -z "$match" ]] && exit 0
 
-# Look up in table. jq returns "null" for missing keys.
-hit=$(jq -r --arg key "$first" '.commands[$key] // .global_commands[$key] // empty' "$TABLE" 2>/dev/null)
+# Look up in table. jq returns empty for missing keys.
+hit=$(jq -r --arg key "$match" '.commands[$key] // .global_commands[$key] // empty' "$TABLE" 2>/dev/null)
 [[ -z "$hit" ]] && exit 0
+first="$match"
 
 plugin=$(jq -r --arg key "$first" '.commands[$key].plugin // .global_commands[$key].plugin // empty' "$TABLE")
 cmd=$(jq -r --arg key "$first" '.commands[$key].command // .global_commands[$key].command // empty' "$TABLE")
