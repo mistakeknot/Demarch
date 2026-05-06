@@ -1,0 +1,18 @@
+{
+  "diff_id": "d06-prime-trim-35pct",
+  "sha": "a03862ed946154fbb65db211a87139ba1d317f79",
+  "summary": "perf(beads): trim PRIME.md by 35% — saves ~600b of session-prefix attachment",
+  "domain_hints": ["claude-code-plugin", "cli-tool"],
+  "expected_agents": ["fd-performance", "fd-quality"],
+  "expected_findings_themes": [
+    "trim removes load-bearing protocol steps that downstream sessions depend on",
+    "byte-savings claim should be reproducible by a measurement script, not eyeballed"
+  ],
+  "rationale": "Prompt-prefix performance work. fd-performance on the cache/prefix economics; fd-quality on whether the trimmed text drops semantically required content.",
+  "complexity": "small",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating because legacy flux-drive's per-domain pattern routing typically excludes fd-performance from .md-only diffs; ontology should bridge the 'perf:' commit prefix and PRIME.md keyword to fd-performance.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

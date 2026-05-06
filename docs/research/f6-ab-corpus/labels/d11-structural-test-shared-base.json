@@ -1,0 +1,18 @@
+{
+  "diff_id": "d11-structural-test-shared-base",
+  "sha": "80894cfe66b51a3f5a417899cd17117080509a52",
+  "summary": "refactor(tests): convert interhelm + intersight structural tests to shared base",
+  "domain_hints": ["claude-code-plugin", "library-sdk"],
+  "expected_agents": ["fd-architecture", "fd-quality"],
+  "expected_findings_themes": [
+    "sys.path injection for shared fixtures is fragile if the conftest base directory moves",
+    "shared base must not regress per-plugin coverage metrics or test isolation"
+  ],
+  "rationale": "Test-infra rollout. fd-architecture on the shared-base abstraction; fd-quality on test idiomaticity.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Test-only change — neither backend should pull cognitive agents in.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

@@ -1,0 +1,19 @@
+{
+  "diff_id": "d15-oyrf-cost-calibration",
+  "sha": "d3c72900398f35fc3bd2c07ee96d9f6f16869692",
+  "summary": "feat(oyrf): add cost calibration infra",
+  "domain_hints": ["data-pipeline", "cli-tool"],
+  "expected_agents": ["fd-correctness", "fd-architecture", "fd-safety"],
+  "expected_findings_themes": [
+    "estimate-costs.sh derives dollar figures from model-pricing config that drifts independently of code",
+    "GitHub workflow on a public repo should not run cost-calibration jobs that pull paid model pricing without secrets isolation",
+    "validation script seeds a CSV trajectory file — append vs overwrite semantics must be explicit"
+  ],
+  "rationale": "Cost-tracking infra with a public CI workflow. fd-correctness on script semantics, fd-architecture on the multi-script boundary, fd-safety on the public-CI surface.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Both backends should pick fd-correctness given .sh + .yml + script files.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

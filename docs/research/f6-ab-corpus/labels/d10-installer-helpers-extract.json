@@ -1,0 +1,18 @@
+{
+  "diff_id": "d10-installer-helpers-extract",
+  "sha": "0e147837ef243cd8f827c65f92767c584b01a7fa",
+  "summary": "refactor: extract shared installer helpers + clean stale flux-gen specs",
+  "domain_hints": ["cli-tool"],
+  "expected_agents": ["fd-architecture", "fd-quality"],
+  "expected_findings_themes": [
+    "shared lib must source-guard against double-include in case both install + uninstall run sequentially",
+    "removing empty spec files should be paired with a check that nothing references them"
+  ],
+  "rationale": "Classic refactor — extract common code, sweep dead artefacts. fd-architecture on the boundary, fd-quality on shell idiom.",
+  "complexity": "small",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Standard refactor signal — both backends should agree on architecture+quality.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

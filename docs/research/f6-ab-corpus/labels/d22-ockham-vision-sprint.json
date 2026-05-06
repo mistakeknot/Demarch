@@ -1,0 +1,20 @@
+{
+  "diff_id": "d22-ockham-vision-sprint",
+  "sha": "31102b666333d164237929d60a8c6b8bd093ef6b",
+  "summary": "feat(ockham): vision doc sprint — PRD, plan, reflection",
+  "domain_hints": ["library-sdk"],
+  "expected_agents": ["fd-systems", "fd-decisions", "fd-perception", "fd-people", "fd-user-product"],
+  "expected_findings_themes": [
+    "vision lacks a falsifiable success metric tied to a concrete population of users",
+    "Wave 1 PRD revision absorbed 15 P1 fixes — the residual fixes should be tracked, not assumed integrated",
+    "algedonic signal research must specify the threshold mechanism for promoting alerts to action",
+    "reaction round end-to-end test output is evidence, not proof — define the next falsification step"
+  ],
+  "rationale": "Vision/PRD/plan document trio. Cognitive agents fire heavily: fd-systems on signal mechanisms, fd-decisions on PRD framing, fd-perception on epistemology of the reaction-round result, fd-people on the change implications, fd-user-product on the user framing.",
+  "complexity": "large",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Strategy/vision document — Step 1.2a base score 3 for systems/strategy content.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

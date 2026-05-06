@@ -1,0 +1,20 @@
+{
+  "diff_id": "d30-prometheus-metrics",
+  "sha": "f33d3d51ced52063c04a38f4853acdf4a2bceb0c",
+  "summary": "feat(interfere): add Prometheus /metrics export for Grafana monitoring",
+  "domain_hints": ["web-api", "ml-pipeline"],
+  "expected_agents": ["fd-architecture", "fd-correctness", "fd-performance", "fd-user-product"],
+  "expected_findings_themes": [
+    "content negotiation on /metrics changes default behaviour for clients that don't set Accept header — document migration",
+    "instrument cardinality (per-user labels) must be bounded or Prometheus storage explodes",
+    "quality composite gauge is a derived signal that can mask its inputs — expose the components too",
+    "/metrics/prometheus and /metrics dispatching from the same handler increases the test surface"
+  ],
+  "rationale": "Observability surface change. fd-architecture for the dual-endpoint pattern, fd-correctness for content negotiation edge cases, fd-performance for instrument-cardinality cost, fd-user-product for the dashboard consumer story.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Standard observability work — both backends should pull architecture+correctness+perf.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

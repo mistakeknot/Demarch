@@ -1,0 +1,19 @@
+{
+  "diff_id": "d07-prime-trim-preamble",
+  "sha": "7d2a39b789a12f3755846990327026bb8bbc9033",
+  "summary": "perf(beads): trim PRIME.md to cut SessionStart preamble cost",
+  "domain_hints": ["claude-code-plugin", "cli-tool"],
+  "expected_agents": ["fd-performance", "fd-user-product", "fd-quality"],
+  "expected_findings_themes": [
+    "removing command reference material assumes users know to consult bd --help",
+    "PRIME.md is read at every SessionStart so even small bytes compound across runs",
+    "JSONL backup re-export inflates the diff and must not be confused with the substantive edit"
+  ],
+  "rationale": "Prompt economics + UX trade-off (less reference material). fd-performance on the cache cost, fd-user-product on the affordance loss, fd-quality on the diff signal-to-noise.",
+  "complexity": "large",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Diff is large in line count (3714) but most is the bead JSONL re-export; substantive change is ~105 lines in .beads/PRIME.md. Slicing-eligible.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

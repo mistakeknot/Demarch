@@ -1,0 +1,20 @@
+{
+  "diff_id": "d27-turboquant-polar-qjl",
+  "sha": "7e54e6c474c6c3b623b193927e25de85b0461c0b",
+  "summary": "feat(interfere): add TurboQuant polar transform primitives + QJL",
+  "domain_hints": ["ml-pipeline"],
+  "expected_agents": ["fd-correctness", "fd-performance", "fd-quality", "fd-architecture"],
+  "expected_findings_themes": [
+    "float32 trig precision claim should be measured against float64 ground truth at edge angles",
+    "theta normalisation to [0,1] makes uniform quantisation possible but loses precision near boundaries",
+    "QJL 1-bit JL sketch dimension must be calibrated against the residual error budget the experiment expects to recover",
+    "polar / inverse-polar pair should be tested for numerical idempotence under round-trip"
+  ],
+  "rationale": "Numerical primitives + tests + design docs. fd-correctness on numerical edge cases, fd-performance because the primitives feed a benchmark, fd-quality on test coverage, fd-architecture on the experiment-config boundary.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Both backends should agree given the new primitive surface + .py test additions.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

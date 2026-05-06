@@ -1,0 +1,19 @@
+{
+  "diff_id": "d26-turboquant-v3-bhq",
+  "sha": "89df53cea78b177edbb1ce63cfe5df16832640b6",
+  "summary": "feat(interfere): TurboQuant v3 (BHQ) — Lloyd-Max centroid quantization for KV cache",
+  "domain_hints": ["ml-pipeline"],
+  "expected_agents": ["fd-correctness", "fd-performance", "fd-quality"],
+  "expected_findings_themes": [
+    "Lloyd-Max convergence on Beta(d/2, d/2) is sensitive to initial centroid placement — the CDF-quantile init must hold across hidden-dim sizes",
+    "non-fused bhq_attention path has different numerical accumulation than the fused legacy attention; downstream eval must compare both",
+    "synthetic NMSE on Qwen 0.5B-4bit is a microbench — generalisation to full-size models must be staged"
+  ],
+  "rationale": "Numerical algorithm + KV cache hot path + benchmark integration. fd-correctness on numerical stability, fd-performance on the benchmark surface, fd-quality on the implementation idiomaticity.",
+  "complexity": "small",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: small diff line count (67) but high algorithmic density. Legacy may underweight; ontology should bridge 'Lloyd-Max', 'centroid', 'KV cache' to ML-pipeline domain.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

@@ -1,0 +1,19 @@
+{
+  "diff_id": "d14-ecosystem-simplification",
+  "sha": "8676c2bb1304d139998b94fb15242f413bbcb919",
+  "summary": "feat: ecosystem-wide simplification pass — ~1,980 LOC across 15+ repos",
+  "domain_hints": ["claude-code-plugin", "library-sdk", "web-api"],
+  "expected_agents": ["fd-architecture", "fd-quality", "fd-correctness"],
+  "expected_findings_themes": [
+    "god-function decomposition needs invariant tests to prove behaviour preservation",
+    "duplicate-package consolidation should bind a single source of truth and migrate consumers, not just delete copies",
+    "auth middleware factory must keep the same public surface across the 15+ plugins or the simplification breaks consumers"
+  ],
+  "rationale": "Cross-cutting refactor at scale. fd-architecture on the boundary work, fd-correctness on behaviour preservation, fd-quality on idiomaticity.",
+  "complexity": "medium",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: legacy may pick fd-architecture only; ontology should bridge 'auth middleware' / 'session context lib' to fd-correctness as well.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

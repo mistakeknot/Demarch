@@ -1,0 +1,19 @@
+{
+  "diff_id": "d04-gemini-path-scrub",
+  "sha": "31f163657807e0150def7474b5c38a1d7a7fb5dc",
+  "summary": "fix: scrub hardcoded paths from .gemini config for portability",
+  "domain_hints": ["claude-code-plugin", "cli-tool"],
+  "expected_agents": ["fd-safety", "fd-architecture", "fd-quality"],
+  "expected_findings_themes": [
+    "MCP server paths now derive from git rev-parse which fails outside a working tree",
+    "regenerating 108 toml command files invites churn-on-rebase if generator is non-deterministic",
+    "absolute-to-relative migration should include a test that exercises both layouts"
+  ],
+  "rationale": "Config plumbing change at scale (108 generated files). fd-safety on path resolution risks, fd-architecture on the generator/source-of-truth question, fd-quality on the multi-file consistency.",
+  "complexity": "large",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Large diff (1938 lines) but most is regenerated TOML. Slicing-eligible per Step 1.1.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

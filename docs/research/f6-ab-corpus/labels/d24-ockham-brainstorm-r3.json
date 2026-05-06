@@ -1,0 +1,20 @@
+{
+  "diff_id": "d24-ockham-brainstorm-r3",
+  "sha": "9e1bba049825122c2fa0bca3dc426ead754dfee3",
+  "summary": "feat(ockham): brainstorm rev 3 + 16-agent 4-track flux-review + handoff",
+  "domain_hints": ["library-sdk"],
+  "expected_agents": ["fd-systems", "fd-decisions", "fd-perception", "fd-resilience", "fd-people"],
+  "expected_findings_themes": [
+    "structural safety invariants list must be testable, not aspirational",
+    "cross-domain min-tier resolution introduces a global minimum which can deadlock under contention",
+    "weight-outcome feedback loop is double-edged — describe the recovery path when the loop drifts unfavourably",
+    "16-agent review across 4 tracks costs many tokens — record the marginal-finding-per-token to justify the depth"
+  ],
+  "rationale": "Brainstorm with deep systems content. Cognitive roster fires; fd-resilience for the weight-outcome loop drift; fd-people for the cross-domain authority dynamics.",
+  "complexity": "large",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Strategy-content document; cognitive roster is the canonical roster.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

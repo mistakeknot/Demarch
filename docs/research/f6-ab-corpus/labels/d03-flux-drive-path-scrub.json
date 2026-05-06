@@ -1,0 +1,19 @@
+{
+  "diff_id": "d03-flux-drive-path-scrub",
+  "sha": "426577c4865924298ee0a05bd5c1526fc8056e21",
+  "summary": "fix: scrub hardcoded /home/mk paths from flux-drive output artifacts",
+  "domain_hints": ["claude-code-plugin"],
+  "expected_agents": ["fd-safety", "fd-quality"],
+  "expected_findings_themes": [
+    "hardcoded user paths leaked into committed review artifacts disclose host layout",
+    "replacing absolute with relative paths must keep tools that depended on absolute resolution working",
+    "automated scrub may not catch paths in nested or generated content"
+  ],
+  "rationale": "Path leakage is a portability + minor information-disclosure issue. fd-safety on path-leakage and fd-quality on the bulk text-replacement pattern.",
+  "complexity": "medium",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: legacy flux-drive's diff routing for .md-only changes may skip fd-safety; ontology should pick up 'path' / 'scrub' / 'hardcoded' keywords as security-adjacent.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

@@ -82,6 +82,7 @@ docs/research/*/
 !docs/research/flux-research/
 !docs/research/flux-review/
 !docs/research/f1-cypher-benchmark/
+!docs/research/f6-ab-corpus/
 
 # Dolt database files (added by bd init)
 .dolt/

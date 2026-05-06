@@ -1,0 +1,19 @@
+{
+  "diff_id": "d09-interrank-r2-lazy-load",
+  "sha": "608c93a2f612a165ab01dfb93ba9be992ca374e7",
+  "summary": "fix(sylveste-mb72): ship R2 lazy-load for interrank agmodb snapshot",
+  "domain_hints": ["library-sdk", "data-pipeline"],
+  "expected_agents": ["fd-performance", "fd-correctness", "fd-architecture"],
+  "expected_findings_themes": [
+    "background prefetch + first-tool-call coalesce is a race-condition-prone pattern",
+    "snapshot fetched from a github release URL pins behaviour to a remote artifact",
+    "535ms cold-start reduction is meaningful only if measured under realistic concurrency"
+  ],
+  "rationale": "Lazy-load + coalesce optimisation. fd-performance is canonical; fd-correctness on the prefetch-vs-call race; fd-architecture on the SnapshotStore boundary.",
+  "complexity": "small",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Both backends should agree given perf-tagged commit + concurrency hooks.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

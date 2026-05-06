@@ -1,0 +1,20 @@
+{
+  "diff_id": "d29-flash-moe-bench",
+  "sha": "e1727fb6d38138719b6bacee1cf1dab586aa534c",
+  "summary": "feat(interfere): flash-moe expert cache sweep benchmark (sylveste-rb6)",
+  "domain_hints": ["ml-pipeline"],
+  "expected_agents": ["fd-performance", "fd-correctness", "fd-architecture"],
+  "expected_findings_themes": [
+    "10000 entries (54GB) optimum is hardware-specific — recommend reproducing on at least one other M-series chassis before declaring default",
+    "unified-memory contention with Metal GPU buffers is the regression mechanism beyond 15000 entries — document for future sweeps",
+    "AGENTS.md recommendation should be auto-derived from results.tsv to avoid drift",
+    "shader CWD gotcha + LRU pread EFAULT discovery should become regression tests, not just reflection notes"
+  ],
+  "rationale": "ML benchmark + AGENTS.md update + reflection. fd-performance is canonical, fd-correctness for the EFAULT/CWD edge cases, fd-architecture for the AGENTS.md/code-result coupling.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Both backends should pull fd-performance on a perf-bench commit.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

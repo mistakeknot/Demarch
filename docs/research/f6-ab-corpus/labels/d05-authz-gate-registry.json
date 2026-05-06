@@ -1,0 +1,19 @@
+{
+  "diff_id": "d05-authz-gate-registry",
+  "sha": "01693e7765016836d18d32e17201b33941d76659",
+  "summary": "feat(authz): .clavain/gates/ registry + .beads/push.sh gate delegation",
+  "domain_hints": ["cli-tool", "claude-code-plugin"],
+  "expected_agents": ["fd-safety", "fd-architecture", "fd-correctness"],
+  "expected_findings_themes": [
+    "gate delegation should fail closed when clavain-cli is malformed, not silently fall through",
+    "policy lint walks a directory but does not validate gate marker contents are signed or hashed",
+    "non-invasive opt-in is a feature flag pattern that can drift if not periodically reconciled"
+  ],
+  "rationale": "Authorization plumbing landing new policy registry. fd-safety on the fail-open vs fail-closed semantics, fd-architecture on the registry-of-markers pattern, fd-correctness on lint walker correctness.",
+  "complexity": "small",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Both backends should agree this is auth/policy work; safety is the canonical signal.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

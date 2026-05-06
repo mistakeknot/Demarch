@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "F6 A/B Corpus Diff Label",
+  "description": "Ground-truth label for one diff in the F6 A/B corpus. One file per diff at labels/<diff_id>.json.",
+  "type": "object",
+  "required": [
+    "diff_id",
+    "sha",
+    "expected_agents",
+    "expected_findings_themes",
+    "rationale",
+    "complexity",
+    "discriminating",
+    "labeler",
+    "labeler_notes",
+    "human_validated",
+    "label_version"
+  ],
+  "properties": {
+    "diff_id": {
+      "type": "string",
+      "description": "Stable identifier — kebab-case, prefix d##- where ## is 01..30 in manifest order."
+    },
+    "sha": {
+      "type": "string",
+      "description": "Full git SHA the diff was extracted from. The manifest references this; harness uses git show to materialize."
+    },
+    "summary": {
+      "type": "string",
+      "description": "First-line commit message, for human readability."
+    },
+    "domain_hints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "game-simulation",
+          "web-api",
+          "ml-pipeline",
+          "cli-tool",
+          "mobile-app",
+          "embedded-systems",
+          "library-sdk",
+          "data-pipeline",
+          "claude-code-plugin",
+          "tui-app",
+          "desktop-tauri",
+          "none"
+        ]
+      },
+      "description": "Project domain(s) per flux-drive Step 1.0.1. Used to validate domain classification and as a triage feature."
+    },
+    "expected_agents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "fd-architecture",
+          "fd-correctness",
+          "fd-quality",
+          "fd-safety",
+          "fd-performance",
+          "fd-user-product",
+          "fd-game-design",
+          "fd-systems",
+          "fd-decisions",
+          "fd-people",
+          "fd-resilience",
+          "fd-perception"
+        ]
+      },
+      "minItems": 1,
+      "description": "Agents that MUST fire for this diff (precision floor for the system under test). Missing any of these is a recall miss."
+    },
+    "expected_findings_themes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 8
+      },
+      "minItems": 1,
+      "maxItems": 8,
+      "description": "Short prose themes a thorough review SHOULD surface. Used as the ground truth for the primary metric (review-coverage-per-diff)."
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "description": "1–3 sentences explaining the label, especially the non-obvious agent choices."
+    },
+    "complexity": {
+      "type": "string",
+      "enum": ["small", "medium", "large"],
+      "description": "Matches flux-drive Step 1.1 Diff Profile complexity. small <200 lines, medium 200–1000, large >=1000 (slicing-eligible)."
+    },
+    "discriminating": {
+      "type": "boolean",
+      "description": "True if legacy and ontology backends are expected to disagree on agent selection. Drives subset analysis in the F6b ship-decision memo."
+    },
+    "labeler": {
+      "type": "string",
+      "description": "Identifier of the human or model that produced the label."
+    },
+    "labeler_notes": {
+      "type": "string",
+      "description": "Free-form notes — uncertainty flags, edge-case rationale, follow-ups."
+    },
+    "human_validated": {
+      "type": "boolean",
+      "description": "True after a second-labeler review pass; false on V1 single-labeler set."
+    },
+    "label_version": {
+      "type": "string",
+      "description": "Semver. v1.0.0 is the F6a ship state. Bump on relabel."
+    }
+  },
+  "additionalProperties": false
+}

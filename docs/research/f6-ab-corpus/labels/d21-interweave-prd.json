@@ -1,0 +1,20 @@
+{
+  "diff_id": "d21-interweave-prd",
+  "sha": "376e84ce927923ad8cc8c282a2edf663023604d2",
+  "summary": "feat(interweave): brainstorm + PRD for generative ontology graph",
+  "domain_hints": ["library-sdk"],
+  "expected_agents": ["fd-systems", "fd-decisions", "fd-perception", "fd-architecture", "fd-user-product"],
+  "expected_findings_themes": [
+    "catalog-of-catalogs architecture must specify the cycle-breaking rule for self-referential catalogs",
+    "entity identity resolution as foundation begs the question of how the resolver evolves with the schema",
+    "epic with 8 feature children needs explicit dependency edges to expose the critical path",
+    "16-agent flux-review across 4 tracks risks groupthink if the same lens-set is reused per track"
+  ],
+  "rationale": "PRD/brainstorm document — cognitive agents fire (Step 1.2a base score 2 for PRD/brainstorm). fd-systems for feedback loops in catalog-of-catalogs, fd-decisions for the framing decisions, fd-perception for the multi-track review epistemology, plus fd-architecture and fd-user-product for the technical/consumer angles.",
+  "complexity": "large",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Cognitive-heavy diff — both backends should agree the document type drives roster choice.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

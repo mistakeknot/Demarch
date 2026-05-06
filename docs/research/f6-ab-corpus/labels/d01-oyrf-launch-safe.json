@@ -1,0 +1,19 @@
+{
+  "diff_id": "d01-oyrf-launch-safe",
+  "sha": "4740bba25f2d7884206ce3638ba54f3fc691198e",
+  "summary": "fix(oyrf): keep public validation launch-safe",
+  "domain_hints": ["claude-code-plugin", "cli-tool"],
+  "expected_agents": ["fd-safety", "fd-correctness"],
+  "expected_findings_themes": [
+    "validation script no longer enforces a check that was previously gating launch",
+    "removing a public-launch guardrail without a regression test risks recurrence",
+    "single committed bead row is brittle if other agents export concurrently"
+  ],
+  "rationale": "Public-launch gating script silently dropped a Mythos requirement. fd-safety fires on guardrail removal in user-facing surfaces; fd-correctness on the export semantics of staging only one bead row.",
+  "complexity": "small",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "F6a V1 label set — single-labeler. Discriminating because legacy flux-drive may not weight the validation-script path heavily on a 7-line diff; ontology should bridge the path-keyword 'validation' to fd-safety.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

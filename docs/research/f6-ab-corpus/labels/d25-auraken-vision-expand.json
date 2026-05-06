@@ -1,0 +1,20 @@
+{
+  "diff_id": "d25-auraken-vision-expand",
+  "sha": "24aac3312e26ca95118aaba90b6bbc2af9ac7415",
+  "summary": "feat(auraken): expand vision from cognitive augmentation to life operating system",
+  "domain_hints": ["library-sdk"],
+  "expected_agents": ["fd-systems", "fd-decisions", "fd-perception", "fd-people", "fd-user-product", "fd-resilience"],
+  "expected_findings_themes": [
+    "expanding scope from cognitive augmentation to life operating system risks Conway's-Law-style team strain",
+    "fiduciary obligations from deep context cannot be fulfilled without a clear data retention and consent model",
+    "structurally separated affiliate business model must specify how affiliate signals are isolated from recommendation rankings",
+    "four domains (thinking/discovery/learning/pattern awareness) compose only if the user can opt out per domain"
+  ],
+  "rationale": "Vision-scope-expansion document. Full cognitive roster + fd-user-product fires because of the affiliate model + scope-expansion implications for users. fd-people for team/Conway implications.",
+  "complexity": "large",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Strategy-content document — both backends should pull cognitive roster.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

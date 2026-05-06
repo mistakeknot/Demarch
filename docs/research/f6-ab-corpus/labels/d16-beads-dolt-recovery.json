@@ -1,0 +1,19 @@
+{
+  "diff_id": "d16-beads-dolt-recovery",
+  "sha": "9e1016e53de34d9aa1c68024bcff7c7e637993ec",
+  "summary": "fix(beads): recover Dolt database, untrack runtime files, import 416 issues",
+  "domain_hints": ["data-pipeline", "cli-tool"],
+  "expected_agents": ["fd-correctness", "fd-safety", "fd-architecture"],
+  "expected_findings_themes": [
+    "untracking runtime files retroactively does not remove already-committed history of credentials",
+    "schema fix via bd doctor --fix should record what was fixed for audit",
+    "BLOCKED.md to bead conversion must preserve all blocking context, not collapse it"
+  ],
+  "rationale": "Database recovery + credential exposure check + schema correctness. fd-correctness for schema, fd-safety for the credential file commits, fd-architecture for the runtime/source split.",
+  "complexity": "large",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: legacy flux-drive's diff routing for .gitignore + JSONL bulk re-imports may not weight fd-safety; ontology should pick up 'credential', 'untrack', 'beads-credential-key' as security-adjacent.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

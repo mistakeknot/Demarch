@@ -1,0 +1,19 @@
+{
+  "diff_id": "d20-metal-subprocess",
+  "sha": "9191c31ee368542c1e7b9820021266e04044a9ea",
+  "summary": "feat(interfere): Metal subprocess with memory safety and health check",
+  "domain_hints": ["ml-pipeline", "embedded-systems"],
+  "expected_agents": ["fd-correctness", "fd-safety", "fd-architecture", "fd-performance"],
+  "expected_findings_themes": [
+    "subprocess lifecycle requires explicit termination on parent crash to avoid orphaned Metal contexts",
+    "memory-safety claim should be validated with a stress test that intentionally over-allocates",
+    "health check polling interval interacts with thermal gate cadence — must not race"
+  ],
+  "rationale": "New subprocess worker for ML inference. Full technical roster fires: correctness for IPC, safety for resource exhaustion, architecture for the subprocess boundary, performance for the GPU-context cost.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Greenfield code — both backends should pull all four technical agents.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

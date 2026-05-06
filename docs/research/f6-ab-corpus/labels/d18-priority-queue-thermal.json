@@ -1,0 +1,20 @@
+{
+  "diff_id": "d18-priority-queue-thermal",
+  "sha": "1630a70cdc6879a1c86021eb46142ac54a813452",
+  "summary": "feat(interfere): wire PriorityRequestQueue + thermal gate for multi-user safety",
+  "domain_hints": ["web-api", "ml-pipeline"],
+  "expected_agents": ["fd-correctness", "fd-safety", "fd-performance", "fd-architecture"],
+  "expected_findings_themes": [
+    "thermal gate threshold is configurable but the default 'heavy' should be calibrated per chassis",
+    "503 + Retry-After on overflow leaks no information about queue depth which can be a feature or bug",
+    "X-Interfere-Priority header is trusted from the client and could be abused to jump the queue",
+    "queue depth gauge + reject counter are the right SLO instruments for this admission-control surface"
+  ],
+  "rationale": "Concurrency + admission control + multi-user safety + new metrics. fd-correctness for admission ordering, fd-safety for the trusted-header risk, fd-performance for latency under thermal load, fd-architecture for the gate/queue boundary.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Multi-domain commit; both backends should pull the full technical roster.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

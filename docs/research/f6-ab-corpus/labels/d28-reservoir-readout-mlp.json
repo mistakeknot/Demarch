@@ -1,0 +1,18 @@
+{
+  "diff_id": "d28-reservoir-readout-mlp",
+  "sha": "215360109036bc14861cf83c1506ae17bc211f56",
+  "summary": "feat(interfere): reservoir routing readout MLP for task classification",
+  "domain_hints": ["ml-pipeline"],
+  "expected_agents": ["fd-correctness", "fd-quality"],
+  "expected_findings_themes": [
+    "MLP readout for routing introduces a learned dependency that must be retrained when the task taxonomy changes",
+    "test-only commit suggests the MLP itself was implemented elsewhere — review pairing is needed to avoid blind spots"
+  ],
+  "rationale": "17-line test addition for ML routing component. fd-correctness on the MLP's behavioural contract, fd-quality on the test scope.",
+  "complexity": "small",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: very small test-only diff. Legacy may dispatch only fd-quality; ontology should pull fd-correctness because of the ML-routing semantics.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

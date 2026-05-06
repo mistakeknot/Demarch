@@ -1,0 +1,19 @@
+{
+  "diff_id": "d02-beads-push-portable",
+  "sha": "514316a8b1825634e8fbb7cb7172a9d7744667c2",
+  "summary": "fix(sylveste-2d9): make .beads/push.sh portable across Mac + Linux",
+  "domain_hints": ["cli-tool"],
+  "expected_agents": ["fd-quality", "fd-correctness", "fd-safety"],
+  "expected_findings_themes": [
+    "shell script depends on BASH_SOURCE which is non-portable to POSIX sh",
+    "env-var escape hatches without input validation widen the attack surface",
+    "command -v dolt resolution silently picks up a wrong dolt on PATH if user shadowing exists"
+  ],
+  "rationale": "Bash refactor with portability concerns and new env-var inputs. fd-quality on shell idioms, fd-correctness on cross-platform path derivation edge cases, fd-safety on env-var escape hatches.",
+  "complexity": "small",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Both backends should agree this needs shell-aware review.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

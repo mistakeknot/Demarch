@@ -1,0 +1,19 @@
+{
+  "diff_id": "d08-trigger-vocab-helper",
+  "sha": "18b3a8bfa4c48a04f21ced8b8aa36af258fcdc8f",
+  "summary": "feat(perf): extract-trigger-vocab helper + Task 3 handoff (sylveste-ynh7)",
+  "domain_hints": ["cli-tool", "claude-code-plugin"],
+  "expected_agents": ["fd-performance", "fd-correctness", "fd-quality"],
+  "expected_findings_themes": [
+    "trigger-vocab extraction needs to be deterministic across runs to support pre-edit/post-edit comparison",
+    "60% survival heuristic is a magic number that should be calibrated with worked examples",
+    "the helper should fail loudly when the SKILL.md description has no detectable description block"
+  ],
+  "rationale": "Helper script that gates skill-trim correctness. fd-performance on the perf framing, fd-correctness on edge cases (empty descriptions), fd-quality on the magic-number heuristic.",
+  "complexity": "small",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "perf-tagged commit makes fd-performance the canonical agent.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

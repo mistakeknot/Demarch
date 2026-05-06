@@ -1,0 +1,19 @@
+{
+  "diff_id": "d19-mlx-inference-engine",
+  "sha": "f2b3639557221e68762fda266be9eadca1c4ef98",
+  "summary": "feat(interfere): MLX inference engine with stream_generate",
+  "domain_hints": ["ml-pipeline", "library-sdk"],
+  "expected_agents": ["fd-correctness", "fd-architecture", "fd-quality"],
+  "expected_findings_themes": [
+    "stream_generate API surface differs from deprecated generate_step in ways that affect token-by-token consumers",
+    "make_sampler replacement for the temp kwarg should be tested across the temperature range, not just default",
+    "new test file should cover the streaming generator's exception path, not only the happy path"
+  ],
+  "rationale": "API adaptation to new MLX surface. fd-correctness on edge cases of the streaming surface, fd-architecture on the inference engine boundary, fd-quality on test coverage of the new code.",
+  "complexity": "small",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Both backends should agree given Python ML code with new tests.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

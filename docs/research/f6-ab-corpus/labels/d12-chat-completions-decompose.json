@@ -1,0 +1,19 @@
+{
+  "diff_id": "d12-chat-completions-decompose",
+  "sha": "73178ad62217b12d0e3acfb1ac66c9c8d55ad5d3",
+  "summary": "refactor: remove deprecated config, consolidate test fixtures, decompose _chat_completions",
+  "domain_hints": ["web-api", "ml-pipeline"],
+  "expected_agents": ["fd-architecture", "fd-correctness", "fd-quality"],
+  "expected_findings_themes": [
+    "decomposition into gate functions must preserve original ordering of admission checks",
+    "removing deprecated config without migration notes risks silent breakage for clients still using it",
+    "shared fixtures should be reset between tests to avoid leakage of mutable state"
+  ],
+  "rationale": "Hot-path decomposition + dead code removal + test infra. fd-architecture on the gate-function pattern, fd-correctness on ordering of admission gates, fd-quality on test fixture hygiene.",
+  "complexity": "medium",
+  "discriminating": false,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Change touches request hot path so fd-correctness is mandatory.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

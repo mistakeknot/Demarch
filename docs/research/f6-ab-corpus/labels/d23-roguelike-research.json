@@ -1,0 +1,20 @@
+{
+  "diff_id": "d23-roguelike-research",
+  "sha": "cbfbc612fcac1bc5c86a1d243c9c38b67f6fe5ca",
+  "summary": "feat(research): roguelike-inspired agent architecture — brainstorm, assessments, vision update",
+  "domain_hints": ["library-sdk"],
+  "expected_agents": ["fd-systems", "fd-decisions", "fd-perception", "fd-resilience", "fd-game-design"],
+  "expected_findings_themes": [
+    "claimed 340x efficiency from Arcgentica needs source-context to avoid map-territory confusion",
+    "stigmergic 36-41% advantage benchmark conditions should be reproduced before adopting the pattern",
+    "identification-as-calibration mapping risks borrowing the right metaphor with the wrong dynamics",
+    "BALROG long-horizon harness adoption must specify what we lose if we drop it after 3 months"
+  ],
+  "rationale": "Research document with strong cross-domain claims. Cognitive roster fires; fd-game-design fires explicitly because roguelikes are game systems and the document quotes game-design papers (NLE, NetHack).",
+  "complexity": "medium",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: legacy may not pull fd-game-design (it requires game-simulation domain), but ontology should bridge 'roguelike', 'NetHack', 'BALROG' to fd-game-design.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

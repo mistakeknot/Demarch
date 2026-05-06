@@ -1,0 +1,19 @@
+{
+  "diff_id": "d13-interfere-rename",
+  "sha": "31c71cb9537404a827bb10a0c86b7a466e270ae4",
+  "summary": "refactor: rename interfere → interfer across monorepo",
+  "domain_hints": ["claude-code-plugin", "library-sdk"],
+  "expected_agents": ["fd-architecture", "fd-quality", "fd-user-product"],
+  "expected_findings_themes": [
+    "Prometheus metric prefix rename breaks dashboards and alert routes that consumers built against the old name",
+    "MCP tool name change is a breaking contract for any external client that hard-coded the old identifier",
+    "GitHub repo rename must be done manually — a stale clone url in docs will break onboarding"
+  ],
+  "rationale": "Mass identity rename across plugin/python pkg/metrics/MCP/docs. fd-architecture on the cross-cutting boundary, fd-user-product on the consumer-facing breaking change, fd-quality on consistency of the rename.",
+  "complexity": "large",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: legacy flux-drive's diff routing splits across many file types; ontology should infer 'rename', 'breaking', 'metric prefix' as a coherent user-product concern even though most LOC is mechanical.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}

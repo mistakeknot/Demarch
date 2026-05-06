@@ -1,0 +1,19 @@
+{
+  "diff_id": "d17-beads-dolt-resilience",
+  "sha": "0a8810908b9d2e042531b0bc7e3e1295d4b86363",
+  "summary": "feat(beads): add 3-layer Dolt crash resilience",
+  "domain_hints": ["cli-tool", "data-pipeline"],
+  "expected_agents": ["fd-correctness", "fd-resilience", "fd-architecture"],
+  "expected_findings_themes": [
+    "auto-heal-before-every-command pattern can mask the root cause of Dolt instability instead of fixing it",
+    "git pre-commit hook coupling makes every commit dependent on bd backup successfully running",
+    "JSONL-as-source-of-truth fallback needs round-trip equivalence with Dolt or recovery is partial"
+  ],
+  "rationale": "Resilience plumbing across wrapper + git hook + session-start. fd-correctness on the auto-heal semantics, fd-resilience on the strategy itself, fd-architecture on the 3-layer pattern.",
+  "complexity": "small",
+  "discriminating": true,
+  "labeler": "claude-opus-4-7",
+  "labeler_notes": "Discriminating: cognitive fd-resilience on a feat commit is unusual for legacy flux-drive (cognitive agents rarely fire on code). Diff-vs-doc nuance — README mentions resilience strategy.",
+  "human_validated": false,
+  "label_version": "v1.0.0"
+}
