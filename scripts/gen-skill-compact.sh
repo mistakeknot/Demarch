@@ -43,51 +43,38 @@ KNOWN_SKILLS=(
 
 # ─── Helpers ──────────────────────────────────────────────────────────
 
+# Source the shared freshness library (extracted in sylveste-a4oj.8). Provides
+# freshness_compute_manifest, freshness_compare. Keeps gen-skill-compact's
+# skill-specific logic (SKILL-compact.md presence check) here.
+source "$SCRIPT_DIR/lib-freshness.sh"
+
+# List the files that contribute to a skill's freshness manifest.
+_skill_manifest_files() {
+    local skill_dir="$1"
+    local f
+    for f in "$skill_dir"/SKILL.md "$skill_dir"/phases/*.md "$skill_dir"/references/*.md; do
+        [[ -f "$f" ]] && echo "$f"
+    done
+}
+
 compute_manifest() {
     local skill_dir="$1"
-    local manifest="{}"
-
-    # Hash SKILL.md + all phase and reference files
-    for f in "$skill_dir"/SKILL.md "$skill_dir"/phases/*.md "$skill_dir"/references/*.md; do
-        [[ -f "$f" ]] || continue
-        local hash
-        hash=$(sha256sum "$f" | cut -d' ' -f1)
-        local relpath
-        relpath=$(basename "$f")
-        manifest=$(echo "$manifest" | jq --arg k "$relpath" --arg v "$hash" '. + {($k): $v}')
-    done
-
-    echo "$manifest" | jq -S '.'
+    # shellcheck disable=SC2046
+    freshness_compute_manifest $(_skill_manifest_files "$skill_dir")
 }
 
 check_freshness() {
     local skill_dir="$1"
     local manifest_path="$skill_dir/.skill-compact-manifest.json"
 
-    if [[ ! -f "$manifest_path" ]]; then
-        echo "MISSING: $manifest_path" >&2
-        return 2
-    fi
-
     if [[ ! -f "$skill_dir/SKILL-compact.md" ]]; then
         echo "MISSING: $skill_dir/SKILL-compact.md" >&2
         return 2
     fi
 
-    local current
-    current=$(compute_manifest "$skill_dir")
-    local saved
-    saved=$(cat "$manifest_path")
-
-    if [[ "$current" == "$saved" ]]; then
-        echo "FRESH: $skill_dir"
-        return 0
-    else
-        echo "STALE: $skill_dir" >&2
-        # Show which files changed
-        diff <(echo "$saved" | jq -S '.') <(echo "$current" | jq -S '.') >&2 || true
-        return 1
-    fi
+    # FRESHNESS_VERBOSE=1 makes the lib print FRESH/STALE diff to stderr
+    FRESHNESS_VERBOSE=1 compute_manifest "$skill_dir" \
+        | freshness_compare "$manifest_path" "$skill_dir"
 }
 
 generate_compact_structural() {
