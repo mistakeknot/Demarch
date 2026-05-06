@@ -29,6 +29,25 @@
           }
         ],
         "matcher": ""
+      },
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $PROJECT_DIR/scripts/gen-skill-prefix-table.py >/dev/null 2>&1 &"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $PROJECT_DIR/scripts/skill-prefix-router-hook.sh"
+          }
+        ]
       }
     ]
   },
