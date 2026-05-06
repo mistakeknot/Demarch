@@ -67,7 +67,7 @@ Computed as `(ontology_primary - legacy_primary) / legacy_primary`.
 |---|---|---|
 | ≥ +15% | ontology ≤ legacy | **SHIP** — flag default flips to `ontology`; epic DoD #1 met |
 | ≥ +15% | ontology > legacy | **REDESIGN** — feature reopens to reduce cost; epic pauses |
-| +5% to +15% (inclusive at edges) | any | **REDESIGN** — inconclusive lift; reopens with explicit scope |
+| +5% to <+15% (5% inclusive, 15% exclusive) | any | **REDESIGN** — inconclusive lift; reopens with explicit scope |
 | < +5% or negative | any | **ABANDON** — DoD #1 NOT MET; epic reopens as redesign per PRD §F6b |
 
 If the legacy baseline review-coverage-per-diff is itself < 0.10 (i.e., legacy is failing at the corpus, not just being beaten), the experiment is paused and the corpus / ground-truth labels are reviewed before any decision binds — a 15% lift on a 5% baseline is meaningless.
