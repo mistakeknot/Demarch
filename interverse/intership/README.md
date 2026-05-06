@@ -28,7 +28,7 @@ The names span eight rhetorical registers: terse loaded phrases (*Sunk Cost*, *F
 ## Customize
 
 ```
-/intership:setup
+/intership:customize
 ```
 
 Toggle between canonical-only, generated-only, or both. Filter by source novel, add your own ships, or switch from replace to append mode (keeping Claude's defaults alongside the Culture names).
