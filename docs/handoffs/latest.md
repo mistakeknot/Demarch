@@ -1,1 +1,1 @@
-2026-05-06-3xl3-1-flux-explore-teams-planned-execute-deferred.md
+2026-05-06-thread-a-shipped-and-git-wrapper-fixed.md
