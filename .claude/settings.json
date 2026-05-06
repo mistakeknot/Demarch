@@ -15,7 +15,7 @@
       {
         "hooks": [
           {
-            "command": "bash -c 'cd \"$PROJECT_DIR\" \u0026\u0026 [ -f .beads/heal-dolt.sh ] \u0026\u0026 bash .beads/heal-dolt.sh .beads 2\u003e\u00261 || true; bd stats 2\u003e/dev/null | head -1 || echo \"beads: Dolt unavailable, JSONL backup is source of truth\"'",
+            "command": "bash -c 'cd \"$PROJECT_DIR\" && bash scripts/session-freshness-gate.sh && exit 0; [ -f .beads/heal-dolt.sh ] && bash .beads/heal-dolt.sh .beads 2>&1 || true; bd stats 2>/dev/null | head -1 || echo \"beads: Dolt unavailable, JSONL backup is source of truth\"'",
             "type": "command"
           }
         ],
