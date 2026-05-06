@@ -92,16 +92,6 @@ Four cycles surface in the consume graph, all centered on clavain:
 
 **Suggested action.** Treat clavain as a known coupling hub and accept the cycle pattern, but consider whether interpath ↔ interwatch is genuinely necessary — that pair is the real coupling beneath the 3-cycle.
 
-### Resolution: interpath ↔ interwatch is intentional (sylveste-8jx0, 2026-05-06)
-
-After reading both AGENTS.md files, the back-reference is a deliberate **sensor/generator pattern**:
-
-- interwatch detects drift, writes `.interwatch/drift.json`, dispatches `interpath:artifact-gen`
-- `/interpath:all` reads `.interwatch/drift.json` to drive batch refresh
-- The shared file is a **published contract**, not a code dependency
-
-Both AGENTS.md files now carry an explicit "Architectural cycle (intentional)" note pointing back at this finding. The lattice's edge model treats markdown references as plugin-level edges, which collapses producer→artifact→consumer chains into apparent cycles. The clean fix is on the lattice side: a `FileContract` entity type would represent `.interwatch/drift.json` as a first-class node, replacing the cycle with a directed chain (interwatch → file → interpath). Filed as a v0c extension.
-
 ## Top leverage contracts
 
 The contracts most other plugins reference, ranked by inbound consume count (self-references excluded):
