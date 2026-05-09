@@ -25,18 +25,34 @@ The original synthesis offered Architecture β: anchor the holdout against obser
 
 Implication: β has no anchor data. Building it requires a new event family (`interspect-task-outcome`) plus a multi-week data-accumulation window before training labels stabilise.
 
-### Finding 2 — Most "core" cognitive reviewers are dormant
+### Finding 2 — RETRACTED: "Most core cognitive reviewers are dormant"
 
-The 12 always-triaged reviewers split sharply by usage:
+**This finding was wrong and is retracted (2026-05-06, during `.19.1` Phase 1).**
 
-| Reviewer | Synthesis appearances |
+The original claim measured *committed synthesis output* by grepping `.claude/flux-drive-output/*.md` and `docs/research/flux-drive/INPUT*/*.md`. That's the wrong signal for dormancy — it counts agents whose findings made it into a published synthesis, not agents that were dispatched.
+
+The right signal is `~/.claude/interstat/metrics.db` (`agent_runs` table, 7,376 rows). Real numbers (top reviewers, not exhaustive):
+
+| Agent | invocations |
 |---|---|
-| fd-architecture, fd-safety, fd-correctness, fd-quality, fd-user-product, fd-performance, fd-systems | constant (every flux-drive run) |
-| fd-game-design | 1 in `.claude/flux-drive-output/` |
-| fd-decisions | 2 |
-| fd-people, fd-resilience, fd-perception | 0–1 each |
+| interflux:fd-correctness | 74 |
+| interflux:fd-architecture | 41 |
+| interflux:fd-quality | 38 |
+| interflux:fd-game-design | **22** |
+| interflux:fd-user-product | 18 |
+| interflux:fd-safety | 11 |
+| interflux:fd-performance | 9 |
+| interflux:fd-systems | 8 |
+| interflux:fd-decisions | 4 |
+| interflux:fd-perception | 3 |
+| interflux:fd-people | 2 |
+| interflux:fd-resilience | 2 |
 
-The dormant five never produced load-bearing findings. Keeping them in the always-triaged set adds triage cost without insight.
+fd-game-design is the **5th most-invoked review agent**, ahead of fd-safety / fd-performance / fd-systems. fd-decisions / fd-perception / fd-people / fd-resilience have low but non-zero traffic across multiple projects (Revel-*, shadow-work-*).
+
+The user's original concern that fd-game-design is "too domain specific" may still be valid, but as a *triage relevance* problem (is it being scored in for reviews where the document has no game-design content?), not a dormancy problem. That's a different investigation, not absorbed here.
+
+**Consequence**: Decision D1 (prune dormant five) is reversed. `Sylveste-4vv` closed without action. The brainstorm's other findings (β not viable as v0; bimodal agent population; null hypothesis untested) all stand — those used different evidence chains.
 
 ### Finding 3 — The agent population is bimodal
 
@@ -50,13 +66,13 @@ Implication for routing: the workload is not "predict tier for an agent the rout
 
 ## Decisions
 
-### D1 — Prune the dormant five from the always-triaged core
+### D1 — REVERSED (2026-05-06)
 
-Move `fd-game-design`, `fd-people`, `fd-decisions`, `fd-resilience`, `fd-perception` out of the always-triaged set. They remain available via interflux's distant-domain triage when a review's content scores them in. The stable core becomes seven: `fd-architecture`, `fd-safety`, `fd-correctness`, `fd-quality`, `fd-user-product`, `fd-performance`, `fd-systems`.
+Original decision was to prune `fd-game-design`, `fd-people`, `fd-decisions`, `fd-resilience`, `fd-perception` from the always-triaged core. Reversed during `.19.1` Phase 1 when interstat data showed dispatch volumes for those agents are non-zero (fd-game-design is the 5th most-invoked review agent). See Finding 2 retraction above.
 
-Rationale: zero observed signal from these five across the corpus reviewed. Cost of keeping them: triage churn + an unmaintained surface.
+`Sylveste-4vv` closed without action. The 12-reviewer core is preserved unchanged. Any future "is fd-game-design appropriate" investigation should be framed as a triage-relevance question (is it scored in for reviews where the document has no game-design content), tracked under the interflux epic separately.
 
-Out-of-scope here: the actual file moves and config edits. Tracked separately as a follow-up bead under the interflux epic, not under `.19`.
+The downstream-bead implications below treated D1 as in-scope; with D1 reversed, the bead-table column "becomes" should ignore any "stable-7" framing — it's still the original 12.
 
 ### D2 — Run a heuristic-baseline measurement before any other `.19` work (Approach E)
 
