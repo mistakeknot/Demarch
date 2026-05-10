@@ -7,6 +7,12 @@ brainstorm: docs/brainstorms/2026-05-06-microrouter-architecture-decision-brains
 review_synthesis: docs/research/flux-drive/2026-05-06-microrouter-architecture-decision-brainstorm-a4dbb251/synthesis.md
 ---
 
+> **⚠️ SUPERSEDED 2026-05-08** — This PRD operationalized a β-deferral decision that was invalidated the next day by `.19.1` Phase 1 measurement (commit `7f224cca`). The `.19` microrouter epic was closed because `agent-roles.yaml` covers only 6.2% of subagent dispatches — adding a learned router on top can't help at that scope. See `docs/brainstorms/2026-05-06-microrouter-heuristic-baseline.md` for the kill analysis.
+>
+> **What's still useful here**: the heuristic-stratified eval-split idea (would have applied to any post-coverage-extension router question), the "active deferral with pre-registered triggers" pattern (general-purpose project-management technique), and the F4 `/clavain:status` surfacing concept (would help any future deferred decision regardless of microrouter).
+>
+> **What's stale**: the `.19.10` bead, the F1–F4 child beads (`Sylveste-1mp6/5p7s/ngft/58tb`), the bead-body cascade work, and the auto-revert mechanics for the 2026-06-30 review date. None of those beads exist in canonical Dolt; the deferral deadline is moot because the architecture was killed not deferred.
+
 # PRD — Microrouter Architecture Deferral Operationalization
 
 ## Problem

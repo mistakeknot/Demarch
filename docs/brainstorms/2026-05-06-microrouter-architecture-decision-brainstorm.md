@@ -11,6 +11,12 @@ decision_date: 2026-05-06
 review_after: .19.9 ships + 4 sprints of pass@1 telemetry
 ---
 
+> **⚠️ SUPERSEDED 2026-05-08** — This document was authored on the premise that the `.19` microrouter epic would proceed with β as v0 architecture (deferred until `.19.9` pass@1 telemetry shipped). The premise was invalidated the next day when `.19.1` Phase 1 measurement (commit `7f224cca`, brainstorm `docs/brainstorms/2026-05-06-microrouter-heuristic-baseline.md`) showed `agent-roles.yaml` covers only 6.2% of subagent dispatches — triggering the kill rule. The `.19` epic + 20 child beads were closed; replacement scope is `Sylveste-cs2`/`2bg`/`7zi` (cheap heuristic-coverage extension).
+>
+> **What's still useful here**: the α/β/γ comparison table, the γ-as-judge-ensemble-across-disjoint-families idea, and the "active deferral with pre-registered triggers" pattern. None of it is being executed — preserved for future reference if microrouter ever resurrects on a different premise.
+>
+> **What's stale**: every reference to `.19.10`, `Sylveste-1mp6/5p7s/ngft/58tb`, "v0 = β", "deferred until 2026-06-30", and the deferral-cascade bead-body updates. Those beads were created in this session's local Dolt but vanished from canonical Dolt during a parallel push; they no longer resolve via `bd show`.
+
 # Microrouter Architecture α/β/γ — Decision Brainstorm
 
 `.19.8` closed on 2026-05-04 with **α** as v0 (judge family ≠ baseline anchor). `.19.5` audit-trail unconformity then absorbed as `Sylveste-a5u`. After that, Track C of an extended flux-review surfaced **γ** (judge-ensemble across disjoint model families) as a third architecture that breaks circular calibration without requiring outcome data — relevant if `.19.9` (interspect outcome-column extension) doesn't ship in time to make β viable. This bead exists to evaluate γ against the already-chosen α and the already-deferred β before any of `.19.2`/`.19.3`/`.19.4` start work.

@@ -7,6 +7,12 @@ complexity: 3
 sprint_outcome: shipped
 ---
 
+> **⚠️ SUPERSEDED 2026-05-08** — This reflection captures lessons from a sprint whose decision (defer to β as v0 architecture) was invalidated the next day by `.19.1` Phase 1 measurement (commit `7f224cca`). The microrouter epic was killed entirely. See `docs/brainstorms/2026-05-06-microrouter-heuristic-baseline.md`.
+>
+> **What's still useful here**: the meta-lessons about review-round structure are real and transferable — three rounds catching three distinct kinds of error (claim vs design vs implementation), the case for putting `fd-safety` on the roster from round 1 when destructive automation is in scope, the F4-as-sibling-not-child generalization reflex, and the question of whether governance sprints over-instrument flux-drive at three rounds. None of those depend on the architecture decision being correct.
+>
+> **What's stale**: the sprint outcome assertion (`shipped` for a decision that was reversed within 48 hours), the references to `.19.10` and `sylveste-1mp6/5p7s/ngft/58tb`, and any framing that treats the deferral as the durable artifact of the work.
+
 # Sprint Reflection — sylveste-s3z6.19.10 microrouter deferred-β
 
 ## Outcome

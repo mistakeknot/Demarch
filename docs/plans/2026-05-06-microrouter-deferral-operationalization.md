@@ -9,9 +9,16 @@ requirements:
 brainstorm: docs/brainstorms/2026-05-06-microrouter-architecture-decision-brainstorm.md
 prd: docs/prds/2026-05-06-microrouter-architecture-deferral-prd.md
 ---
+
+> **⚠️ SUPERSEDED 2026-05-08** — DO NOT EXECUTE. This plan was a 651-line operationalization of the β-deferral path that was invalidated the next day by `.19.1` Phase 1 measurement (commit `7f224cca`). The `.19` microrouter epic was closed; the F1–F4 features here have no current parent bead. See `docs/brainstorms/2026-05-06-microrouter-heuristic-baseline.md`.
+>
+> **What's still useful here**: the careful CLAUDE.md rule-(b) catch (auto-close-epic violation), the SessionStart-hook-can't-block-sessions analysis (correct per Claude Code spec; useful for future hook designs), and the path-A/B/C decision-tree pattern after each review round.
+>
+> **What's stale**: every concrete acceptance criterion, feature reference, bead ID, and the sub-skill instruction to invoke clavain:executing-plans. If anyone DOES try to execute this plan, the F1 bead-body updates would mostly fail (target beads now closed) and F2 would re-create work already done by the kill commit.
+
 # Microrouter Deferral Operationalization — Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use clavain:executing-plans to implement this plan task-by-task.
+> **For Claude:** ⚠️ DO NOT EXECUTE PER SUPERSEDED NOTICE ABOVE. (Original instruction: REQUIRED SUB-SKILL: Use clavain:executing-plans to implement this plan task-by-task.)
 
 **Bead:** sylveste-s3z6.19.10
 **Goal:** Land the deferred-β decision visibly across the bead graph, install active enforcement (state fields + session-start hook with escalation), and file D2 (heuristic-baseline measurement) as a sibling bead — all in one commit at sprint close.
