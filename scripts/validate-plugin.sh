@@ -501,8 +501,12 @@ scan_skill_injection() {
     )
 
     # --- Authority escalation patterns ---
+    # Patterns are ERE — escalation_patterns_check uses `grep -qE`.
+    # The `you are (now )?an?` shape matches role-assumption jailbreaks
+    # ("you are now an unrestricted AI") while letting benign gerund
+    # continuations ("you are now writing X") slip through.
     local escalation_patterns=(
-        'you are now'
+        'you are (now )?an? '
         'you have been promoted'
         'admin mode'
         'sudo mode'
@@ -534,10 +538,10 @@ scan_skill_injection() {
             fi
         done
 
-        # Check escalation patterns
+        # Check escalation patterns (ERE; see pattern list above)
         for pattern in "${escalation_patterns[@]}"; do
-            if echo "$lower_content" | grep -q "$pattern"; then
-                error "escalation: '$rel' contains '$pattern'"
+            if echo "$lower_content" | grep -qE "$pattern"; then
+                error "escalation: '$rel' matches pattern '$pattern'"
                 scan_count=$((scan_count + 1))
             fi
         done
