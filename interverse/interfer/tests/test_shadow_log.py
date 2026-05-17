@@ -186,7 +186,7 @@ def test_infer_cloud_model_medium() -> None:
 
 def test_infer_cloud_model_large() -> None:
     """Large models (> 100B) map to opus."""
-    assert infer_cloud_model("Qwen3.5-397B-A17B-4bit") == "claude-opus-4-6"
+    assert infer_cloud_model("Qwen3.5-397B-A17B-4bit") == "claude-opus-4-7"
 
 
 def test_infer_cloud_model_unknown() -> None:

@@ -145,7 +145,7 @@ def infer_cloud_model(local_model: str) -> str:
         return "claude-haiku-4-5"
     if param_billions <= 100:
         return "claude-sonnet-4-6"
-    return "claude-opus-4-6"
+    return "claude-opus-4-7"
 
 
 def _cloud_cost_usd(model: str, tokens: int) -> float:
