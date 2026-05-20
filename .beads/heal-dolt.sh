@@ -11,6 +11,26 @@ BEADS_DIR="${1:-.beads}"
 DOLT_DIR="$BEADS_DIR/dolt"
 DB_DIR="$DOLT_DIR/Sylveste"
 
+# Cloud bootstrap: if bd isn't on PATH (fresh remote container), install it
+# before doing anything else. Falls back to a clean no-op if install fails.
+if ! command -v bd >/dev/null 2>&1; then
+    INSTALLER="$(dirname "$BEADS_DIR")/scripts/install-bd-cloud.sh"
+    if [[ -x "$INSTALLER" ]]; then
+        echo "heal-dolt: bd not on PATH — running cloud installer" >&2
+        if ! bash "$INSTALLER" >&2; then
+            echo "heal-dolt: cloud install failed; skipping Dolt healing" >&2
+            exit 0
+        fi
+        # install-bd-cloud.sh drops into /root/.local/bin (or $INSTALL_DIR).
+        # Ensure subsequent `bd` invocations in this script find it even if
+        # PATH wasn't refreshed in our shell.
+        export PATH="/root/.local/bin:$PATH"
+    else
+        echo "heal-dolt: bd not installed and no installer found — skipping" >&2
+        exit 0
+    fi
+fi
+
 heal_lock() {
     local info_file="$1"
     [[ -f "$info_file" ]] || return 0

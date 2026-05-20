@@ -3,6 +3,10 @@ dolt/
 embeddeddolt/
 dolt-access.lock
 
+# Dolt federation remote (legacy `beads_iv` DB from pre-2026-03-15 migration —
+# runtime artifacts, not source. ~138 MB. See .beads/pull.sh comment.)
+remote/
+
 # Runtime files
 bd.sock
 bd.sock.startlock
