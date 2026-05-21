@@ -11,24 +11,15 @@ BEADS_DIR="${1:-.beads}"
 DOLT_DIR="$BEADS_DIR/dolt"
 DB_DIR="$DOLT_DIR/Sylveste"
 
-# Cloud bootstrap: if bd isn't on PATH (fresh remote container), install it
-# before doing anything else. Falls back to a clean no-op if install fails.
+# If bd isn't on PATH, exit cleanly. This is the expected state in
+# cloud_default remote environments, where sessions read .beads/issues.jsonl
+# directly as a flat file rather than running the bd CLI. See CLAUDE.md
+# "Cloud Sessions" for the read-only-beads convention. For tasks that
+# genuinely need the bd CLI in a cloud container, run scripts/install-bd-cloud.sh
+# manually before starting work.
 if ! command -v bd >/dev/null 2>&1; then
-    INSTALLER="$(dirname "$BEADS_DIR")/scripts/install-bd-cloud.sh"
-    if [[ -x "$INSTALLER" ]]; then
-        echo "heal-dolt: bd not on PATH — running cloud installer" >&2
-        if ! bash "$INSTALLER" >&2; then
-            echo "heal-dolt: cloud install failed; skipping Dolt healing" >&2
-            exit 0
-        fi
-        # install-bd-cloud.sh drops into /root/.local/bin (or $INSTALL_DIR).
-        # Ensure subsequent `bd` invocations in this script find it even if
-        # PATH wasn't refreshed in our shell.
-        export PATH="/root/.local/bin:$PATH"
-    else
-        echo "heal-dolt: bd not installed and no installer found — skipping" >&2
-        exit 0
-    fi
+    echo "heal-dolt: bd not on PATH — skipping Dolt healing (cloud read-only mode)" >&2
+    exit 0
 fi
 
 heal_lock() {

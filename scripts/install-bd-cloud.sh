@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
-# install-bd-cloud.sh — Install `bd` (beads CLI) and `dolt` into a cloud
-# Claude Code remote-environment container.
+# install-bd-cloud.sh — Manual / opt-in installer for `bd` (beads CLI) and
+# `dolt` in a Claude Code remote-environment container.
 #
-# Containers are ephemeral, so this runs once per container creation. Called
-# from .beads/heal-dolt.sh when `bd` is missing from PATH. Idempotent: skips
-# work if both binaries are already in place at the expected versions.
+# Cloud_default sessions are read-only on beads by convention (see CLAUDE.md
+# "Cloud Sessions") — they grep .beads/issues.jsonl directly and do not run
+# the bd CLI. Run this script only when a specific cloud task genuinely
+# needs to write to beads (rare: typically the workstation files beads).
 #
-# Wire into a managed environment's setup hook to avoid the on-demand path:
+# Idempotent: skips work if both binaries are already at the expected
+# versions. Cost when binaries are absent: ~3s (download + extract).
+#
+# Usage:
 #   bash scripts/install-bd-cloud.sh
-# Per-session cost when binaries are absent: ~3s (download + extract).
+#
+# Override versions:
+#   BD_VERSION=1.0.5 DOLT_VERSION=2.1.0 bash scripts/install-bd-cloud.sh
 
 set -euo pipefail
 
