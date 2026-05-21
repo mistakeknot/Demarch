@@ -42,6 +42,7 @@ docs/docs
 .clavain/reviews/
 .clavain/checkpoint.json
 .clavain/routing-decisions.jsonl
+.clavain/gate-tier-calibration.json
 .clavain/intercore.db
 .clavain/intercore.db.backup-*
 .clavain/interspect/
