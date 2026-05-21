@@ -1,0 +1,70 @@
+{
+  "created_at": 1778994557,
+  "since_id": 38,
+  "tiers": {
+    "artifact_exists|brainstorm-reviewed|strategized": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 1.5343870627036202,
+      "updated_at": 1776711361
+    },
+    "artifact_exists|brainstorm|brainstorm-reviewed": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 5.038942043435728,
+      "updated_at": 1776711361
+    },
+    "artifact_exists|reflect|done": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 0.32277861363470234,
+      "updated_at": 1776711361
+    },
+    "artifact_exists|strategized|planned": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 0.714802081505771,
+      "updated_at": 1776711361
+    },
+    "|executing|shipping": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 0.3159372337976922,
+      "updated_at": 1776711361
+    },
+    "|plan-reviewed|executing": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 0.31591163519211,
+      "updated_at": 1776711361
+    },
+    "|planned|plan-reviewed": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 0.31591129727059436,
+      "updated_at": 1776711361
+    },
+    "|shipping|reflect": {
+      "tier": "soft",
+      "locked": false,
+      "fpr": 0,
+      "fnr": 0,
+      "weighted_n": 0.31593824764655426,
+      "updated_at": 1776711361
+    }
+  }
+}
