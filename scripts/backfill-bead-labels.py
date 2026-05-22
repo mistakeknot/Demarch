@@ -36,6 +36,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Module detection
@@ -259,6 +260,23 @@ def detect_themes(title: str, description: str) -> set[str]:
 # ---------------------------------------------------------------------------
 
 def main() -> int:
+    # Cloud-guard: cloud sessions can't run bd; backfilling labels is a write
+    # operation that doesn't survive the ephemeral container. Skip cleanly.
+    import shutil
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    try:
+        from lib_cloud_guard import cloud_session, cloud_log_skip, workstation_log_missing_bd
+    except ImportError:
+        cloud_session = lambda: False  # type: ignore
+        cloud_log_skip = lambda op="op": None  # type: ignore
+        workstation_log_missing_bd = lambda op="op": None  # type: ignore
+    if cloud_session():
+        cloud_log_skip("backfill-bead-labels")
+        return 0
+    if shutil.which("bd") is None:
+        workstation_log_missing_bd("backfill-bead-labels")
+        return 0
+
     parser = argparse.ArgumentParser(description="Backfill theme and module labels onto beads.")
     parser.add_argument("--dry-run", action="store_true", help="Preview without applying")
     parser.add_argument("--limit", type=int, default=0, help="Limit to N beads (0=all)")
