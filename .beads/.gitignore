@@ -7,6 +7,14 @@ dolt-access.lock
 # runtime artifacts, not source. ~138 MB. See .beads/pull.sh comment.)
 remote/
 
+# Historical JSONL/DB snapshots from past migrations (~9 MB combined).
+# .bak is current bd's auto-rotation; backup-* are one-time migration
+# breadcrumbs. Source of truth lives in issues.jsonl (and Dolt).
+issues.jsonl.bak
+issues.jsonl.backup-*
+config.yaml.backup-*
+beads.db.migrated
+
 # Runtime files
 bd.sock
 bd.sock.startlock

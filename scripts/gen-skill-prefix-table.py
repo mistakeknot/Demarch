@@ -141,6 +141,16 @@ def build_table() -> dict:
 
 
 def main(argv: list[str]) -> int:
+    # Cloud_default sessions have no plugin cache. Writing an empty table
+    # there would mislead the per-prompt router into thinking it has up-to-
+    # date "0 plugins" state. Skip cleanly when the cache is absent.
+    if not CACHE_ROOT.is_dir():
+        print(
+            f"skill-prefix: no plugin cache at {CACHE_ROOT} — skipping "
+            f"(cloud or pre-install state)"
+        )
+        return 0
+
     table = build_table()
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(table, indent=2, sort_keys=True) + "\n")

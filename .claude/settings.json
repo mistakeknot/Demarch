@@ -28,7 +28,7 @@
             "type": "command"
           }
         ],
-        "matcher": ""
+        "matcher": "startup|resume|clear"
       },
       {
         "matcher": "startup|clear",

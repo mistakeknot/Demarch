@@ -1,5 +1,12 @@
 # Beads — Session Close Protocol
 
+> **In a cloud session (`CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE` set / `IS_SANDBOX=yes`),
+> beads are read-only.** Search with `bash scripts/bd-grep.sh <kw>` and read
+> with `bash scripts/bd-show.sh <id>` — both work against the committed
+> `.beads/issues.jsonl` without needing the `bd` CLI. Note bead candidates in
+> the PR description and let the workstation file them. Skip the rest of this
+> file unless you've manually run `scripts/install-bd-cloud.sh`.
+
 ```
 git status → git add <files> → git commit
 bd backup sync       # flush Dolt → JSONL (auto every 5m; force before push)
