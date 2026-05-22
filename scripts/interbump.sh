@@ -212,6 +212,47 @@ if [ -f "$VALIDATE_SCRIPT" ] && ! $DRY_RUN; then
     echo ""
 fi
 
+# Interverse inventory drift gate. This blocks publishes when the live local
+# skeleton has high-severity manifest/path drift, while keeping warning-level
+# marketplace and rig inventory drift visible in the generated ledger.
+INVENTORY_CHECK=""
+search_dir="$PLUGIN_ROOT"
+for _ in 1 2 3 4 5; do
+    if [ -x "$search_dir/scripts/check-rig-drift.sh" ]; then
+        INVENTORY_CHECK="$search_dir/scripts/check-rig-drift.sh"
+        break
+    fi
+    parent="$(dirname "$search_dir")"
+    [ "$parent" = "$search_dir" ] && break
+    search_dir="$parent"
+done
+
+if [ -n "$INVENTORY_CHECK" ] && ! $DRY_RUN; then
+    echo -e "${CYAN}Running Interverse inventory drift gate...${NC}"
+    inventory_tmp="$(mktemp)"
+    if ! bash "$INVENTORY_CHECK" --json > "$inventory_tmp"; then
+        cat "$inventory_tmp" >&2
+        rm -f "$inventory_tmp"
+        echo -e "\n${RED}Error: High-severity Interverse inventory drift detected. Fix manifest/path drift before publishing.${NC}" >&2
+        exit 1
+    fi
+    python3 - "$inventory_tmp" <<'PY'
+import json
+import sys
+
+ledger = json.load(open(sys.argv[1], encoding="utf-8"))
+summary = ledger["summary"]
+print(
+    "  Inventory: "
+    f"{summary['plugin_count']} plugins, "
+    f"{summary['high_drift_count']} high drift, "
+    f"{summary['warning_drift_count']} warnings"
+)
+PY
+    rm -f "$inventory_tmp"
+    echo ""
+fi
+
 # --- Post-bump hook (plugin-specific pre-commit work) ---
 POST_BUMP="$PLUGIN_ROOT/scripts/post-bump.sh"
 if [ -f "$POST_BUMP" ]; then

@@ -1,0 +1,62 @@
+name: Interverse inventory
+
+on:
+  push:
+    paths:
+      - ".github/workflows/interverse-inventory.yml"
+      - "core/marketplace/.claude-plugin/marketplace.json"
+      - "interverse/**"
+      - "os/Clavain/agent-rig.json"
+      - "scripts/check-rig-drift.sh"
+      - "scripts/gen-interverse-inventory.py"
+      - "scripts/interverse_inventory.py"
+      - "tests/test_interverse_inventory.py"
+  pull_request:
+    paths:
+      - ".github/workflows/interverse-inventory.yml"
+      - "core/marketplace/.claude-plugin/marketplace.json"
+      - "interverse/**"
+      - "os/Clavain/agent-rig.json"
+      - "scripts/check-rig-drift.sh"
+      - "scripts/gen-interverse-inventory.py"
+      - "scripts/interverse_inventory.py"
+      - "tests/test_interverse_inventory.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    name: Generate and check inventory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run inventory tests
+        run: python3 -m pytest tests/test_interverse_inventory.py -q
+
+      - name: Detect full local skeleton
+        id: skeleton
+        run: |
+          if [ -f os/Clavain/agent-rig.json ] && [ -d interverse ]; then
+            echo "full=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "full=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check high-severity manifest and rig drift
+        if: steps.skeleton.outputs.full == 'true'
+        run: scripts/check-rig-drift.sh --json
+
+      - name: Generate inventory artifact
+        if: steps.skeleton.outputs.full == 'true'
+        run: scripts/gen-interverse-inventory.py
+
+      - name: Upload inventory artifact
+        if: steps.skeleton.outputs.full == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: interverse-inventory
+          path: .interwatch/interverse-inventory.json
