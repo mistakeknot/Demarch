@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "bd prime",
+            "command": "command -v bd >/dev/null 2>&1 && bd prime || cat .beads/PRIME.md 2>/dev/null",
             "type": "command"
           }
         ],
@@ -24,11 +24,11 @@
       {
         "hooks": [
           {
-            "command": "bd prime",
+            "command": "command -v bd >/dev/null 2>&1 && bd prime || cat .beads/PRIME.md 2>/dev/null",
             "type": "command"
           }
         ],
-        "matcher": ""
+        "matcher": "startup|resume|clear"
       },
       {
         "matcher": "startup|clear",

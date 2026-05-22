@@ -11,6 +11,17 @@ BEADS_DIR="${1:-.beads}"
 DOLT_DIR="$BEADS_DIR/dolt"
 DB_DIR="$DOLT_DIR/Sylveste"
 
+# If bd isn't on PATH, exit cleanly. This is the expected state in
+# cloud_default remote environments, where sessions read .beads/issues.jsonl
+# directly as a flat file rather than running the bd CLI. See CLAUDE.md
+# "Cloud Sessions" for the read-only-beads convention. For tasks that
+# genuinely need the bd CLI in a cloud container, run scripts/install-bd-cloud.sh
+# manually before starting work.
+if ! command -v bd >/dev/null 2>&1; then
+    echo "heal-dolt: bd not on PATH — skipping Dolt healing (cloud read-only mode)" >&2
+    exit 0
+fi
+
 heal_lock() {
     local info_file="$1"
     [[ -f "$info_file" ]] || return 0
