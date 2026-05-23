@@ -4,8 +4,9 @@
 > beads are read-only.** Search with `bash scripts/bd-grep.sh <kw>` and read
 > with `bash scripts/bd-show.sh <id>` — both work against the committed
 > `.beads/issues.jsonl` without needing the `bd` CLI. Note bead candidates in
-> the PR description and let the workstation file them. Skip the rest of this
-> file unless you've manually run `scripts/install-bd-cloud.sh`.
+> the PR description and let the workstation file them. Skip the **bd CLI
+> steps below** unless you've manually run `scripts/install-bd-cloud.sh` —
+> the `git`/PR workflow still applies.
 
 ```
 git status → git add <files> → git commit

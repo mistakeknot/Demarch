@@ -74,10 +74,22 @@ if [[ -f "$CANDIDATE" ]]; then
     MEMORY_PATH="$CANDIDATE"
 fi
 
+# Container/host runtime epoch — the freshness manifest is otherwise blind to
+# runtime state (Dolt liveness, ephemeral container resets). boot_id flips on
+# every new cloud container, forcing a stale-classify on the first session
+# of a new container regardless of content hashes. Cheap, decisive, closes
+# the biggest observability gap in the estimator (PR #19 follow-up review,
+# control-theoretic + mission-command convergence).
+BOOT_ID=""
+if [[ -r /proc/sys/kernel/random/boot_id ]]; then
+    BOOT_ID=$(cat /proc/sys/kernel/random/boot_id 2>/dev/null || true)
+fi
+
 # Compose the manifest: orientation files + synthetic keys.
 current=$(freshness_compute_manifest_paths "${ORIENTATION_FILES[@]}" ${MEMORY_PATH:+"$MEMORY_PATH"})
 [[ -n "$GIT_SHA" ]]   && current=$(echo "$current" | freshness_add_key git_sha   "$GIT_SHA")
 [[ -n "$BEADS_SHA" ]] && current=$(echo "$current" | freshness_add_key beads_sha "$BEADS_SHA")
+[[ -n "$BOOT_ID" ]]   && current=$(echo "$current" | freshness_add_key boot_id   "$BOOT_ID")
 
 # ─── Compare to saved ──────────────────────────────────────────────────
 
