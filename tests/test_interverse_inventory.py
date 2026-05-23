@@ -163,59 +163,6 @@ def test_unmarketed_local_plugin_warns_without_failing_check(tmp_path: Path) -> 
     assert any(item["code"] == "plugin_not_in_marketplace" for item in gamma["drift"]["warnings"])
 
 
-def test_inventory_assigns_profile_taxonomy_and_install_packs(tmp_path: Path) -> None:
-    write_plugin(
-        tmp_path,
-        "interphase",
-        {"description": "Beads lifecycle and phase tracking", "skills": ["./skills/beads-workflow"]},
-        skill_names=["beads-workflow"],
-    )
-    write_plugin(
-        tmp_path,
-        "interflux",
-        {"description": "Multi-agent review engine", "skills": ["./skills/flux-drive"]},
-        skill_names=["flux-drive"],
-    )
-    write_plugin(
-        tmp_path,
-        "intercache",
-        {
-            "description": "Cross-session semantic cache",
-            "mcpServers": {"intercache": {"type": "stdio", "command": "intercache-mcp"}},
-        },
-    )
-    rig_path = write_rig(
-        tmp_path,
-        ("recommended", "interphase@interagency-marketplace"),
-        ("recommended", "interflux@interagency-marketplace"),
-        ("optional", "intercache@interagency-marketplace"),
-    )
-    marketplace_path = write_marketplace(tmp_path, "interphase", "interflux", "intercache")
-
-    ledger = inventory.build_inventory(tmp_path, rig_path=rig_path, marketplace_path=marketplace_path)
-
-    plugins = {plugin["name"]: plugin for plugin in ledger["plugins"]}
-    assert plugins["interphase"]["profile"] == {
-        "primary": "core",
-        "visibility": "default",
-        "packs": ["core", "default"],
-    }
-    assert plugins["interflux"]["profile"] == {
-        "primary": "review",
-        "visibility": "optional",
-        "packs": ["review"],
-    }
-    assert plugins["intercache"]["profile"] == {
-        "primary": "mcp",
-        "visibility": "optional",
-        "packs": ["mcp"],
-    }
-    assert ledger["profiles"]["packs"]["default"] == ["interphase"]
-    assert ledger["profiles"]["packs"]["review"] == ["interflux"]
-    assert ledger["profiles"]["packs"]["mcp"] == ["intercache"]
-    assert set(ledger["profiles"]["taxonomy"]) >= {"default", "core", "review", "mcp", "all"}
-
-
 def test_cli_json_check_returns_nonzero_only_for_high_drift(tmp_path: Path, capsys) -> None:
     write_plugin(tmp_path, "beta", {"commands": ["./commands/missing.md"]})
     rig_path = write_rig(tmp_path, ("recommended", "beta@interagency-marketplace"))

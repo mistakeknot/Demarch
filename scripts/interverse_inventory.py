@@ -17,82 +17,6 @@ from typing import Any
 COMPONENT_ORDER = ("skills", "commands", "agents", "hooks", "mcpServers", "lspServers")
 DECLARED_PATH_KEYS = ("skills", "commands", "agents")
 INTERAGENCY_MARKETPLACE = "interagency-marketplace"
-PROFILE_TAXONOMY: dict[str, str] = {
-    "default": "Small daily-use pack for fast Claude Code and Codex startup.",
-    "core": "Workflow, coordination, test discipline, and local code-context essentials.",
-    "review": "Multi-agent review, synthesis, integration tracing, and model-ranking tools.",
-    "docs": "Repository documentation, product artifacts, doc freshness, and memory graduation.",
-    "research": "Deep research, knowledge compounding, dialectic reasoning, and search tools.",
-    "ops": "Runtime operator workflows, status surfaces, Slack, diagnostics, and experiment loops.",
-    "observability": "Context pressure, feature metrics, project maps, profiling, and dashboards.",
-    "plugin-dev": "Plugin, skill, MCP, and agent-native development workflows.",
-    "design": "Distinctive interface design and UI/UX analysis workflows.",
-    "mcp": "MCP-heavy services that should be opt-in for startup and context performance.",
-    "incubating": "Experimental or narrow plugins that are not part of the default surface.",
-    "internal": "Internal-only implementation support, hidden from ordinary user-facing packs.",
-    "deprecated": "Retired or archived plugins, excluded from install packs.",
-    "all": "Every non-internal, non-deprecated first-party plugin in this inventory.",
-}
-DEFAULT_PROFILE_PLUGINS = {
-    "clavain",
-    "intercheck",
-    "interdev",
-    "interdoc",
-    "interlock",
-    "internext",
-    "interpeer",
-    "interphase",
-    "intertest",
-    "tldr-swinton",
-    "tool-time",
-}
-PROFILE_NAME_OVERRIDES = {
-    "clavain": "core",
-    "intercheck": "core",
-    "interdev": "core",
-    "interdoc": "core",
-    "interlock": "core",
-    "internext": "core",
-    "interpeer": "core",
-    "interphase": "core",
-    "intertest": "core",
-    "tldr-swinton": "core",
-    "tool-time": "core",
-    "interflux": "review",
-    "interrank": "review",
-    "intersynth": "review",
-    "intertrace": "review",
-    "intermem": "docs",
-    "interpath": "docs",
-    "interscribe": "docs",
-    "intertree": "docs",
-    "interwatch": "docs",
-    "interdeep": "research",
-    "interknow": "research",
-    "interlearn": "research",
-    "intermonk": "research",
-    "intersearch": "research",
-    "interhelm": "ops",
-    "interlab": "ops",
-    "interline": "ops",
-    "intermux": "ops",
-    "interslack": "ops",
-    "interpulse": "observability",
-    "interspect": "observability",
-    "interstat": "observability",
-    "intertrack": "observability",
-    "interchart": "observability",
-    "intercraft": "plugin-dev",
-    "interplug": "plugin-dev",
-    "interpub": "plugin-dev",
-    "interskill": "plugin-dev",
-    "interform": "design",
-    "intersight": "design",
-    "intercache": "mcp",
-    "interject": "mcp",
-    "interlens": "mcp",
-    "tuivision": "mcp",
-}
 
 
 def relpath(path: Path, root: Path) -> str:
@@ -146,15 +70,7 @@ def discover_plugin_roots(root: Path) -> list[Path]:
     return roots
 
 
-def rig_source(payload: Any) -> str:
-    if isinstance(payload, str):
-        return payload
-    if isinstance(payload, dict):
-        return str(payload.get("source", ""))
-    return ""
-
-
-def load_rig_entries(rig_path: Path) -> tuple[dict[str, dict[str, Any]], list[dict[str, str]]]:
+def load_rig_entries(rig_path: Path) -> tuple[dict[str, dict[str, str]], list[dict[str, str]]]:
     if not rig_path.exists():
         return {}, [
             {
@@ -167,25 +83,22 @@ def load_rig_entries(rig_path: Path) -> tuple[dict[str, dict[str, Any]], list[di
 
     data = read_json(rig_path)
     plugins = data.get("plugins", {}) if isinstance(data, dict) else {}
-    entries: dict[str, dict[str, Any]] = {}
+    entries: dict[str, dict[str, str]] = {}
 
-    def add_entry(tier: str, payload: Any, *, profile: str | None = None) -> None:
-        source = rig_source(payload)
+    def add_entry(tier: str, payload: dict[str, Any]) -> None:
+        source = str(payload.get("source", ""))
         name, marketplace = split_source(source)
         if not name or marketplace != INTERAGENCY_MARKETPLACE:
             return
-        entry = entries.setdefault(
+        entries.setdefault(
             name,
             {
                 "name": name,
                 "source": source,
                 "tier": tier,
-                "description": str(payload.get("description", "")) if isinstance(payload, dict) else "",
-                "profiles": [],
+                "description": str(payload.get("description", "")),
             },
         )
-        if profile and profile not in entry["profiles"]:
-            entry["profiles"].append(profile)
 
     if isinstance(plugins, dict):
         core = plugins.get("core")
@@ -194,17 +107,8 @@ def load_rig_entries(rig_path: Path) -> tuple[dict[str, dict[str, Any]], list[di
         for tier, value in plugins.items():
             if isinstance(value, list):
                 for payload in value:
-                    if isinstance(payload, (dict, str)):
+                    if isinstance(payload, dict):
                         add_entry(str(tier), payload)
-        profiles = plugins.get("profiles")
-        if isinstance(profiles, dict):
-            for profile_name, value in profiles.items():
-                if not isinstance(value, list):
-                    continue
-                for payload in value:
-                    add_entry("profile", payload, profile=str(profile_name))
-        for entry in entries.values():
-            entry["profiles"] = sorted(entry.get("profiles", []))
 
     return entries, []
 
@@ -452,84 +356,10 @@ def plugin_surface_types(declared_counts: dict[str, int], disk_counts: dict[str,
     return [key for key in COMPONENT_ORDER if declared_counts.get(key, 0) > 0 or disk_counts.get(key, 0) > 0]
 
 
-def text_blob(name: str, manifest: dict[str, Any], rig_entry: dict[str, Any] | None) -> str:
-    values: list[str] = [name, str(manifest.get("description", ""))]
-    keywords = manifest.get("keywords")
-    if isinstance(keywords, list):
-        values.extend(str(item) for item in keywords)
-    if rig_entry:
-        values.append(str(rig_entry.get("description", "")))
-    return " ".join(values).lower()
-
-
-def infer_primary_profile(
-    name: str,
-    manifest: dict[str, Any],
-    surface_types: list[str],
-    rig_entry: dict[str, Any] | None,
-    plugin_root: Path,
-) -> str:
-    blob = text_blob(name, manifest, rig_entry)
-    if (plugin_root / "ARCHIVED.md").exists() or any(term in blob for term in ("deprecated", "archived", "retired")):
-        return "deprecated"
-    if any(term in blob for term in ("internal-only", "internal only", "private implementation")):
-        return "internal"
-    if name in PROFILE_NAME_OVERRIDES:
-        return PROFILE_NAME_OVERRIDES[name]
-    if surface_types == ["mcpServers"] or ("mcpServers" in surface_types and not set(surface_types) & {"skills", "commands", "agents"}):
-        return "mcp"
-
-    keyword_profiles = (
-        ("review", ("review", "synthesis", "verdict", "trace", "benchmark", "rank")),
-        ("docs", ("document", "documentation", "artifact", "memory", "handoff", "watch")),
-        ("research", ("research", "knowledge", "search", "dialectic", "learn")),
-        ("ops", ("statusline", "slack", "diagnostic", "deploy", "runtime", "operator", "tmux")),
-        ("observability", ("metric", "pressure", "profile", "dashboard", "telemetry", "map")),
-        ("plugin-dev", ("plugin", "skill", "mcp cli", "agent-native", "publishing")),
-        ("design", ("design", "ui", "ux", "interface", "visual")),
-    )
-    for profile, terms in keyword_profiles:
-        if any(term in blob for term in terms):
-            return profile
-    return "incubating"
-
-
-def plugin_profile(
-    name: str,
-    manifest: dict[str, Any],
-    surface_types: list[str],
-    rig_entry: dict[str, Any] | None,
-    plugin_root: Path,
-) -> dict[str, Any]:
-    primary = infer_primary_profile(name, manifest, surface_types, rig_entry, plugin_root)
-    packs = set(rig_entry.get("profiles", [])) if rig_entry else set()
-    if primary not in {"internal", "deprecated"}:
-        packs.add(primary)
-    if name in DEFAULT_PROFILE_PLUGINS and primary not in {"internal", "deprecated"}:
-        packs.add("default")
-    packs.discard("all")
-
-    if primary == "deprecated":
-        visibility = "deprecated"
-    elif primary == "internal":
-        visibility = "internal"
-    elif "default" in packs:
-        visibility = "default"
-    else:
-        visibility = "optional"
-
-    pack_order = ["core", "default", "review", "docs", "research", "ops", "observability", "plugin-dev", "design", "mcp", "incubating"]
-    return {
-        "primary": primary,
-        "visibility": visibility,
-        "packs": [pack for pack in pack_order if pack in packs] + sorted(packs - set(pack_order)),
-    }
-
-
 def analyze_plugin(
     root: Path,
     plugin_root: Path,
-    rig_entries: dict[str, dict[str, Any]],
+    rig_entries: dict[str, dict[str, str]],
     marketplace_entries: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
     manifest_path = plugin_root / ".claude-plugin" / "plugin.json"
@@ -609,8 +439,6 @@ def analyze_plugin(
             }
         )
 
-    surface_types = plugin_surface_types(declared_counts, disk_counts)
-    profile = plugin_profile(name, manifest, surface_types, rig_entry, plugin_root)
     status = "fail" if high else "warn" if warnings else "ok"
     return {
         "name": name,
@@ -627,8 +455,7 @@ def analyze_plugin(
             "present": marketplace_entry is not None,
             "version": marketplace_entry.get("version") if marketplace_entry else None,
         },
-        "profile": profile,
-        "surface_types": surface_types,
+        "surface_types": plugin_surface_types(declared_counts, disk_counts),
         "components": {
             "declared": declared_counts,
             "disk": disk_counts,
@@ -639,22 +466,6 @@ def analyze_plugin(
             "high": high,
             "warnings": warnings,
         },
-    }
-
-
-def profile_summary(plugins: list[dict[str, Any]]) -> dict[str, Any]:
-    packs: dict[str, list[str]] = {name: [] for name in PROFILE_TAXONOMY}
-    for plugin in plugins:
-        profile = plugin.get("profile", {})
-        name = plugin["name"]
-        for pack in profile.get("packs", []):
-            packs.setdefault(pack, []).append(name)
-        if profile.get("visibility") not in {"internal", "deprecated"}:
-            packs["all"].append(name)
-
-    return {
-        "taxonomy": {name: PROFILE_TAXONOMY[name] for name in PROFILE_TAXONOMY},
-        "packs": {name: sorted(set(values)) for name, values in packs.items()},
     }
 
 
@@ -737,7 +548,6 @@ def build_inventory(
             "rig": orphaned_rig,
             "marketplace": orphaned_marketplace,
         },
-        "profiles": profile_summary(plugins),
         "plugins": plugins,
     }
 
@@ -770,7 +580,6 @@ def print_human(ledger: dict[str, Any], *, verbose: bool = False) -> None:
             "  surfaces="
             + (",".join(plugin["surface_types"]) or "none")
             + f" rig={plugin['rig']['tier'] or 'none'} marketplace={plugin['marketplace']['present']}"
-            + f" profile={plugin['profile']['primary']} visibility={plugin['profile']['visibility']}"
         )
         for item in drift["high"]:
             print(f"  [HIGH] {item['code']}: {item['message']} ({item.get('path', '')})")
