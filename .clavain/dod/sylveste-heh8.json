@@ -1,0 +1,7 @@
+[
+  {"criterion":"GitHub release auraken-distribution/v0.1.0 is published with tarball + checksums.txt + .asc + install.sh","verification":"gh release view auraken-distribution/v0.1.0","automated":true},
+  {"criterion":"install.sh succeeds end-to-end in clean Docker against vanilla Hermes and the installed bundle responds to /auraken without violating behavioral contract","verification":"bash tests/e2e/install-smoke.sh","automated":true},
+  {"criterion":"claude-opus-4-7 transcript exists at tests/transcripts/v0.1-claude-opus-4-7.md scoring >=8/10 against voice-rubric.md","verification":"Manual scoring + grep for transcript file","automated":false},
+  {"criterion":"MANIFEST.yaml passes YAML-load and every compatibility row has a compatibility_evidence row","verification":"python3 scripts/validate-manifest.py dist/v0.1/MANIFEST.yaml","automated":true},
+  {"criterion":"auraken-lens MCP returns single-object soundpost response shape, never a list","verification":"pytest mcp-servers/auraken-lens/tests/test_response_shape.py","automated":true}
+]
