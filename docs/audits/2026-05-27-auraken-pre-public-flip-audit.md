@@ -336,3 +336,75 @@ Code quality is dev-grade (working but not polished). Public exposure exposes de
 
 **Recommended next step:** decide on remediation path for §8.1, then schedule the flip. The audit corpus + this report live at `/tmp/auraken-audit/`.
 
+
+---
+
+## ADDENDUM (2026-05-27 — later that day)
+
+While executing the §8.1 remediation (Path 1: HEAD-only scrub of personal Gmail in `.beads/issues.jsonl`), two findings the original audit missed surfaced. These materially change the verdict.
+
+### A1. `.beads/.beads-credential-key` — tracked binary credential blob
+
+A 32-byte binary file (`.beads/.beads-credential-key`) has been tracked since the `bd init` commit (`fa707c6`). It is the local key bd uses for Dolt sync auth.
+
+- The regex sweep in §3-5 used text-shaped credential patterns (`sk-`, `ghp_`, etc.) and did not match binary blobs.
+- The outer Sylveste `.gitignore` correctly ignores `.beads-credential-key`. The apps/Auraken `.gitignore` did not until commit `638092a` (this addendum's remediation).
+- Current HEAD: the file is untracked going forward; local copy preserved so bd keeps working.
+- History: the credential blob remains in every prior commit. Rotating the local key (`bd backup keygen` or equivalent) makes the historical blob inert, but defense-in-depth says scrub it.
+
+**Lesson for future audits:** also flag any tracked file < 256 bytes with high-entropy binary content.
+
+### A2. Git author / committer email on every commit — `MK <a.r.r.qvs@gmail.com>`
+
+```
+$ git log --all --format="%ae" | sort | uniq -c | sort -rn
+    137 a.r.r.qvs@gmail.com
+$ git config --local user.email
+a.r.r.qvs@gmail.com
+$ git config --global user.email
+mistakeknot@vibeguider.org
+```
+
+The personal Gmail is the **local** git author email for this repo (overrides the global). Every one of the 137 commit objects in history carries it in both author and committer fields. This metadata travels with the repo on any clone/fork.
+
+**This is the dominant exposure surface.** A HEAD-only scrub of `.beads/issues.jsonl` (which the commit `638092a` accomplished — HEAD blob now uses `mk@generalsystemsventures.com`) addresses one tracked-content vector and ignores the much bigger metadata vector. Any third party who clones the public repo gets the personal Gmail via `git log` immediately.
+
+**This cannot be fixed without rewriting history.**
+
+### Updated remediation matrix
+
+The original audit listed three paths. Given findings A1 + A2:
+
+| Path | Scrubs JSONL? | Scrubs credential blob? | Scrubs git author? | Effort | Force-push? |
+|------|---|---|---|---|---|
+| ~~1: bd update HEAD-only~~ | yes (HEAD) | no | **no** | low | no |
+| 2: `git filter-repo --mailmap` + path-filter | yes (history) | yes | yes | medium | yes (destructive) |
+| 3: Squash entire history to single commit | yes | yes | yes (set author at squash) | low-medium | yes (destructive) |
+| **C (NEW): Fresh public repo** | n/a | n/a | n/a | low | none |
+
+### Path C — fresh public repo (now the recommended default)
+
+Don't flip `mistakeknot/auraken`. Keep it private. Create a new public repo `mistakeknot/auraken-public` (or `mistakeknot/auraken-distribution`) that contains:
+
+- `integrations/hermes/dist/v0.1/` (the published bundle)
+- `apps/Auraken/dist/{build-binaries,build-dist,install.sh.in,test-install}.sh` (the build tooling)
+- A minimal LICENSE
+- A README pointing back to the upstream private repo
+
+Single commit, authored as `mk@generalsystemsventures.com`, no historical baggage, no IP-disclosure decisions for the legacy daemon, no need to rewrite history. The published GitHub Release attachments are already independent of the source repo — moving the release tag to the new public repo is a `gh release create` against the new repo with the existing tarball + checksums + install.sh.
+
+INSTALL.md's `gh release download` and `curl -LO` commands change their repo path from `mistakeknot/auraken` to `mistakeknot/auraken-public`. That's it.
+
+**Trade-offs of Path C:**
+- + No history rewrite, no force-push, no destructive operations on the working repo
+- + IP-disclosure decisions (§9.1) become per-file-add at the new-repo seeding step rather than a sweeping repo-wide call
+- + The lens library can stay in the private repo; the public bundle ships the binary + MCP server + skill only
+- − Loses the "see the source that built this" link for the public release
+- − Two repos to keep in sync if future v0.x changes touch both code that lives in the private repo AND content that should be in the public release
+
+### Updated verdict
+
+**Status: 🔴 RED for in-place public flip of `mistakeknot/auraken`. 🟢 GREEN for Path C (fresh public repo).**
+
+Phase 1.5 partial remediation (`638092a`) cleaned the JSONL in HEAD and untracked the credential key going forward. This is a reasonable hygiene improvement regardless of which final path the user picks. It does not resolve the in-place-flip blockers.
+
