@@ -408,3 +408,64 @@ INSTALL.md's `gh release download` and `curl -LO` commands change their repo pat
 
 Phase 1.5 partial remediation (`638092a`) cleaned the JSONL in HEAD and untracked the credential key going forward. This is a reasonable hygiene improvement regardless of which final path the user picks. It does not resolve the in-place-flip blockers.
 
+
+---
+
+## Phase 2 — history rewrite complete (2026-05-27, later still)
+
+Executed `git filter-repo` against `mistakeknot/auraken` with three coordinated passes:
+
+```
+git filter-repo \
+  --mailmap <mailmap-file> \
+  --invert-paths --path .beads/.beads-credential-key \
+  --replace-text <replacement-file> \
+  --force
+```
+
+- **Mailmap** rewrites all 137 commits' author + committer fields from `a.r.r.qvs@gmail.com` → `mk@generalsystemsventures.com`
+- **Path removal** drops the `.beads/.beads-credential-key` blob from every commit's tree across history
+- **Text replacement** substitutes the personal Gmail with the company email in any blob's contents (covers historical `.beads/issues.jsonl` snapshots where 45 records carried the email)
+
+### Verification (post-rewrite, post-force-push)
+
+| Check | Pre-rewrite | Post-rewrite |
+|---|---|---|
+| Commits authored by `a.r.r.qvs@gmail.com` | 137 | **0** |
+| Commits authored by `mk@generalsystemsventures.com` | 0 | **137** |
+| Blobs containing personal Gmail (across all history) | several | **0** |
+| Commits with `.beads-credential-key` in their tree | 137 | **0** |
+| `auraken-distribution-v0.1.0` tag | `7fb2545` → `ec099dd` | `f7a43b7` → `2baf9b58` |
+| `mistakeknot/auraken/main` HEAD | `638092a` | `16271cf` |
+
+### Release page impact
+
+- **Tag re-pointed automatically** — GitHub Release page's tag-association follows the new SHA `2baf9b58`.
+- **Three attachments unchanged** — tarball, checksums.txt, install.sh remained at their original SHA-256 digests because they're opaque blobs uploaded independently of the source tree.
+- **End-user install path verified post-rewrite**: `gh release download` → `sha256sum -c checksums.txt --ignore-missing` returns `OK` → `tar -xzf` → `bash install.sh` succeeds against a fresh `$HERMES_HOME`.
+
+### Local sync
+
+The local `apps/Auraken` working copy was hard-reset to the new `origin/main`. Stashed parallel-session work (uv.lock, recon-spike SKILL.md edits, etc.) was preserved via `git stash pop` after the reset — no conflicts because filter-repo only modified files (`.beads/issues.jsonl`, `.beads/.beads-credential-key`) outside the stash's diff. Reflog + GC dropped the orphaned old commits from local storage.
+
+Local git config (`apps/Auraken/.git/config`) updated:
+- `user.email = mk@generalsystemsventures.com`
+- `user.name = MK`
+
+Going forward, every commit authored from this checkout uses the company email by default.
+
+### Updated verdict — pre-flip state
+
+**Status: 🟢 GREEN.** All findings from the original audit + the A1/A2 addendum are now resolved:
+
+- ✅ Personal Gmail nowhere in the repo (HEAD or history)
+- ✅ Credential-key blob removed from all history; gitignored going forward
+- ✅ Git author metadata is `mk@generalsystemsventures.com` on every commit
+- ✅ Release attachments unchanged; end-user install path verified
+
+**Phase 3 (the actual `gh repo edit --visibility public --accept-visibility-change-consequences`) remains pending user authorization.** Pre-flip state is now clean.
+
+### Insurance backup
+
+A mirror clone of the pre-rewrite state was kept at `/tmp/auraken-backup` for the duration of the rewrite. Can be removed once Phase 3 lands and the new state is verified stable.
+
