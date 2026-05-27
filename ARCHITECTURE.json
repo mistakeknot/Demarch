@@ -1,0 +1,1534 @@
+{
+  "version": 1,
+  "generated_by": "Sylveste/scripts/build-architecture-map.py",
+  "plugin_count": 61,
+  "plugins": {
+    "interbrowse": {
+      "name": "interbrowse",
+      "version": "0.4.1",
+      "description": "Browser automation and competitive research for AI agents. UX teardowns, docs crawls, cross-cutting synthesis, and CUJ generation \u2014 the full research-to-design pipeline via agent-browser CLI.",
+      "skills": [
+        "./skills/browse",
+        "./skills/teardown",
+        "./skills/docs-crawl",
+        "./skills/synthesize",
+        "./skills/research"
+      ],
+      "commands": [
+        "./commands/browse.md",
+        "./commands/teardown.md",
+        "./commands/docs-crawl.md",
+        "./commands/synthesize.md",
+        "./commands/research.md"
+      ],
+      "agents": [
+        "./agents/ux-analyst.md",
+        "./agents/content-extractor.md"
+      ],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intercache": {
+      "name": "intercache",
+      "version": "0.2.1",
+      "description": "Cross-session semantic cache for Claude Code. Content-addressed blob storage, per-project manifests, and session tracking \u2014 reduces cold start time and eliminates redundant file reads across sessions.",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "intercache"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intercept": {
+      "name": "intercept",
+      "version": "0.1.3",
+      "description": "Smart decision gates \u2014 haiku LLM decisions that distill into local models over time",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interchart": {
+      "name": "interchart",
+      "version": "0.1.8",
+      "description": "Interactive ecosystem diagram \u2014 scans Interverse monorepo and generates a D3.js force graph showing all plugins, skills, MCP tools, hooks, and their relationships.",
+      "skills": [
+        "./skills/interchart"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interkasten": 4,
+        "interflux": 2,
+        "intercheck": 2,
+        "interstat": 2,
+        "intermem": 2,
+        "interject": 2,
+        "intermap": 2,
+        "interleave": 2,
+        "tool-time": 1,
+        "interwatch": 1,
+        "interdoc": 1,
+        "interpath": 1,
+        "interphase": 1,
+        "intersearch": 1,
+        "tldr-swinton": 1,
+        "intercept": 1,
+        "interfluence": 1,
+        "intermux": 1
+      }
+    },
+    "intercheck": {
+      "name": "intercheck",
+      "version": "0.2.2",
+      "description": "Code quality guards and session health monitoring",
+      "skills": [
+        "./skills/quality"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interpulse": 2,
+        "intermux": 1
+      }
+    },
+    "intercraft": {
+      "name": "intercraft",
+      "version": "0.1.3",
+      "description": "Agent-native architecture patterns \u2014 design, review, and audit for agent-first applications.",
+      "skills": [
+        "./skills/agent-native-architecture"
+      ],
+      "commands": [
+        "./commands/agent-native-audit.md"
+      ],
+      "agents": [
+        "./agents/review/agent-native-reviewer.md"
+      ],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interdeep": {
+      "name": "interdeep",
+      "version": "0.1.6",
+      "description": "Deep research plugin \u2014 content extraction and research orchestration via MCP tools.",
+      "skills": [
+        "./skills/deep-research"
+      ],
+      "commands": [
+        "./commands/research.md"
+      ],
+      "agents": [
+        "./agents/research-planner.md",
+        "./agents/source-evaluator.md",
+        "./agents/report-compiler.md"
+      ],
+      "mcp_servers": [
+        "interdeep"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interknow": 4,
+        "interlens": 3,
+        "interject": 2,
+        "interflux": 2,
+        "intercache": 2,
+        "intersynth": 2
+      }
+    },
+    "interdeploy": {
+      "name": "interdeploy",
+      "version": "0.1.0",
+      "description": "Deploy monitoring and auto-fix \u2014 watches Vercel deployments after push, diagnoses build failures from logs, fixes code, and re-pushes until the deploy succeeds.",
+      "skills": [
+        "./skills/deploy-watch"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interdev": {
+      "name": "interdev",
+      "version": "0.2.0",
+      "description": "Developer tooling for Claude Code \u2014 MCP CLI interaction and Claude Code reference.",
+      "skills": [
+        "./skills/mcp-cli",
+        "./skills/working-with-claude-code"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interdoc": {
+      "name": "interdoc",
+      "version": "5.2.3",
+      "description": "Recursive AGENTS.md generator with integrated Oracle critique, CLAUDE.md harmonization, incremental updates, diff previews, and smart monorepo scoping. Cross-AI compatible.",
+      "skills": [
+        "./skills/interdoc"
+      ],
+      "commands": [
+        "./commands/interdoc.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interwatch": 6,
+        "interlore": 4,
+        "intercheck": 3
+      }
+    },
+    "interfer": {
+      "name": "interfer",
+      "version": "0.1.0",
+      "description": "Local MLX-LM inference server for Apple Silicon. Custom serving layer with priority queuing, thermal-aware scheduling, and experiment hooks for Sylveste/Clavain.",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "interfer"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interlab": 3
+      }
+    },
+    "interfluence": {
+      "name": "interfluence",
+      "version": "0.2.12",
+      "description": "Analyze your writing style and adapt Claude's output to sound like you. Ingest writing samples, build a voice profile, and apply it to any human-facing documentation or copy.",
+      "skills": [
+        "./skills/analyze",
+        "./skills/apply",
+        "./skills/compare",
+        "./skills/ingest",
+        "./skills/optimize",
+        "./skills/refine"
+      ],
+      "commands": [
+        "./commands/interfluence.md"
+      ],
+      "agents": [
+        "./agents/voice-analyzer.md"
+      ],
+      "mcp_servers": [
+        "interfluence"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "intercheck": 3
+      }
+    },
+    "interflux": {
+      "name": "interflux",
+      "version": "0.2.70",
+      "description": "Multi-agent review and research with scored triage, domain detection, content slicing, intermediate finding sharing, and knowledge injection. 17 agents (12 review + 5 research), 7 commands, 1 skill (u",
+      "skills": [
+        "./skills/flux-engine",
+        "./skills/flux-review-engine"
+      ],
+      "commands": [
+        "./commands/fetch-findings.md",
+        "./commands/flux-agent.md",
+        "./commands/flux-drive.md",
+        "./commands/flux-explore.md",
+        "./commands/flux-gen.md",
+        "./commands/flux-research.md",
+        "./commands/flux-review.md"
+      ],
+      "agents": [
+        "./agents/research/best-practices-researcher.md",
+        "./agents/research/framework-docs-researcher.md",
+        "./agents/research/git-history-analyzer.md",
+        "./agents/research/learnings-researcher.md",
+        "./agents/research/repo-research-analyst.md",
+        "./agents/review/fd-architecture.md",
+        "./agents/review/fd-correctness.md",
+        "./agents/review/fd-decisions.md",
+        "./agents/review/fd-game-design.md",
+        "./agents/review/fd-people.md",
+        "./agents/review/fd-perception.md",
+        "./agents/review/fd-performance.md",
+        "./agents/review/fd-quality.md",
+        "./agents/review/fd-resilience.md",
+        "./agents/review/fd-safety.md",
+        "./agents/review/fd-systems.md",
+        "./agents/review/fd-user-product.md"
+      ],
+      "mcp_servers": [
+        "exa",
+        "openrouter-dispatch"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interstat": 38,
+        "interrank": 19,
+        "interknow": 18,
+        "interspect": 12,
+        "interpeer": 12,
+        "intersynth": 11,
+        "intercept": 5,
+        "intertrust": 3,
+        "interlock": 2,
+        "interlens": 1,
+        "interfluence": 1,
+        "interdeep": 1,
+        "intercraft": 1,
+        "intertrace": 1,
+        "interleave": 1
+      }
+    },
+    "interform": {
+      "name": "interform",
+      "version": "0.1.0",
+      "description": "Design patterns and visual quality for Claude Code \u2014 distinctive, production-grade interfaces.",
+      "skills": [
+        "./skills/distinctive-design"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interhelm": {
+      "name": "interhelm",
+      "version": "0.2.2",
+      "description": "Agent-as-operator runtime diagnostics \u2014 teaches agents to observe and control running applications via diagnostic HTTP servers and CLI tools.",
+      "skills": [
+        "./skills/runtime-diagnostics",
+        "./skills/smoke-test-design",
+        "./skills/cuj-verification",
+        "./skills/diagnostic-maturation"
+      ],
+      "commands": [],
+      "agents": [
+        "./agents/review/runtime-reviewer.md"
+      ],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interject": {
+      "name": "interject",
+      "version": "0.1.14",
+      "description": "Ambient discovery and research engine. Continuously scans arXiv, Hacker News, GitHub, and Anthropic docs for new capabilities, workflows, and tools relevant to your engineering ecosystem. Creates bead",
+      "skills": [
+        "./skills/discover",
+        "./skills/inbox",
+        "./skills/profile",
+        "./skills/scan",
+        "./skills/status"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "interject"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "intercheck": 3
+      }
+    },
+    "interkasten": {
+      "name": "interkasten",
+      "version": "0.4.25",
+      "description": "Living bridge between your projects folder and Notion \u2014 bidirectional sync with adaptive AI documentation and pagent workflow automation",
+      "skills": [
+        "./skills/onboard",
+        "./skills/doctor",
+        "./skills/webhook-setup"
+      ],
+      "commands": [
+        "./commands/onboard.md",
+        "./commands/doctor.md",
+        "./commands/webhook-setup.md"
+      ],
+      "agents": [],
+      "mcp_servers": [
+        "interkasten"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interdoc": 13,
+        "interwatch": 9,
+        "interpath": 8,
+        "interflux": 4,
+        "interphase": 1
+      }
+    },
+    "interknow": {
+      "name": "interknow",
+      "version": "0.1.5",
+      "description": "Knowledge compounding \u2014 durable pattern repository with provenance tracking, temporal decay, and semantic retrieval via qmd.",
+      "skills": [
+        "./skills/compound",
+        "./skills/recall"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "qmd"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interlab": {
+      "name": "interlab",
+      "version": "0.4.8",
+      "description": "Autonomous experiment loop with mutation provenance tracking \u2014 init, run, log experiments with JSONL persistence, git isolation, SQLite mutation store, and ic events bridge.",
+      "skills": [
+        "./skills/autoresearch",
+        "./skills/autoresearch-multi"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "interlab"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interlock": 5,
+        "interskill": 1,
+        "intercache": 1,
+        "intermem": 1
+      }
+    },
+    "interlearn": {
+      "name": "interlearn",
+      "version": "0.1.0",
+      "description": "Cross-repo institutional knowledge index \u2014 indexes solution docs across the Interverse monorepo, enables unified search, and audits reflect coverage.",
+      "skills": [
+        "./skills/interlearn"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interleave": {
+      "name": "interleave",
+      "version": "0.1.2",
+      "description": "Deterministic Skeleton with LLM Islands \u2014 token-efficient document generation via template-then-fill.",
+      "skills": [
+        "./skills/interleave"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interpath": 3
+      }
+    },
+    "interlens": {
+      "name": "interlens",
+      "version": "2.2.4",
+      "description": "288 FLUX cognitive lenses for structured thinking \u2014 MCP server with lens search, thinking mode workflows, belief statement generation, quality evaluation, and solution synthesis.",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "interlens"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interline": {
+      "name": "interline",
+      "version": "0.2.13",
+      "description": "Dynamic statusline for Claude Code \u2014 shows workflow phase, bead context, and Codex dispatch state. Integrates with Clavain and interphase.",
+      "skills": [],
+      "commands": [
+        "./commands/statusline-setup.md",
+        "./commands/statusline-customize.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interspect": 5,
+        "interlock": 4,
+        "intercheck": 4,
+        "interstat": 3,
+        "interphase": 3,
+        "interflux": 1,
+        "interpeer": 1
+      }
+    },
+    "interlock": {
+      "name": "interlock",
+      "version": "0.2.14",
+      "description": "MCP server for intermute file reservation and agent coordination. 12 tools: reserve, release, conflict check, messaging, agent listing, negotiation, escalation. Companion plugin for Clavain.",
+      "skills": [
+        "./skills/conflict-recovery",
+        "./skills/coordination-protocol"
+      ],
+      "commands": [
+        "./commands/join.md",
+        "./commands/leave.md",
+        "./commands/setup.md",
+        "./commands/status.md"
+      ],
+      "agents": [],
+      "mcp_servers": [
+        "interlock"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interline": 1
+      }
+    },
+    "interlore": {
+      "name": "interlore",
+      "version": "0.1.0",
+      "description": "Philosophy observer \u2014 detects latent design patterns and philosophy drift from decision artifacts, proposes PHILOSOPHY.md updates.",
+      "skills": [
+        "./skills/observe"
+      ],
+      "commands": [
+        "./commands/scan.md",
+        "./commands/review.md",
+        "./commands/status.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interdoc": 1,
+        "interpath": 1
+      }
+    },
+    "intermap": {
+      "name": "intermap",
+      "version": "0.1.7",
+      "description": "Project-level code mapping: project registry, call graphs, architecture analysis, agent overlay, cross-project dependencies, pattern detection, live changes. MCP server with 9 tools.",
+      "skills": [
+        "./skills"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "intermap"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intermem": {
+      "name": "intermem",
+      "version": "0.2.4",
+      "description": "Memory synthesis \u2014 graduates stable auto-memory facts to AGENTS.md/CLAUDE.md",
+      "skills": [
+        "./skills/synthesize",
+        "./skills/tidy"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interwatch": 1
+      }
+    },
+    "intermix": {
+      "name": "intermix",
+      "version": "0.1.11",
+      "description": "Cross-repo matrix evaluation harness \u2014 run Skaffen against unfamiliar codebases, classify outcomes, track failure patterns.",
+      "skills": [
+        "./skills/evaluate"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "intermix"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intermonk": {
+      "name": "intermonk",
+      "version": "0.1.2",
+      "description": "Hegelian dialectic reasoning \u2014 Electric Monk subagents for structured contradiction analysis and synthesis",
+      "skills": [
+        "./skills/dialectic"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intermux": {
+      "name": "intermux",
+      "version": "0.1.8",
+      "description": "Agent activity visibility -- tmux monitoring, activity feeds, health detection. Enriches intermute with live context.",
+      "skills": [
+        "./skills/agents"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "intermux"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interpulse": 1,
+        "intercheck": 1
+      }
+    },
+    "intername": {
+      "name": "intername",
+      "version": "0.1.2",
+      "description": "Agent and agency naming for legible orchestration \u2014 memorable, deterministic identities across all surfaces.",
+      "skills": [],
+      "commands": [
+        "./commands/name.md",
+        "./commands/name-theme.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "internext": {
+      "name": "internext",
+      "version": "0.1.5",
+      "description": "Work prioritization and next-task analysis for Claude Code \u2014 tradeoff-aware recommendations from project state.",
+      "skills": [
+        "./skills/next-work"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interpath": {
+      "name": "interpath",
+      "version": "0.3.3",
+      "description": "Product artifact generator \u2014 roadmaps, PRDs, vision docs, changelogs, CUJs, and status reports from beads, brainstorms, and project state. Companion plugin for Clavain.",
+      "skills": [
+        "./skills/artifact-gen"
+      ],
+      "commands": [
+        "./commands/all.md",
+        "./commands/changelog.md",
+        "./commands/cuj.md",
+        "./commands/prd.md",
+        "./commands/propagate.md",
+        "./commands/roadmap.md",
+        "./commands/status.md",
+        "./commands/vision.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interwatch": 16,
+        "interleave": 6,
+        "interdoc": 5,
+        "interflux": 2,
+        "interphase": 1,
+        "interline": 1,
+        "interlock": 1,
+        "tuivision": 1
+      }
+    },
+    "interpeer": {
+      "name": "interpeer",
+      "version": "0.1.1",
+      "description": "Cross-AI peer review \u2014 quick (Claude\u2194Codex), deep (Oracle), council (multi-model), mine (disagreement extraction).",
+      "skills": [
+        "./skills/interpeer"
+      ],
+      "commands": [
+        "./commands/interpeer.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interphase": {
+      "name": "interphase",
+      "version": "0.3.17",
+      "description": "Phase tracking, gate validation, and work discovery for the Beads issue tracker. Companion plugin for Clavain \u2014 adds lifecycle state management on top of the core beads plugin.",
+      "skills": [
+        "./skills/beads-workflow"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interspect": 6,
+        "interject": 5
+      }
+    },
+    "interplug": {
+      "name": "interplug",
+      "version": "0.1.5",
+      "description": "Plugin development toolkit \u2014 lifecycle management, structure validation, and troubleshooting for Claude Code plugins",
+      "skills": [
+        "./skills/plugin",
+        "./skills/validate",
+        "./skills/troubleshoot"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interskill": 3,
+        "interdev": 1
+      }
+    },
+    "interpub": {
+      "name": "interpub",
+      "version": "0.1.8",
+      "description": "Safe plugin publishing \u2014 bumps all version locations, validates sync, commits and pushes with confirmation.",
+      "skills": [],
+      "commands": [
+        "./.claude-plugin/commands/release.md",
+        "./.claude-plugin/commands/sweep.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interpulse": {
+      "name": "interpulse",
+      "version": "0.1.5",
+      "description": "Session context monitoring \u2014 pressure tracking, token estimation, threshold warnings",
+      "skills": [
+        "./skills/pressure"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "intermem": 2,
+        "intercheck": 1,
+        "intermux": 1
+      }
+    },
+    "interrank": {
+      "name": "interrank",
+      "version": "0.3.1",
+      "description": "Snapshot-backed model/benchmark ranking MCP server for AgMoDB",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "interrank"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interscout": {
+      "name": "interscout",
+      "version": "0.1.2",
+      "description": "[DEPRECATED 2026-04-27] Roadmap refresh orchestrator. Functionality migrated to /schedule + /interject:scan + /interpath:all + /clavain:status. See README.md for migration. Plugin still works but new ",
+      "skills": [
+        "./skills/daily",
+        "./skills/weekly",
+        "./skills/status"
+      ],
+      "commands": [
+        "./commands/daily.md",
+        "./commands/weekly.md",
+        "./commands/status.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interject": 23,
+        "interpath": 2
+      }
+    },
+    "interscribe": {
+      "name": "interscribe",
+      "version": "0.1.2",
+      "description": "Documentation quality toolkit \u2014 enforces CLAUDE.md/AGENTS.md boundaries, applies progressive disclosure, deduplicates across doc hierarchy.",
+      "skills": [
+        "./skills/interscribe"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "intermem": 1
+      }
+    },
+    "intersearch": {
+      "name": "intersearch",
+      "version": "0.2.2",
+      "description": "Shared embedding and search infrastructure for the Interverse ecosystem \u2014 sentence-transformer embeddings, persistent vector store, and Exa web search.",
+      "skills": [
+        "./skills/session-search"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "intersearch"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interseed": {
+      "name": "interseed",
+      "version": "0.1.0",
+      "description": "Idea garden: capture, refine, and graduate ideas from rough seeds to actionable plans.",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "interseed"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intership": {
+      "name": "intership",
+      "version": "0.3.3",
+      "description": "Culture ship names as Claude Code spinner verbs. Because why would you settle for 'Thinking...' when you could have 'Experiencing A Significant Gravitas Shortfall'?",
+      "skills": [],
+      "commands": [
+        "./commands/customize.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intersight": {
+      "name": "intersight",
+      "version": "0.1.5",
+      "description": "Automated UI/UX design analysis \u2014 extracts W3C DTCG tokens, component inventory, and layout analysis from any URL.",
+      "skills": [
+        "./skills/analyze"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "intercache": 2
+      }
+    },
+    "intersite": {
+      "name": "intersite",
+      "version": "0.1.0",
+      "description": "GSV portfolio site content generation and pipeline management",
+      "skills": [
+        "./skills/generate",
+        "./skills/status"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interlock": 1
+      }
+    },
+    "interskill": {
+      "name": "interskill",
+      "version": "0.1.3",
+      "description": "Skill authoring toolkit \u2014 unified skill creation, TDD-adapted testing, and audit. Consolidated from interdev's create-agent-skills and writing-skills.",
+      "skills": [
+        "./skills/skill",
+        "./skills/audit"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interplug": 1
+      }
+    },
+    "interslack": {
+      "name": "interslack",
+      "version": "0.1.0",
+      "description": "Slack integration for Claude Code \u2014 send messages, read channels, test integrations.",
+      "skills": [
+        "./skills/slack-messaging"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "interspect": {
+      "name": "interspect",
+      "version": "0.1.20",
+      "description": "Agent performance profiler and routing optimizer. Collects evidence about flux-drive agent accuracy, proposes routing overrides for underperforming agents, and monitors canary periods. Companion plugi",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interflux": 30,
+        "tool-time": 7,
+        "interstat": 3
+      }
+    },
+    "interstat": {
+      "name": "interstat",
+      "version": "0.3.0",
+      "description": "Token efficiency benchmarking, session analytics, and API-equivalent cost analysis for agent workflows",
+      "skills": [
+        "./skills/analyze",
+        "./skills/report",
+        "./skills/status",
+        "./skills/cost"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interflux": 5,
+        "interspect": 2
+      }
+    },
+    "intersynth": {
+      "name": "intersynth",
+      "version": "0.1.12",
+      "description": "Multi-agent synthesis engine \u2014 collects findings from parallel review/research agents, deduplicates, writes verdicts, produces compact summaries. Keeps agent output out of the host context.",
+      "skills": [],
+      "commands": [],
+      "agents": [
+        "./agents/synthesize-review.md",
+        "./agents/synthesize-research.md",
+        "./agents/synthesize-documents.md"
+      ],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interflux": 1
+      }
+    },
+    "intertest": {
+      "name": "intertest",
+      "version": "0.1.3",
+      "description": "Engineering quality disciplines \u2014 systematic debugging, test-driven development, and verification gates.",
+      "skills": [
+        "./skills/systematic-debugging",
+        "./skills/test-driven-development",
+        "./skills/verification-before-completion"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intertrace": {
+      "name": "intertrace",
+      "version": "0.1.2",
+      "description": "Cross-module integration gap tracer \u2014 traces data flows from shipped features to find unverified consumer edges.",
+      "skills": [
+        "./skills/intertrace"
+      ],
+      "commands": [],
+      "agents": [
+        "./agents/review/fd-integration.md"
+      ],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {}
+    },
+    "intertrack": {
+      "name": "intertrack",
+      "version": "0.1.4",
+      "description": "Feature-level success metric tracking for Demarch",
+      "skills": [
+        "./skills/report",
+        "./skills/metrics"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interpulse": 1,
+        "intercheck": 1
+      }
+    },
+    "intertree": {
+      "name": "intertree",
+      "version": "0.1.2",
+      "description": "Project hierarchy management \u2014 filesystem discovery, parent-child relationships, tagging, and layout orchestration",
+      "skills": [
+        "./skills/tree"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interkasten": 4,
+        "interflux": 1
+      }
+    },
+    "intertrust": {
+      "name": "intertrust",
+      "version": "0.1.3",
+      "description": "Agent trust scoring \u2014 reputation tracking, severity-weighted decay, and suppression candidates.",
+      "skills": [],
+      "commands": [
+        "./commands/trust-status.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interspect": 12,
+        "interflux": 1
+      }
+    },
+    "interwatch": {
+      "name": "interwatch",
+      "version": "0.5.0",
+      "description": "Doc freshness and correctness monitoring \u2014 auto-discovers watchable docs, detects drift via 17 signal types, scores confidence, dispatches generators for auto-refresh, and runs stranger-perspective co",
+      "skills": [
+        "./skills/doc-watch"
+      ],
+      "commands": [
+        "./commands/audit.md",
+        "./commands/install-hooks.md",
+        "./commands/refresh.md",
+        "./commands/status.md",
+        "./commands/watch.md"
+      ],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interdoc": 14,
+        "interpath": 11,
+        "interphase": 1,
+        "interline": 1,
+        "interflux": 1,
+        "interlock": 1,
+        "interslack": 1,
+        "interform": 1,
+        "intercraft": 1,
+        "interdev": 1,
+        "intercheck": 1,
+        "interject": 1,
+        "internext": 1,
+        "interpub": 1,
+        "intersearch": 1,
+        "tldr-swinton": 1,
+        "tool-time": 1,
+        "tuivision": 1,
+        "interspect": 1
+      }
+    },
+    "lattice": {
+      "name": "lattice",
+      "version": "0.2.0",
+      "description": "Generative ontology layer for agentic platforms \u2014 5 composable type families, 7 interaction rules, multi-family membership, lifecycle transitions. Indexes entity metadata across subsystems and returns",
+      "skills": [],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interlens": 12
+      }
+    },
+    "tldr-swinton": {
+      "name": "tldr-swinton",
+      "version": "0.7.18",
+      "description": "Token-efficient code reconnaissance for LLMs. Autonomous skills save 48-85% tokens via diff-context, semantic search, structural patterns, and symbol analysis. Includes MCP server for direct tool inte",
+      "skills": [
+        "./.claude-plugin/skills/tldrs-session-start",
+        "./.claude-plugin/skills/tldrs-map-codebase",
+        "./.claude-plugin/skills/tldrs-interbench-sync",
+        "./.claude-plugin/skills/finding-duplicate-functions"
+      ],
+      "commands": [
+        "./.claude-plugin/commands/find.md",
+        "./.claude-plugin/commands/diff-context.md",
+        "./.claude-plugin/commands/context.md",
+        "./.claude-plugin/commands/structural.md",
+        "./.claude-plugin/commands/quickstart.md",
+        "./.claude-plugin/commands/extract.md"
+      ],
+      "agents": [],
+      "mcp_servers": [
+        "tldr-code"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "intercheck": 3
+      }
+    },
+    "tool-time": {
+      "name": "tool-time",
+      "version": "0.3.11",
+      "description": "Tool usage analytics for Claude Code. Tracks tool patterns via hooks, detects inefficiencies, and offers community comparison with anonymized data.",
+      "skills": [
+        "./skills/tool-time",
+        "./skills/tool-time-codex"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [],
+      "declared_peers": [],
+      "discovered_refs": {
+        "interspect": 23,
+        "intercheck": 3
+      }
+    },
+    "tuivision": {
+      "name": "tuivision",
+      "version": "0.2.1",
+      "description": "TUI automation and visual testing - Playwright for terminal applications. Spawn, interact with, and screenshot TUI apps.",
+      "skills": [
+        "./skills/tui-test"
+      ],
+      "commands": [],
+      "agents": [],
+      "mcp_servers": [
+        "tuivision"
+      ],
+      "declared_peers": [],
+      "discovered_refs": {
+        "intercheck": 3
+      }
+    }
+  },
+  "referenced_by": {
+    "interkasten": [
+      "interchart",
+      "intertree"
+    ],
+    "interflux": [
+      "interchart",
+      "interdeep",
+      "interkasten",
+      "interline",
+      "interpath",
+      "interspect",
+      "interstat",
+      "intersynth",
+      "intertree",
+      "intertrust",
+      "interwatch"
+    ],
+    "intercheck": [
+      "interchart",
+      "interdoc",
+      "interfluence",
+      "interject",
+      "interline",
+      "intermux",
+      "interpulse",
+      "intertrack",
+      "interwatch",
+      "tldr-swinton",
+      "tool-time",
+      "tuivision"
+    ],
+    "interstat": [
+      "interchart",
+      "interflux",
+      "interline",
+      "interspect"
+    ],
+    "intermem": [
+      "interchart",
+      "interlab",
+      "interpulse",
+      "interscribe"
+    ],
+    "interject": [
+      "interchart",
+      "interdeep",
+      "interphase",
+      "interscout",
+      "interwatch"
+    ],
+    "intermap": [
+      "interchart"
+    ],
+    "interleave": [
+      "interchart",
+      "interflux",
+      "interpath"
+    ],
+    "tool-time": [
+      "interchart",
+      "interspect",
+      "interwatch"
+    ],
+    "interwatch": [
+      "interchart",
+      "interdoc",
+      "interkasten",
+      "intermem",
+      "interpath"
+    ],
+    "interdoc": [
+      "interchart",
+      "interkasten",
+      "interlore",
+      "interpath",
+      "interwatch"
+    ],
+    "interpath": [
+      "interchart",
+      "interkasten",
+      "interleave",
+      "interlore",
+      "interscout",
+      "interwatch"
+    ],
+    "interphase": [
+      "interchart",
+      "interkasten",
+      "interline",
+      "interpath",
+      "interwatch"
+    ],
+    "intersearch": [
+      "interchart",
+      "interwatch"
+    ],
+    "tldr-swinton": [
+      "interchart",
+      "interwatch"
+    ],
+    "intercept": [
+      "interchart",
+      "interflux"
+    ],
+    "interfluence": [
+      "interchart",
+      "interflux"
+    ],
+    "intermux": [
+      "interchart",
+      "intercheck",
+      "interpulse"
+    ],
+    "interpulse": [
+      "intercheck",
+      "intermux",
+      "intertrack"
+    ],
+    "interknow": [
+      "interdeep",
+      "interflux"
+    ],
+    "interlens": [
+      "interdeep",
+      "interflux",
+      "lattice"
+    ],
+    "intercache": [
+      "interdeep",
+      "interlab",
+      "intersight"
+    ],
+    "intersynth": [
+      "interdeep",
+      "interflux"
+    ],
+    "interlore": [
+      "interdoc"
+    ],
+    "interlab": [
+      "interfer"
+    ],
+    "interrank": [
+      "interflux"
+    ],
+    "interspect": [
+      "interflux",
+      "interline",
+      "interphase",
+      "interstat",
+      "intertrust",
+      "interwatch",
+      "tool-time"
+    ],
+    "interpeer": [
+      "interflux",
+      "interline"
+    ],
+    "intertrust": [
+      "interflux"
+    ],
+    "interlock": [
+      "interflux",
+      "interlab",
+      "interline",
+      "interpath",
+      "intersite",
+      "interwatch"
+    ],
+    "interdeep": [
+      "interflux"
+    ],
+    "intercraft": [
+      "interflux",
+      "interwatch"
+    ],
+    "intertrace": [
+      "interflux"
+    ],
+    "interskill": [
+      "interlab",
+      "interplug"
+    ],
+    "interline": [
+      "interlock",
+      "interpath",
+      "interwatch"
+    ],
+    "tuivision": [
+      "interpath",
+      "interwatch"
+    ],
+    "interdev": [
+      "interplug",
+      "interwatch"
+    ],
+    "interplug": [
+      "interskill"
+    ],
+    "interslack": [
+      "interwatch"
+    ],
+    "interform": [
+      "interwatch"
+    ],
+    "internext": [
+      "interwatch"
+    ],
+    "interpub": [
+      "interwatch"
+    ]
+  },
+  "warnings": [
+    {
+      "plugin": "interchart",
+      "missing_peers": [
+        "interkasten"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interdeep",
+      "missing_peers": [
+        "interknow",
+        "interlens"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interdoc",
+      "missing_peers": [
+        "intercheck",
+        "interlore",
+        "interwatch"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interfer",
+      "missing_peers": [
+        "interlab"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interfluence",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interflux",
+      "missing_peers": [
+        "intercept",
+        "interknow",
+        "interpeer",
+        "interrank",
+        "interspect",
+        "interstat",
+        "intersynth",
+        "intertrust"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interject",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interkasten",
+      "missing_peers": [
+        "interdoc",
+        "interflux",
+        "interpath",
+        "interwatch"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interlab",
+      "missing_peers": [
+        "interlock"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interleave",
+      "missing_peers": [
+        "interpath"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interline",
+      "missing_peers": [
+        "intercheck",
+        "interlock",
+        "interphase",
+        "interspect",
+        "interstat"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interpath",
+      "missing_peers": [
+        "interdoc",
+        "interleave",
+        "interwatch"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interphase",
+      "missing_peers": [
+        "interject",
+        "interspect"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interplug",
+      "missing_peers": [
+        "interskill"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interscout",
+      "missing_peers": [
+        "interject"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interspect",
+      "missing_peers": [
+        "interflux",
+        "interstat",
+        "tool-time"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interstat",
+      "missing_peers": [
+        "interflux"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "intertree",
+      "missing_peers": [
+        "interkasten"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "intertrust",
+      "missing_peers": [
+        "interspect"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "interwatch",
+      "missing_peers": [
+        "interdoc",
+        "interpath"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "lattice",
+      "missing_peers": [
+        "interlens"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "tldr-swinton",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "tool-time",
+      "missing_peers": [
+        "intercheck",
+        "interspect"
+      ],
+      "kind": "undeclared_strong_dependency"
+    },
+    {
+      "plugin": "tuivision",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency"
+    }
+  ]
+}

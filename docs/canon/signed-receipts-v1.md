@@ -120,16 +120,14 @@ This trust shape mirrors `docs/canon/authz-signing-trust-model.md` for the authz
 
 ## Storage
 
-**v1 substrate: SQLite (intercore).** Receipts live in the intercore SQLite store under table `action_receipts` with primary key `receipt_id`, defined by db migration 035 (`core/intercore/internal/db/migrations/035_action_receipts.sql`). Each row carries:
+Receipts live in the Sylveste Dolt store under table `action_receipts` with primary key `receipt_id`. Each row carries:
 
 - All 8 signed fields as typed columns.
 - The unsigned fields (`signature`, `signature_alg`, `key_id`, `signed_at`).
 - A `payload_canonical` BLOB containing the exact bytes the HMAC was computed over (avoids re-canonicalization at verify time and lets verifiers detect canonicalization-rule drift).
-- An `inserted_at` unix-seconds column for query-side filtering, distinct from `timestamp` (action logical time) and `signed_at` (envelope sign time).
+- A `dolt_sha` column populated by the Dolt commit hash that introduced the row (content-addressing).
 
-INSERT-only is enforced by two SQLite triggers (`action_receipts_no_delete`, `action_receipts_no_update`) that `RAISE(ABORT, '...')` on any DELETE or UPDATE attempt. This is the SQLite analogue of canon §Trust claim "Receipt-row deletion is forbidden by schema." Decay is by archival, not removal.
-
-**v1.1 substrate target: Dolt.** The original canon language committed to a Dolt backend with a `dolt_sha` content-addressing column. v1.1 ports `action_receipts` to a Sylveste-owned Dolt instance (distinct from beads' Dolt at `.beads/dolt/`); the migration is additive — rows are copied with schema preserved, the SQLite store becomes a write-through cache, and `dolt_sha` populates from the new Dolt commit hash. The substrate change does not alter the canonicalization, signing, or verification semantics defined above; only the durability and content-addressing surface improves. v1.1 is post-Mythos.
+Receipt writes are part of the normal Dolt commit flow; receipts emitted within a single agent action share a Dolt commit. Receipt-row deletion is forbidden by schema (no DELETE permission); decay is by archival, not removal.
 
 ## v1 → v2 migration path
 

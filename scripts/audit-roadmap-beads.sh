@@ -19,30 +19,6 @@ done
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 ROADMAP="${ROADMAP:-$REPO_ROOT/docs/sylveste-roadmap.md}"
 
-# Cloud-guard: cloud sessions can't run bd; skip cleanly so we don't produce
-# misleading "missing from beads" results for every roadmap entry.
-GUARD_LIB="$REPO_ROOT/scripts/lib-cloud-guard.sh"
-if [[ -r "$GUARD_LIB" ]]; then
-    # shellcheck source=lib-cloud-guard.sh
-    source "$GUARD_LIB"
-    if cloud_session; then
-        if $JSON_MODE; then
-            echo '{"skipped":"cloud read-only mode","reason":"audit requires bd CLI"}'
-        else
-            cloud_log_skip "audit-roadmap-beads"
-        fi
-        exit 0
-    fi
-    if ! command -v bd >/dev/null 2>&1; then
-        if $JSON_MODE; then
-            echo '{"skipped":"bd not on PATH","reason":"workstation bd install required"}'
-        else
-            workstation_log_missing_bd "audit-roadmap-beads"
-        fi
-        exit 0
-    fi
-fi
-
 if [[ ! -f "$ROADMAP" ]]; then
     if $JSON_MODE; then
         echo '{"error":"roadmap not found","path":"'"$ROADMAP"'"}'

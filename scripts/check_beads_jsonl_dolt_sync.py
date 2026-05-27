@@ -113,23 +113,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    # Cloud-guard: this script asks Dolt for issue ids and compares to JSONL.
-    # In cloud there is no Dolt, and we treat JSONL as the source of truth,
-    # so the comparison is meaningless. Skip cleanly with exit 0.
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    try:
-        from lib_cloud_guard import cloud_session, cloud_log_skip, workstation_log_missing_bd
-    except ImportError:
-        cloud_session = lambda: False  # type: ignore
-        cloud_log_skip = lambda op="op": None  # type: ignore
-        workstation_log_missing_bd = lambda op="op": None  # type: ignore
-    if cloud_session():
-        cloud_log_skip("check_beads_jsonl_dolt_sync")
-        return 0
-    if shutil.which("bd") is None:
-        workstation_log_missing_bd("check_beads_jsonl_dolt_sync")
-        return 0
-
     args = build_parser().parse_args(argv)
     repo = args.repo.resolve()
     issues_jsonl = args.issues_jsonl or (repo / ".beads" / "issues.jsonl")

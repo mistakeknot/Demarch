@@ -7,23 +7,6 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
 
-# Cloud-guard: bd is unavailable in cloud sessions; this script would emit
-# warnings and produce a roadmap.json with all bead links missing. Skip
-# cleanly instead.
-GUARD_LIB="$ROOT_DIR/scripts/lib-cloud-guard.sh"
-if [[ -r "$GUARD_LIB" ]]; then
-    # shellcheck source=lib-cloud-guard.sh
-    source "$GUARD_LIB"
-    if cloud_session; then
-        cloud_log_skip "sync-roadmap-json"
-        exit 0
-    fi
-    if ! command -v bd >/dev/null 2>&1; then
-        workstation_log_missing_bd "sync-roadmap-json"
-        exit 0
-    fi
-fi
-
 # Read project config from .interwatch/project.yaml if available
 _PROJECT_YAML="$ROOT_DIR/.interwatch/project.yaml"
 if [ -z "${ROADMAP_PROJECT:-}" ] && [ -f "$_PROJECT_YAML" ] && command -v yq >/dev/null 2>&1; then
