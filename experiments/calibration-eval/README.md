@@ -69,12 +69,17 @@ export ANTHROPIC_API_KEY=sk-ant-...  # for closed models
 
 ## Reproduce
 
-**1. Run the offline test suite** (no API needed — proves the metric math):
+**1. Validate everything offline** (no API key, no cost):
 
 ```bash
-pytest
-python src/metrics.py        # prints a summary on synthetic data
+pytest                              # 25 unit tests: metric math, parsers, correctness
+python src/metrics.py               # summary on synthetic data
+python scripts/validate_pipeline.py # full Inspect pipeline against the mockllm provider
 ```
+
+`validate_pipeline.py` runs the real harness (task → solver → scorer → log →
+`analyze` → figures + CSV) against Inspect's fake model, so you can confirm the
+plumbing works before spending any API budget.
 
 **2. Run the custom interest-domain eval** (RQ2) on the ladder:
 
