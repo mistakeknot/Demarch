@@ -129,12 +129,30 @@ steering harness. It does **not** re-invent the task or the metrics.
 ## 7. Tooling & compute (the real gate)
 
 - **Interp:** `nnsight` (multi-model, lighter) or `transformer-lens`; `nnterp` wrapper.
-- **Models:** Hermes open weights on HF. Mechanistic work is feasible on a ~7–14B Hermes
-  on a single rented GPU (Runpod/Lambda/Vast). The 405B tier is out of scope for
-  activation work — so the *mechanistic* capability-ladder comparison is limited to
-  sizes that fit; note this asymmetry vs the behavioral ladder.
-- This is the first piece that needs a **GPU** — unlike the behavioral eval. Budget a
-  few $/hr of single-GPU time; no training, just forward passes + light probe fits.
+- **Models:** Hermes open weights on HF (confirm the exact checkpoint exists on the
+  NousResearch HF org — portal API access ≠ weight access).
+- **Compute: the user's RTX 4090 (24 GB), Windows desktop via WSL2.** No rental needed.
+  This workload is forward passes + activation capture + linear-probe fits + steering —
+  no training, so no optimizer/gradient memory. Envelope:
+  - **~7–8B Hermes in bf16** (≈14–16 GB weights + KV/activations) — the workhorse;
+    full precision, which is what clean interp wants. Target this tier.
+  - **~13–14B only via 8-bit** (~14 GB) — acceptable for the *decode* probes (A/B);
+    **avoid for steering (C)**: quantization perturbs the very activations being
+    manipulated.
+  - **70B/405B out of scope** for activation work — the *mechanistic* ladder is capped
+    at the small tier; note this asymmetry vs the behavioral ladder.
+  - Activation storage is not a bottleneck: capture at a single locus token and
+    offload to CPU/disk.
+- **Environment:** run the stack inside **WSL2** (Ubuntu + NVIDIA CUDA-on-WSL driver);
+  the interp ecosystem (nnsight/transformer-lens/bitsandbytes wheels) is Linux-first
+  and native Windows hits dependency walls. `tmux` for long jobs; disable Windows sleep.
+- **Remote driving:** cloud sessions can reach the desktop over Tailscale —
+  feasibility verified from a session container (root + CAP_NET_ADMIN + /dev/net/tun +
+  egress to the Tailscale control plane/DERP/pkgs all confirmed). Wiring:
+  `scripts/join-tailnet.sh` joins the tailnet using an **ephemeral, tagged,
+  ACL-scoped `TS_AUTHKEY`** env secret, then drives WSL2 via Tailscale SSH
+  (`tailscale up --ssh` on the desktop side — one-time user setup). Deferred until
+  Step 2 starts, by decision.
 
 ## 8. Confounds & controls (preempt the reviewer)
 

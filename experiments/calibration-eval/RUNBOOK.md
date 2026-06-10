@@ -1,7 +1,29 @@
-# RUNBOOK — executing the measurement loop on a workstation
+# RUNBOOK — executing the measurement loop
 
-This is the step-by-step for running real models. The cloud session that built this
-cannot run it (no API key / no portal access), so everything here is for your machine.
+This is the step-by-step for running real models. Two ways to execute it:
+
+## Path A (preferred): run from the Claude Code cloud session
+
+Add the Nous Portal credentials to the Claude Code **environment variables**
+(claude.ai/code → your environment → Environment variables):
+
+```
+NOUS_API_KEY  = <from portal.nousresearch.com>
+NOUS_BASE_URL = https://<verify-exact-host>/v1
+```
+
+That's the only user-side action. Any subsequent cloud session can then execute
+everything below directly in the container (the harness, datasets, and analysis all
+already run there — validated end-to-end via mockllm). Ask the session to "run Step 1
+per the RUNBOOK"; it will do the smoke test first, stop if anything looks off, and
+commit `runs/summary.csv` + figures to the branch.
+
+Egress note: the container reaches external HTTPS endpoints (verified for HF and
+others), so portal calls work as long as the base URL is HTTPS.
+
+## Path B: run on your own machine
+
+Same commands, your shell. Use this if you'd rather not put the key in the cloud env.
 
 ## 0. Prerequisites
 
@@ -9,7 +31,7 @@ cannot run it (no API key / no portal access), so everything here is for your ma
 cd experiments/calibration-eval
 uv venv && source .venv/bin/activate
 uv pip install -e ".[dev]"     # installs inspect-ai, openai, anthropic, numpy, pandas, matplotlib
-pytest                          # 36 tests must pass
+pytest                          # 38 tests must pass
 python scripts/validate_pipeline.py   # no-API end-to-end check must print "PIPELINE OK"
 ```
 
