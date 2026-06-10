@@ -14,6 +14,8 @@ repo + note, then move on. See `README.md` / `RUNBOOK.md`.
 
 ## Step 2 — Mechanistic introspection (the flagship) — *next, after Step 1 ships*
 
+**Full design sketch: [`../introspection-probe/DESIGN.md`](../introspection-probe/DESIGN.md).**
+
 **Question:** is a model's verbalized confidence *read from* an internal uncertainty
 representation, or confabulated after the answer?
 
