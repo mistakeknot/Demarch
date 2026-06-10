@@ -155,9 +155,11 @@ gitignored).
 **Sensitivity / efficiency — the headline ("knows what it knows"):**
 - **type-2 AUROC** — nonparametric: does confidence rank the model's own correct answers
   above its incorrect ones? Robust, assumption-light primary.
-- **meta-d′** — sensitivity in d′ units, via the equal-variance-Gaussian type-2 ROC
-  (`meta-d′ = √2·z(type-2 AUROC)`). A deliberately simple estimator; the full MLE fit
-  (Maniscalco & Lau; HMeta-d) is future work.
+- **meta-d′** — sensitivity in d′ units: the d′ whose *predicted* type-2 ROC area
+  (equal-variance Gaussian SDT) matches the *observed* type-2 AUROC, i.e.
+  `meta-d′ = g⁻¹(type-2 AUROC)`. Calibrated so an **ideal observer gives M-ratio = 1.0**
+  (regression-tested). AUROC-matched rather than the full multinomial MLE over rating
+  bins (Maniscalco & Lau; HMeta-d), which is future work.
 - **d′** — 2AFC-equivalent first-order ability (`√2·z(accuracy)`), the M-ratio denominator.
 - **M-ratio (meta-d′/d′)** — metacognitive efficiency, *controlling for capability*. The
   number plain calibration cannot isolate.
@@ -179,9 +181,10 @@ ECE, MCE, Brier, signed miscalibration (+ over- / − under-confident), reliabil
 
 ### Honest limitations
 
-- **meta-d′ here is the simple ROC-area estimator**, not the MLE fit, and `d′` uses a
-  2AFC approximation for >2-option items — magnitudes are indicative; type-2 AUROC is the
-  robust comparison.
+- **meta-d′ here is the SDT type-2-ROC-matched estimator**, not the full rating-bin MLE
+  (HMeta-d), and `d′` uses a 2AFC approximation for >2-option items — so absolute
+  magnitudes are indicative; type-2 AUROC is the assumption-light comparison and the
+  M-ratio is calibrated against an ideal observer (= 1.0).
 - **`consensus_recall` measures canon-knowledge, not taste.** Treat it as such.
 - **Logprob availability is provider-specific** — present on open weights via Nous Portal,
   absent on the Anthropic chat API (the arm falls back to verbalized, recorded as such).

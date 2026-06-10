@@ -266,6 +266,47 @@ def _norm_cdf(x: float) -> float:
 # (corresponds to accuracy ~53%). Suppressed to NaN rather than emitting huge values.
 D_PRIME_FLOOR = 0.1
 
+# numpy 2.x renamed trapz -> trapezoid; support both.
+_trapz = getattr(np, "trapezoid", None) or getattr(np, "trapz")
+
+
+_erf_vec = np.vectorize(math.erf)
+
+
+def _ideal_type2_auroc(d: float, n: int = 3000) -> float:
+    """Ideal (SDT-optimal) type-2 ROC area for first-order sensitivity ``d``.
+
+    Equal-variance 2AFC model: the decision variable D ~ N(d', 2); the observer
+    chooses correctly when D>0 and confidence is |D|. Sweeping a confidence criterion
+    theta>=0 traces the type-2 ROC, which we integrate numerically. Monotone
+    increasing in d', with g(0)=0.5 and g(inf)->1. Deterministic (no RNG).
+    """
+    if d <= 0:
+        return 0.5
+    s2 = math.sqrt(2.0)
+    theta = np.linspace(0.0, 12.0, n)
+    phi = lambda z: 0.5 * (1.0 + _erf_vec(z / s2))  # standard-normal CDF, vectorized
+    hit = phi((d - theta) / s2) / phi(d / s2)        # P(D>theta)/P(D>0)
+    fa = phi((-d - theta) / s2) / phi(-d / s2)        # P(D<-theta)/P(D<0)
+    order = np.argsort(fa)
+    return float(_trapz(hit[order], fa[order]))
+
+
+# Lazily-built, cached monotone lookup of (d', ideal type-2 AUROC) for inverting
+# meta-d'. Grid to d'=5 (type-2 AUROC ~0.999); 101 points is smooth enough for interp.
+_IDEAL_TABLE: tuple[np.ndarray, np.ndarray] | None = None
+
+
+def _ideal_type2_table() -> tuple[np.ndarray, np.ndarray]:
+    global _IDEAL_TABLE
+    if _IDEAL_TABLE is None:
+        d_grid = np.linspace(0.0, 5.0, 101)
+        auc_grid = np.array([_ideal_type2_auroc(float(d)) for d in d_grid])
+        # enforce strict monotonicity for np.interp (guard against tiny numeric dips)
+        auc_grid = np.maximum.accumulate(auc_grid)
+        _IDEAL_TABLE = (d_grid, auc_grid)
+    return _IDEAL_TABLE
+
 
 def d_prime(correct: Sequence[float]) -> float:
     """First-order sensitivity (task ability) as a 2AFC-equivalent d'.
@@ -286,18 +327,30 @@ def meta_d_prime(
     correct: Sequence[float],
     scale: float = 100.0,
 ) -> float:
-    """Metacognitive sensitivity in d' units.
+    """Metacognitive sensitivity in d' units (SDT type-2-ROC-matched).
 
-    Derived from the type-2 ROC area under the equal-variance Gaussian model:
-    AUC = Phi(d'/sqrt(2))  =>  meta-d' = sqrt(2) * z(type-2 AUROC). This is a
-    deliberately simple estimator; the gold-standard MLE fit (Maniscalco & Lau 2012;
-    Fleming's HMeta-d) is noted as future work in the README. Returns NaN when the
-    type-2 AUROC is undefined (single outcome class).
+    meta-d' is the first-order d' whose *predicted* type-2 ROC area, under the
+    unbiased equal-variance Gaussian SDT model, matches the *observed* type-2 AUROC.
+    Concretely: meta-d' = g^{-1}(observed type-2 AUROC), where g(d') is the ideal
+    type-2 AUROC for sensitivity d' (``_ideal_type2_auroc``). This is the standard
+    meta-d' logic (Maniscalco & Lau 2012), AUROC-matched rather than fit by full
+    multinomial MLE over rating bins (HMeta-d; noted as future work in the README).
+
+    Crucially, this is calibrated against ``d_prime``: an *ideal* metacognitive
+    observer (confidence == the SDT-optimal posterior) yields meta-d' == d', so
+    M-ratio == 1.0. The earlier sqrt(2)*z(AUROC) shortcut did NOT have this property
+    (it read M-ratio ~0.84 for an ideal observer — see test_m_ratio_ideal_observer).
+
+    Returns NaN when the type-2 AUROC is undefined (single outcome class), 0.0 at or
+    below chance type-2 AUROC, and saturates at the lookup-grid maximum (d'=5).
     """
     a = auroc(confidences, correct, scale)
     if math.isnan(a):
         return float("nan")
-    return math.sqrt(2.0) * _norm_ppf(a)
+    if a <= 0.5:
+        return 0.0
+    d_grid, auc_grid = _ideal_type2_table()
+    return float(np.interp(a, auc_grid, d_grid))
 
 
 def m_ratio(

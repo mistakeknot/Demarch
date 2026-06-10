@@ -142,6 +142,29 @@ def test_m_ratio_finite_positive_when_sensitive():
     assert not math.isnan(val) and val > 0
 
 
+def test_ideal_type2_auroc_anchors():
+    # closed-form ideal type-2 AUROC must match the SDT simulation to ~0.005
+    from src.metrics import _ideal_type2_auroc
+    assert _ideal_type2_auroc(0.0) == pytest.approx(0.5, abs=1e-6)
+    assert _ideal_type2_auroc(0.5) == pytest.approx(0.615, abs=0.005)
+    assert _ideal_type2_auroc(1.0) == pytest.approx(0.722, abs=0.005)
+    assert _ideal_type2_auroc(2.0) == pytest.approx(0.886, abs=0.005)
+
+
+def test_m_ratio_ideal_observer_near_one():
+    # An ideal equal-variance SDT observer has true meta-d' == d', so the estimator
+    # must read M-ratio ~1.0. (The old sqrt(2)*z(AUROC) estimator read ~0.84 here.)
+    rng = np.random.default_rng(7)
+    for d_true in (0.75, 1.5):
+        n = 60000
+        s1 = rng.normal(d_true, 1.0, n)  # signal interval
+        s2 = rng.normal(0.0, 1.0, n)     # noise interval
+        correct = (s1 > s2).astype(int)
+        conf = np.abs(s1 - s2)           # ideal (boundary-distance) confidence
+        conf01 = (conf.argsort().argsort() / n) * 100  # monotone -> 0-100
+        assert m_ratio(conf01, correct) == pytest.approx(1.0, abs=0.08)
+
+
 # ----------------------- logprob elicitation ------------------------------
 
 
