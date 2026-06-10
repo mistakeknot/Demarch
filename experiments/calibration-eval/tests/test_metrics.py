@@ -5,17 +5,26 @@ import math
 import numpy as np
 import pytest
 
-from src.elicitation import parse_answer_letter, parse_confidence, sampling_confidence
+from src.elicitation import (
+    logprob_to_confidence,
+    parse_answer_letter,
+    parse_confidence,
+    sampling_confidence,
+)
 from src.metrics import (
     auroc,
     brier_score,
+    d_prime,
     expected_calibration_error,
+    m_ratio,
     maximum_calibration_error,
+    meta_d_prime,
     reliability_bins,
     signed_miscalibration,
     summarize,
     to_unit_interval,
 )
+from src.metrics import _norm_cdf, _norm_ppf
 from src.scoring import mc_correct, numeric_correct, text_correct
 
 
@@ -84,8 +93,77 @@ def test_reliability_bins_partition_counts():
 
 def test_summarize_keys():
     out = summarize([10, 50, 90], [0, 1, 1])
-    for key in ("n", "accuracy", "ece", "mce", "brier", "auroc", "signed_miscalibration"):
+    for key in (
+        "n", "accuracy", "auroc", "d_prime", "meta_d_prime", "m_ratio",
+        "ece", "mce", "brier", "signed_miscalibration",
+    ):
         assert key in out
+
+
+# --------------------- type-2 SDT / metacognition -------------------------
+
+
+def test_norm_ppf_inverts_cdf():
+    for p in (0.05, 0.3, 0.5, 0.8, 0.99):
+        assert _norm_cdf(_norm_ppf(p)) == pytest.approx(p, abs=1e-6)
+
+
+def test_norm_ppf_symmetry():
+    assert _norm_ppf(0.5) == pytest.approx(0.0, abs=1e-9)
+    assert _norm_ppf(0.975) == pytest.approx(1.959963, abs=1e-4)
+
+
+def test_d_prime_zero_at_chance():
+    assert d_prime([1, 1, 0, 0]) == pytest.approx(0.0, abs=1e-6)
+    assert d_prime([1, 1, 1, 0]) > 0.5  # above-chance accuracy -> positive d'
+
+
+def test_meta_d_prime_high_when_confidence_separates():
+    md = meta_d_prime([10, 20, 80, 90], [0, 0, 1, 1])  # type-2 AUROC = 1.0
+    assert md > 3.0
+
+
+def test_meta_d_prime_zero_at_chance_sensitivity():
+    md = meta_d_prime([50, 50, 50, 50], [1, 0, 1, 0])  # AUROC = 0.5
+    assert md == pytest.approx(0.0, abs=0.5)
+
+
+def test_meta_d_prime_nan_single_class():
+    assert math.isnan(meta_d_prime([10, 90], [1, 1]))
+
+
+def test_m_ratio_nan_at_chance_accuracy():
+    # accuracy 0.5 -> d' ~ 0 -> efficiency undefined
+    assert math.isnan(m_ratio([10, 20, 80, 90], [0, 1, 0, 1]))
+
+
+def test_m_ratio_finite_positive_when_sensitive():
+    val = m_ratio([10, 20, 80, 90, 95, 99], [0, 0, 1, 1, 1, 1])
+    assert not math.isnan(val) and val > 0
+
+
+# ----------------------- logprob elicitation ------------------------------
+
+
+class _Tok:
+    def __init__(self, token, logprob):
+        self.token = token
+        self.logprob = logprob
+
+
+def test_logprob_to_confidence_reads_chosen_token():
+    toks = [_Tok("ANSWER", -0.1), _Tok(":", -0.01), _Tok("B", math.log(0.9))]
+    assert logprob_to_confidence(toks, "B") == 90
+
+
+def test_logprob_to_confidence_missing_token():
+    toks = [_Tok("A", math.log(0.7))]
+    assert logprob_to_confidence(toks, "C") is None
+    assert logprob_to_confidence(toks, "C", default=50) == 50
+
+
+def test_logprob_to_confidence_none_answer():
+    assert logprob_to_confidence([_Tok("A", -0.1)], None) is None
 
 
 def test_mismatched_shapes_raise():

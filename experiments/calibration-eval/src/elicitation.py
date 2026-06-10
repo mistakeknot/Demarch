@@ -17,6 +17,7 @@ even when the eval harness is not installed.
 
 from __future__ import annotations
 
+import math
 import re
 from collections import Counter
 from typing import Optional
@@ -26,8 +27,10 @@ __all__ = [
     "REFLECTION_SYSTEM",
     "parse_confidence",
     "parse_answer_letter",
+    "logprob_to_confidence",
     "verbalized_confidence",
     "sampling_self_consistency",
+    "logprob_confidence",
     "logprob_confidence_note",
 ]
 
@@ -118,6 +121,25 @@ def sampling_confidence(answers: list[Optional[str]]) -> tuple[Optional[str], fl
     return modal, n / len(valid)
 
 
+def logprob_to_confidence(tokens, answer: Optional[str], default: Optional[int] = None):
+    """Confidence (0-100) from the logprob of the chosen answer token.
+
+    ``tokens`` is an iterable of objects exposing ``.token`` and ``.logprob`` (Inspect's
+    ``Logprob`` content list). We find the first generated token matching the parsed
+    answer letter and return ``round(exp(logprob) * 100)`` — the probability mass the
+    model placed on that token. Returns ``default`` if the answer token isn't found.
+    """
+    if not answer or tokens is None:
+        return default
+    target = answer.strip().upper()
+    for tok in tokens:
+        text = getattr(tok, "token", "")
+        if text and text.strip().upper() == target:
+            p = math.exp(getattr(tok, "logprob", float("-inf")))
+            return max(0, min(100, int(round(p * 100))))
+    return default
+
+
 # ---------------------------------------------------------------------------
 # Inspect solver builders (inspect_ai imported lazily)
 # ---------------------------------------------------------------------------
@@ -180,15 +202,65 @@ def sampling_self_consistency(n: int = 10):
     return _sampling()
 
 
-def logprob_confidence_note() -> str:
-    """Return guidance on the logprob method.
+def logprob_confidence(top_logprobs: int = 5):
+    """Inspect solver: confidence from the chosen answer token's logprob (RQ3).
 
-    Logprob elicitation reads probability mass on the chosen answer token directly
-    from the API response (``logprobs``). Availability is provider-specific: the
-    Anthropic API does not currently expose token logprobs for chat completions, so
-    this method is only runnable on open models (via vLLM/HF) and OpenAI-compatible
-    endpoints that return ``logprobs``. When unavailable, record it as N/A in the run
-    log rather than substituting another method — the *availability gap itself* is a
-    finding worth reporting (RQ3).
+    Requests ``logprobs`` at generation time, parses the answer letter, and reads the
+    probability mass the model put on that token (via :func:`logprob_to_confidence`).
+    Falls back to the verbalized confidence if logprobs are unavailable or the answer
+    token can't be located, so the run still yields a number — the run log records the
+    elicitation method actually used.
+
+    Requires a provider that returns logprobs. The Anthropic API does not expose chat
+    logprobs; open-weight models via Nous Portal / vLLM / OpenAI-compatible endpoints
+    typically do. Verify availability with a 1-sample smoke before a full run.
+    """
+    from inspect_ai.solver import generate, system_message, solver, Generate, TaskState
+
+    sys = system_message(VERBALIZED_SYSTEM)
+    gen = generate(logprobs=True, top_logprobs=top_logprobs)
+
+    @solver
+    def _logprob():
+        async def solve(state: TaskState, generate_fn: Generate) -> TaskState:
+            state = await sys(state, generate_fn)
+            state = await gen(state, generate_fn)
+            text = state.output.completion if state.output else ""
+            choices = [c.value for c in state.choices] if getattr(state, "choices", None) else None
+            answer = parse_answer_letter(text, choices)
+
+            conf = None
+            try:
+                logprobs = state.output.choices[0].logprobs
+                if logprobs is not None and answer is not None:
+                    conf = logprob_to_confidence(logprobs.content, answer)
+            except (AttributeError, IndexError):
+                conf = None
+
+            method = "logprob"
+            if conf is None:  # provider returned no usable logprobs — fall back
+                conf = parse_confidence(text)
+                method = "logprob_fallback_verbalized"
+
+            state.metadata["elicitation"] = method
+            state.metadata["confidence"] = conf
+            return state
+
+        return solve
+
+    return _logprob()
+
+
+def logprob_confidence_note() -> str:
+    """Return guidance on logprob-availability across providers.
+
+    Logprob elicitation (:func:`logprob_confidence`) reads probability mass on the
+    chosen answer token from the API ``logprobs``. Availability is provider-specific:
+    the Anthropic API does not expose token logprobs for chat completions, so on the
+    Claude family this arm falls back to verbalized confidence (recorded as such in the
+    log). Open-weight models via Nous Portal / vLLM / OpenAI-compatible endpoints
+    generally do expose logprobs — making logprob-vs-verbalized divergence both an RQ3
+    result and a behavioral bridge to the mechanistic-introspection flagship (does
+    token-level uncertainty match stated confidence?).
     """
     return logprob_confidence_note.__doc__ or ""

@@ -19,7 +19,11 @@ from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, hf_dataset, json_dataset
 from inspect_ai.solver import multiple_choice
 
-from src.elicitation import sampling_self_consistency, verbalized_confidence
+from src.elicitation import (
+    logprob_confidence,
+    sampling_self_consistency,
+    verbalized_confidence,
+)
 from src.scoring import confidence_scorer
 
 CUSTOM_FILE = "data/interest_domain.jsonl"
@@ -48,14 +52,15 @@ def _custom_dataset(path: str = CUSTOM_FILE):
 def calibration_custom(elicitation: str = "verbalized", reflect: bool = False) -> Task:
     """Calibration on the author's balanced interest-domain set (RQ2 + RQ4).
 
-    ``elicitation``: 'verbalized' | 'sampling'.
-    ``reflect=True`` swaps in the introspective-reflection prompt (RQ4).
+    ``elicitation``: 'verbalized' | 'logprob' | 'sampling'.
+    ``reflect=True`` swaps in the introspective-reflection prompt (RQ4; verbalized only).
     """
-    solver = (
-        sampling_self_consistency()
-        if elicitation == "sampling"
-        else verbalized_confidence(reflect=reflect)
-    )
+    if elicitation == "sampling":
+        solver = sampling_self_consistency()
+    elif elicitation == "logprob":
+        solver = logprob_confidence()
+    else:
+        solver = verbalized_confidence(reflect=reflect)
     return Task(
         dataset=_custom_dataset(),
         solver=solver,
