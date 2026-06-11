@@ -30,10 +30,17 @@ def mc_correct(output: str, target: str, choices: Optional[Sequence[str]] = None
 
 
 _NUM_RE = re.compile(r"-?\d[\d,]*\.?\d*")
+_CONF_LINE_RE = re.compile(r"CONFIDENCE:\s*\d{1,3}", re.IGNORECASE)
 
 
 def numeric_correct(output: str, target: str, tol: float = 1e-6) -> bool:
-    """GSM8K-style numeric match: compare the last number in the output to target."""
+    """GSM8K-style numeric match: compare the last number in the output to target.
+
+    The trailing ``CONFIDENCE: <int>`` line every elicitation prompt requests is
+    stripped first — otherwise the confidence value is always the last number and
+    the answer is never compared.
+    """
+    output = _CONF_LINE_RE.sub("", output)
     nums = _NUM_RE.findall(output.replace(",", ""))
     if not nums:
         return False

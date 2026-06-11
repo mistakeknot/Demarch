@@ -252,6 +252,13 @@ def test_numeric_correct():
     assert not numeric_correct("about 41", "42")
 
 
+def test_numeric_correct_ignores_confidence_line():
+    # the elicitation prompt appends CONFIDENCE: <int>; it must not be
+    # mistaken for the answer
+    assert numeric_correct("her earnings are $18.\n\nCONFIDENCE: 100", "18")
+    assert not numeric_correct("the answer is 7.\nCONFIDENCE: 95", "95")
+
+
 def test_text_correct_lenient():
     assert text_correct("It is the Mona Lisa, by da Vinci.", "mona lisa")
     assert not text_correct("It is The Scream.", "mona lisa")
