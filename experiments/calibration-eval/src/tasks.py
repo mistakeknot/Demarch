@@ -91,7 +91,7 @@ def calibration_mmlu(reflect: bool = False) -> Task:
     """MMLU multiple-choice calibration anchor (broad knowledge)."""
     return Task(
         dataset=hf_dataset(
-            "cais/mmlu", "all", split="test", sample_fields=_mmlu_to_sample,
+            "cais/mmlu", name="all", split="test", sample_fields=_mmlu_to_sample,
         ),
         solver=verbalized_confidence(reflect=reflect),
         scorer=confidence_scorer(answer_kind="mc"),
@@ -120,7 +120,7 @@ def calibration_gpqa(reflect: bool = False) -> Task:
     """GPQA-Diamond: hard science, calibration at the frontier of competence."""
     return Task(
         dataset=hf_dataset(
-            "Idavidrein/gpqa", "gpqa_diamond", split="train",
+            "Idavidrein/gpqa", name="gpqa_diamond", split="train",
             sample_fields=_gpqa_to_sample,
         ),
         solver=verbalized_confidence(reflect=reflect),
@@ -145,7 +145,7 @@ def calibration_truthfulqa(reflect: bool = False) -> Task:
     """TruthfulQA (MC1): items models tend to get *confidently* wrong."""
     return Task(
         dataset=hf_dataset(
-            "truthful_qa", "multiple_choice", split="validation",
+            "truthfulqa/truthful_qa", name="multiple_choice", split="validation",
             sample_fields=_truthfulqa_to_sample,
         ),
         solver=verbalized_confidence(reflect=reflect),
@@ -168,7 +168,7 @@ def calibration_gsm8k(reflect: bool = False) -> Task:
     """GSM8K: grade-school math; verifiable numeric correctness."""
     return Task(
         dataset=hf_dataset(
-            "gsm8k", "main", split="test", sample_fields=_gsm8k_to_sample,
+            "openai/gsm8k", name="main", split="test", sample_fields=_gsm8k_to_sample,
         ),
         solver=verbalized_confidence(reflect=reflect),
         scorer=confidence_scorer(answer_kind="numeric"),
