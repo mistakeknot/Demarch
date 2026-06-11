@@ -23,7 +23,7 @@ import os
 from collections import defaultdict
 
 from src.metrics import summarize
-from src.plotting import domain_miscalibration_bar, reliability_diagram
+from src.plotting import domain_miscalibration_bar, reliability_diagram, rq1_ladder_plot
 
 
 def _extract(log) -> list[dict]:
@@ -56,6 +56,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", default="figures", help="figure output dir")
     ap.add_argument("--summary", default="runs/summary.csv", help="summary CSV path")
     ap.add_argument("--bins", type=int, default=10)
+    ap.add_argument(
+        "--ladder", action="append", default=None, metavar="SUB1,SUB2,...",
+        help="ordered comma-separated model-name substrings (small -> large) forming one "
+             "capability ladder; emits the RQ1 sensitivity-vs-capability figure for the "
+             "verbalized arm. Repeat the flag for additional ladders (one figure each).",
+    )
     args = ap.parse_args(argv)
 
     from inspect_ai.log import read_eval_log
@@ -97,6 +103,37 @@ def main(argv: list[str] | None = None) -> int:
             title=f"Signed miscalibration by domain — {model} ({elicit})",
             out_path=os.path.join(args.out, f"rq2_domains_{safe}.png"),
         )
+
+    # RQ1: sensitivity vs capability across each requested ladder (verbalized arm)
+    for ladder_spec in args.ladder or []:
+        rungs = [r.strip() for r in ladder_spec.split(",") if r.strip()]
+        ladder_stats: dict[str, dict[str, dict]] = {}
+        for rung in rungs:
+            doms: dict[str, dict[str, list]] = defaultdict(
+                lambda: {"confidence": [], "correct": []}
+            )
+            for (model, elicit, domain), data in grouped.items():
+                if elicit != "verbalized" or rung not in model:
+                    continue
+                doms[domain]["confidence"] += data["confidence"]
+                doms[domain]["correct"] += data["correct"]
+            if not doms:
+                print(f"ladder rung {rung!r}: no verbalized rows matched — skipped")
+                continue
+            stats = {
+                d: summarize(v["confidence"], v["correct"], n_bins=args.bins)
+                for d, v in doms.items()
+            }
+            all_conf = [c for v in doms.values() for c in v["confidence"]]
+            all_corr = [c for v in doms.values() for c in v["correct"]]
+            stats["pooled"] = summarize(all_conf, all_corr, n_bins=args.bins)
+            ladder_stats[rung] = stats
+        if len(ladder_stats) >= 2:
+            safe = f"{rungs[0]}_to_{rungs[-1]}".replace("/", "-").replace(" ", "_")
+            rq1_ladder_plot(
+                ladder_stats, rungs,
+                out_path=os.path.join(args.out, f"rq1_ladder_{safe}.png"),
+            )
 
     if summary_rows:
         with open(args.summary, "w", newline="") as f:
