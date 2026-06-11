@@ -15,6 +15,8 @@ datasets load via HuggingFace; the first run downloads them.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, hf_dataset, json_dataset
 from inspect_ai.solver import multiple_choice
@@ -26,7 +28,9 @@ from src.elicitation import (
 )
 from src.scoring import confidence_scorer
 
-CUSTOM_FILE = "data/interest_domain.jsonl"
+# anchored to the experiment root so both `inspect eval` (resolves relative to this
+# file) and programmatic eval() from the repo (resolves relative to cwd) find it
+CUSTOM_FILE = str(Path(__file__).resolve().parent.parent / "data" / "interest_domain.jsonl")
 
 
 # ---------------------------------------------------------------------------
