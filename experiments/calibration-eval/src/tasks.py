@@ -19,7 +19,6 @@ from pathlib import Path
 
 from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, hf_dataset, json_dataset
-from inspect_ai.solver import multiple_choice
 
 from src.elicitation import (
     logprob_confidence,
@@ -110,7 +109,7 @@ def _gpqa_to_sample(record: dict) -> Sample:
     return Sample(
         input=record["Question"],
         choices=choices,
-        target="A",  # correct answer placed first; use shuffle=True in solver if desired
+        target="A",  # correct answer placed first; shuffle_choices below remaps it
         metadata={"domain_type": "verifiable_technical"},
     )
 
@@ -121,7 +120,7 @@ def calibration_gpqa(reflect: bool = False) -> Task:
     return Task(
         dataset=hf_dataset(
             "Idavidrein/gpqa", name="gpqa_diamond", split="train",
-            sample_fields=_gpqa_to_sample,
+            sample_fields=_gpqa_to_sample, shuffle_choices=42,
         ),
         solver=verbalized_confidence(reflect=reflect),
         scorer=confidence_scorer(answer_kind="mc"),
@@ -145,8 +144,10 @@ def calibration_truthfulqa(reflect: bool = False) -> Task:
     """TruthfulQA (MC1): items models tend to get *confidently* wrong."""
     return Task(
         dataset=hf_dataset(
+            # mc1 places the correct answer near the front (target is overwhelmingly
+            # "A"); shuffle so position bias can't masquerade as accuracy
             "truthfulqa/truthful_qa", name="multiple_choice", split="validation",
-            sample_fields=_truthfulqa_to_sample,
+            sample_fields=_truthfulqa_to_sample, shuffle_choices=42,
         ),
         solver=verbalized_confidence(reflect=reflect),
         scorer=confidence_scorer(answer_kind="mc"),

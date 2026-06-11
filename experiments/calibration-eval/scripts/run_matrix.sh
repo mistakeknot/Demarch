@@ -19,7 +19,7 @@ for M in "${LADDER[@]}"; do
   inspect eval $CUSTOM -T reflect=true          --model "$M" --log-dir runs
 
   inspect eval src/tasks.py@calibration_mmlu       --model "$M" --limit 300 --log-dir runs
-  inspect eval src/tasks.py@calibration_gpqa       --model "$M"             --log-dir runs
+  # calibration_gpqa omitted: gated HF dataset, no HF token in this environment
   inspect eval src/tasks.py@calibration_truthfulqa --model "$M"             --log-dir runs
   inspect eval src/tasks.py@calibration_gsm8k      --model "$M" --limit 300 --log-dir runs
 done

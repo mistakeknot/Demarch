@@ -72,10 +72,16 @@ def confidence_scorer(answer_kind: str = "mc"):
             output = state.output.completion if state.output else ""
             gold = target.text
             choices = [c.value for c in state.choices] if getattr(state, "choices", None) else None
+            modal = state.metadata.get("modal_answer")
             if answer_kind == "numeric":
                 ok = numeric_correct(output, gold)
             elif answer_kind == "text":
                 ok = text_correct(output, gold)
+            elif modal is not None:
+                # sampling self-consistency: the agreement confidence refers to the
+                # modal answer, so correctness must be judged on it — not on whichever
+                # sample happened to be generated last
+                ok = modal.strip().upper() == gold.strip().upper()
             else:
                 ok = mc_correct(output, gold, choices)
 

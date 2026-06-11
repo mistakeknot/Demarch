@@ -145,6 +145,24 @@ def logprob_to_confidence(tokens, answer: Optional[str], default: Optional[int] 
 # ---------------------------------------------------------------------------
 
 
+def _present_choices(state) -> None:
+    """Append lettered options + ANSWER-line instruction to the user prompt.
+
+    Without this the model never sees the options and answers free-form, while the
+    mc scorer matches letters — benchmark accuracy collapses to a scoring artifact.
+    No-op for samples without choices (e.g. GSM8K).
+    """
+    choices = getattr(state, "choices", None)
+    if not choices:
+        return
+    opts = "\n".join(f"{chr(ord('A') + i)}) {c.value}" for i, c in enumerate(choices))
+    state.user_prompt.text = (
+        f"{state.user_prompt.text}\n\n{opts}\n\n"
+        "Reply with the letter of your chosen option on a line formatted exactly as:\n"
+        "ANSWER: <letter>"
+    )
+
+
 def verbalized_confidence(reflect: bool = False):
     """Inspect solver: elicit answer + verbalized confidence in one generation.
 
@@ -159,6 +177,7 @@ def verbalized_confidence(reflect: bool = False):
     def _verbalized():
         async def solve(state: TaskState, generate_fn: Generate) -> TaskState:
             state = await sys(state, generate_fn)
+            _present_choices(state)
             state = await gen(state, generate_fn)
             text = state.output.completion if state.output else ""
             state.metadata["elicitation"] = "verbalized_reflect" if reflect else "verbalized"
@@ -184,9 +203,15 @@ def sampling_self_consistency(n: int = 10):
     def _sampling():
         async def solve(state: TaskState, generate_fn: Generate) -> TaskState:
             state = await sys(state, generate_fn)
+            _present_choices(state)
             choices = [c.value for c in state.choices] if getattr(state, "choices", None) else None
             answers: list[Optional[str]] = []
+            # reset to the bare prompt before each sample: re-generating on the
+            # accumulated history would let sample k see samples 1..k-1's answers,
+            # destroying the independence self-consistency relies on
+            base_messages = list(state.messages)
             for _ in range(n):
+                state.messages = list(base_messages)
                 state = await generate_fn(state)
                 text = state.output.completion if state.output else ""
                 answers.append(parse_answer_letter(text, choices))
@@ -224,6 +249,7 @@ def logprob_confidence(top_logprobs: int = 5):
     def _logprob():
         async def solve(state: TaskState, generate_fn: Generate) -> TaskState:
             state = await sys(state, generate_fn)
+            _present_choices(state)
             state = await gen(state, generate_fn)
             text = state.output.completion if state.output else ""
             choices = [c.value for c in state.choices] if getattr(state, "choices", None) else None
