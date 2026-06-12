@@ -1,0 +1,39 @@
+name: Calibration eval
+
+on:
+  push:
+    paths:
+      - ".github/workflows/calibration-eval.yml"
+      - "experiments/calibration-eval/**"
+  pull_request:
+    paths:
+      - ".github/workflows/calibration-eval.yml"
+      - "experiments/calibration-eval/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: experiments/calibration-eval
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: |
+          uv venv
+          uv pip install -e ".[dev]"
+
+      - name: Unit tests (metrics, parsers, scoring)
+        run: uv run pytest
+
+      - name: Pipeline validation (no-API end-to-end vs mockllm)
+        run: uv run python scripts/validate_pipeline.py
