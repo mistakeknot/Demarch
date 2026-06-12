@@ -1,0 +1,122 @@
+{
+  "reviewed": "2026-05-25",
+  "input": "docs/brainstorms/2026-05-25-auraken-distribution-v01-brainstorm.md",
+  "agents_launched": [
+    "fd-eleusinian-mystai-token",
+    "fd-luthier-soundpost-transmission",
+    "fd-mycorrhizal-inoculum"
+  ],
+  "agents_completed": [
+    "fd-eleusinian-mystai-token",
+    "fd-luthier-soundpost-transmission",
+    "fd-mycorrhizal-inoculum"
+  ],
+  "findings": [
+    {
+      "id": "P1-CONV-01",
+      "severity": "P1",
+      "agent": "eleusinian+luthier+mycorrhizal",
+      "section": "install.sh contract",
+      "title": "install.sh step 6 ends with capability enumeration, not a transmissive gesture",
+      "convergence": 3
+    },
+    {
+      "id": "P1-2",
+      "severity": "P1",
+      "agent": "fd-luthier-soundpost-transmission",
+      "section": "Bundle layout / SKILL.md",
+      "title": "SKILL.md behavioral contract is declarative, not structural — soundpost glued not wedged",
+      "convergence": 1
+    },
+    {
+      "id": "P1-3",
+      "severity": "P1",
+      "agent": "fd-luthier-soundpost-transmission",
+      "section": "Bundle layout / mcp-servers/auraken-lens",
+      "title": "auraken-lens MCP API surface unconstrained — no behavioral coupling to SKILL.md",
+      "convergence": 2
+    },
+    {
+      "id": "P1-4",
+      "severity": "P1",
+      "agent": "fd-eleusinian-mystai-token",
+      "section": "MANIFEST.yaml schema",
+      "title": "capabilities list delivers epoptika before mystika — catalog preempts gripping impression",
+      "convergence": 1
+    },
+    {
+      "id": "P1-5",
+      "severity": "P1",
+      "agent": "fd-mycorrhizal-inoculum",
+      "section": "install.sh contract",
+      "title": "No substrate-readiness check — install.sh detects Hermes version but not profile composition",
+      "convergence": 2
+    },
+    {
+      "id": "P2-1",
+      "severity": "P2",
+      "agent": "fd-eleusinian-mystai-token",
+      "section": "Bundle layout",
+      "title": "No symbolon in bundle — voice-rubric.md is machine-legible criteria, not an object the initiate carries",
+      "convergence": 2
+    },
+    {
+      "id": "P2-2",
+      "severity": "P2",
+      "agent": "fd-eleusinian-mystai-token",
+      "section": "What We're Building",
+      "title": "Telete incomplete — no transmissive success criterion in the brainstorm",
+      "convergence": 2
+    },
+    {
+      "id": "P2-3",
+      "severity": "P2",
+      "agent": "fd-luthier-soundpost-transmission",
+      "section": "Bundle layout / voice-rubric.md",
+      "title": "voice-rubric.md is recipe transmission not constraint transmission — examples decay across model versions",
+      "convergence": 2
+    },
+    {
+      "id": "P2-4",
+      "severity": "P2",
+      "agent": "fd-luthier-soundpost-transmission",
+      "section": "MANIFEST.yaml schema / capabilities",
+      "title": "Version-pinning preserves API contract but not soundpost calibration",
+      "convergence": 1
+    },
+    {
+      "id": "P2-5",
+      "severity": "P2",
+      "agent": "fd-mycorrhizal-inoculum",
+      "section": "MANIFEST.yaml schema",
+      "title": "MANIFEST does not flag substrate-incompatibility cases (hostile profiles, competing personalities)",
+      "convergence": 2
+    },
+    {
+      "id": "P2-6",
+      "severity": "P2",
+      "agent": "fd-mycorrhizal-inoculum",
+      "section": "What We're Building / install.sh contract",
+      "title": "No first-72-hours scaffolding — colonization window is unstructured",
+      "convergence": 2
+    },
+    {
+      "id": "P2-7",
+      "severity": "P2",
+      "agent": "fd-mycorrhizal-inoculum",
+      "section": "Bundle layout / mcp-servers/auraken-lens/trajectory.py",
+      "title": "trajectory.py colonization role unspecified — passive responder or active habit-reshaper?",
+      "convergence": 1
+    },
+    {
+      "id": "P3-1",
+      "severity": "P3",
+      "agent": "fd-eleusinian-mystai-token",
+      "section": "Key Decisions / Bundle layout",
+      "title": "v0.1→v0.2→v0.3 gradient ships initiation in v0.1 without staging what is withheld until later",
+      "convergence": 1
+    }
+  ],
+  "verdict": "needs-changes",
+  "early_stop": false
+}

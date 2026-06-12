@@ -1,61 +1,68 @@
 # Sylveste Roadmap
 
-**Modules:** ~70 (see Ecosystem Snapshot) | **Beads:** `bd stats` (3433 total; 388 open at last refresh) | **Last updated:** 2026-05-29
+**Modules:** `find apps os core interverse sdk -maxdepth 2 -name .git -printf '%h\n' 2>/dev/null | wc -l` | **Beads:** `bd stats` | **Last updated:** 2026-03-27
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json) — auto-generated superset of roadmap-placed items only (fewer than `bd stats` totals, which track all beads).
-
-> **2026-05-29 re-baseline.** This roadmap was re-grounded against *live* bead state after the 2026-05-29 ecosystem analysis (`docs/research/ecosystem-analysis-2026-05-29/`, epic `sylveste-owjn`) found the prior 2026-03-27 version was citing phantom `iv-*` IDs as live blockers. The `iv-` namespace was erased in two beads DB-reinit events; those items were recovered under `sylveste-*` IDs (see "Corrected since last update"). **Headline finding:** the highest-leverage work is now *corrective, not additive* — fix the measurement substrate (roadmap drift + ghost infrastructure) before building more.
 
 ---
 
 ## Now — Frontier Priorities
 
-### P0/P1: Measurement-substrate correctness (the "ghost infrastructure" fix)
-The dominant pattern across the ecosystem: infrastructure closes at *unit-test-green*, not *wired-to-production-observed*, so "done" beads aren't actually live. Compounded by beads data loss that makes "done" unreportable. Fix the substrate first. Epic: `sylveste-owjn`.
-- **sylveste-tizx** (P1) Re-baseline this roadmap against live beads — *this document*; ongoing discipline, not one-shot.
-- **sylveste-6h7x** (P1) Close-gate: `phase:done` requires integration-test-pass vs a live server + orphan/ghost scan. Attacks the *generator* of ghost infra.
-- **sylveste-xogc** (P1) Beads durability: JSONL→DB restore + integrity check. Stops the recurring data loss that invalidated this roadmap.
+**P1: Skaffen competitive gap closure** (Sylveste-6i0, epic, 22 open subtasks). The largest active epic. Closing feature gaps identified in the coding-agent feature matrix — hooks, compaction, skills, subagents, sandbox, image support, web search, plan mode, and more. 1/23 subtasks shipped so far. Brainstorms and plans landed for most critical gaps (hook system, skills system, subagent system, sandbox, image support, web search, plan mode, per-project config).
 
-### P0/P1: Clavain gate correctness (mis-gated fail-open chain)
-Clavain is **mis-gated**: the only hard gate guards the least safety-critical artifact (reflection), while review/test/ship gates fail *open*. Unreviewed code can ship.
-- **sylveste-n35t** (P0, bug) The silent-failure surface is a FOUR-layer fail-open chain (flux-engine triage / synthesize "no file = no findings" / quality-gates `cp … || true` / enforce-gate `return nil`). Fix needs a positive completion sentinel, not just an exit-code check.
-- **sylveste-scx1** (P1) Invert fail-direction on safety gates — degraded-modes as an active breaker.
-- **sylveste-0ly7** (P1) Implement the `verdict_clean` ship gate (currently declared in YAML, no Go evaluator — decorative) + set ship stage to `enforce`.
-- **sylveste-qf1k** (P1, bug) Decouple `tests_passed`/`vetted` from orchestrator assertion — currently stamped regardless of findings.
+**P1: SWE-bench pass rate** (Sylveste-ynh Phase 1 + Sylveste-9lx Phase 2). Two epics targeting +15-20% (quick wins: grep context lines, glob fixes, tail-preserving truncation, py_compile validation, fault hypothesis prompting) and +10-15% (test-driven feedback loop, empty-diff detection, aggregate diff review). pyenv per-cell Python selection (Sylveste-sdk0) also open.
 
-### P1: Wire ONE loop end-to-end (make "wired" the unit of progress)
-- **sylveste-xka6** (P1) Promote B2 complexity routing dispatch-side **shadow → enforce** + quality-evidence. Reconciled finding: callers ARE wired (`sylveste-2aqs`/`magy` closed) but in caller-local shadow; the explicit punt was enforce. Cleanest verified narrow loop to close.
-- **sylveste-i8gp** (P1) Evidence-pipeline flywheel second source — **now UNBLOCKED** (both deps `sylveste-5qv9` + `sylveste-xcn4` closed). Was mislabeled blocked-on-iv-ho3.
-- **sylveste-ohb8** (P1) `landed_changes` referential-integrity audit — the one intercore issue that bites today (nullable FKs, no `REFERENCES`).
+**P1: Infrastructure + bugs.**
+- **iv-ho3** StrongDM Factory Substrate — validation-first infra for Clavain. In progress. Blocks iv-296 → iv-g36hy → iv-3ov (the measurement chain).
+- **iv-v5ayb** go.mod replace directive breaks interlock/intermap in plugin cache. Quick fix: publish interbase/go as Go module.
+- **iv-28vf9** Compaction recovery protocol for SessionStart hook.
+- **iv-6376** Kernel E9: Autarch Phase 2 — Pollard + Gurgeh migration.
 
-### P1 (unchanged from prior roadmap, still active)
-- **Skaffen competitive gap closure** (Sylveste-6i0, epic). Coding-agent feature-matrix gaps. NOTE: 1/23 subtasks in ~90 days — epic needs re-estimation or re-scoping.
-- **SWE-bench pass rate** (Sylveste-ynh Phase 1 + Sylveste-9lx Phase 2). Quick-win + feedback-loop epics. pyenv per-cell selection (Sylveste-sdk0) open.
+Note: iv-83du3 (Intercom message delivery reliability) shipped — outbox, LISTEN/NOTIFY, UDS, SQLite retirement all complete.
 
-### Corrected since last update (was wrong / now resolved)
-- **iv-ho3** "Factory Substrate, in progress 120 days" → **DONE.** Recovered as `sylveste-5qv9`, CLOSED 2026-04-10 (CXDB built, integration test passing).
-- **iv-3ov** (evidence pipeline wiring) → **DONE.** Recovered as `sylveste-xcn4`, CLOSED 2026-04-28.
-- **Measurement-hardening chain** `iv-ho3→iv-296→iv-g36hy→iv-3ov` → **2/4 links shipped** under new IDs; not a pristine queued chain.
-- **iv-jgdct** "B2 fully built, zero callers" → **STALE.** Callers shipped in shadow (`sylveste-2aqs`/`magy`). Real work is shadow→enforce (`sylveste-xka6`).
-- **iv-v5ayb** "go.mod replace breaks interlock/intermap" → **MOSTLY DONE.** interbase/go published (`v0.1.1`, no replace); only `lattice→attp` local replace residual (`sylveste-s01c`).
-- **"7 dead plugins"** (intercept, intermix, interpub, intersense, intersynth, intertrack, intersite) → **REFUTED.** Zero are dead; intersense already self-archived; interpub powers the marketplace; intersite drives the GSV pipeline. **Do not archive.**
-- **sylveste-g3a / interpath-witness** (cited in prior planning) → **PHANTOM** (no live bead).
+**P1: Measurement hardening chain.** The path to making the north-star metric canonical:
+- iv-ho3 (in progress) → iv-296 (CXDB integration) → iv-g36hy (sprint execution recording) → iv-3ov (evidence pipeline wiring)
+
+**P1: Hyperspace AGI adoption** (Sylveste-a42, epic). Three themes from Hyperspace research: close Skaffen's feedback loop (quality signals, compound phase), consolidate observability, enable autonomous plugin improvement via interlab mutation campaigns.
+
+**P2: Adaptive routing (the flywheel).**
+- **iv-5ztam** Interspect adaptive routing epic — evidence-driven agent selection. 10+ subtasks including counterfactual shadow evaluation, rate limiter, meta-learning loop.
+- **iv-jgdct** Apply complexity-aware routing across all subagents. B2 infrastructure is fully built but has zero production callers — needs signal collection + injection at dispatch points (flux-drive, quality-gates). Staged rollout plan: shadow first, enforce later.
+- **Sylveste-g4ja** Interspect-interrank wiring. Override consumption (Gap 1) shipped — lib-routing.sh now reads `.claude/routing-overrides.json`. Gaps 2-5 (interrank at decision time, calibration validation, routing decision feedback, override TTL) remain open.
+- **Sylveste-g3a** Interspect calibration pipeline — fix broken verdict recording in quality-gates, upgrade calibration schema to v2 with source weighting and phase awareness.
+
+**Recently completed (since last update):**
+- **iv-awny7** Intercom Rust/Postgres cutover — ALL 6 SUBTASKS CLOSED. Group registration, scheduled tasks, SQLite removal, command plane unification, Node scaffolding removal, architecture docs. Former P0 epic, done.
+- **iv-iq14t** Intent contract hardening — quality gate follow-ups (closed)
+- **iv-godia** Routing decision capture as replayable kernel facts (closed)
+- **iv-fo0rx** Canonical landed-change entity and north-star denominator (closed)
+- **iv-30zy3** Durable session-bead-run attribution ledger in interstat (closed)
+- **iv-544dn** Interspect event validity and outcome attribution research (closed)
+- **iv-ojik9** Apps → OS → Kernel intent contract research (closed)
+- **Sylveste-g4ja** Override consumption (Gap 1) — lib-routing.sh reads interspect overrides (closed)
+- **Sylveste-pgl** Context monitor hook — inject context % warnings (closed)
+- **iv-83du3** Intercom message delivery reliability — outbox, LISTEN/NOTIFY, UDS IPC, SQLite retirement (closed)
+- **iv-craui** interkasten self-referential FK fix (closed)
+- **iv-q8ge7** BeadID/SessionID validation before subprocess arg passing (closed)
+- **interlab v0.4.0** Mutation store with SQLite-backed provenance tracking, 3 new MCP tools (mutation_record, mutation_query, mutation_genealogy), /autoresearch integration, interflux self-review pilot campaign
+- **interlab v0.4.1** Multi-plugin quality scanner — scan all interverse plugins by PQS, generate campaign specs for /autoresearch-multi
+- **interlab v0.4.2** Delta sharing via interlock — broadcast mutations and aggregate results so parallel sessions discover and build on each other's approaches
 
 ---
 
 ## Next — Strategic Themes (P2)
 
-Medium-term direction. Full item inventory: [backlog.md](backlog.md). New items below carry live bead IDs from the 2026-05-29 analysis.
+5 themes defining the medium-term direction. Full item inventory: [backlog.md](backlog.md).
 
-1. **Skaffen Sovereign Agent** — Go-native second runtime (OODARC loop, masaq TUI, intercore bridge). **Strategic caveat (sylveste-104h):** Skaffen's evidence path lacks `run_id` attribution and risks reproducing the unwired-evidence ghost in Go. Gate Skaffen's evidence layer on consuming Clavain's *proven* schema after one loop is live — don't mint a parallel silo. Relates to `sylveste-benl`.
+1. **Skaffen Sovereign Agent** — Go-native coding agent with OODARC loop, masaq TUI, MCP client, intercore bridge, model routing. The second runtime alongside Clavain. Brainstorms and plans cover v0.1 completion, agent loop separation, quality signals (cross-session compound learning), scoped sessions, and competitive feature parity. See [Skaffen brainstorms](brainstorms/) from 2026-03-10 through 2026-03-14.
 
-2. **Adaptive Routing (shadow → enforce)** — Not "build" but "wire": promote B2 to enforce (`sylveste-xka6`), then interspect calibration. The learning loop that makes the system cheaper over time.
+2. **Adaptive Routing (Track B2→B3)** — Complexity-aware routing activation (B2 infrastructure exists, callers needed), interspect calibration pipeline fixes, evidence-driven agent selection. The learning loop that makes the system cheaper and better over time.
 
-3. **Autonomous Improvement Loop** — interlab records mutations but **no interspect consumer reads them** (`sylveste-ioe7`). Sequence the mutation→adaptation wiring *after* the close-gate so it doesn't become the next ghost.
+3. **Autonomous Improvement Loop** — interlab mutation store (shipped), meta-improvement campaigns (interflux self-review pilot planned), intermix cross-repo matrix evaluation harness (planned, Sylveste-ome7), multi-plugin quality scanning (shipped). The infrastructure for agents improving themselves.
 
-4. **Clavain control-loop quality** — Brainstorm-summary feedforward into plan review (`sylveste-td2o`); local plan-phase verification in `/work` + `/execute-plan` (`sylveste-ungg`). Cheaper, non-redundant review.
+4. **Measurement Hardening** — Make the north-star metric canonical. The measurement chain unblocks the evidence pipeline that adaptive routing needs.
 
-5. **interverse hygiene + DX** — Safe quick wins: root `go.work`, 3 missing READMEs, intersearch `DEPENDENCIES.md`, `HOOKS-REGISTRY.md` (`sylveste-qhn1`); close `lattice→attp` (`sylveste-s01c`). Skill-description boilerplate trim via interskill:audit (`sylveste-z0pc`, ~3-4kt/session).
+5. **Developer Experience & Tooling** — Intermap code mapping, interlock coordination, Autarch TUI migration, plugin ecosystem maturity, masaq component library refinements (breadcrumb, viewport, markdown improvements in progress).
 
 ---
 

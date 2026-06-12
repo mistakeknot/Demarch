@@ -14,7 +14,7 @@ Add a Claude Code hook output capability that lets a `UserPromptSubmit` hook **s
 
 ## Problem
 
-Claude Code's system prompt currently loads the full skill listing on every turn. Per a typical user-installed plugin set, this is **~150 skills × ~40-80 tokens each = ~8 kt of input per turn**. Most turns produce "no skill applicable" — the listing is paid context for a routing decision that is largely deterministic (60-90% per [internal study](https://github.com/mistakeknot/Sylveste/blob/main/docs/research/flux-review/sylveste-improvements-multi-axis/2026-05-04-synthesis.md), tracks A/B/C/D 4/4 convergence).
+Claude Code's system prompt currently loads the full skill listing on every turn. Per a typical user-installed plugin set, this is **~150 skills × ~40-80 tokens each = ~8 kt of input per turn**. Most turns produce "no skill applicable" — the listing is paid context for a routing decision that is largely deterministic (60-90% per [internal study](https://github.com/mistakeknot/Sylveste/blob/main/docs/research/flux-review/sylveste-improvements-multi-axis/2026-05-04-synthesis.md), tracks A/B/C/D 4/4 convergence). A 2026-05-29 ecosystem-wide re-audit independently re-confirmed this magnitude: ~150 skill descriptions still repeat the same `Use when / TRIGGER / SKIP / Examples` framing (~3-4 kt/session of pure boilerplate), and the plugin set has only grown (57 interverse plugins, zero retired) — so the listing is not self-limiting and a one-time static prune will not hold. This is fresh evidence that per-turn trimming, not a static cut, is the right shape.
 
 Existing `UserPromptSubmit` hook shape (`hookSpecificOutput.additionalContext`) can only **add** context. There is no mechanism to **remove** skills the hook knows are not needed.
 
@@ -68,6 +68,8 @@ A 30-day cass extraction over this user's sessions ([investigation](https://gith
 - 6% are pure conversational triggers → require LLM deliberation (no router can replace)
 
 Of the routable ~60-65% surface, today's hooks cannot reduce input-token cost without `skillFilter`.
+
+*Methodology note:* token-savings figures in this request are derived from direct session/transcript observation (cass extraction), not from bead-tracker rollups — the project's beads DB has had data-loss events, so per-bead cost aggregates are not a reliable source for the numbers quoted here.
 
 ## Alternatives considered
 

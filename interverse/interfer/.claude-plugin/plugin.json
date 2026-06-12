@@ -25,5 +25,8 @@
       ],
       "cwd": "${CLAUDE_PLUGIN_ROOT}"
     }
-  }
+  },
+  "peerDependencies": [
+    "interlab"
+  ]
 }

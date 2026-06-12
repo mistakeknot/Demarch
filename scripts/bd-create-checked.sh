@@ -19,6 +19,22 @@ set -u
 REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 LIB="${REPO_ROOT}/scripts/lib-bd-dup-check.py"
 
+# Cloud-guard: creating beads from cloud doesn't survive the ephemeral
+# container. Refuse loudly so the agent files the bead via PR description
+# instead of silently losing the write.
+GUARD_LIB="${REPO_ROOT}/scripts/lib-cloud-guard.sh"
+if [[ -r "$GUARD_LIB" ]]; then
+    # shellcheck source=lib-cloud-guard.sh
+    source "$GUARD_LIB"
+    if cloud_session; then
+        echo "bd-create-checked: refusing to create in cloud read-only mode." >&2
+        echo "  Beads writes don't survive the ephemeral container — note the candidate" >&2
+        echo "  in the PR description and let the workstation file it." >&2
+        echo "  (Override: bash scripts/install-bd-cloud.sh && bd create ...)" >&2
+        exit 1
+    fi
+fi
+
 if [[ "${BD_DUP_CHECK_SKIP:-0}" == "1" ]]; then
     exec bd create "$@"
 fi
