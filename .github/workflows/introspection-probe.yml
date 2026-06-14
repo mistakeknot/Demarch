@@ -1,0 +1,39 @@
+name: Introspection probe
+
+on:
+  push:
+    paths:
+      - ".github/workflows/introspection-probe.yml"
+      - "experiments/introspection-probe/**"
+      # the probe reuses calibration-eval's metrics by path, so changes there can affect it
+      - "experiments/calibration-eval/src/metrics.py"
+  pull_request:
+    paths:
+      - ".github/workflows/introspection-probe.yml"
+      - "experiments/introspection-probe/**"
+      - "experiments/calibration-eval/src/metrics.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: experiments/introspection-probe
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install (CPU-only; the [interp] extra with nnsight/torch stays off CI)
+        run: |
+          uv venv
+          uv pip install -e ".[dev]"
+
+      - name: Unit tests (probe decode, dissociation, steering direction, metric bridge)
+        run: uv run pytest
