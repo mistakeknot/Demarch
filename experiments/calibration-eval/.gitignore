@@ -1,0 +1,17 @@
+# Python envs / caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Run outputs: keep the dir + summaries, drop raw logs
+runs/*
+!runs/.gitkeep
+!runs/summary.csv
+
+# Inspect default log location if used inside the experiment
+logs/
+
+# Secrets
+.env
