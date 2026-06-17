@@ -59,7 +59,7 @@ operator (cron job → external storage if long-term analysis is needed).
   invocations through a prior scoring formula to detect calibration drift
 - `interflux ← interspect evidence subscription` (Sylveste-fwd) — reads
   agent invocation counts + success rates to skip underperforming agents
-- `interspect skill calibration` (Sylveste-skillcal) — drains `tool: "Skill"`
+- `interspect skill calibration` (sylveste-7aj8) — drains `tool: "Skill"`
   rows into the evidence store under `source_kind='skill'`, then derives per-skill
   composite quality scores from four signals (tokens, bead_close,
   no_redirect, error). See
