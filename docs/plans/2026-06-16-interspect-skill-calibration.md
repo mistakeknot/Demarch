@@ -15,7 +15,7 @@ requirements:
 > **For Claude:** REQUIRED SUB-SKILL: Use `clavain:executing-plans` to
 > implement this plan task-by-task.
 
-**Bead:** Sylveste-skillcal
+**Bead:** sylveste-7aj8 (epic) — children sylveste-7aj8.1 (schema, includes source_kind port prereq) through sylveste-7aj8.7 (canary + autonomy)
 **Goal:** Generalize `interspect` from `source_kind='agent'` to
 `{agent, skill}` so that every Claude Code Skill invocation feeds an
 autonomous tune-and-canary loop.
