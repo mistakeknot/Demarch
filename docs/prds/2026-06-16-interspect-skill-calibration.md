@@ -1,6 +1,6 @@
 ---
 artifact_type: prd
-bead: Sylveste-skillcal
+bead: sylveste-7aj8
 stage: design
 ---
 # PRD: Interspect Skill Calibration — Extend the Routing Loop to Skills
