@@ -1,6 +1,6 @@
 ---
 artifact_type: plan
-bead: Sylveste-skillcal
+bead: sylveste-7aj8
 stage: design
 requirements:
   - F1: source_kind='skill' schema extension
