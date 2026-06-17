@@ -105,7 +105,24 @@ flowchart LR
 ### Task 1: Schema delta — `skill_goals` + `skill_signals`
 
 **Files:**
-- Modify: `interverse/interspect/hooks/lib-interspect.sh`
+- Modify: `interverse/interspect/hooks/lib-interspect.sh` (in the sibling
+  `mistakeknot/interspect` repo — see Repo scope above)
+
+**Step 0 (prereq, discovered 2026-06-17):** The sibling `mistakeknot/interspect`
+repo's `lib-interspect.sh` does NOT yet have the `source_kind` column — that
+addition (`sylveste-sfhq.1`, telemetry fusion) lives only in the Sylveste
+monorepo copy at `interverse/interspect/hooks/lib-interspect.sh:114-118`.
+Before extending the allowed values in Step 2, **port the column itself**:
+
+```sql
+ALTER TABLE evidence ADD COLUMN source_kind TEXT NOT NULL DEFAULT 'agent';
+CREATE INDEX IF NOT EXISTS idx_evidence_source_kind ON evidence(source_kind, source);
+```
+
+Inline the ALTER inside `_interspect_ensure_db` next to the existing
+`source_event_id` ALTER, guarded by `|| true` for idempotency. Update the
+CHECK list documented in the comment block to `('agent','tool','pattern')`
+initially — Step 2 widens it to include `'skill'`.
 
 **Step 1:** Locate `_interspect_ensure_db` and the existing `CREATE TABLE`
 block. Append the two new tables idempotently:
