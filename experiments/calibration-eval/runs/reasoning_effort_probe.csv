@@ -1,0 +1,10 @@
+model,effort,n,mean_reasoning_tokens,median_reasoning_tokens,min,max
+qwen3.5-27b,minimal,15,3088.7,2890,1147,6982
+qwen3.5-27b,high,15,3002.8,2647,1058,5273
+qwen3.5-397b-a17b,minimal,15,3385.2,2398,1338,6871
+qwen3.5-397b-a17b,high,15,3450.8,3328,1750,5444
+qwen3.5-9b,none,3,0,0,0,0
+qwen3.5-9b,minimal,20,3295.4,3271.0,78,8628
+qwen3.5-9b,low,20,4243.2,3494.0,435,16417
+qwen3.5-9b,medium,20,4206.8,3440.0,724,18291
+qwen3.5-9b,high,20,3641.2,3093.0,817,7999
