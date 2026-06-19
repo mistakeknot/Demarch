@@ -27,27 +27,3 @@
   setsid bash "$runner" "post-commit" </dev/null >/dev/null 2>&1 &
 ) || true
 # <<< interwatch managed block
-
-# >>> beads dolt auto-push block — managed (do not edit manually)
-# Push the per-project Dolt DB after any commit that changes .beads/issues.jsonl,
-# so bead state reaches the remote without a manual `.beads/push.sh`. setsid
-# detaches from git's process group (git SIGHUPs it on exit); fail-open, never
-# blocks or fails the commit; output → .beads/push-hook.log. Tracked in git
-# (core.hooksPath=.beads/hooks) so it applies on every machine.
-(
-  root="$(git rev-parse --show-toplevel)" || exit 0
-  cd "$root" || exit 0
-  if git diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null | grep -qx '.beads/issues.jsonl'; then
-    if [[ -x "$root/.beads/push.sh" ]]; then
-      setsid bash -c '
-        cd "$1" || exit 0
-        {
-          echo "--- $(date -u +%FT%TZ) post-commit dolt auto-push (HEAD $(git rev-parse --short HEAD 2>/dev/null))"
-          bash "$1/.beads/push.sh"
-          echo "--- exit $?"
-        } >> "$1/.beads/push-hook.log" 2>&1
-      ' _ "$root" </dev/null >/dev/null 2>&1 &
-    fi
-  fi
-) || true
-# <<< beads dolt auto-push block
