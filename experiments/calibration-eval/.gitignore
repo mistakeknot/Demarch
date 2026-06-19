@@ -9,6 +9,7 @@ __pycache__/
 runs/*
 !runs/.gitkeep
 !runs/summary.csv
+!runs/reasoning_effort_probe.csv
 
 # Inspect default log location if used inside the experiment
 logs/
