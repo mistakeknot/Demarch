@@ -10,6 +10,7 @@ runs/*
 !runs/.gitkeep
 !runs/summary.csv
 !runs/reasoning_effort_probe.csv
+!runs/rq1_crossfamily.csv
 
 # Inspect default log location if used inside the experiment
 logs/
