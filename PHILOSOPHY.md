@@ -44,6 +44,8 @@ The distinction matters because Reflect without Compound is write-only learning 
 
 Situation assessments are prompt aids, not ground truth. Always verify recent evidence against cached assessments.
 
+The runtime reinforcement of OODARC across the polyrepo — failing gates closed so Compound is trustworthy, naming the per-turn loop in the surface agents read, wiring `ic situation` as the shared Observe call, and reaching Codex/interserve parity — is tracked in `docs/plans/2026-06-20-oodarc-runtime-reinforcement-polyrepo.md`.
+
 ---
 
 ### Receipts Close Loops
