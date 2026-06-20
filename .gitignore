@@ -12,6 +12,7 @@ sdk/*
 # ── Beads runtime artifacts (beads' own .gitignore handles the rest) ──
 .beads/bd.sock.startlock
 .beads/daemon-error
+.beads/push-hook.log
 
 # ── Claude Code session artifacts ──
 .claude/settings.local.json
