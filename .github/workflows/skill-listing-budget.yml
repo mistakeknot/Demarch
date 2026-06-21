@@ -1,0 +1,42 @@
+name: Skill listing budget
+
+# The eager skill listing (every plugin SKILL.md's frontmatter `description:`)
+# loads into the model context prefix on every session. This workflow validates
+# the budget-gate logic via its hermetic bats tests. The gate-against-installed-
+# plugins runs on a workstation (it needs ~/.claude/plugins), e.g. via
+# `scripts/check-skill-listing-budget.sh` or `/clavain:doctor`.
+
+on:
+  push:
+    paths:
+      - ".github/workflows/skill-listing-budget.yml"
+      - "scripts/check-skill-listing-budget.sh"
+      - "scripts/perf/audit-skill-contributions.py"
+      - "scripts/tests/skill_listing_budget.bats"
+  pull_request:
+    paths:
+      - ".github/workflows/skill-listing-budget.yml"
+      - "scripts/check-skill-listing-budget.sh"
+      - "scripts/perf/audit-skill-contributions.py"
+      - "scripts/tests/skill_listing_budget.bats"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  budget-gate:
+    name: Validate skill-listing budget gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+
+      - name: Syntax-check the gate
+        run: bash -n scripts/check-skill-listing-budget.sh
+
+      - name: Run budget-gate tests
+        run: bats scripts/tests/skill_listing_budget.bats
