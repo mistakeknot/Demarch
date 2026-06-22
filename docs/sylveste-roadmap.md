@@ -1,10 +1,12 @@
 # Sylveste Roadmap
 
-**Modules:** ~70 (see Ecosystem Snapshot) | **Beads:** `bd stats` (3433 total; 388 open at last refresh) | **Last updated:** 2026-05-29
+**Modules:** ~70 (see Ecosystem Snapshot) | **Beads:** 3,594 total; 476 open/in-progress (12 P0, 119 P1, 229 P2, 107 P3) | **Last updated:** 2026-06-21
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)
 **Machine output:** [`docs/roadmap.json`](roadmap.json) — auto-generated superset of roadmap-placed items only (fewer than `bd stats` totals, which track all beads).
 
-> **2026-05-29 re-baseline.** This roadmap was re-grounded against *live* bead state after the 2026-05-29 ecosystem analysis (`docs/research/ecosystem-analysis-2026-05-29/`, epic `sylveste-owjn`) found the prior 2026-03-27 version was citing phantom `iv-*` IDs as live blockers. The `iv-` namespace was erased in two beads DB-reinit events; those items were recovered under `sylveste-*` IDs (see "Corrected since last update"). **Headline finding:** the highest-leverage work is now *corrective, not additive* — fix the measurement substrate (roadmap drift + ghost infrastructure) before building more.
+> **2026-06-21 re-baseline** (`sylveste-tizx`). Re-grounded against live beads. **What graduated since 2026-05-29:** the entire Clavain gate-correctness chain shipped — `sylveste-n35t`/`scx1`/`0ly7`/`qf1k` all CLOSED (the fail-open chain is fixed). `sylveste-ohb8` (landed_changes integrity) CLOSED. `sylveste-ioe7` (interlab→interspect mutation loop) CLOSED/LIVE 2026-06-21 — it is now a wired loop, not a future item. **New this cycle:** an agentic-orchestration/coding frontier review (`Sylveste-4b5`, 23 children) mapped the external frontier against the backlog; its headline *reinforced* the corrective-first stance rather than overturning it. **Stance unchanged:** highest-leverage work is *corrective, not additive* — fix the measurement substrate (roadmap drift + ghost infrastructure) before building more; the close-gate `sylveste-6h7x` is the spine ~10 frontier survivors gate on.
+>
+> **2026-05-29 re-baseline.** Re-grounded after the 2026-05-29 ecosystem analysis (`docs/research/ecosystem-analysis-2026-05-29/`, epic `sylveste-owjn`) found the prior 2026-03-27 version citing phantom `iv-*` IDs as live blockers. The `iv-` namespace was erased in two beads DB-reinit events; items were recovered under `sylveste-*` IDs (see "Corrected since last update").
 
 ---
 
@@ -16,21 +18,25 @@ The dominant pattern across the ecosystem: infrastructure closes at *unit-test-g
 - **sylveste-6h7x** (P1) Close-gate: `phase:done` requires integration-test-pass vs a live server + orphan/ghost scan. Attacks the *generator* of ghost infra.
 - **sylveste-xogc** (P1) Beads durability: JSONL→DB restore + integrity check. Stops the recurring data loss that invalidated this roadmap.
 
-### P0/P1: Clavain gate correctness (mis-gated fail-open chain)
-Clavain is **mis-gated**: the only hard gate guards the least safety-critical artifact (reflection), while review/test/ship gates fail *open*. Unreviewed code can ship.
-- **sylveste-n35t** (P0, bug) The silent-failure surface is a FOUR-layer fail-open chain (flux-engine triage / synthesize "no file = no findings" / quality-gates `cp … || true` / enforce-gate `return nil`). Fix needs a positive completion sentinel, not just an exit-code check.
-- **sylveste-scx1** (P1) Invert fail-direction on safety gates — degraded-modes as an active breaker.
-- **sylveste-0ly7** (P1) Implement the `verdict_clean` ship gate (currently declared in YAML, no Go evaluator — decorative) + set ship stage to `enforce`.
-- **sylveste-qf1k** (P1, bug) Decouple `tests_passed`/`vetted` from orchestrator assertion — currently stamped regardless of findings.
+### ✅ SHIPPED: Clavain gate correctness (the fail-open chain is fixed)
+Clavain *was* mis-gated — review/test/ship gates failed *open*, so unreviewed code could ship. **The whole chain closed 2026-06-18→20:**
+- **sylveste-n35t** (was P0) ✅ Positive completion sentinel replaces the four-layer fail-open chain (flux-engine triage / synthesize "no file = no findings" / quality-gates `cp … || true` / enforce-gate `return nil`).
+- **sylveste-scx1** ✅ Safety gates inverted — degraded-modes as an active breaker.
+- **sylveste-0ly7** ✅ `verdict_clean` ship gate implemented (Go evaluator) + ship stage set to `enforce`.
+- **sylveste-qf1k** ✅ `tests_passed`/`vetted` decoupled from orchestrator assertion.
+
+> The 2026-06-21 frontier review (`Sylveste-4b5`) confirms this fix: external-verifier-beats-self-critique (Kambhampati) and "silent failures are the unsolved problem" (VerifyMAS) both name a fail-open gate as the exact anti-pattern. With the chain closed, the *next* substrate priority is making the close-gate (`sylveste-6h7x`) a real enforced gate — see below.
+
+### P1: Frontier delta — the close-gate is the spine
+- **sylveste-4b5** (P1, epic, 23 children) Agentic-frontier roadmap delta. 91-agent review of the mid-2026 orchestration/coding frontier → mapped vs backlog → adversarially verified (44 credible → 24 survived). **Top items, all corrective:** consensus-trap monitor on the now-live `ioe7` loop (`4b5.1`, blocks on holdout register `9lp.37`); make runtime-health/state-delta the *substance* of the `6h7x` close-gate (`4b5.2`); SWE-bench roadmap-drift fix (`4b5.3`); native-worktree retirement audit folded into `n2ma` (`4b5.4`). Full delta: `docs/research/2026-06-21-agentic-frontier-roadmap-delta.md`.
 
 ### P1: Wire ONE loop end-to-end (make "wired" the unit of progress)
-- **sylveste-xka6** (P1) Promote B2 complexity routing dispatch-side **shadow → enforce** + quality-evidence. Reconciled finding: callers ARE wired (`sylveste-2aqs`/`magy` closed) but in caller-local shadow; the explicit punt was enforce. Cleanest verified narrow loop to close.
-- **sylveste-i8gp** (P1) Evidence-pipeline flywheel second source — **now UNBLOCKED** (both deps `sylveste-5qv9` + `sylveste-xcn4` closed). Was mislabeled blocked-on-iv-ho3.
-- **sylveste-ohb8** (P1) `landed_changes` referential-integrity audit — the one intercore issue that bites today (nullable FKs, no `REFERENCES`).
+- **sylveste-xka6** (P1) Promote B2 complexity routing dispatch-side **shadow → enforce** + quality-evidence. Callers ARE wired (`sylveste-2aqs`/`magy` closed) but in caller-local shadow; the punt was enforce. Cleanest verified narrow loop to close — and the frontier names it the hard dependency for two additive levers (cache-aware cost `4b5.18`, pass@k escalation `4b5.15`).
+- **sylveste-i8gp** (P1) Evidence-pipeline flywheel second source — **UNBLOCKED** (deps `sylveste-5qv9` + `sylveste-xcn4` closed).
+- ~~**sylveste-ohb8** `landed_changes` referential-integrity audit~~ → ✅ **CLOSED 2026-06-21** (nullable FKs / missing `REFERENCES` addressed).
 
-### P1 (unchanged from prior roadmap, still active)
-- **Skaffen competitive gap closure** (Sylveste-6i0, epic). Coding-agent feature-matrix gaps. NOTE: 1/23 subtasks in ~90 days — epic needs re-estimation or re-scoping.
-- **SWE-bench pass rate** (Sylveste-ynh Phase 1 + Sylveste-9lx Phase 2). Quick-win + feedback-loop epics. pyenv per-cell selection (Sylveste-sdk0) open.
+### P1 (corrected — was citing phantom IDs)
+- **SWE-bench / benchmark harness** — ⚠️ the prior `Sylveste-ynh`/`9lx`/`6i0`/`sdk0` citations were **PHANTOM** (no live beads; `ynh7` is a closed token-optimization audit, not SWE-bench). The **real** live harness work is the interfer Flash-MoE benchmark suite: **`sylveste-2ss`** (epic, in-progress) → `b7j` (SWE-bench Lite + LiveCodeBench-v6 wiring, closed), **`r8g`** (SWE-bench Lite runner, open), capstone **`m71`** (Pareto speed-vs-quality, open). Frontier caveat (`4b5.3`/`4b5.19`): SWE-bench Verified is reportedly contaminated — the LiveCodeBench-v6 (time-segmented) choice already partly mitigates; do not swap to SWE-bench Pro until the harness feeds a live routing decision.
 
 ### Corrected since last update (was wrong / now resolved)
 - **iv-ho3** "Factory Substrate, in progress 120 days" → **DONE.** Recovered as `sylveste-5qv9`, CLOSED 2026-04-10 (CXDB built, integration test passing).
@@ -51,7 +57,7 @@ Medium-term direction. Full item inventory: [backlog.md](backlog.md). New items 
 
 2. **Adaptive Routing (shadow → enforce)** — Not "build" but "wire": promote B2 to enforce (`sylveste-xka6`), then interspect calibration. The learning loop that makes the system cheaper over time.
 
-3. **Autonomous Improvement Loop** — interlab records mutations but **no interspect consumer reads them** (`sylveste-ioe7`). Sequence the mutation→adaptation wiring *after* the close-gate so it doesn't become the next ghost.
+3. **Autonomous Improvement Loop** — ✅ **WIRED 2026-06-21** (`sylveste-ioe7` CLOSED): interlab `is_new_best` mutations now drain into interspect as pattern-kind evidence and are read by the classifier. The loop is live. **Open follow-on:** nothing yet monitors its verifier-vs-generator agreement trend, so the consensus-trap breaker (`sylveste-4b5.1`, P1) is the corrective next step — gated on a frozen external holdout (`sylveste-9lp.37`) so the trend is interpretable.
 
 4. **Clavain control-loop quality** — Brainstorm-summary feedforward into plan review (`sylveste-td2o`); local plan-phase verification in `/work` + `/execute-plan` (`sylveste-ungg`). Cheaper, non-redundant review.
 
@@ -80,7 +86,7 @@ Longer-term directions, not yet scoped into specific items. Full inventory: [bac
 |--------|----------|---------|--------|---------|----------------------|
 | agent-rig | core/agent-rig | 0.1.0 | early | no | n/a |
 | autarch | apps/autarch | 0.1.0 | active | yes | n/a |
-| clavain | os/clavain | 0.6.236 | active | yes | n/a |
+| clavain | os/clavain | 0.6.253 | active | yes | n/a |
 | interblog | apps/interblog | 0.1.3 | early | no | n/a |
 | interband | core/interband | — | planned | no | n/a |
 | interbench | core/interbench | — | planned | no | n/a |
@@ -95,13 +101,13 @@ Longer-term directions, not yet scoped into specific items. Full inventory: [bac
 | interdoc | interverse/interdoc | 5.2.1 | active | yes | 4 |
 | interfer | interverse/interfer | 0.1.0 | early | no | n/a |
 | interfluence | interverse/interfluence | 0.2.10 | active | yes | 4 |
-| interflux | interverse/interflux | 0.2.52 | active | yes | n/a |
+| interflux | interverse/interflux | 0.2.70 | active | yes | n/a |
 | interform | interverse/interform | 0.1.0 | active | yes | 4 |
 | interhelm | interverse/interhelm | 0.2.0 | active | yes | n/a |
 | interject | interverse/interject | 0.1.14 | active | yes | 4 |
 | interkasten | interverse/interkasten | 0.4.25 | active | no | n/a |
 | interknow | interverse/interknow | 0.1.5 | early | no | n/a |
-| interlab | interverse/interlab | 0.4.6 | active | yes | n/a |
+| interlab | interverse/interlab | 0.4.8 | active | yes | n/a |
 | interlearn | interverse/interlearn | 0.1.0 | active | yes | 8 |
 | interleave | interverse/interleave | 0.1.2 | early | no | n/a |
 | interlens | interverse/interlens | 2.2.4 | active | yes | 4 |
@@ -130,7 +136,7 @@ Longer-term directions, not yet scoped into specific items. Full inventory: [bac
 | intersight | interverse/intersight | 0.1.5 | early | no | n/a |
 | interskill | interverse/interskill | 0.1.3 | early | no | n/a |
 | interslack | interverse/interslack | 0.1.0 | active | yes | 4 |
-| interspect | interverse/interspect | 0.1.18 | active | [vision](./interspect-vision.md) | n/a |
+| interspect | interverse/interspect | 0.1.21 | active | [vision](./interspect-vision.md) | n/a |
 | interstat | interverse/interstat | 0.2.27 | active | yes | 4 |
 | intersynth | interverse/intersynth | 0.1.9 | early | no | n/a |
 | intertest | interverse/intertest | 0.1.2 | early | no | n/a |
