@@ -1,0 +1,309 @@
+{
+  "reviewed": "2026-05-01",
+  "input": "/Users/sma/projects/Sylveste/docs/research/flux-review/microrouter-track-b6/INPUT.md",
+  "agents_launched": [
+    "fd-trading-router-bestexec",
+    "fd-triage-acuity-routing",
+    "fd-dispatch-economic-grid",
+    "fd-ss7-cascade-routing",
+    "fd-glacial-sediment-cascade-sorting",
+    "fd-gongfu-cha-cascade-discernment",
+    "fd-ifa-divination-verifier-corpus",
+    "fd-yaki-ire-temper-promotion-gates"
+  ],
+  "agents_completed": [
+    "fd-trading-router-bestexec",
+    "fd-triage-acuity-routing",
+    "fd-dispatch-economic-grid",
+    "fd-ss7-cascade-routing",
+    "fd-glacial-sediment-cascade-sorting",
+    "fd-gongfu-cha-cascade-discernment",
+    "fd-ifa-divination-verifier-corpus",
+    "fd-yaki-ire-temper-promotion-gates"
+  ],
+  "findings": [
+    {
+      "id": "P0-1",
+      "severity": "P0",
+      "agent": "fd-triage-acuity-routing",
+      "section": "sylveste-s3z6.19.5 \u2014 Resolver Integration",
+      "title": "ineligible_agents pre-call enforcement not specified \u2014 garbage response could bypass safety floor for fd-safety/fd-correctness",
+      "convergence": 3,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P0-2",
+      "severity": "P0",
+      "agent": "fd-glacial-sediment-cascade-sorting",
+      "section": "Resolver Integration",
+      "title": "Audit-trail unconformity: no-op short-circuit erases microrouter layer from shadow log when decision matches B3",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P0-3",
+      "severity": "P0",
+      "agent": "fd-gongfu-cha-cascade-discernment",
+      "section": "sylveste-s3z6.19.3 \u2014 Training Pipeline",
+      "title": "Circular calibration: GPT-5.5/Opus used for both label augmentation and eval accuracy anchor",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P0-4",
+      "severity": "P0",
+      "agent": "fd-gongfu-cha-cascade-discernment",
+      "section": "Success Criteria",
+      "title": "Accuracy target measured against judge-shaped calibrated baseline, not independent holdout",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P0-5",
+      "severity": "P0",
+      "agent": "fd-ifa-divination-verifier-corpus",
+      "section": "sylveste-s3z6.19.7 \u2014 Confidence-Cascade Verifier",
+      "title": "Verifier would share corpus and judge with microrouter \u2014 systematic judge error propagates to both",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P0-6",
+      "severity": "P0",
+      "agent": "fd-yaki-ire-temper-promotion-gates",
+      "section": "sylveste-s3z6.19.6 \u2014 Privacy-Routing Extension",
+      "title": "Privacy cloud leak: privacy=sensitive tasks fall through to cloud when router endpoint is down",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-1",
+      "severity": "P1",
+      "agent": "fd-trading-router-bestexec",
+      "section": "sylveste-s3z6.19.5 \u2014 Resolver Integration",
+      "title": "Shadow log lacks reason-code field \u2014 timed-out calls indistinguishable from B3 fallthroughs",
+      "convergence": 2,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-2",
+      "severity": "P1",
+      "agent": "fd-trading-router-bestexec",
+      "section": "sylveste-s3z6.19.4 \u2014 Eval Harness",
+      "title": "Routing distribution collapse not a named failure mode in eval matrix",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-3",
+      "severity": "P1",
+      "agent": "fd-trading-router-bestexec",
+      "section": "sylveste-s3z6.19 \u2014 Epic",
+      "title": "Shadow-to-enforce promotion gate is calendar duration only \u2014 no minimum entry count or reroute rate floor",
+      "convergence": 3,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-4",
+      "severity": "P1",
+      "agent": "fd-triage-acuity-routing",
+      "section": "sylveste-s3z6.19.5 \u2014 Resolver Integration",
+      "title": "Failure modes not paired with named test cases \u2014 endpoint unreachable assumed, not verified",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-5",
+      "severity": "P1",
+      "agent": "fd-triage-acuity-routing",
+      "section": "sylveste-s3z6.19.2 \u2014 Dataset",
+      "title": "Coverage report lacks per-complexity-tier breakdown \u2014 class imbalance at C1/C2 invisible",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-6",
+      "severity": "P1",
+      "agent": "fd-dispatch-economic-grid",
+      "section": "sylveste-s3z6.19.3 \u2014 Training Pipeline",
+      "title": "Loss design deferred with no gate blocking pure cross-entropy \u2014 distillation collapse unblocked",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-7",
+      "severity": "P1",
+      "agent": "fd-dispatch-economic-grid",
+      "section": "sylveste-s3z6.19.5 \u2014 Resolver Integration",
+      "title": "B3 calibration freshness not a promotion prerequisite \u2014 stale contingency reserve at enforce time",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-8",
+      "severity": "P1",
+      "agent": "fd-dispatch-economic-grid",
+      "section": "sylveste-s3z6.19.1 \u2014 Design / .19.3 Training",
+      "title": "Local model tier labels not required in router label space \u2014 local-fleet dispatch economically blind",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-9",
+      "severity": "P1",
+      "agent": "fd-ss7-cascade-routing",
+      "section": "sylveste-s3z6.19.5 \u2014 Resolver Integration",
+      "title": "Resolver chain terminal not proven reachable \u2014 no hardcoded last-resort below defaults.model",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-10",
+      "severity": "P1",
+      "agent": "fd-ss7-cascade-routing",
+      "section": "sylveste-s3z6.19.5 \u2014 Resolver Integration",
+      "title": "Route flap from intermittent endpoint in 100ms window \u2014 cold-start variance produces incoherent sprint distributions",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-11",
+      "severity": "P1",
+      "agent": "fd-ss7-cascade-routing",
+      "section": "sylveste-s3z6.19.5 \u2014 Resolver Integration",
+      "title": "Simultaneous failure combinations (timeout + calibration absent) not tested in combination",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-12",
+      "severity": "P1",
+      "agent": "fd-glacial-sediment-cascade-sorting",
+      "section": "Design Doc",
+      "title": "Decision-space cardinality mismatch: binary local/cloud collapses 5-way C1-C5 complexity tiers",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-13",
+      "severity": "P1",
+      "agent": "fd-glacial-sediment-cascade-sorting",
+      "section": "Eval Harness",
+      "title": "Shadow-soak diversity not required \u2014 gate does not require multi-regime coverage",
+      "convergence": 3,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-14",
+      "severity": "P1",
+      "agent": "fd-gongfu-cha-cascade-discernment",
+      "section": "Eval Harness",
+      "title": "No sprint-aggregate regret metric \u2014 cumulative directional routing bias invisible",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-15",
+      "severity": "P1",
+      "agent": "fd-gongfu-cha-cascade-discernment",
+      "section": "Dataset",
+      "title": "By-time holdout straddles 2026-04-29 routing regime change \u2014 holdout ground truth generated under different regime",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-16",
+      "severity": "P1",
+      "agent": "fd-ifa-divination-verifier-corpus",
+      "section": "Dataset",
+      "title": "5K example floor does not guarantee per-(agent, phase, complexity-tier) cell coverage",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-17",
+      "severity": "P1",
+      "agent": "fd-ifa-divination-verifier-corpus",
+      "section": "Resolver Integration",
+      "title": "No startup self-test \u2014 router activates without verifying canonical probe cases",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-18",
+      "severity": "P1",
+      "agent": "fd-yaki-ire-temper-promotion-gates",
+      "section": "Eval Harness",
+      "title": "Promotion auto-proceeds on aggregate metrics \u2014 no operator review gate for high-stakes agent failures",
+      "convergence": 1,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    },
+    {
+      "id": "P1-19",
+      "severity": "P1",
+      "agent": "fd-yaki-ire-temper-promotion-gates",
+      "section": "Resolver Integration",
+      "title": "Garbage-response failure mode unnamed \u2014 resolver does not enumerate behavior for malformed router output",
+      "convergence": 2,
+      "provider": "claude",
+      "model_family": "claude",
+      "model_id": "claude-sonnet-4-6"
+    }
+  ],
+  "verdict": "risky",
+  "early_stop": false,
+  "total_findings": 41,
+  "by_severity": {
+    "P0": 6,
+    "P1": 19,
+    "P2": 16
+  }
+}
