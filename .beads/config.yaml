@@ -4,6 +4,10 @@ issue-prefix: "sylveste"
 # Per-project Dolt server (isolated from other projects)
 dolt.shared-server: false
 
+# Keep ordinary bd reads/writes from blocking on non-interactive remote pushes.
+# Sync is handled explicitly by beads hooks/commands once credentials are sane.
+dolt.auto-push: false
+
 sync-branch: "beads-sync"
 sync.remote: "origin"
 events-export: true

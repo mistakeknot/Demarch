@@ -4,7 +4,7 @@
       {
         "hooks": [
           {
-            "command": "command -v bd >/dev/null 2>&1 && bd prime || cat .beads/PRIME.md 2>/dev/null",
+            "command": "command -v bd >/dev/null 2>&1 && bd --sandbox prime || cat .beads/PRIME.md 2>/dev/null",
             "type": "command"
           }
         ],
@@ -15,7 +15,7 @@
       {
         "hooks": [
           {
-            "command": "bash -c 'cd \"$PROJECT_DIR\" && bash scripts/session-freshness-gate.sh && exit 0; [ -f .beads/heal-dolt.sh ] && bash .beads/heal-dolt.sh .beads 2>&1 || true; bd stats 2>/dev/null | head -1 || echo \"beads: Dolt unavailable, JSONL backup is source of truth\"; bash scripts/beads-sync-guard.sh'",
+            "command": "bash -c 'cd \"$PROJECT_DIR\" || exit 0; bash scripts/session-freshness-gate.sh || true; [ -f .beads/heal-dolt.sh ] && bash .beads/heal-dolt.sh .beads 2>&1 || true; bd --sandbox stats 2>/dev/null | head -1 || echo \"beads: Dolt unavailable, JSONL backup is source of truth\"; bash scripts/beads-sync-guard.sh'",
             "type": "command"
           }
         ],
@@ -24,7 +24,7 @@
       {
         "hooks": [
           {
-            "command": "command -v bd >/dev/null 2>&1 && bd prime || cat .beads/PRIME.md 2>/dev/null",
+            "command": "command -v bd >/dev/null 2>&1 && bd --sandbox prime || cat .beads/PRIME.md 2>/dev/null",
             "type": "command"
           }
         ],

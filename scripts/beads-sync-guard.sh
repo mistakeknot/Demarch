@@ -10,14 +10,14 @@
 #   invisible to `bd` until `bd import` ran.)
 #
 # WHAT THIS DOES
-#   Compares the live Dolt issue count (`bd count`) against the number of
+#   Compares the live Dolt issue count (`bd --sandbox count`) against the number of
 #   *issue* lines in .beads/issues.jsonl (excluding "_type":"memory" records,
 #   which `bd count` does not count). If they diverge beyond a tolerance, it
 #   prints a one-line advisory pointing the user at `bd import`. It never
 #   blocks: every exit path returns 0.
 #
 # PROPERTIES
-#   - cheap   : a `bd count` (a single COUNT(*) against a warm Dolt server)
+#   - cheap   : a `bd --sandbox count` (a single COUNT(*) against a warm Dolt server)
 #               plus a `wc -l` and one grep. Sub-second in practice; a
 #               hard timeout guarantees it never hangs a SessionStart.
 #   - advisory: warns on stderr, always exit 0. Never blocks pull/commit/session.
@@ -28,7 +28,7 @@
 #
 # ENV OVERRIDES
 #   BEADS_SYNC_GUARD_TOLERANCE   integer drift tolerated before warning (default 0)
-#   BEADS_SYNC_GUARD_TIMEOUT     seconds to wait for `bd count` (default 3)
+#   BEADS_SYNC_GUARD_TIMEOUT     seconds to wait for `bd --sandbox count` (default 3)
 #   BEADS_JSONL                  path to issues.jsonl (default .beads/issues.jsonl)
 #   PROJECT_DIR                  repo root (default: git toplevel, else $PWD)
 
@@ -45,7 +45,9 @@ TIMEOUT_S="${BEADS_SYNC_GUARD_TIMEOUT:-3}"
 # ─── Cloud / sandbox: beads are read-only, JSONL is the source of truth ──
 # Mirror scripts/lib-cloud-guard.sh detection (env vars only — never `which bd`,
 # so a workstation with a broken PATH is not misdiagnosed as cloud).
-if [ "${CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE:-}" = "cloud_default" ] || [ "${IS_SANDBOX:-}" = "yes" ]; then
+if [ "${CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE:-}" = "cloud_default" ] || \
+   [ "${IS_SANDBOX:-}" = "yes" ] || \
+   [ "${CODEX_SANDBOX_NETWORK_DISABLED:-}" = "1" ]; then
     # No Dolt to compare against; the comparison is meaningless. Stay silent.
     exit 0
 fi
@@ -84,21 +86,21 @@ jsonl_issues=$(( total_lines - blank_lines - memory_lines ))
 [ "$jsonl_issues" -lt 0 ] && jsonl_issues=0
 
 # ─── Count live Dolt issues, with a hard timeout ───────────────────────
-# `bd count` (no filters) == total issues in the Dolt `issues` table.
+# `bd --sandbox count` (no filters) == total issues in the Dolt `issues` table.
 # Use `timeout`/`gtimeout` if available; otherwise a portable background+wait
 # fallback so a wedged Dolt server can never hang the hook.
 run_bd_count() {
     if command -v timeout >/dev/null 2>&1; then
-        timeout "$TIMEOUT_S" bd count 2>/dev/null
+        timeout "$TIMEOUT_S" bd --sandbox count 2>/dev/null
         return $?
     elif command -v gtimeout >/dev/null 2>&1; then
-        gtimeout "$TIMEOUT_S" bd count 2>/dev/null
+        gtimeout "$TIMEOUT_S" bd --sandbox count 2>/dev/null
         return $?
     fi
     # Portable fallback: run bd in the background, kill it if it overruns.
     local out_file rc
     out_file="$(mktemp 2>/dev/null || echo /tmp/bd_count.$$)"
-    ( bd count >"$out_file" 2>/dev/null ) &
+    ( bd --sandbox count >"$out_file" 2>/dev/null ) &
     local bd_pid=$!
     local waited=0
     while kill -0 "$bd_pid" 2>/dev/null; do
