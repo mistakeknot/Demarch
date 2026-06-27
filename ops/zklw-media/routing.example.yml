@@ -1,0 +1,52 @@
+# Per-title indexer routing rules for the intake agent.
+#
+# HONEST SCOPE (from research): Radarr/Sonarr are built to score releases
+# across ALL indexers and grab the best. True per-request "send THIS title to
+# THAT tracker" is the exception path, not a first-class feature. So this file
+# expresses STANDING BIASES (content-type → preferred indexers) that the agent
+# applies as Radarr indexer tags + release-profile preferences — NOT a hard
+# per-download lock. For a hard pin, the agent uses Prowlarr interactive search
+# with an explicit indexerId (see DESIGN.md "Hard pin").
+#
+# `indexer` names must match the indexer names you create in Prowlarr.
+
+defaults:
+  # When no rule matches, let Radarr score across all indexers (the normal,
+  # recommended behavior). Bias only via Prowlarr indexer priority + flags.
+  strategy: score-all
+  prefer_flags: [freeleech, internal]   # release-profile preference, not a lock
+
+rules:
+  # Arthouse / world / cult / pre-1980 → Karagarga is the right home.
+  - match:
+      any_of:
+        - genre: [arthouse, foreign, documentary]
+        - year_before: 1980
+    prefer_indexers: [karagarga]
+    note: "KG culture = rare/world cinema. NEVER route modern blockbusters here."
+
+  # High-def feature films, 1080p/4K remux → HDBits.
+  - match:
+      any_of:
+        - quality: [remux, bluray-2160p, bluray-1080p]
+    prefer_indexers: [hdbits]
+    note: "HDB = HD quality. Seed long; ratio-model account."
+
+  # General / scene / everything-else movies + TV → TorrentLeech.
+  # Also your ratio-builder: seedbox-friendly, auto-freeleech on big torrents.
+  - match:
+      any_of:
+        - media_type: [movie, tv]
+    prefer_indexers: [torrentleech]
+    note: "TL = best clean ratio-builder with a seedbox. Declare the seedbox!"
+
+  # Audio production tools (VST/DAW/sample libs) → AudioNews.
+  - match:
+      any_of:
+        - category: [audio-tools, software-audio]
+    prefer_indexers: [audionews]
+    note: "AudioNews = production tools, not music albums. Hard 0.8 ratio."
+
+# Hard-pin escape hatch: a request like "get <release> from hdbits" makes the
+# agent run Prowlarr interactive search with indexerIds=<hdbits id> and push
+# the chosen release directly, bypassing the scored pipeline. Use sparingly.

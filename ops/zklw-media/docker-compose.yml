@@ -35,6 +35,11 @@ services:
     restart: unless-stopped
     # No GPU on zklw (ASPEED BMC only) — the 5950X handles CPU transcode.
 
+  # NOTE: Overseerr + Jellyseerr reportedly merged into "Seerr"
+  # (seerr-team/seerr) in early 2026. Verify the current image before
+  # switching — until then jellyseerr is known-good and (if the merge is real)
+  # auto-migrates. To switch: image -> ghcr.io/seerr-team/seerr:latest and
+  # check the config volume path in their docs.
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
@@ -128,6 +133,75 @@ services:
     ports:
       - "${TS_BIND}:${SABNZBD_PORT}:8080"
     restart: unless-stopped
+
+  # ====================================================================
+  # RATIO ENGINE (see DESIGN.md Part 2). Enable AFTER the base stack works.
+  # ORDER MATTERS: bring up qbit_manage (the HnR firewall) BEFORE/with
+  # cross-seed, never cross-seed alone. cross-seed needs the SAME /data mount
+  # as qBittorrent + the *arrs or hardlinks fail.
+  # ====================================================================
+
+  # cross-seed: seeds one downloaded file to N trackers (ratio multiplier).
+  # Matches content you already have against your other trackers' indexers.
+  cross-seed:
+    image: ghcr.io/cross-seed/cross-seed:6
+    container_name: cross-seed
+    user: "${PUID}:${PGID}"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/cross-seed:/config
+      - ${MEDIA_ROOT}:/data        # MUST match qBittorrent's mount (hardlinks)
+    command: daemon
+    ports:
+      - "${TS_BIND}:2468:2468"     # webhook/RSS endpoint, tailnet-only
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+      - prowlarr
+    # First run: `docker compose run --rm cross-seed gen-config`, then edit
+    # /config/config.js — set torrentClients (qbittorrent), torznab (each
+    # Prowlarr indexer's /<id>/api?apikey=...), linkType: hardlink,
+    # matchMode: partial, linkCategory (keep cross-seeds out of *arr import).
+
+  # qbit_manage: the ONLY thing allowed to remove torrents. Enforces
+  # per-tracker min_seeding_time so cleanup never causes a Hit-and-Run.
+  qbit-manage:
+    image: ghcr.io/stuffanthings/qbit_manage:latest
+    container_name: qbit-manage
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - QBT_RUN=true
+      - QBT_SCHEDULE=30          # run every 30 min
+    volumes:
+      - ${CONFIG_ROOT}/qbit-manage:/config
+      - ${MEDIA_ROOT}:/data
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    # Configure config.yml `share_limits` groups: one per tracker tag, each
+    # with min_seeding_time >= that tracker's HnR floor (TL: start 10 days).
+    # Set qBittorrent's OWN share limits to pause-only / -1 so they NEVER
+    # delete — qbit_manage owns removal. See DESIGN.md "ratio-vs-cleanup
+    # firewall".
+
+  # autobrr: OPT-IN racing tier. Monitors tracker IRC #announce channels to
+  # grab new uploads in ~1s (early seeders win the most ratio). Leave this
+  # commented until seed-time floors are proven safe; RSS is the baseline.
+  # autobrr:
+  #   image: ghcr.io/autobrr/autobrr:latest
+  #   container_name: autobrr
+  #   environment:
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ${CONFIG_ROOT}/autobrr:/config
+  #   ports:
+  #     - "${TS_BIND}:7474:7474"
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - qbittorrent
 
 # Bind mounts are used for all persistent state (under ${CONFIG_ROOT} and
 # ${MEDIA_ROOT}); no named volumes needed. This keeps everything visible on
