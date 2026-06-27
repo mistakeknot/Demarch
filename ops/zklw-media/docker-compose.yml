@@ -1,0 +1,134 @@
+# ======================================================================
+# zklw media server stack
+#
+#   Jellyfin   - playback        (the Netflix-like front end)
+#   Jellyseerr - request portal  (what users touch: "I want this movie")
+#   Radarr     - movie automation (search/score/import state machine)
+#   Sonarr     - TV automation    (same, for shows; remove if movies-only)
+#   Prowlarr   - indexer manager  (your private tracker + Usenet, one place)
+#   qBittorrent- torrent client
+#   SABnzbd    - usenet client
+#
+# SECURITY: every service binds ONLY to ${TS_BIND} (zklw's Tailscale IP).
+# Nothing is published on 0.0.0.0, so nothing is reachable from the public
+# internet — only devices on your tailnet.
+#
+# HARDLINKS: every service mounts the SAME ${MEDIA_ROOT} at /data, so
+# Radarr/Sonarr import via instant hardlinks (no cross-filesystem copies).
+# Do NOT give qBittorrent /data/downloads and Radarr /movies as separate
+# mounts — that breaks hardlinking. One shared /data root is the trick.
+# ======================================================================
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    user: "${PUID}:${PGID}"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/jellyfin:/config
+      - ${MEDIA_ROOT}:/data
+      - /cache/jellyfin:/cache
+    ports:
+      - "${TS_BIND}:${JELLYFIN_PORT}:8096"
+    restart: unless-stopped
+    # No GPU on zklw (ASPEED BMC only) — the 5950X handles CPU transcode.
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - ${CONFIG_ROOT}/jellyseerr:/app/config
+    ports:
+      - "${TS_BIND}:${JELLYSEERR_PORT}:5055"
+    restart: unless-stopped
+    depends_on:
+      - jellyfin
+      - radarr
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/radarr:/config
+      - ${MEDIA_ROOT}:/data      # <-- shared root = hardlink imports
+    ports:
+      - "${TS_BIND}:${RADARR_PORT}:7878"
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - qbittorrent
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/sonarr:/config
+      - ${MEDIA_ROOT}:/data
+    ports:
+      - "${TS_BIND}:${SONARR_PORT}:8989"
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - qbittorrent
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/prowlarr:/config
+    ports:
+      - "${TS_BIND}:${PROWLARR_PORT}:9696"
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - ${CONFIG_ROOT}/qbittorrent:/config
+      - ${MEDIA_ROOT}:/data      # downloads land under /data/downloads
+    ports:
+      - "${TS_BIND}:${QBITTORRENT_PORT}:8080"
+      - "${QBITTORRENT_BT_PORT}:6881"       # BT listen port (TCP)
+      - "${QBITTORRENT_BT_PORT}:6881/udp"   # BT listen port (UDP)
+    restart: unless-stopped
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/sabnzbd:/config
+      - ${MEDIA_ROOT}:/data
+    ports:
+      - "${TS_BIND}:${SABNZBD_PORT}:8080"
+    restart: unless-stopped
+
+# Bind mounts are used for all persistent state (under ${CONFIG_ROOT} and
+# ${MEDIA_ROOT}); no named volumes needed. This keeps everything visible on
+# the host filesystem and trivially backup-able to your home NAS.
