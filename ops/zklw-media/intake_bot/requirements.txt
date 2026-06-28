@@ -1,0 +1,7 @@
+# Pinned for reproducible builds on zklw. Versions current as of 2026-06.
+# The core resolver/dispatch use only the stdlib; these are the channel +
+# LLM deps, imported lazily so the package structure-checks without them.
+discord.py==2.6.4
+python-telegram-bot==21.11.1
+imap-tools==1.13.0
+anthropic==0.69.0

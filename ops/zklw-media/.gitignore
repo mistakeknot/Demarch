@@ -2,3 +2,7 @@
 .env
 agent.env
 config/
+
+# Python build artifacts from the intake bot.
+__pycache__/
+*.pyc

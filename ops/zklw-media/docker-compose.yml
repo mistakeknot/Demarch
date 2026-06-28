@@ -135,6 +135,30 @@ services:
     restart: unless-stopped
 
   # ====================================================================
+  # INTAKE BOT (see DESIGN.md Part 1 + intake_bot/README.md). The routing
+  # brain: Discord/Telegram/email request → resolve (TMDB fast-path or Claude
+  # Haiku ranker) → dispatch through Seerr. No published ports — it only makes
+  # OUTbound calls (to Discord/Telegram/IMAP and to Seerr on the internal net),
+  # so nothing to bind. Secrets resolved in-process via `op run` (the image's
+  # entrypoint); the only thing mounted is the read-only service-account token.
+  # ====================================================================
+  intake-bot:
+    build:
+      context: .
+      dockerfile: intake_bot/Dockerfile
+    container_name: intake-bot
+    environment:
+      - TZ=${TZ}
+      # op reads this to authenticate the service account, then resolves the
+      # op:// refs in bot.env.tpl. The token file is root-600 on the host.
+      - OP_SERVICE_ACCOUNT_TOKEN_FILE=/run/secrets/op_token
+    secrets:
+      - op_token
+    restart: unless-stopped
+    depends_on:
+      - jellyseerr   # dispatch target (Seerr). Rename if you switch the image.
+
+  # ====================================================================
   # RATIO ENGINE (see DESIGN.md Part 2). Enable AFTER the base stack works.
   # ORDER MATTERS: bring up qbit_manage (the HnR firewall) BEFORE/with
   # cross-seed, never cross-seed alone. cross-seed needs the SAME /data mount
@@ -202,6 +226,13 @@ services:
   #   restart: unless-stopped
   #   depends_on:
   #     - qbittorrent
+
+# The 1Password service-account token, mounted read-only into intake-bot only.
+# Create it root-600 first: see agent/secrets-1password.md step 3
+#   sudo install -m 600 /dev/stdin /etc/zklw-media/op-token <<< 'ops_…'
+secrets:
+  op_token:
+    file: /etc/zklw-media/op-token
 
 # Bind mounts are used for all persistent state (under ${CONFIG_ROOT} and
 # ${MEDIA_ROOT}); no named volumes needed. This keeps everything visible on
