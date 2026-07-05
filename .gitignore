@@ -84,6 +84,7 @@ research/*
 docs/research/*/
 !docs/research/dialectics/
 !docs/research/flux-drive/
+!docs/research/flux-melange/
 !docs/research/flux-research/
 !docs/research/flux-review/
 !docs/research/f1-cypher-benchmark/

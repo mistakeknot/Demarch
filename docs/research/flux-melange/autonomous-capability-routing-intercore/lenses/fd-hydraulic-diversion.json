@@ -1,0 +1,34 @@
+{
+  "id": "fd-hydraulic-diversion",
+  "kind": "base",
+  "parents": [],
+  "domain": "water-conservancy-flow-control",
+  "axioms": [
+    "The diversion must never hard-fail: excess flow (unavailable fable) must leave by a designed spillway (opus fallback) enforced at every inlet, not just the headworks.",
+    "Every load path must have a named relief path; a diversion that surges back and forth without a fixed relief mark (escalation with no per-chain cap) scours its own banks and consumes the scarcest resource indefinitely.",
+    "Success must be read against a fixed carved mark (plan→execution pass rate), not last year's water level (shipped count / delegation_outcome); commissioning a pilot while reading the wrong gauge is a category error.",
+    "Un-dredged sediment (unbounded routing_decisions + escalation record growth) silently raises the channel bed until aggregation floods or reads stale/partial data — a retention/aggregation cadence is required.",
+    "A new channel is commissioned at deliberately low water first; the pilot window is the most safety-critical moment and must not be judged by the gauge it is meant to replace.",
+    "Flow should be apportioned by graded proportion, not binary gates, wherever complexity could size the channel."
+  ],
+  "primitives": [
+    "designed spillway / relief path",
+    "levee vs breach (hard-fail)",
+    "standing wave / oscillation damping",
+    "carved gauge stone (true metric)",
+    "sediment / retention-dredge cadence",
+    "pilot-flow at low water",
+    "graded proportional diversion"
+  ],
+  "failure_mode": [
+    "Does not own who-is-qualified-to-touch-the-work or inspection-independence (owned by swordsmith); sees fable-unavailability purely as load-shedding, not authority.",
+    "Blind to mechanism-level counter/copy bugs and to precedence-resolution determinism except where they manifest as a missing relief path.",
+    "Reasons in flow/relief/gauge metaphor; may miss statistical-confound nuance (attribution, sample size) that eval-calibration owns, treating the gauge only as 'exists / is aggregated', not 'is unbiased'."
+  ],
+  "findings": [
+    "f-016",
+    "f-017",
+    "f-018",
+    "f-019"
+  ]
+}

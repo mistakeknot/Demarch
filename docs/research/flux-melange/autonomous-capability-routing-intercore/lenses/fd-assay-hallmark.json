@@ -1,0 +1,34 @@
+{
+  "id": "fd-assay-hallmark",
+  "kind": "base",
+  "parents": [],
+  "domain": "assay-hallmark-certification",
+  "axioms": [
+    "The standard a piece is tested against must be a sealed, independent artifact (the acceptance-criteria block captured as an immutable run artifact), handed verbatim to the validator — never re-derivable or editable by the tier that produced the work, or the maker punches his own standard mark.",
+    "Assay is not appraisal: the plan-conformance verdict returns a per-criterion pass/fail against the sealed standard and must be structurally distinct from flux-drive's own review findings; one failed criterion defaces the hallmark (blocks advancement) regardless of how good the review looks.",
+    "A lawful hallmark carries a full chain of accountable punches: plan_execution_outcome must stamp separable provenance (author model, executor model, validator model, per-criterion counts, escalation count) so a later pass-rate drift is attributable to a specific (author_tier, executor_tier) pair, not an anonymous aggregate.",
+    "The assayer must itself be periodically tried against a sealed reference (Trial of the Pyx): nothing in the plan ever re-validates the validator tier's per-criterion judgments against ground truth, so a systematically lenient opus inflates the pass-rate that gates autonomy, undetectably.",
+    "Sub-standard work is defaced, not silently resubmitted: a failed dispatch must leave a durable defacement record and must not re-enter the stream to the same tier to be re-presented until it slips through.",
+    "The assay sample must be representative of the whole piece: the machine-checkable criteria must cover the plan's load-bearing surface, not a token scrape that lets a substantially non-conforming execution pass."
+  ],
+  "primitives": [
+    "sealed standard held in trust (immutable acceptance-criteria artifact)",
+    "assay-not-appraisal (per-criterion conformance verdict distinct from review score)",
+    "four-punch chain-of-custody (attributable provenance stamping)",
+    "Trial of the Pyx (audit-the-assayer / who validates the validator)",
+    "defacement vs silent resubmission (durable failure record)",
+    "representative assay sample (criteria coverage sufficiency)",
+    "forgery of the standard mark (executor/session model shaping its own pass criteria)"
+  ],
+  "failure_mode": [
+    "Owns criteria-as-sealed-independent-artifact, verdict-vs-appraisal separation, provenance-stamping-for-attribution, and audit-the-auditor; does NOT own tier-to-task allocation or master-substitution authority (swordsmith's territory), nor flow-volume, overflow, oscillation, or load-shedding (hydraulic's territory).",
+    "Sees the pass-rate metric only as a hallmark requiring attributable provenance and an audited office (integrity/attribution), not as a gauge requiring dredging/retention cadence (hydraulic) or unbiased statistical attribution (eval-calibration); expresses metric risk through the custody/audit metaphor, not the sample-size or confound frame.",
+    "Two-strikes escalation seen solely through the defacement facet (was the failed piece durably marked so it cannot silently re-enter) — not whether the escalated attempt changes the hand (swordsmith) or whether the ladder oscillates (hydraulic)."
+  ],
+  "findings": [
+    "f-034",
+    "f-035",
+    "f-036",
+    "f-037"
+  ]
+}

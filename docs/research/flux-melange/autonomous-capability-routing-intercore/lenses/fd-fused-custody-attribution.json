@@ -1,0 +1,38 @@
+{
+  "id": "fd-fused-custody-attribution",
+  "kind": "fusion",
+  "parents": [
+    "fd-eval-calibration-metrics",
+    "fd-assay-hallmark"
+  ],
+  "domain": "shared-un-audited-node (measurement-validity x custody-certification)",
+  "axioms": [
+    "TENSION (unresolved, this lens's home): measurement-validity thinking treats the standard as immutably sealed and the record store as a faithful population, asking only whether the statistic is unbiased, powered, and attributed; custody/certification thinking treats the number as a hallmark requiring an accountable, periodically-tried assayer against a sealed reference, asking only whether the chain of provenance is lawful. Neither can see a certifier whose drift is statistically invisible because the metric dropped the axis that would isolate it, nor a sealed reference whose mutation silently rebases every downstream statistic without breaking any custody check. This lens lives exactly at the node the two graphs share and does not resolve the tension.",
+    "The plan builds two graphs over the same nodes: a TRUST GRAPH (author certifies plan, executor certifies artifact, opus assays against the sealed acceptance-criteria artifact, interspect:calibrate certifies the tiers, and nothing tries the assayer) and a MEASUREMENT GRAPH (plan-conformance verdict gates advancement; plan-pass-rate per (author_tier, executor_tier) gates autonomy widening; escalation_count and the 2-3-item pilot delta gate the ladder). A finding exists only where one node sits in BOTH.",
+    "A sealed standard consumed as a statistical definition must be cryptographically bound into every record it produces: without a criteria-artifact hash in each plan_execution_outcome row, a mutation/re-derivation/version-skew of the standard both defaces the hallmark (custody) AND silently changes what 'pass' means across the sample (measurement) — one node, corrupt on both graphs, healthy to each parent alone.",
+    "The un-tried assayer (Trial-of-the-Pyx gap) and the missing validator axis on the pass-rate are the SAME gap from two sides: a systematically lenient opus is an unaudited custodian AND a statistically invisible confound folded into every (author,executor) cell precisely because the metric dropped the validator axis.",
+    "A provenance punch is only lawful if the stamped tier equals the dispatched tier: when the stamp records resolved spec-intent (fable) rather than the tier that produced the work after fallback/clamp/escalation, the custody chain carries a false punch AND every per-tier statistic keys on a mislabeled axis — the independent witness that would catch the forged punch is the same witness that would de-confound the statistic.",
+    "One emission cannot be both the certifying punch and the measured observation without losing the ability to establish either: a single validator dispatch that seals advancement (custody) and supplies the pass-rate's per-criterion counts (measurement) makes judge-variance a custody defect and single-hand accountability a measurement defect — the reliability fix and the accountability fix become the same missing mechanism at one shared node.",
+    "The 2-3-item pilot is both a custody rehearsal (the pipeline is tried and stamped lawful) and an underpowered certification (n=2-3 cannot measure the rate the stamp certifies); conflating the two seals a statistically powerless cold-start reading as the first standard later runs are audited against.",
+    "HARD CONSTRAINT: report a finding ONLY if it requires BOTH parent perspectives — every finding must name a trust-graph node AND the measurement-graph statistic it shares, with an intersection_justification showing that deleting the custody half leaves a pure calibration finding (already the eval parent's) and deleting the measurement half leaves a pure custody finding (already the assay parent's)."
+  ],
+  "primitives": [
+    "shared-un-audited-node: a certifier or sealed reference that lives in both the trust graph and the measurement graph, un-audited on the axis the other graph would supply",
+    "standard-hash binding: the (missing) cryptographic tie between the sealed criteria artifact's version and each outcome record computed against it",
+    "invisible-assayer axis gap: the un-tried opus-validator made statistically undetectable by the pass-rate dropping the validator_tier axis",
+    "forged-punch-as-attribution-axis: stamped resolved-intent tier (fable) diverging from dispatched tier (opus after clamp), corrupting both the custody chain and the statistical key with no reconciling witness",
+    "punch-equals-observation collapse: a single validator emission serving as both the advancement-sealing conformance verdict and the statistical sample, so reliability and accountability cannot be established independently",
+    "pilot-as-sealed-baseline: the 2-3-item custody rehearsal entrenched as the first statistical standard the autonomy gate trusts",
+    "defacement-attribution join gap: the escalation event as both a durable custody defacement and a sample-stratification boundary, un-reconciled between the defacement record and the outcome record"
+  ],
+  "failure_mode": [
+    "Declines any finding whose defect is purely statistical (bad aggregation, small n, missing axis, judge-noise) over an assumed-faithful, assumed-immutably-sealed record — that belongs to fd-eval-calibration-metrics alone (f-008 pilot power, f-010 inter-validator agreement).",
+    "Declines any finding whose defect is purely custodial (unsealed standard, unaudited assayer, false punch, silent resubmission) with no downstream gating-statistic consequence — that belongs to fd-assay-hallmark alone (f-034 custody lock, f-035 per-criterion persistence, f-036 validator/provenance axis).",
+    "Does not evaluate routing resolution/precedence determinism (fd-routing-kernel-mechanics), escalation state-machine termination (fd-escalation-retry-ladder), tier-authority/master-substitution (fd-swordsmith-transmission), or flow-infrastructure siltation/gauge-placement (fd-hydraulic-diversion, fd-fused-gauge-siltation); assumes those behave as designed and asks only whether their record/stamp is a shared trust-and-measurement node under-audited on one graph's axis.",
+    "By construction cannot report a finding that only one parent lens would surface — the intersection-only constraint (a custody node and a measurement node that are the SAME under-audited node) is the lens's failure mode when the trust graph and the measurement graph do not actually pass through one shared un-audited artifact or certifier."
+  ],
+  "findings": [
+    "f-042",
+    "f-043"
+  ]
+}

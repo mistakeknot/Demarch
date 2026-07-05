@@ -1,0 +1,73 @@
+{
+  "rounds": 3,
+  "halt_reason": "BUDGET",
+  "slots_spent": 14,
+  "slots_total": 15,
+  "gain_history": [
+    {
+      "round": 0,
+      "yield": 15,
+      "novel_cluster_rate": 0.83
+    },
+    {
+      "round": 1,
+      "yield": 8,
+      "novel_cluster_rate": 0.57
+    },
+    {
+      "round": 2,
+      "yield": 4,
+      "novel_cluster_rate": 0.67
+    }
+  ],
+  "directives": {
+    "round-1": [
+      {
+        "type": "DEEPEN",
+        "cluster": "c-escalation-oscillation-cap",
+        "lens": "fd-routing-kernel-mechanics"
+      },
+      {
+        "type": "FUSE",
+        "parents": [
+          "fd-eval-calibration-metrics",
+          "fd-hydraulic-diversion"
+        ]
+      },
+      {
+        "type": "FUSE",
+        "parents": [
+          "fd-escalation-retry-ladder",
+          "fd-swordsmith-transmission"
+        ]
+      },
+      {
+        "type": "STEER-WIDE"
+      }
+    ],
+    "round-2": [
+      {
+        "type": "DEEPEN",
+        "cluster": "c-fable-clamp-universality",
+        "lens": "fd-routing-kernel-mechanics"
+      },
+      {
+        "type": "FUSE",
+        "parents": [
+          "fd-eval-calibration-metrics",
+          "fd-assay-hallmark"
+        ]
+      }
+    ]
+  },
+  "lenses": {
+    "base": 5,
+    "wide": 1,
+    "fusions": 3
+  },
+  "verified": {
+    "upheld": 29,
+    "refuted": 1,
+    "raw": 13
+  }
+}

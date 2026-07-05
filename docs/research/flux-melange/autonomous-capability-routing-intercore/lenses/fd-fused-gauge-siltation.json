@@ -1,0 +1,39 @@
+{
+  "id": "fd-fused-gauge-siltation",
+  "kind": "fusion",
+  "parents": [
+    "fd-eval-calibration-metrics",
+    "fd-hydraulic-diversion"
+  ],
+  "domain": "gauge-in-the-flow (measurement-validity x flow-infrastructure)",
+  "axioms": [
+    "TENSION (unresolved, this lens's home): measurement-validity thinking treats the record store as a faithful population and asks only whether the aggregation math is unbiased; flow/infrastructure thinking treats the gauge as merely 'exists / is aggregated' and asks only whether the channel has a relief path and a dredge cadence. Neither can see a gate whose metric is statistically sound over a sample the plumbing has silently biased, nor a spillway correctly designed whose diverted flow unbalances the sample the gate is calibrated against. This lens lives exactly there and does not resolve it.",
+    "A gating number is only as valid as the point in the flow where it is physically sampled: a gauge installed upstream of a fallback/escalation avulsion reads the pre-diversion intent, not the post-diversion reality the metric then trusts.",
+    "A designed relief path (fable->opus fallback, two-strikes escalation) is also a sampling mechanism: it systematically deposits the hardest/failed flow into one tier's record and the easy flow into another's, so the population the pass-rate metric aggregates is selected by the plumbing, not by tier capability.",
+    "Un-dredged evidence tables (routing_decisions, plan_execution_outcome) silt the channel bed until aggregation reads stale/partial/co-mingled data — the retention cadence is a measurement-validity control, not merely a storage concern.",
+    "The low-water pilot (2-3 items, Rule 6) is the most fragile flow AND the most underpowered sample; letting it feed the same calibrate loop that later gates live routing entrenches a cold-start reading taken at the worst moment for both flow-safety and statistical power.",
+    "Routing-that-consumes-the-metric is itself a spillway: a low/biased reading diverts flow away from a tier and thereby starves that tier of the samples needed to correct the estimate — a feedback trap that needs a minimum-flow/dredge guarantee neither parent lens alone would prescribe.",
+    "HARD CONSTRAINT: report a finding ONLY if it requires BOTH parent perspectives — every finding must name a flow/infrastructure mechanism AND a measurement-validity consequence for a gate, with an intersection_justification showing that deleting either half collapses the finding into a single-parent concern."
+  ],
+  "primitives": [
+    "gauge-in-the-flow: a gate-governing number crossed with the point in the dispatch flow where it is physically sampled",
+    "spillway-as-sampler: fallback/escalation relief path treated as the selection mechanism that populates a tier's metric sample",
+    "silted denominator: un-dredged evidence-table growth producing a stale/partial/co-mingled aggregation population",
+    "avulsion-vs-gauge-placement: escalation/fallback tier-switch relative to where author_tier/executor_tier is recorded (attribution error from mis-placed gauge)",
+    "low-water-sample entrenchment: the 2-3-item pilot as both fragile flow and underpowered sample feeding the gating metric",
+    "starvation feedback loop: routing-consumes-metric as a spillway that drains the sample needed to correct a biased reading",
+    "lossy-gauge advancement: verdict-sidecar extraction as a fail-open reading that gates phase advance and feeds the metric"
+  ],
+  "failure_mode": [
+    "Declines any finding whose defect is purely statistical (bad aggregation math over a correctly-collected sample) — that belongs to fd-eval-calibration-metrics alone.",
+    "Declines any finding whose defect is purely hydraulic (missing relief path / dredge cadence with no downstream gate-corruption) — that belongs to fd-hydraulic-diversion alone.",
+    "Does not evaluate routing resolution/precedence determinism (fd-routing-kernel-mechanics), escalation state-machine termination (fd-escalation-retry-ladder), or authority/inspection-independence (fd-swordsmith-transmission); assumes those fire as designed and asks only whether their flow biases the sample a gating metric aggregates.",
+    "By construction cannot report a finding that only one parent lens would surface — the intersection-only constraint is the lens's failure mode when the two perspectives do not actually cross at a gated number."
+  ],
+  "findings": [
+    "f-027",
+    "f-028",
+    "f-029",
+    "f-030"
+  ]
+}

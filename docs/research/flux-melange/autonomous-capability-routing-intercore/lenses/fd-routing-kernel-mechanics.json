@@ -1,0 +1,41 @@
+{
+  "id": "fd-routing-kernel-mechanics",
+  "kind": "base",
+  "parents": [],
+  "domain": "routing",
+  "axioms": [
+    "Resolution-order determinism is sacred: a (phase, category, run) tuple must resolve to exactly one model regardless of which resolver runs.",
+    "Two independently-maintained resolvers (bash lib-routing.sh fast-path vs Go internal/routing) will silently diverge on any input unless a shared invariant forces parity.",
+    "An unrecognized model string that falls through to tier 0 (TierUnknown) is more dangerous than a hard error because it feeds directly into ordinal safety-floor comparisons and looks like a normal clamp in logs.",
+    "Every routing decision must be auditable: routing_decisions must carry enough provenance fields to distinguish a floor-clamp from an availability-fallback from an agency match.",
+    "Kernel-stored agency-spec state (agency.models.${phase}) loaded once via ic agency load is stale the moment the spec or plan changes mid-run, with no reload trigger.",
+    "The CLAVAIN_RUN_ID-gated skip of the Go fast-path is a load-bearing invariant, not a convenient accident, and depends on env-var propagation across subagent/subshell boundaries."
+  ],
+  "primitives": [
+    "model-tier ordinal (haiku=1/sonnet=2/opus=3, fable missing)",
+    "precedence hierarchy (overrides > phase.category > phase.model > defaults)",
+    "resolver path selection (bash vs Go, gated by CLAVAIN_RUN_ID)",
+    "safety-floor clamp comparison",
+    "routing_decisions row provenance (rule_matched, floor_applied, FloorFrom/FloorTo)",
+    "agency-spec kernel state (intercore_state_get)"
+  ],
+  "failure_mode": [
+    "Systematically misses retry/escalation state-machine correctness (attempt counting, tier-stepping, oscillation) — assumes resolution is the only surface.",
+    "Does not evaluate whether the downstream pass-rate metric is statistically sound; stops at whether routing_decisions produces auditable rows.",
+    "Blind to human-transmission/allocation-independence framing and to flow-volume/spillway framing — reasons purely in config-resolution determinism terms."
+  ],
+  "findings": [
+    "f-011",
+    "f-012",
+    "f-013",
+    "f-014",
+    "f-015",
+    "f-024",
+    "f-025",
+    "f-026",
+    "f-038",
+    "f-039",
+    "f-040",
+    "f-041"
+  ]
+}

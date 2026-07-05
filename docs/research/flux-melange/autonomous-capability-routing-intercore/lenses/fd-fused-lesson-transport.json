@@ -1,0 +1,39 @@
+{
+  "id": "fd-fused-lesson-transport",
+  "kind": "fusion",
+  "parents": [
+    "fd-escalation-retry-ladder",
+    "fd-swordsmith-transmission"
+  ],
+  "domain": "escalation-mechanics-x-craft-lineage-transmission",
+  "axioms": [
+    "Escalation moves two distinct things: the WORK (the task re-dispatched at a higher tier) and the LESSON (what the failed attempt learned — its failure_mode, failed criteria, plan-conformance gap). A provably-correct state transition moves the former; only a transmission channel moves the latter. Their divergence is where this lens lives.",
+    "A tier-step can be flawless as a counter (attempt/tier orthogonal, terminating, oscillation-capped) and catastrophic as a hand-off (the higher tier inherits nothing the lower tier learned) — and vice versa. Neither parent frame alone can see this; the fusion exists at the seam where both are simultaneously true.",
+    "failure_mode is asked to be two things at once: a closed enum bucketable for aggregation (the counter's need) and an actionable fault-record specific enough to change what the next hand does (the lineage's need). A schema that satisfies one can silently starve the other.",
+    "'Correction changes the hand' (attempt==3 → tier-step) is not automatically a valid correction: if the fault lived in the PLAN's judgment-call ambiguity, a bigger executor re-hits the same wall — the hand changed but the canonical form (and thus the lesson) did not. Distinguishing real correction from disguised same-hand re-strike requires reading BOTH the transition and the transmission.",
+    "Termination and oscillation-capping are counter obligations; remembering the specific fault and delivering the accumulated lesson-chain to the master at the cap are transmission obligations. A guard can terminate correctly and hand the inheritor an empty ledger.",
+    "The escalation TRIGGER (coarse verdict sidecar: pass/warn/error/retry) and the LESSON (fine criterion-level plan-conformance from the master's fixed jig) can live in separate channels — so the tier-step fires on one signal while the actual lesson sits in another the escalated tier never reads."
+  ],
+  "primitives": [
+    "work-vs-lesson split (what moves up a tier vs what the failed attempt learned)",
+    "lesson-carrying payload on tier-step (fault-record threaded into escalated dispatch context)",
+    "failure_mode as dual-purpose field (aggregation-bucket-key AND actionable-fault-record)",
+    "correction-vs-disguised-re-strike discriminator (did canonical form change, or only the hand?)",
+    "lesson-chain artifact at the oscillation cap (per-tier inheritance delivered to the master)",
+    "trigger-channel vs jig-channel divergence (coarse verdict vs criterion-level conformance)",
+    "canonical-form transmission across tiers (execution-grade plan authored for sonnet traveling up to opus/fable)",
+    "intersection_justification (mandatory: what each parent lens concludes alone, and why only both together reveal the defect)"
+  ],
+  "failure_mode": [
+    "Will NOT report a pure state-machine defect (counter/termination/oscillation/verdict-parse) that fd-escalation-retry-ladder would surface alone — engages mechanics only as the WORK half of a work-moved-but-lesson-didn't seam.",
+    "Will NOT report a pure craft-lineage concern (grade-binding, inspection independence, failure-vocabulary, master-substitution) that fd-swordsmith-transmission would surface alone — engages transmission only as the LESSON half of the seam.",
+    "Every finding must carry an intersection_justification; a finding that either parent lens produces in isolation is out of scope and dropped. This is the hard constraint that keeps the fusion at the intersection rather than reverting to a union of its parents.",
+    "Does not own routing resolution/precedence/staleness (fd-routing-kernel-mechanics), metric statistical soundness (fd-eval-calibration-metrics), or flow-volume/load-shedding framing (fd-hydraulic-diversion) — touches those only where a resolution result or a schema's aggregation-fitness IS the lesson-transmission collision under investigation."
+  ],
+  "tension": "Mechanical retry/escalation state-machine thinking (attempt counters, tier-stepping, termination bounds, oscillation guards — moving WORK up a tier) vs craft-lineage transmission thinking (how skill, technique, and failure-knowledge pass between tiers of workers — moving the LESSON up with it). The fused lens does not resolve this; it investigates every place the escalation machinery moves work up a tier without carrying along what the failed attempt learned.",
+  "findings": [
+    "f-031",
+    "f-032",
+    "f-033"
+  ]
+}

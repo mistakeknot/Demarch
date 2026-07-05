@@ -1,0 +1,35 @@
+{
+  "id": "fd-escalation-retry-ladder",
+  "kind": "base",
+  "parents": [],
+  "domain": "reliability-retry-state-machines",
+  "axioms": [
+    "'Attempt' (retries at current tier) and 'tier' (position in the sonnet→opus→fable ladder) must be tracked as orthogonal dimensions; conflating them into one counter violates two-strikes-per-tier semantics.",
+    "The escalation state machine must be provably terminating, with a worst-case bound like len(TierSequence) * MaxRetriesPerTier.",
+    "retry.go copies Model: orig.Model verbatim; tier-stepping is a new code path (a new function or changed signature), not an incremental 'extension'.",
+    "The existing MaxRetries=3 default truncates the ladder before the second escalation can be evaluated unless explicitly re-scoped.",
+    "Verdict-parse failure must fail-closed (unparseable → error/escalate, not retry), or a broken executor burns the same-tier retry budget without ever escalating.",
+    "The oscillation guard depends on a durable chain identity that survives re-triggers; walking ParentDispatchID from an ephemeral dispatch root resets the escalation cap to zero on every re-run."
+  ],
+  "primitives": [
+    "RetryCount (single monotonic counter)",
+    "ShouldRetry / MaxRetries guard",
+    "Retry() dispatch-config copy (Model field)",
+    "ParentDispatchID / ListRetryChain chain-walk",
+    "verdict sidecar (pass/warn/error/retry)",
+    "tier ladder (sonnet→opus→fable)",
+    "dispatch chain identity"
+  ],
+  "failure_mode": [
+    "Assumes routing resolves the correct model in the first place — does not review precedence/resolution correctness (owned by routing-kernel-mechanics).",
+    "Stops at whether the escalation event is correctly triggered/capped/recorded; does not judge whether the recorded data aggregates into a sound metric.",
+    "Reasons about termination and counters mechanically; does not reach into human-allocation-independence or flow-spillway metaphors, nor statistical sufficiency of the resulting sample."
+  ],
+  "findings": [
+    "f-001",
+    "f-002",
+    "f-003",
+    "f-004",
+    "f-005"
+  ]
+}

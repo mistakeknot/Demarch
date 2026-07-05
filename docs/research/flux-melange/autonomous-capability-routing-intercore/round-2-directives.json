@@ -1,0 +1,21 @@
+[
+  {
+    "type": "DEEPEN",
+    "target": {
+      "region": "brainstorm \u00a7Phase 1 / \u00a7Design fable-window",
+      "cluster_id": "c-fable-clamp-universality"
+    },
+    "rationale": "f-017 (risk 6, single lens, unverified): the fable->opus clamp is only committed for routing_resolve_model; dispatch call sites that select models independently may bypass it. Enumerate the actual call sites and confirm/refute.",
+    "lens": "fd-routing-kernel-mechanics",
+    "budget_weight": 0.4
+  },
+  {
+    "type": "FUSE",
+    "parents": [
+      "fd-eval-calibration-metrics",
+      "fd-assay-hallmark"
+    ],
+    "rationale": "shared_heat 2 (\u00a7Phase 3 + \u00a7Phase 4), complementarity (custody/provenance sits in eval's blind spot), redundancy 0 \u2014 the metrology-of-the-validator intersection",
+    "budget_weight": 0.6
+  }
+]

@@ -1,0 +1,130 @@
+{
+  "objective": "maximize verified novelty\u00d7risk surface until dry",
+  "weights": "balanced",
+  "round": 2,
+  "min_rounds": 2,
+  "max_rounds": 4,
+  "budget": {
+    "total": 15,
+    "remaining": 1,
+    "round_cost_floor": 3
+  },
+  "coverage": {
+    "regions": [
+      "\u00a7Phase 1",
+      "\u00a7Phase 2",
+      "\u00a7Phase 3",
+      "\u00a7Phase 4",
+      "\u00a7Design considerations",
+      "\u00a7Survey"
+    ],
+    "tiers_used": [
+      "adjacent",
+      "distant"
+    ],
+    "lens_pairs_fused": [
+      [
+        "fd-eval-calibration-metrics",
+        "fd-hydraulic-diversion"
+      ],
+      [
+        "fd-escalation-retry-ladder",
+        "fd-swordsmith-transmission"
+      ]
+    ]
+  },
+  "heat_map": {
+    "regions": [
+      {
+        "region": "\u00a7Phase 1 + routing code",
+        "yield_density": 52,
+        "max_risk": 9,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "\u00a7Phase 4",
+        "yield_density": 46,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "\u00a7Phase 2",
+        "yield_density": 44,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "\u00a7Phase 3",
+        "yield_density": 16,
+        "max_risk": 4,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "\u00a7Design escalation guard",
+        "yield_density": 12,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      }
+    ],
+    "lens_pairs": [
+      {
+        "pair": [
+          "fd-eval-calibration-metrics",
+          "fd-hydraulic-diversion"
+        ],
+        "shared_heat": 2,
+        "complementarity": 1,
+        "redundancy": 0,
+        "score": 3
+      },
+      {
+        "pair": [
+          "fd-escalation-retry-ladder",
+          "fd-swordsmith-transmission"
+        ],
+        "shared_heat": 2,
+        "complementarity": 1,
+        "redundancy": 1,
+        "score": 2
+      }
+    ],
+    "disagreement_flags": [
+      {
+        "location": "tier-0 floor semantics (RESOLVED: f-040 refuted, f-011 stands)",
+        "finding_ids": [
+          "f-040",
+          "f-011"
+        ]
+      }
+    ]
+  },
+  "gain_history": [
+    {
+      "round": 0,
+      "yield": 15,
+      "novel_cluster_rate": 0.83
+    },
+    {
+      "round": 1,
+      "yield": 8,
+      "novel_cluster_rate": 0.57
+    },
+    {
+      "round": 2,
+      "yield": 4,
+      "novel_cluster_rate": 0.67
+    }
+  ],
+  "frontier": [
+    "f-027",
+    "f-031",
+    "f-011",
+    "f-039",
+    "f-029",
+    "f-042",
+    "f-043",
+    "f-033"
+  ],
+  "should_stop": true,
+  "halt_reason": "BUDGET"
+}

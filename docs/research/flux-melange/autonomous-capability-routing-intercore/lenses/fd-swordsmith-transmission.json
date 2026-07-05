@@ -1,0 +1,33 @@
+{
+  "id": "fd-swordsmith-transmission",
+  "kind": "base",
+  "parents": [],
+  "domain": "craft-lineage-transmission",
+  "axioms": [
+    "Each operation must be bound to a proven grade (tier); the executor default (sonnet) must never silently be handed master-grade work.",
+    "Inspection independence is cardinal: the master inspects against a fixed jig (the plan's criteria), never blends the fixed-gauge result with his own taste — a plan-conformance verdict must be an independent, non-overridable gate, not folded into flux-drive's review score.",
+    "Correction-not-repetition: a master never lets the same untrained hand re-strike a botched weld a third time the same way — the escalated attempt must change the hand (model tier), not just the attempt count.",
+    "Canonical form must be transmitted exactly; a plan with 'use your judgment' steps handed to an apprentice-grade executor is catastrophic, and nothing yet lints for it.",
+    "The lineage remembers the specific fault (a closed failure_mode vocabulary), not just 'failure happened', so faults of the same kind can be counted and compared across incidents.",
+    "When the master is away, sign-off falls to the most-senior journeyman (opus), never the apprentice."
+  ],
+  "primitives": [
+    "grade-to-task binding (tier-to-phase)",
+    "master-inspection jig (fixed rubric, independent gate)",
+    "correction-changes-the-hand (tier-escalation vs same-model retry)",
+    "canonical-form lint (judgment-call rejection)",
+    "durable failure record (closed enum)",
+    "master-substitution (fable→opus sign-off)"
+  ],
+  "failure_mode": [
+    "Owns only human-transmission concerns (allocation, inspection independence, correction discipline, failure memory); does NOT own flow-volume, overflow, oscillation, or gauge/measurement (hydraulic's territory).",
+    "Sees fable-unavailability solely as a who-signs-off (authority) question, missing the relief-spillway/load-shedding framing.",
+    "Does not reason about statistical sufficiency, precedence-resolution determinism, or termination proofs; expresses mechanism bugs only through the forge metaphor (same-hand re-strike)."
+  ],
+  "findings": [
+    "f-020",
+    "f-021",
+    "f-022",
+    "f-023"
+  ]
+}

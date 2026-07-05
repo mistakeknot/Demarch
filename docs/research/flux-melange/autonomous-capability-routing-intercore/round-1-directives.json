@@ -1,0 +1,35 @@
+[
+  {
+    "type": "DEEPEN",
+    "target": {
+      "region": "brainstorm \u00a7Design considerations (Escalation loop guard)",
+      "cluster_id": "c-escalation-oscillation-cap"
+    },
+    "rationale": "f-005+f-016 (risk 6, cross-tier convergent, unverified): the sonnet->opus->fable ladder has no per-chain cap or terminal relief valve once fable fails. Confirm against retry.go/dispatch.sh mechanics and sharpen the concrete guard design.",
+    "lens": "fd-routing-kernel-mechanics",
+    "budget_weight": 0.3
+  },
+  {
+    "type": "FUSE",
+    "parents": [
+      "fd-eval-calibration-metrics",
+      "fd-hydraulic-diversion"
+    ],
+    "rationale": "shared_heat 2 (both fired on \u00a7Phase 4), complementarity 1 (accumulation/cadence sits in eval's blind spot), redundancy 0",
+    "budget_weight": 0.3
+  },
+  {
+    "type": "FUSE",
+    "parents": [
+      "fd-escalation-retry-ladder",
+      "fd-swordsmith-transmission"
+    ],
+    "rationale": "shared_heat 2 (\u00a7Phase 2), complementarity 1 (technique-transmission vs retry mechanics), redundancy 1 (c-retry-model-copy) -> score 2",
+    "budget_weight": 0.2
+  },
+  {
+    "type": "STEER-WIDE",
+    "rationale": "novel_cluster_rate 0.83 >= 0.6 \u2014 widening still pays",
+    "budget_weight": 0.2
+  }
+]

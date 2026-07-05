@@ -1,0 +1,34 @@
+{
+  "id": "fd-eval-calibration-metrics",
+  "kind": "base",
+  "parents": [],
+  "domain": "ml-evaluation-calibration",
+  "axioms": [
+    "A single executor_model field per outcome record cannot attribute credit correctly when escalation produced the passing artifact at a different tier than the one originally routed.",
+    "An acceptance criterion is only a valid validator rubric if it resolves to a machine-checkable check (shell exit code, file existence, structural diff); semantic-judgment criteria ('follows the intended design') silently degrade the gate back to judgment-based review.",
+    "2-3 pilot items is a pipeline smoke test, not a statistically sufficient sample size for a binary pass/fail metric that gates autonomy widening.",
+    "Raw pass-rate aggregated by (author_tier, executor_tier) without controlling for task difficulty conflates tier capability with selection-biased task complexity (fable/frontier is reserved for already-failed hard tasks by doctrine).",
+    "A single validator dispatch is one noisy sample; without inter-run/inter-validator agreement checks, the north-star metric may measure judge-noise rather than plan-conformance.",
+    "The metric that gates autonomy must be measuring the tier-capability signal, not confounds (attribution error, difficulty, judge variance)."
+  ],
+  "primitives": [
+    "plan_execution_outcome record (author/executor/validator model, criteria pass/fail, escalation_count)",
+    "(author_tier, executor_tier) aggregation key",
+    "machine-checkable acceptance criterion",
+    "inter-validator/inter-run agreement rate",
+    "sample size / confidence interval",
+    "task-complexity (B2/C-class) confound dimension"
+  ],
+  "failure_mode": [
+    "Assumes escalation events are triggered and recorded correctly upstream (owned by escalation-retry-ladder); reviews only the aggregation/attribution downstream.",
+    "Downstream of routing correctness — assumes routing_decisions captured the right model; concerned only with the pass-rate math and rubric objectivity.",
+    "Reasons in statistical-confound terms; does not surface mechanism-level code bugs (Model copy, counter conflation) or metaphor-driven structural risks (spillway, forge)."
+  ],
+  "findings": [
+    "f-006",
+    "f-007",
+    "f-008",
+    "f-009",
+    "f-010"
+  ]
+}
