@@ -41,16 +41,17 @@ if ! mountpoint -q "$MEDIA_ROOT" 2>/dev/null; then
   [[ "$ans" == "y" || "$ans" == "Y" ]] || exit 1
 fi
 
-avail_gb=$(df -BG --output=avail "$MEDIA_ROOT" | tail -1 | tr -dc '0-9')
-echo "Available on $MEDIA_ROOT: ${avail_gb}G"
-echo
-
 mkdir -p \
   "$MEDIA_ROOT/downloads/complete" \
   "$MEDIA_ROOT/downloads/incomplete" \
   "$MEDIA_ROOT/movies" \
   "$MEDIA_ROOT/tv" \
   "$CONFIG_ROOT"/{jellyfin,jellyseerr,radarr,sonarr,prowlarr,qbittorrent,sabnzbd}
+
+# (df runs after mkdir — on a fresh path there is nothing to stat before it.)
+avail_gb=$(df -BG --output=avail "$MEDIA_ROOT" | tail -1 | tr -dc '0-9')
+echo "Available on $MEDIA_ROOT: ${avail_gb}G"
+echo
 
 # Ownership so the containers (running as PUID:PGID) can write.
 chown -R "$PUID:$PGID" "$MEDIA_ROOT" "$CONFIG_ROOT"

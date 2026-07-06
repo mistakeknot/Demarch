@@ -29,7 +29,7 @@ services:
     volumes:
       - ${CONFIG_ROOT}/jellyfin:/config
       - ${MEDIA_ROOT}:/data
-      - /cache/jellyfin:/cache
+      - ${CACHE_ROOT:-/cache}/jellyfin:/cache
     ports:
       - "${TS_BIND}:${JELLYFIN_PORT}:8096"
     restart: unless-stopped
@@ -232,7 +232,7 @@ services:
 #   sudo install -m 600 /dev/stdin /etc/zklw-media/op-token <<< 'ops_…'
 secrets:
   op_token:
-    file: /etc/zklw-media/op-token
+    file: ${OP_TOKEN_FILE:-/etc/zklw-media/op-token}
 
 # Bind mounts are used for all persistent state (under ${CONFIG_ROOT} and
 # ${MEDIA_ROOT}); no named volumes needed. This keeps everything visible on
