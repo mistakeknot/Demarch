@@ -10,7 +10,12 @@ WINDOW_DAYS="${OYRF_WINDOW_DAYS:-7}"
 SINCE=""
 DRY_RUN=0
 TIMEOUT_SECONDS="${OYRF_COST_QUERY_TIMEOUT_SECONDS:-20}"
-COST_QUERY="$ROOT/interverse/interstat/scripts/cost-query.sh"
+# Interstat's cost-query.sh is private tooling and deliberately gitignored
+# (see .gitignore: interverse/), so it is absent on any fresh clone/CI
+# checkout by design. OYRF_COST_QUERY_OVERRIDE lets callers (tests, or
+# alternate local setups) point at a substitute script without needing
+# the real private path to exist.
+COST_QUERY="${OYRF_COST_QUERY_OVERRIDE:-$ROOT/interverse/interstat/scripts/cost-query.sh}"
 
 usage() {
   cat <<'USAGE'

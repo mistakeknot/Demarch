@@ -184,8 +184,26 @@ JSON
         )
         fake_timeout.chmod(0o700)
 
+        # interverse/interstat/scripts/cost-query.sh is private tooling and
+        # deliberately gitignored (see .gitignore: interverse/), so it never
+        # exists on a fresh clone/CI checkout. estimate-costs.sh checks
+        # `[ -x "$COST_QUERY" ]` before ever invoking `timeout`, so without a
+        # stub here it always short-circuits to interstat-empty and the fake
+        # `timeout` above is never reached. OYRF_COST_QUERY_OVERRIDE points
+        # estimate-costs.sh at this stub instead of the real private path;
+        # the stub itself is never executed (the fake `timeout` above
+        # intercepts first) but must exist and be executable to pass the
+        # `-x` check.
+        fake_cost_query = tmp_path / "cost-query.sh"
+        fake_cost_query.write_text(
+            "#!/usr/bin/env bash\necho 'stub: intercepted by fake timeout' >&2\nexit 1\n",
+            encoding="utf-8",
+        )
+        fake_cost_query.chmod(0o700)
+
         env = os.environ.copy()
         env["PATH"] = f"{tmp_path}:{env.get('PATH', '')}"
+        env["OYRF_COST_QUERY_OVERRIDE"] = str(fake_cost_query)
         result = subprocess.run(
             [str(ESTIMATOR), f"--output={out_path}", "--since=2026-04-23T00:00:00Z"],
             cwd=ROOT,
