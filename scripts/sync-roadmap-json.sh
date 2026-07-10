@@ -6,6 +6,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
+BACKLOG_OUTPUT="${2:-$ROOT_DOCS_DIR/backlog.md}"
 
 # Cloud-guard: bd is unavailable in cloud sessions; this script would emit
 # warnings and produce a roadmap.json with all bead links missing. Skip
@@ -145,7 +146,8 @@ collect_items_from_beads() {
             phase: (if .priority <= 1 then "now" elif .priority == 2 then "next" else "later" end),
             priority: ("P" + (.priority | tostring)),
             status: (
-                if .dependency_count > 0 and .status != "closed" then "blocked"
+                if .status == "deferred" then "deferred"
+                elif .dependency_count > 0 and .status != "closed" then "blocked"
                 elif .status == "in_progress" then "in_progress"
                 elif .status == "blocked" then "blocked"
                 else "open"
@@ -153,19 +155,22 @@ collect_items_from_beads() {
             ),
             source: "beads",
             source_file: "beads",
-            blocked_by: [],
+            blocked_by: [
+                .dependencies[]?
+                | select(.type == "blocks")
+                | .depends_on_id
+            ],
             notes: (.title | gsub("^\\[[^\\]]+\\]\\s*"; ""))
         }
     ' >> "$ITEMS_FILE" 2>/dev/null || true
 
-    # Note: cross-dep resolution via ID_TO_MODULE is skipped for beads-derived items
-    # since bd list --json doesn't provide dependency IDs (only counts).
-    # Cross-module dependencies will be empty until bd adds dep ID export.
+    # Cross-module rollups remain empty; blocked_by retains live dependency IDs.
 }
 
 # === MAIN ===
 
 require jq
+require python3
 
 TMP_DIR="$(mktemp -d)"
 chmod 700 "$TMP_DIR"
@@ -262,7 +267,7 @@ jq -s '.' "$NO_ROADMAP_FILE" > "$TMP_DIR/no_roadmap.json"
 if ! jq -n \
     --arg project "$ROADMAP_PROJECT" \
     --arg kind "${ROADMAP_PROJECT}-monorepo-roadmap" \
-    --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%S%:z)" \
+    --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
     --argjson module_count "$module_count" \
     --argjson open_beads "$open_beads" \
     --argjson blocked "$blocked_items" \
@@ -281,4 +286,6 @@ if ! jq -n \
 fi
 
 jq -M . "$OUTPUT" >"${OUTPUT}.tmp" && mv "${OUTPUT}.tmp" "$OUTPUT"
+python3 "$ROOT_DIR/scripts/render_backlog.py" "$OUTPUT" "$BACKLOG_OUTPUT"
 echo "Wrote roadmap JSON: $OUTPUT"
+echo "Wrote backlog Markdown: $BACKLOG_OUTPUT"
