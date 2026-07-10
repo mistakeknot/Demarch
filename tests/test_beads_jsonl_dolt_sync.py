@@ -27,6 +27,31 @@ def test_diff_issue_ids_reports_jsonl_ids_missing_from_dolt() -> None:
     assert diff.ok is False
 
 
+def test_load_jsonl_issue_ids_accepts_exported_memory_records(tmp_path: Path) -> None:
+    issues_jsonl = tmp_path / "issues.jsonl"
+    write_jsonl(
+        issues_jsonl,
+        [
+            {"id": "sylveste-o2fr", "title": "gate"},
+            {"_type": "memory", "key": "routing-note", "value": "Prefer live evidence."},
+        ],
+    )
+
+    assert check.load_jsonl_issue_ids(issues_jsonl) == {"sylveste-o2fr"}
+
+
+def test_load_jsonl_issue_ids_rejects_malformed_memory_records(tmp_path: Path) -> None:
+    issues_jsonl = tmp_path / "issues.jsonl"
+    write_jsonl(issues_jsonl, [{"_type": "memory", "key": "routing-note"}])
+
+    try:
+        check.load_jsonl_issue_ids(issues_jsonl)
+    except ValueError as exc:
+        assert "invalid memory record" in str(exc)
+    else:  # pragma: no cover - assertion guard
+        raise AssertionError("malformed memory record was accepted")
+
+
 def test_cli_fails_when_tracked_jsonl_contains_ids_absent_from_dolt(tmp_path: Path, capsys) -> None:
     repo = tmp_path
     beads_dir = repo / ".beads"
