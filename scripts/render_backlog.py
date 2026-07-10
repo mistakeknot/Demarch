@@ -80,7 +80,7 @@ def render(payload: dict[str, Any]) -> str:
         "**Companion to:** [sylveste-roadmap.md](sylveste-roadmap.md) (strategic roadmap)",
         f"**Last synced:** {synced_date}",
         "",
-        "This file contains every live P2-P4 item in the canonical Beads tracker. ",
+        "This file contains every live P2-P4 item in the canonical Beads tracker.",
         "It is generated from [roadmap.json](roadmap.json); do not hand-edit it.",
     ]
 

@@ -89,6 +89,7 @@ def test_renders_live_p2_through_p4_grouped_by_priority_and_module(tmp_path: Pat
     assert "- **sylveste-d** Someday cleanup" in rendered
     assert "sylveste-p1" not in rendered
     assert rendered.index("### clavain") < rendered.index("### intercore")
+    assert all(line == line.rstrip() for line in rendered.splitlines())
 
 
 def test_rejects_duplicate_issue_ids_across_phases(tmp_path: Path) -> None:
