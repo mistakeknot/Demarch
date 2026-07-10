@@ -39,6 +39,16 @@ def load_jsonl_issue_ids(path: Path) -> set[str]:
                 row = json.loads(line)
             except json.JSONDecodeError as exc:  # pragma: no cover - argparse-facing guard
                 raise ValueError(f"{path}:{line_number}: invalid JSON: {exc}") from exc
+            if row.get("_type") == "memory":
+                memory_key = row.get("key")
+                memory_value = row.get("value")
+                if (
+                    not isinstance(memory_key, str)
+                    or not memory_key
+                    or not isinstance(memory_value, str)
+                ):
+                    raise ValueError(f"{path}:{line_number}: invalid memory record")
+                continue
             issue_id = row.get("id")
             if not isinstance(issue_id, str) or not issue_id:
                 raise ValueError(f"{path}:{line_number}: missing string id")
