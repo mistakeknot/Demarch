@@ -54,7 +54,8 @@ The v1.5 system does **not** claim:
 | Attack | v1.5 detects? | Mitigation lever |
 |---|---|---|
 | Direct SQL: rewrite `op_type`, `target`, `mode` on a signed row | Yes — `audit --verify` flags row | Run `--verify` periodically; alert on mismatch |
-| Direct SQL: insert a new row with NULL signature | Yes — visible as pre-cutover-vintage when compared against marker timestamp | Compare row `created_at` to cutover-marker timestamp; reject new rows with `created_at > marker AND signature IS NULL` |
+| Direct SQL: insert a new row with `sig_version>=1` and NULL signature | Yes — `audit --verify` rejects it | Require a zero-failure audit before release |
+| Direct SQL: downgrade `sig_version` to 0 | Not fully | Current vintage classification is not cryptographically anchored; tracked corrective work must add an immutable legacy-row manifest or eliminate unsigned vintage rows |
 | Direct SQL: delete signed rows | No (signatures cover rows, not a chain) | Per-row deletion is not detectable via signatures alone; audit log should be append-only at the OS level (backup + WORM-ish policy) |
 | Invoke `clavain-cli` to produce legitimate signed rows | No — signatures are valid | Access control on the CLI path and signing key (0400 perms); rotate key on suspected compromise |
 | Steal key, sign forged rows offline | No | Key rotation + quarantine (`policy audit quarantine --before-key=<fp>`) flags all pre-breach rows |
@@ -62,7 +63,7 @@ The v1.5 system does **not** claim:
 
 ## Deprecation path to v1.6 (separation of duties)
 
-v1.6 moves `policy sign` out of the gate-wrapper process into a
+Future separation-of-duties work moves `policy sign` out of the gate-wrapper process into a
 standalone watcher (systemd/launchd/cron job) that owns the signing
 key. Gate wrappers write unsigned rows only; the watcher signs on its
 own schedule. Post-v1.6 trust claim upgrades to **tamper-proof-at-rest
@@ -75,26 +76,40 @@ write-time forgery by a privileged caller.
 
 ## Key distribution
 
-- `authz-project.key` (private, 0400) — **never commit**. Host-local.
+- `authz-project.key` (private, 0400) — **never commit**. Keep one canonical
+  signing copy for each audit domain; verifier hosts do not receive it.
 - `authz-project.pub` (public, 0444) — **commit** to the repo so
   verifiers agree on the expected fingerprint.
+- A verifier needs both the committed public key and a signed snapshot of the
+  canonical authorization DB. The public key alone establishes identity but
+  cannot supply the rows being audited.
 - `KeyFingerprint(pub)` = first 8 bytes of `sha256(pub)` as hex.
   Shown in audit output + git logs of pub file changes.
 
-Rotation procedure:
-1. `clavain-cli policy rotate-key` generates new `authz-project.key`;
-   old key is archived as `authz-project.key.<oldfp>.archive`.
-2. Old pubkey archived as `authz-project.pub.<oldfp>`.
-3. Old rows keep `sig_version=1`; new rows are `sig_version=2+`.
-4. Verifier walks sig_version and loads the matching archived pubkey.
+`policy doctor --require-signer --project-root=<root>` is the preflight for a
+signing host. It requires the current DB schema, public key, private mode 0400,
+and matching fingerprint without printing private-key paths or material.
 
-Rotation does NOT re-sign old rows. A compromised key means
-`quarantine --before-key=<fp>` flags everything signed under it, and
-those rows are downgraded to "pre-breach vintage" in audit output.
+**Rotation limitation:** the current verifier loads only the active public key
+and authorization rows do not store a signer key ID. `policy rotate-key`
+therefore refuses to run when any signed authorization history exists. Rotation
+remains available only before the first signature; retained histories require
+multi-key verification or an explicit re-sign migration first. `policy
+quarantine` records an event; the current verifier does not yet enforce that
+event against historical rows.
+
+For the Sylveste operating baseline, zklw is the sole canonical signer and owns
+the sole writable authorization ledger. Mac is verifier-only: it uses the
+Git-tracked public key and a signed snapshot of zklw's authorization DB, and it
+does not hold the private key. Any signer-required operation initiated on Mac
+must be handed off to zklw and recorded in the canonical ledger there. Do not
+copy the private key to Mac unless and until the system has real ledger
+replication with a single canonical write path or a remote-signing service.
 
 ## Out-of-scope
 
 - Multi-principal identity (who is "the user" vs "the agent") — see v2 token model.
-- Cross-host key distribution — Sylveste is single-host in v1.x.
+- Multi-host writable ledgers and active-active signing — the current Sylveste
+  topology deliberately uses one signer and one canonical ledger.
 - Certificate transparency / witness servers — not in scope; single-host trust.
 - HSM-backed signing — deferred indefinitely; file-based key is sufficient for the single-user threat model.
