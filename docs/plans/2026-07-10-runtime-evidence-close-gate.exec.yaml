@@ -1,0 +1,92 @@
+version: 1
+mode: all-sequential
+tier: deep
+max_parallel: 1
+timeout_per_task: 3600
+
+stages:
+  - name: "Intercore Contract and Kernel"
+    tasks:
+      - id: task-1
+        title: "Add strict runtime-evidence/v1 receipt contract"
+        files:
+          - core/intercore/pkg/runtimeproof/runtimeproof.go
+          - core/intercore/pkg/runtimeproof/runtimeproof_test.go
+        depends: []
+      - id: task-2
+        title: "Inject hard terminal gate and metadata binding support"
+        files:
+          - core/intercore/internal/runtrack/store.go
+          - core/intercore/internal/runtrack/store_test.go
+          - core/intercore/internal/phase/gate.go
+          - core/intercore/internal/phase/gate_test.go
+          - core/intercore/internal/phase/tx_queriers.go
+          - core/intercore/internal/phase/machine_test.go
+          - core/intercore/internal/phase/store.go
+          - core/intercore/internal/phase/store_test.go
+          - core/intercore/cmd/ic/run_create.go
+          - core/intercore/cmd/ic/run_config.go
+        depends: [task-1]
+
+  - name: "Clavain Evidence Path"
+    tasks:
+      - id: task-3
+        title: "Bind, collect, register, and verify runtime evidence"
+        files:
+          - os/Clavain/cmd/clavain-cli/go.mod
+          - os/Clavain/cmd/clavain-cli/go.sum
+          - os/Clavain/cmd/clavain-cli/runtime_evidence.go
+          - os/Clavain/cmd/clavain-cli/runtime_evidence_test.go
+          - os/Clavain/cmd/clavain-cli/main.go
+          - os/Clavain/cmd/clavain-cli/init.go
+          - os/Clavain/cmd/clavain-cli/phase.go
+          - os/Clavain/cmd/clavain-cli/testdata/runtimefixture/main.go
+          - os/Clavain/cmd/clavain-cli/testdata/runtimeprobe/main.go
+          - os/Clavain/cmd/clavain-cli/testdata/runtime-evidence-canary.json
+        depends: [task-2]
+      - id: task-4
+        title: "Move terminal transition and managed closes behind the gate"
+        files:
+          - os/Clavain/commands/reflect.md
+          - os/Clavain/commands/sprint.md
+          - os/Clavain/commands/bead-sweep.md
+          - os/Clavain/commands/campaign.md
+          - os/Clavain/commands/clavain-doctor.md
+          - os/Clavain/scripts/gates/bead-close.sh
+          - os/Clavain/scripts/bead-close-shipped.sh
+          - os/Clavain/scripts/bead-land.sh
+          - os/Clavain/hooks/lib-sprint.sh
+          - os/Clavain/skills/landing-a-change/SKILL.md
+          - os/Clavain/skills/landing-a-change/SKILL-compact.md
+          - os/Clavain/skills/ship/SKILL.md
+          - os/Clavain/cmd/clavain-cli/children.go
+        depends: [task-3]
+      - id: task-5
+        title: "Add throttled read-only tracker/runtime reconciliation"
+        files:
+          - os/Clavain/scripts/runtime-evidence-audit.sh
+          - os/Clavain/tests/test_runtime_evidence_audit.bats
+          - os/Clavain/hooks/session-start.sh
+          - os/Clavain/commands/clavain-doctor.md
+        depends: [task-4]
+
+  - name: "Installed Proof and Release"
+    tasks:
+      - id: task-6
+        title: "Verify source, publish, and deploy exact releases"
+        files:
+          - os/Clavain/scripts/runtime-evidence-canary.sh
+          - os/Clavain/tests/test_runtime_evidence_canary.bats
+          - core/intercore/**
+          - os/Clavain/**
+        depends: [task-4, task-5]
+      - id: task-7
+        title: "Run exact-release canaries, close tracker, and regenerate roadmap"
+        files:
+          - docs/evidence/2026-07-10-runtime-evidence-close-gate.md
+          - docs/sylveste-roadmap.md
+          - docs/roadmap.json
+          - docs/backlog.md
+          - .beads/issues.jsonl
+          - .beads/dolt-backup-state.json
+        depends: [task-6]
