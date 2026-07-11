@@ -1,10 +1,10 @@
 {
   "project": "demarch",
   "kind": "demarch-monorepo-roadmap",
-  "generated_at": "2026-07-10T19:22:24Z",
+  "generated_at": "2026-07-11T04:38:41Z",
   "module_count": 84,
-  "open_beads": 471,
-  "blocked": 146,
+  "open_beads": 470,
+  "blocked": 145,
   "modules": [
     {
       "module": ".clavain",
@@ -477,7 +477,7 @@
     {
       "module": "interspect",
       "location": "interverse/interspect",
-      "version": "0.1.21",
+      "version": "0.1.22",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -486,7 +486,7 @@
     {
       "module": "interstat",
       "location": "interverse/interstat",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "has_roadmap": true,
       "roadmap_source": "beads",
       "open_beads": 0,
@@ -1235,7 +1235,7 @@
     {
       "module": "interspect",
       "location": "interverse/interspect",
-      "version": "0.1.21",
+      "version": "0.1.22",
       "has_roadmap": false,
       "roadmap_source": "none",
       "open_beads": 0,
@@ -1244,7 +1244,7 @@
     {
       "module": "interstat",
       "location": "interverse/interstat",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "has_roadmap": true,
       "roadmap_source": "beads",
       "open_beads": 0,
@@ -1525,6 +1525,18 @@
     "now": [
       {
         "module": "sylveste",
+        "id": "sylveste-myyw.16",
+        "title": "A:L3 receipt proof gate — observe 10 natural no-touch sprints",
+        "phase": "now",
+        "priority": "P0",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "A:L3 receipt proof gate — observe 10 natural no-touch sprints"
+      },
+      {
+        "module": "sylveste",
         "id": "sylveste-ewy3.4.1",
         "title": "Implement A2A native transport at apps/Intercom/go/internal/transport/a2a/",
         "phase": "now",
@@ -1725,18 +1737,6 @@
       },
       {
         "module": "sylveste",
-        "id": "Sylveste-4b5.3",
-        "title": "Fix roadmap line-33 SWE-bench drift (phantom ynh/9lx -> real harness beads)",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "beads",
-        "source_file": "beads",
-        "blocked_by": [],
-        "notes": "Fix roadmap line-33 SWE-bench drift (phantom ynh/9lx -> real harness beads)"
-      },
-      {
-        "module": "sylveste",
         "id": "Sylveste-4b5.2",
         "title": "Make runtime-health/state-delta the SUBSTANCE of the 6h7x close-gate",
         "phase": "now",
@@ -1863,20 +1863,6 @@
         "source_file": "beads",
         "blocked_by": [],
         "notes": "Close-gate: phase:done requires integration-test-pass vs live server + orphan/ghost scan"
-      },
-      {
-        "module": "sylveste",
-        "id": "sylveste-tizx",
-        "title": "Re-baseline sylveste-roadmap.md against live beads",
-        "phase": "now",
-        "priority": "P1",
-        "status": "blocked",
-        "source": "beads",
-        "source_file": "beads",
-        "blocked_by": [
-          "Sylveste-4b5.3"
-        ],
-        "notes": "Re-baseline sylveste-roadmap.md against live beads"
       },
       {
         "module": "sylveste",
@@ -7949,7 +7935,7 @@
     {
       "module": "interspect",
       "location": "interverse/interspect",
-      "version": "0.1.21",
+      "version": "0.1.22",
       "notes": "No docs/roadmap.md"
     },
     {

@@ -1,6 +1,6 @@
 # Sylveste Roadmap
 
-**Modules discovered:** 84 | **Ledger:** 3,632 total; 3,143 closed; 457 open; 13 in progress; 18 deferred; 1 blocked | **Last updated:** 2026-07-10
+**Modules discovered:** 84 | **Ledger:** 3,633 total; 3,145 closed; 456 open; 13 in progress; 18 deferred; 1 blocked | **Last updated:** 2026-07-10
 
 **Machine roadmap:** [`roadmap.json`](roadmap.json) | **Detailed P2-P4 inventory:** [`backlog.md`](backlog.md) | **Architecture:** [`CLAUDE.md`](../CLAUDE.md)
 
@@ -12,18 +12,20 @@
 
 The 2026-07-10 operating-baseline repair is complete:
 
-- Beads/Dolt/JSONL history reconciled to 3,632 issues without discarding later state.
+- Beads/Dolt/JSONL history reconciled to 3,633 issues without discarding later state.
 - Stale claims, one duplicate, four completed epics, and 12 reversed dependency edges repaired.
 - Clavain source and installed surfaces canonicalized on the Mac and zklw.
 - Clavain structural CI, both Codex installer doctors, Interverse quality scoring, and `ic publish doctor` are green.
 - `roadmap.json` and `backlog.md` now regenerate from the canonical tracker rather than erased `iv-*` snapshots.
+- The A:L3 receipt pipeline is published and deployed as Clavain 0.6.261, Interstat 0.3.1, and Interspect 0.1.22 on both hosts.
 
-Two administrative closeouts remain evidence-driven:
+One integrity closeout remains evidence-driven:
 
 - **`sylveste-xogc`** - restoration and integrity guards are delivered; close only after the periodic integrity path is recorded and verified.
-- **`sylveste-tizx`** and **`Sylveste-4b5.3`** - this refresh supplies the corrected live roadmap and benchmark IDs; close after the generated artifacts land and the consistency audit passes.
 
-The previous A:L3 display of 8/10 is invalid. SessionEnd advanced blind counters even when calibration failed, normal `/reflect` runs recorded manual intervention, and proof state fragmented by working directory. A:L3 restarts at zero under receipt verification.
+**`sylveste-tizx`** and **`Sylveste-4b5.3`** are closed after the corrected artifacts landed and the consistency audit passed.
+
+The previous A:L3 display of 8/10 is invalid. SessionEnd advanced blind counters even when calibration failed, normal `/reflect` runs recorded manual intervention, and proof state fragmented by working directory. A:L3 restarted at zero under receipt verification.
 
 ---
 
@@ -39,13 +41,14 @@ This is the highest-leverage live graph node: **8 direct and 10 transitive unblo
 
 **`sylveste-myyw` (P0)** - Replace counters with unique sprint/session receipts for routing, gate-threshold, and phase-cost calibration. Failures, timeouts, manual edits, duplicate sessions, or broken hash continuity reset the proof. Close only after 10 consecutive natural no-touch sprints.
 
-Required sequence:
+Implementation and deployment are complete:
 
-1. Attribute successful phase transitions to the active Intercore run.
-2. Give each calibration loop strict `updated`, `valid_noop`, `failed`, or `timeout` outcomes.
-3. Verify receipts from history rather than trusting cached counters.
-4. Add an open proof child so raw epic close fails until verification passes.
-5. Deploy one canary sprint, then observe 10 natural sprints. Synthetic recorder calls do not count.
+- Successful phase transitions are attributed to the active Intercore run.
+- Calibration loops return strict `updated`, `valid_noop`, `failed`, or `timeout` outcomes.
+- Receipt verification rejects duplicates, tampering, broken hash continuity, and invalid migration state.
+- Open proof child **`sylveste-myyw.16`** carries `close-gate:calibration-streak`; its installed gate was observed refusing closure at 0/10.
+
+The remaining work is observational: accumulate 10 natural no-touch sprints on the deployed path. Synthetic recorder calls do not count. Work `sylveste-6h7x` while those receipts accrue.
 
 ### 3. Make runtime evidence substantive
 
