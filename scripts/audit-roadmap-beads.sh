@@ -71,7 +71,12 @@ fi
 
 # Active IDs = all IDs minus completed IDs
 if [[ -n "$COMPLETED_IDS" ]]; then
-    ACTIVE_IDS=$(comm -23 <(echo "$ALL_IDS") <(echo "$COMPLETED_IDS"))
+    ACTIVE_IDS="$(
+        awk '
+            NR == FNR { completed[tolower($0)] = 1; next }
+            !completed[tolower($0)]
+        ' <(printf '%s\n' "$COMPLETED_IDS") <(printf '%s\n' "$ALL_IDS")
+    )"
 else
     ACTIVE_IDS="$ALL_IDS"
 fi

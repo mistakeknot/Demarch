@@ -27,7 +27,13 @@ def run_audit(tmp_path: Path, roadmap_text: str) -> subprocess.CompletedProcess[
         "args = sys.argv[1:]\n"
         "if args[0] == 'show':\n"
         "    issue_id = args[1]\n"
-        "    known = {'sylveste-good': 'open', 'Sylveste-Good2': 'open'}\n"
+        "    known = {\n"
+        "        'sylveste-good': 'open',\n"
+        "        'Sylveste-Good2': 'open',\n"
+        "        'sylveste-6h7x': 'closed',\n"
+        "        'Sylveste-4b5.2': 'closed',\n"
+        "        'Sylveste-4b5.11': 'closed',\n"
+        "    }\n"
         "    match = next((key for key in known if key.casefold() == issue_id.casefold()), None)\n"
         "    if match is None:\n"
         "        raise SystemExit(1)\n"
@@ -75,3 +81,23 @@ def test_audit_handles_roadmap_without_issue_ids(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert payload["roadmap_ids_total"] == 0
     assert payload["coverage_pct"] == 100
+
+
+def test_audit_handles_mixed_case_recently_completed_ids(tmp_path: Path) -> None:
+    result = run_audit(
+        tmp_path,
+        (
+            "# Roadmap\n\n"
+            "- `sylveste-good` active\n"
+            "- `Sylveste-Good2` active\n"
+            "- **Recently completed:** `sylveste-6h7x`, "
+            "`Sylveste-4b5.2`, and `Sylveste-4b5.11`\n"
+        ),
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["roadmap_ids_total"] == 5
+    assert payload["roadmap_ids_active"] == 2
+    assert payload["roadmap_ids_completed"] == 3
+    assert payload["unclosed_completed"] == []
