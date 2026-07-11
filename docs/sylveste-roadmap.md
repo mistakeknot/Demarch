@@ -1,10 +1,10 @@
 # Sylveste Roadmap
 
-**Modules discovered:** 84 | **Ledger:** 3,652 total; 3,166 closed; 454 open; 13 in progress; 18 deferred; 1 blocked | **Last updated:** 2026-07-11
+**Modules discovered:** 84 | **Ledger:** 3,662 total; 3,172 closed; 458 open; 13 in progress; 18 deferred; 1 blocked | **Last updated:** 2026-07-11
 
 **Machine roadmap:** [`roadmap.json`](roadmap.json) | **Detailed P2-P4 inventory:** [`backlog.md`](backlog.md) | **Architecture:** [`CLAUDE.md`](../CLAUDE.md)
 
-> **Operating decision:** remain corrective-first. The live close-gate is enforced; do not start new plugins, consolidated MCP work, A:L4/auto-ship, or additive research until the evidence-qualified A:L3 proof and the remaining policy-audit trust gap pass. Live evidence outranks graph centrality, issue priority, and unit-test completion.
+> **Operating decision:** remain corrective-first. The live close-gate is enforced; do not start new plugins, consolidated MCP work, A:L4/auto-ship, or additive research until the evidence-qualified A:L3 proof and the remaining P1 authorization-provenance gaps pass. Live evidence outranks graph centrality, issue priority, and unit-test completion.
 
 ---
 
@@ -17,8 +17,9 @@ The 2026-07-10 operating-baseline repair is complete:
 - Clavain source and installed surfaces canonicalized on the Mac and zklw.
 - Clavain structural CI, both Codex installer doctors, Interverse quality scoring, and `ic publish doctor` are green.
 - `roadmap.json` and `backlog.md` now regenerate from the canonical tracker rather than erased `iv-*` snapshots.
-- The receipt and runtime-close pipeline is published and deployed as Clavain 0.6.265, Intercore 0.3.3, Interstat 0.3.1, and Interspect 0.1.22 on both hosts.
-- **Recently completed:** `sylveste-6h7x`, `Sylveste-4b5.2`, and `Sylveste-4b5.11` closed after exact installed canaries on both hosts and a real managed close. The recurring runtime-evidence audit reports one gated bead and zero findings.
+- The receipt and runtime-close pipeline is published and deployed as Clavain 0.6.266, Intercore 0.3.4, Interstat 0.3.1, and Interspect 0.1.22 on both hosts.
+- zklw is the sole authorization signer and canonical writable ledger; the Mac holds a read-only verifier snapshot and no private key. The repaired schema-35 ledger and both real managed operations verify with zero failed signatures.
+- **Recently completed:** `sylveste-6h7x`, `Sylveste-4b5.2`, `Sylveste-4b5.11`, and `Sylveste-rkm` closed after exact installed canaries, cross-host doctors, signed-history repair, and real managed close/push receipts.
 
 One integrity closeout remains evidence-driven:
 
@@ -38,11 +39,12 @@ The previous A:L3 display of 8/10 is invalid. SessionEnd advanced blind counters
 
 Both deployed proof epochs are currently **0/10**. This is deliberately observational: synthetic recorder calls and direct counter manipulation do not count. Continue normal corrective sprints and let valid SessionEnd receipts accumulate; a failure, timeout, duplicate, manual intervention, or broken hash chain resets the proof.
 
-### 2. Restore signed policy-audit integrity
+### 2. Harden signed-history provenance
 
-**`Sylveste-rkm` (P1)** - Define canonical project-key ownership across the Mac and zklw, provision it without committing private material, sign the cutover marker and existing rows, and fail deployment preflight when a managed-close host lacks its key.
+- **`sylveste-mn13` (P1)** - cryptographically anchor the three retained pre-signing rows so changing a signed record to `sig_version=0` cannot evade verification.
+- **`sylveste-5xpi` (P1)** - add signer key IDs, archived public-key lookup, and enforced quarantine before enabling key rotation.
 
-The first real managed close exposed six invalid policy-audit rows on zklw: one unsigned cutover marker and five post-signing rows without a loaded project key. Runtime evidence still passed independently, but additive work remains frozen until this audit surface is trustworthy.
+The safe single-signer baseline is live: zklw owns the only private key and writable ledger, Mac verification is read-only, and all 218 current authorization rows pass audit. These P1 items close the remaining database-tamper and future-rotation gaps rather than weakening that topology.
 
 ### 3. Guard calibration against self-confirmation
 
@@ -52,6 +54,9 @@ The first real managed close exposed six invalid policy-audit rows on zklw: one 
 ### 4. Make deployment identity self-repairing
 
 - **`sylveste-npc5` (P2)** - verify version, install path, Git commit, and binary digest atomically after Claude plugin updates; fail or perform a data-preserving repair when commit metadata is stale.
+- **`sylveste-dan6` (P2)** - design authenticated remote signing or conflict-safe canonical replication before permitting Mac-originated managed operations.
+- **`sylveste-otv9` (P2)** - archive or namespace both historical home ledgers without losing their real run evidence.
+- **`sylveste-4jmp` (P2)** - make the Interverse quality sweep frozen and non-mutating; keep variable PQS values as telemetry rather than a deterministic gate.
 
 `bv --robot-next` ranks the additive `sylveste-bcok` integration bridge by its
 seven downstream unblocks, while robot triage also surfaces `sylveste-22oi`

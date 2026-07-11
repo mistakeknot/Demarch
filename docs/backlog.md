@@ -17,6 +17,10 @@ It is generated from [roadmap.json](roadmap.json); do not hand-edit it.
 - **sylveste-2l1.6** AITA near-miss density analysis (270K moral dilemmas)
 - **sylveste-muf** Research: ambient recommendation UX — window shopping vs. over-indexed personalization _(deferred)_
 
+### clavain
+- **sylveste-dan6** Design remote signer or canonical ledger replication for Mac-originated operations
+- **sylveste-otv9** Retire ambiguous home-ledger fallback without losing historical runs
+
 ### harvest
 - **Sylveste-ie6.7** Transplant Compound's Codex Writer safety logic into Clavain's Codex install path
 
@@ -54,6 +58,9 @@ It is generated from [roadmap.json](roadmap.json); do not hand-edit it.
 - **sylveste-fyo3.6** P2: Hard budget enforcement mode — test and enable blocking behavior
 - **sylveste-fyo3.7** P2: Interspect overlay activation — promote from progressive enhancement to default
 - **sylveste-wyoi** Brainstorm-to-roadmap lift discipline — checklist step in /interpath:roadmap
+
+### interlab
+- **sylveste-4jmp** Make plugin quality sweep read-only and reproducible
 
 ### interspect
 - **sylveste-sfhq** Telemetry fusion: wire tool-time stats into interspect evidence

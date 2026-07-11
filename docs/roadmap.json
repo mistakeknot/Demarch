@@ -1,9 +1,9 @@
 {
-  "project": "demarch",
-  "kind": "demarch-monorepo-roadmap",
-  "generated_at": "2026-07-11T16:53:53Z",
+  "project": "sylveste",
+  "kind": "sylveste-monorepo-roadmap",
+  "generated_at": "2026-07-11T23:26:04Z",
   "module_count": 84,
-  "open_beads": 468,
+  "open_beads": 472,
   "blocked": 143,
   "modules": [
     {
@@ -754,7 +754,7 @@
       "status": "active"
     },
     {
-      "module": "demarch",
+      "module": "sylveste",
       "location": "root",
       "version": "—",
       "has_roadmap": true,
@@ -1512,7 +1512,7 @@
       "status": "active"
     },
     {
-      "module": "demarch",
+      "module": "sylveste",
       "location": "root",
       "version": "—",
       "has_roadmap": true,
@@ -1674,6 +1674,30 @@
         "source_file": "beads",
         "blocked_by": [],
         "notes": "Hassease: multi-model code execution daemon (Signal-native, cost-routed)"
+      },
+      {
+        "module": "intercore",
+        "id": "sylveste-5xpi",
+        "title": "Implement multi-key verification and enforced quarantine semantics",
+        "phase": "now",
+        "priority": "P1",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "Implement multi-key verification and enforced quarantine semantics"
+      },
+      {
+        "module": "intercore",
+        "id": "sylveste-mn13",
+        "title": "Cryptographically anchor legacy vintage against sig_version downgrade",
+        "phase": "now",
+        "priority": "P1",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "Cryptographically anchor legacy vintage against sig_version downgrade"
       },
       {
         "module": "upstream-sync",
@@ -2070,18 +2094,6 @@
         "source_file": "beads",
         "blocked_by": [],
         "notes": "RunPod H200 rental for DeepSeek V4 baseline logit capture (Day-3 unblock)"
-      },
-      {
-        "module": "clavain",
-        "id": "Sylveste-rkm",
-        "title": "Policy-engine audit — bd-push-dolt safety semantics + dead audit/sign surface",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "beads",
-        "source_file": "beads",
-        "blocked_by": [],
-        "notes": "Policy-engine audit — bd-push-dolt safety semantics + dead audit/sign surface"
       },
       {
         "module": "sylveste",
@@ -3125,6 +3137,42 @@
       }
     ],
     "next": [
+      {
+        "module": "interlab",
+        "id": "sylveste-4jmp",
+        "title": "Make plugin quality sweep read-only and reproducible",
+        "phase": "next",
+        "priority": "P2",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "Make plugin quality sweep read-only and reproducible"
+      },
+      {
+        "module": "clavain",
+        "id": "sylveste-otv9",
+        "title": "Retire ambiguous home-ledger fallback without losing historical runs",
+        "phase": "next",
+        "priority": "P2",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "Retire ambiguous home-ledger fallback without losing historical runs"
+      },
+      {
+        "module": "clavain",
+        "id": "sylveste-dan6",
+        "title": "Design remote signer or canonical ledger replication for Mac-originated operations",
+        "phase": "next",
+        "priority": "P2",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "Design remote signer or canonical ledger replication for Mac-originated operations"
+      },
       {
         "module": "sylveste",
         "id": "sylveste-npc5",
