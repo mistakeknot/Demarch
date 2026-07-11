@@ -1,10 +1,10 @@
 # Sylveste Roadmap
 
-**Modules discovered:** 84 | **Ledger:** 3,633 total; 3,145 closed; 456 open; 13 in progress; 18 deferred; 1 blocked | **Last updated:** 2026-07-10
+**Modules discovered:** 84 | **Ledger:** 3,652 total; 3,166 closed; 454 open; 13 in progress; 18 deferred; 1 blocked | **Last updated:** 2026-07-11
 
 **Machine roadmap:** [`roadmap.json`](roadmap.json) | **Detailed P2-P4 inventory:** [`backlog.md`](backlog.md) | **Architecture:** [`CLAUDE.md`](../CLAUDE.md)
 
-> **Operating decision:** remain corrective-first. Do not start new plugins, consolidated MCP work, A:L4/auto-ship, or additive research until the enforced close-gate and the evidence-qualified A:L3 proof pass. Live runtime evidence outranks graph centrality, issue priority, and unit-test completion.
+> **Operating decision:** remain corrective-first. The live close-gate is enforced; do not start new plugins, consolidated MCP work, A:L4/auto-ship, or additive research until the evidence-qualified A:L3 proof and the remaining policy-audit trust gap pass. Live evidence outranks graph centrality, issue priority, and unit-test completion.
 
 ---
 
@@ -17,7 +17,8 @@ The 2026-07-10 operating-baseline repair is complete:
 - Clavain source and installed surfaces canonicalized on the Mac and zklw.
 - Clavain structural CI, both Codex installer doctors, Interverse quality scoring, and `ic publish doctor` are green.
 - `roadmap.json` and `backlog.md` now regenerate from the canonical tracker rather than erased `iv-*` snapshots.
-- The A:L3 receipt pipeline is published and deployed as Clavain 0.6.261, Interstat 0.3.1, and Interspect 0.1.22 on both hosts.
+- The receipt and runtime-close pipeline is published and deployed as Clavain 0.6.265, Intercore 0.3.3, Interstat 0.3.1, and Interspect 0.1.22 on both hosts.
+- **Recently completed:** `sylveste-6h7x`, `Sylveste-4b5.2`, and `Sylveste-4b5.11` closed after exact installed canaries on both hosts and a real managed close. The recurring runtime-evidence audit reports one gated bead and zero findings.
 
 One integrity closeout remains evidence-driven:
 
@@ -29,40 +30,37 @@ The previous A:L3 display of 8/10 is invalid. SessionEnd advanced blind counters
 
 ---
 
-## Now - Prove the Corrective Substrate
+## Now - Finish the Corrective Proof
 
-### 1. Enforce live-state closure
+### 1. Finish A:L3 with natural receipts
 
-**`sylveste-6h7x` (P1)** - Require an installed artifact to boot, report healthy subsystems, handle a live event, produce the expected state delta, and leave no ghost/orphan surface before `phase:done` can close.
+**`sylveste-myyw.16` (P0)** - Observe 10 consecutive natural no-touch sprints whose Intercore run, Bead closure, artifact chain, and routing/gate-threshold/phase-cost outcomes all verify.
 
-This is the highest-leverage live graph node: **8 direct and 10 transitive unblocks**. The corrected dependencies place the gated follow-ons behind it rather than making the close-gate wait on its own consumers.
+Both deployed proof epochs are currently **0/10**. This is deliberately observational: synthetic recorder calls and direct counter manipulation do not count. Continue normal corrective sprints and let valid SessionEnd receipts accumulate; a failure, timeout, duplicate, manual intervention, or broken hash chain resets the proof.
 
-### 2. Restart and finish A:L3 with real receipts
+### 2. Restore signed policy-audit integrity
 
-**`sylveste-myyw` (P0)** - Replace counters with unique sprint/session receipts for routing, gate-threshold, and phase-cost calibration. Failures, timeouts, manual edits, duplicate sessions, or broken hash continuity reset the proof. Close only after 10 consecutive natural no-touch sprints.
+**`Sylveste-rkm` (P1)** - Define canonical project-key ownership across the Mac and zklw, provision it without committing private material, sign the cutover marker and existing rows, and fail deployment preflight when a managed-close host lacks its key.
 
-Implementation and deployment are complete:
+The first real managed close exposed six invalid policy-audit rows on zklw: one unsigned cutover marker and five post-signing rows without a loaded project key. Runtime evidence still passed independently, but additive work remains frozen until this audit surface is trustworthy.
 
-- Successful phase transitions are attributed to the active Intercore run.
-- Calibration loops return strict `updated`, `valid_noop`, `failed`, or `timeout` outcomes.
-- Receipt verification rejects duplicates, tampering, broken hash continuity, and invalid migration state.
-- Open proof child **`sylveste-myyw.16`** carries `close-gate:calibration-streak`; its installed gate was observed refusing closure at 0/10.
-
-The remaining work is observational: accumulate 10 natural no-touch sprints on the deployed path. Synthetic recorder calls do not count. Work `sylveste-6h7x` while those receipts accrue.
-
-### 3. Make runtime evidence substantive
-
-- **`Sylveste-4b5.2` (P1)** - after `sylveste-6h7x`, require boot, subsystem health, named startup/DI/connection failure checks, and a post-event state delta.
-- **`Sylveste-4b5.11` (P2)** - after `sylveste-6h7x`, refuse false green when parallel agents validate against shared ports, databases, migrations, or environment state.
-
-### 4. Guard calibration against self-confirmation
+### 3. Guard calibration against self-confirmation
 
 - **`sylveste-9lp.37` (P1)** - establish an external holdout for each calibration loop, including refresh policy and contamination failure mode.
 - **`Sylveste-4b5.1` (P1)** - after the holdout exists, monitor agreement, diversity, and independent defect escape so consensus cannot masquerade as improvement.
 
+### 4. Make deployment identity self-repairing
+
+- **`sylveste-npc5` (P2)** - verify version, install path, Git commit, and binary digest atomically after Claude plugin updates; fail or perform a data-preserving repair when commit metadata is stale.
+
+`bv --robot-next` ranks the additive `sylveste-bcok` integration bridge by its
+seven downstream unblocks, while robot triage also surfaces `sylveste-22oi`
+and `sylveste-7505`. Those graph scores do not supersede the observed proof
+and audit failures above; all three remain behind the corrective freeze.
+
 ---
 
-## Next - After Close-Gate and A:L3
+## Next - After A:L3
 
 1. **`sylveste-xka6` (P1)** - promote B2 routing from shadow to enforce with observed quality and cost evidence. This unlocks `Sylveste-4b5.15` and `Sylveste-4b5.18`.
 2. **`sylveste-i8gp` (P1)** - activate the second cross-subsystem evidence source and prove attribution through the live flywheel.
@@ -107,8 +105,9 @@ These outrank standalone feature work because each closes or measures an existin
 
 The corrective freeze ends only when:
 
-- `sylveste-6h7x` blocks closure on missing live-runtime evidence and is observed firing.
 - `sylveste-myyw` verifies 10 consecutive unique natural sprint receipts across all three loops.
+- Managed-close policy audit verification reports zero unsigned or invalid post-cutover rows.
+- The shipped runtime close-gate remains green in exact installed canaries and its recurring audit.
 - Both hosts retain one canonical source/install surface and zero installer or publish-doctor errors.
 - Tracker integrity and roadmap generation remain reproducible from the canonical zklw state.
 
