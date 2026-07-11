@@ -1,10 +1,10 @@
 {
   "project": "demarch",
   "kind": "demarch-monorepo-roadmap",
-  "generated_at": "2026-07-11T04:38:41Z",
+  "generated_at": "2026-07-11T16:53:53Z",
   "module_count": 84,
-  "open_beads": 470,
-  "blocked": 145,
+  "open_beads": 468,
+  "blocked": 143,
   "modules": [
     {
       "module": ".clavain",
@@ -1737,20 +1737,6 @@
       },
       {
         "module": "sylveste",
-        "id": "Sylveste-4b5.2",
-        "title": "Make runtime-health/state-delta the SUBSTANCE of the 6h7x close-gate",
-        "phase": "now",
-        "priority": "P1",
-        "status": "blocked",
-        "source": "beads",
-        "source_file": "beads",
-        "blocked_by": [
-          "sylveste-6h7x"
-        ],
-        "notes": "Make runtime-health/state-delta the SUBSTANCE of the 6h7x close-gate"
-      },
-      {
-        "module": "sylveste",
         "id": "Sylveste-4b5.1",
         "title": "Consensus-trap breaker on interspect's adaptive calibration loop",
         "phase": "now",
@@ -1851,18 +1837,6 @@
         "source_file": "beads",
         "blocked_by": [],
         "notes": "Beads durability: JSONL->DB restore + periodic integrity check"
-      },
-      {
-        "module": "sylveste",
-        "id": "sylveste-6h7x",
-        "title": "Close-gate: phase:done requires integration-test-pass vs live server + orphan/ghost scan",
-        "phase": "now",
-        "priority": "P1",
-        "status": "open",
-        "source": "beads",
-        "source_file": "beads",
-        "blocked_by": [],
-        "notes": "Close-gate: phase:done requires integration-test-pass vs live server + orphan/ghost scan"
       },
       {
         "module": "sylveste",
@@ -2096,6 +2070,18 @@
         "source_file": "beads",
         "blocked_by": [],
         "notes": "RunPod H200 rental for DeepSeek V4 baseline logit capture (Day-3 unblock)"
+      },
+      {
+        "module": "clavain",
+        "id": "Sylveste-rkm",
+        "title": "Policy-engine audit — bd-push-dolt safety semantics + dead audit/sign surface",
+        "phase": "now",
+        "priority": "P1",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "Policy-engine audit — bd-push-dolt safety semantics + dead audit/sign surface"
       },
       {
         "module": "sylveste",
@@ -3141,6 +3127,18 @@
     "next": [
       {
         "module": "sylveste",
+        "id": "sylveste-npc5",
+        "title": "Repair stale Claude plugin commit metadata during deploy",
+        "phase": "next",
+        "priority": "P2",
+        "status": "open",
+        "source": "beads",
+        "source_file": "beads",
+        "blocked_by": [],
+        "notes": "Repair stale Claude plugin commit metadata during deploy"
+      },
+      {
+        "module": "sylveste",
         "id": "Sylveste-407",
         "title": "Research spike: holdout register as first-class primitive across calibration loops",
         "phase": "next",
@@ -3288,20 +3286,6 @@
         "source_file": "beads",
         "blocked_by": [],
         "notes": "Audit-plane correlation layer (deferred, three-feed + consumer gated)"
-      },
-      {
-        "module": "sylveste",
-        "id": "Sylveste-4b5.11",
-        "title": "Make the close-gate parallel-safe: forbid green against a SHARED runtime (false-green guard)",
-        "phase": "next",
-        "priority": "P2",
-        "status": "blocked",
-        "source": "beads",
-        "source_file": "beads",
-        "blocked_by": [
-          "sylveste-6h7x"
-        ],
-        "notes": "Make the close-gate parallel-safe: forbid green against a SHARED runtime (false-green guard)"
       },
       {
         "module": "sylveste",
@@ -6634,18 +6618,6 @@
         "source_file": "beads",
         "blocked_by": [],
         "notes": "beads: bd dolt status errors with 'not supported in embedded mode' but bd dolt help lists it unconditionally under Server lifecycle"
-      },
-      {
-        "module": "clavain",
-        "id": "Sylveste-rkm",
-        "title": "Policy-engine audit — bd-push-dolt safety semantics + dead audit/sign surface",
-        "phase": "later",
-        "priority": "P3",
-        "status": "open",
-        "source": "beads",
-        "source_file": "beads",
-        "blocked_by": [],
-        "notes": "Policy-engine audit — bd-push-dolt safety semantics + dead audit/sign surface"
       },
       {
         "module": "interstat",

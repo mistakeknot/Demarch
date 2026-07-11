@@ -111,7 +111,6 @@ It is generated from [roadmap.json](roadmap.json); do not hand-edit it.
 - **sylveste-3z91** F4: interspect activation CLI (per-subsystem + fleet rollup) _(deferred)_
 - **Sylveste-407** Research spike: holdout register as first-class primitive across calibration loops
 - **Sylveste-4b5.10** LLM-judge bias doc-hygiene + gate-hardening rider (no new judge epic)
-- **Sylveste-4b5.11** Make the close-gate parallel-safe: forbid green against a SHARED runtime (false-green guard) _(blocked)_
 - **Sylveste-4b5.12** Audit-plane correlation layer (deferred, three-feed + consumer gated)
 - **Sylveste-4b5.13** Trust-card: glanceable per-task human review surface from existing evidence
 - **Sylveste-4b5.14** ACE coding-skill playbook vs compound-baseline bake-off (measurement-gated spike) _(blocked)_
@@ -187,6 +186,7 @@ It is generated from [roadmap.json](roadmap.json); do not hand-edit it.
 - **sylveste-mblb** F2: Subsystem emit helper (Go + bash) with durable session sentinel _(deferred)_
 - **sylveste-mf6n** F5.1: QueryTemplate protocol + TemplateRegistry _(blocked)_
 - **sylveste-mij3** Install sqlite3 CLI on zklw + re-derive cost-per-landable-change baseline
+- **sylveste-npc5** Repair stale Claude plugin commit metadata during deploy
 - **sylveste-nr6x.4** L4: Signal-native tool approval transport
 - **sylveste-nr6x.5** L5: Skaffen integration — sovereign agent lifecycle
 - **sylveste-nyx** Hidden /about page with mission/vision from GSV identity repo
@@ -289,7 +289,6 @@ It is generated from [roadmap.json](roadmap.json); do not hand-edit it.
 
 ### clavain
 - **sylveste-kogm** /context-restore + structured WIP-commit metadata (parked)
-- **Sylveste-rkm** Policy-engine audit — bd-push-dolt safety semantics + dead audit/sign surface
 
 ### interfer
 - **sylveste-7hxm** Route-heuristic-coverage interlab campaign
