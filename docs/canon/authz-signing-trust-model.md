@@ -19,6 +19,13 @@ missing signature is flagged as suspect by `clavain-cli policy audit
 etc.) directly in the SQLite file cannot produce a matching Ed25519
 signature without access to the project signing key.
 
+At schema 36, the same command also requires a signed public legacy
+manifest. That artifact binds the full project-public-key digest, the fixed
+migration-033 marker payload, and the exact sorted set of every retained
+`sig_version=0` row as canonical payload hashes. Audit validates that complete
+set before applying any display filter, so changing a signed row to version 0
+cannot turn it into trusted vintage.
+
 ## Non-claims
 
 The v1.5 system does **not** claim:
@@ -55,7 +62,8 @@ The v1.5 system does **not** claim:
 |---|---|---|
 | Direct SQL: rewrite `op_type`, `target`, `mode` on a signed row | Yes — `audit --verify` flags row | Run `--verify` periodically; alert on mismatch |
 | Direct SQL: insert a new row with `sig_version>=1` and NULL signature | Yes — `audit --verify` rejects it | Require a zero-failure audit before release |
-| Direct SQL: downgrade `sig_version` to 0 | Not fully | Current vintage classification is not cryptographically anchored; tracked corrective work must add an immutable legacy-row manifest or eliminate unsigned vintage rows |
+| Direct SQL: downgrade `sig_version` to 0 | Yes — exact legacy membership no longer matches the signed manifest | Require schema 36, a valid manifest, and zero audit failures |
+| Direct SQL: mutate, insert, or delete a retained legacy row | Yes — its canonical hash or exact set membership changes | Keep the signed manifest outside the database and committed with the public key |
 | Direct SQL: delete signed rows | No (signatures cover rows, not a chain) | Per-row deletion is not detectable via signatures alone; audit log should be append-only at the OS level (backup + WORM-ish policy) |
 | Invoke `clavain-cli` to produce legitimate signed rows | No — signatures are valid | Access control on the CLI path and signing key (0400 perms); rotate key on suspected compromise |
 | Steal key, sign forged rows offline | No | Key rotation + quarantine (`policy audit quarantine --before-key=<fp>`) flags all pre-breach rows |
@@ -80,15 +88,19 @@ write-time forgery by a privileged caller.
   signing copy for each audit domain; verifier hosts do not receive it.
 - `authz-project.pub` (public, 0444) — **commit** to the repo so
   verifiers agree on the expected fingerprint.
-- A verifier needs both the committed public key and a signed snapshot of the
-  canonical authorization DB. The public key alone establishes identity but
-  cannot supply the rows being audited.
+- `authz-legacy-manifest.json` (public, 0444) — **commit** beside the public
+  key. It is create-exclusive and has no overwrite or re-anchor command.
+- A verifier needs the committed public key, signed legacy manifest, and a
+  signed snapshot of the canonical authorization DB. The public artifacts
+  establish identity and vintage membership but cannot supply the rows being
+  audited.
 - `KeyFingerprint(pub)` = first 8 bytes of `sha256(pub)` as hex.
   Shown in audit output + git logs of pub file changes.
 
 `policy doctor --require-signer --project-root=<root>` is the preflight for a
-signing host. It requires the current DB schema, public key, private mode 0400,
-and matching fingerprint without printing private-key paths or material.
+signing host. It requires schema 36, a clean full-ledger audit, the public key,
+valid legacy manifest, private mode 0400, and matching fingerprint without
+printing private-key paths or material.
 
 **Rotation limitation:** the current verifier loads only the active public key
 and authorization rows do not store a signer key ID. `policy rotate-key`
@@ -100,8 +112,8 @@ event against historical rows.
 
 For the Sylveste operating baseline, zklw is the sole canonical signer and owns
 the sole writable authorization ledger. Mac is verifier-only: it uses the
-Git-tracked public key and a signed snapshot of zklw's authorization DB, and it
-does not hold the private key. Any signer-required operation initiated on Mac
+Git-tracked public key and legacy manifest plus a signed snapshot of zklw's
+authorization DB, and it does not hold the private key. Any signer-required operation initiated on Mac
 must be handed off to zklw and recorded in the canonical ledger there. Do not
 copy the private key to Mac unless and until the system has real ledger
 replication with a single canonical write path or a remote-signing service.

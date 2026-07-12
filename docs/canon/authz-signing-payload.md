@@ -35,7 +35,9 @@ created_at
 12 fields. `sig_version` and `signature` and `signed_at` are metadata
 about the signing itself and are NOT part of the signed payload. This
 avoids a circular dependency and lets `sig_version` change without
-invalidating old signatures.
+invalidating old signatures. Because the row signature alone therefore cannot
+detect a version downgrade, schema 36 additionally requires the signed legacy
+manifest described below.
 
 ## Encoding rules
 
@@ -155,7 +157,7 @@ surrounding `\n` delimiters.
 Row:
 
 ```
-id              = "01HQ8YSAAAAAAAAAAAAAAAAAAA"
+id              = "migration-033-cutover-marker"
 op_type         = "migration.signing-enabled"
 target          = "authorizations"
 agent_id        = "system:migration-033"
@@ -172,7 +174,7 @@ created_at      = 1776618000
 Canonical payload:
 
 ```
-01HQ8YSAAAAAAAAAAAAAAAAAAA\n
+migration-033-cutover-marker\n
 migration.signing-enabled\n
 authorizations\n
 system:migration-033\n
@@ -186,10 +188,34 @@ auto\n
 1776618000
 ```
 
-The migration row is itself signed (it is the FIRST signed row in the
-table). Its signature anchors the cutover timestamp: verifiers use
-`created_at` of this row as the "anything-before-this-is-pre-signing"
-boundary.
+The fixed migration row is itself signed. Its canonical payload is bound into
+the legacy manifest, but its timestamp is **not** a vintage boundary: retained
+legitimate legacy rows are not necessarily a timestamp prefix. Verifiers trust
+only the manifest's exact row-ID and canonical-payload-hash membership.
+
+## Legacy manifest v1
+
+The public `.clavain/keys/authz-legacy-manifest.json` artifact contains:
+
+- schema `intercore.authz-legacy-manifest`, version 1;
+- SHA-256 of the full decoded project public key;
+- the fixed `migration-033-cutover-marker` ID and a domain-separated SHA-256
+  of its canonical row payload;
+- the exact sorted legacy set as row ID plus domain-separated SHA-256 of each
+  canonical row payload;
+- the signed legacy count, manifest SHA-256, and Ed25519 signature.
+
+The signature covers a deterministic JSON body prefixed by the domain
+`intercore-authz-legacy-manifest-v1` and a NUL byte. Marker and legacy-row
+hashes use the corresponding `intercore-authz-cutover-marker-v1` and
+`intercore-authz-legacy-row-v1` NUL-prefixed domains. The manifest signature
+and digest fields are excluded from the signed body to avoid recursion.
+
+Audit first loads the complete authorization table in one SQLite read snapshot,
+validates this artifact and exact legacy membership, and only then applies
+`--since`, `--op`, `--agent`, or `--bead` as display filters. Only signature
+versions 0 and 1 are accepted for authorization rows; version 0 is valid solely
+when authenticated by this manifest.
 
 ## Implementation-level test
 
