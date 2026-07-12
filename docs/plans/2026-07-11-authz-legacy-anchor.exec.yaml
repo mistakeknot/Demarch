@@ -1,0 +1,62 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 900
+
+stages:
+  - name: "Core contract"
+    tasks:
+      - id: task-1
+        title: "Implement signed legacy manifest primitives"
+        files:
+          - core/intercore/pkg/authz/legacy_manifest.go
+          - core/intercore/pkg/authz/legacy_manifest_test.go
+        depends: []
+      - id: task-2
+        title: "Advance Intercore to schema 36"
+        files:
+          - core/intercore/internal/db/db.go
+          - core/intercore/internal/db/schema.sql
+          - core/intercore/internal/db/db_test.go
+          - core/intercore/internal/db/migrations/036_authz_legacy_anchor.sql
+        depends: []
+  - name: "Clavain enforcement"
+    tasks:
+      - id: task-3
+        title: "Implement reviewed anchor ceremony"
+        files:
+          - os/Clavain/cmd/clavain-cli/authz_sign.go
+          - os/Clavain/cmd/clavain-cli/authz_sign_test.go
+          - os/Clavain/cmd/clavain-cli/authz.go
+          - os/Clavain/cmd/clavain-cli/main.go
+        depends:
+          - task-1
+          - task-2
+      - id: task-4
+        title: "Enforce global fail-closed verification"
+        files:
+          - os/Clavain/cmd/clavain-cli/authz_sign.go
+          - os/Clavain/cmd/clavain-cli/authz_sign_test.go
+          - os/Clavain/tests/authz-v15-e2e_test.sh
+        depends:
+          - task-3
+      - id: task-5
+        title: "Update bootstrap doctor and trust docs"
+        files:
+          - os/Clavain/scripts/authz-init.sh
+          - os/Clavain/scripts/gates/_common.sh
+          - os/Clavain/README.md
+          - docs/canon/authz-signing-trust-model.md
+          - docs/canon/authz-signing-payload.md
+        depends:
+          - task-4
+  - name: "Production rollout"
+    tasks:
+      - id: task-6
+        title: "Release migrate verify and close"
+        files:
+          - .clavain/keys/authz-legacy-manifest.json
+          - docs/evidence/2026-07-11-authz-legacy-anchor.md
+        depends:
+          - task-5
