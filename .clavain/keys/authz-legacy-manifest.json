@@ -1,0 +1,28 @@
+{
+  "schema": "intercore.authz-legacy-manifest",
+  "version": 1,
+  "hash_algorithm": "sha256",
+  "signature_algorithm": "ed25519",
+  "public_key_sha256": "3d1c3001d533c5a9337ee1524646689711df91fe38a5727c73d4202e7254757c",
+  "cutover_marker": {
+    "id": "migration-033-cutover-marker",
+    "payload_sha256": "6fdd1d2067880663d04cb0abdc89197e26889f7268acf31b7062c77d5ea8a840"
+  },
+  "legacy_count": 3,
+  "legacy_rows": [
+    {
+      "id": "06368bcfc6a5f1f7de625a46cdf90013",
+      "payload_sha256": "fc3df139ef8c268bed095591f387de8c545688a931f2256784eb6947fdfb1606"
+    },
+    {
+      "id": "8ca52f7a0720eb184efcc355f166aaf0",
+      "payload_sha256": "9fdaee0c45e13ef715524f19bf1243f54215a640509f78c59c39e77d72a8c53f"
+    },
+    {
+      "id": "d44721d3a358fd6ce7cb100b895c03e9",
+      "payload_sha256": "b1b39681ad568c2d4e0f009439ecfc1bfb699df57cd47596d2c73b6ea29396be"
+    }
+  ],
+  "manifest_sha256": "4020f06edf093731da41b752db2bc6fd7789e0d545a4318365d31abe9d3f1cd3",
+  "signature": "ea22071b8567a3ca707cabb8d8e188a23c34598bd7f6ba35add8ecd9cf09af441c2d3bb9d1d4bf621c733c2814b5ad753b083ce075996e8f21c2acdde285de09"
+}
