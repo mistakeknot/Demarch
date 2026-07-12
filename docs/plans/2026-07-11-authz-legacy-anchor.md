@@ -40,6 +40,7 @@ stage: implementation
 **Key Links**
 - The manifest signature verifies under the same Git-tracked public key used for authorization rows.
 - The manifest hashes use `authz.CanonicalPayload`, so row signing and legacy classification share one byte contract.
+- Canonical field values reject every ASCII control character, including LF; LF exists only as the payload field separator.
 - `runPolicyVerify` validates schema, manifest, marker, and the full legacy set before applying `--since`, `--op`, `--agent`, or `--bead` filters.
 - Deployment installs a schema-36-aware `clavain-cli` before `ic init` migrates the production ledger.
 
@@ -51,7 +52,7 @@ stage: implementation
 
 1. Write failing table tests for deterministic sorting, domain-separated canonical bytes, full public-key digest binding, fixed marker binding, exact legacy row hashes, duplicate-ID rejection, and Ed25519 sign/verify.
 2. Run `go test ./pkg/authz -run 'LegacyManifest' -count=1` and confirm the new tests fail for missing APIs.
-3. Implement the minimal manifest types and helpers. Hash each legacy entry over `"sig_version=0\\n" + CanonicalPayload(row)` and sign a deterministic unsigned struct representation.
+3. Implement the minimal manifest types and helpers. Hash each legacy entry over the bytes `"intercore-authz-legacy-row-v1" + NUL + CanonicalPayload(row)` and sign a deterministic unsigned struct representation.
 4. Add failing tamper tests for row mutation, membership insertion/deletion, marker mutation, wrong key, malformed hex, and unsupported versions.
 5. Implement strict parsing and bounded regular-file loading with symlink rejection.
 6. Run focused tests green and commit Intercore.
@@ -150,13 +151,14 @@ stage: implementation
 
 1. Push Intercore and publish the next patch release.
 2. Update/build Clavain against that exact Intercore checkout, bump its patch version, push, and publish release artifacts.
-3. Install the schema-36-aware `clavain-cli` and `ic` on zklw before changing the live database.
-4. Freeze managed authorization writes, checkpoint WAL, retain and hash a database backup, and run `anchor-legacy --inspect` on the canonical ledger and Mac snapshot.
-5. Confirm both proposals match the reviewed three IDs, count, digest, marker digest, and public-key digest.
+3. Pause managed authorization writers and drain stale shell and agent sessions on both hosts. Install the released schema-36-aware `clavain-cli` and `ic` on zklw and Mac before migration; record each resolved path, version, and binary SHA-256 so no old verifier remains in service.
+4. Keep the canonical ledger quiescent, run `wal_checkpoint(TRUNCATE)`, create a SQLite-safe backup through the SQLite backup API, and verify and hash that backup before migration. Do not treat a raw copy of the main database file as sufficient while WAL mode is enabled.
+5. Run `anchor-legacy --inspect` on the canonical ledger and the pre-migration Mac snapshot. Confirm both proposals match the reviewed three IDs, count, digest, marker digest, and public-key digest.
 6. Run `ic init` only on zklw, then create the signed manifest with the exact expected values. Never copy the private key.
-7. Commit and push the public manifest, replicate the signed DB snapshot to Mac, and install the released binaries there.
-8. Prove clean audits on both hosts and prove downgrade rejection only on disposable copies.
-9. Close `sylveste-mn13` through the managed gate, push Dolt and Git state, and record whether the sprint naturally produced an A:L3 receipt.
+7. Prove the migrated zklw audit clean, commit and push the public manifest and evidence document, close `sylveste-mn13` through the managed gate, and complete the Dolt and Git pushes. Treat those managed operations as the last allowed ledger writes before cross-host proof.
+8. Drain and freeze writers again, checkpoint WAL, run a full zklw audit, and create the final SQLite-safe signed snapshot. Hash the database and a deterministic ordered authorization-row projection, then replicate that final snapshot to Mac.
+9. Prove clean audits on both hosts, require identical schema/count/ordered-row hashes, and prove downgrade rejection only on disposable copies. The final Mac comparison must occur after the manifest, evidence, bead, Dolt, and Git operations in step 7, not from an earlier snapshot.
+10. Record whether the sprint naturally produced an A:L3 receipt; do not synthesize one for acceptance.
 
 <verify>
 - run: `clavain-cli policy doctor --project-root="$PWD"`
@@ -164,4 +166,3 @@ stage: implementation
 - run: `clavain-cli policy audit --verify --json --project-root="$PWD"`
   expect: exit 0
 </verify>
-

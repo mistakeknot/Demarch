@@ -118,6 +118,16 @@ must be handed off to zklw and recorded in the canonical ledger there. Do not
 copy the private key to Mac unless and until the system has real ledger
 replication with a single canonical write path or a remote-signing service.
 
+The schema-36 cutover is a quiesced migration. Drain stale sessions and managed
+writers, install and fingerprint the schema-aware `ic` and `clavain-cli`
+binaries on both hosts, and only then migrate zklw. Before migration and before
+the final replica, checkpoint WAL with `wal_checkpoint(TRUNCATE)` and create a
+verified backup through SQLite's backup API; copying only the main database file
+is not a safe WAL-mode backup. Commit the public manifest and evidence, complete
+the managed bead close and Dolt/Git pushes, then freeze writers again and take
+the final signed snapshot. Mac's final audit and deterministic ordered-row hash
+comparison must use that post-operation snapshot, not an earlier proposal copy.
+
 ## Out-of-scope
 
 - Multi-principal identity (who is "the user" vs "the agent") — see v2 token model.

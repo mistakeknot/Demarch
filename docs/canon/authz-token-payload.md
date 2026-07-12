@@ -9,7 +9,7 @@ superseded_by: (none)
 
 This document pins the **exact byte sequence** that Ed25519 signs for each `authz_tokens` row under `sig_version=2`. Signatures depend on byte-for-byte agreement; any deviation in encoding produces non-verifying signatures for correct rows and verifying signatures for tampered rows. This is the spec. Implementations MUST match.
 
-The v1.5 canonical payload (see `docs/canon/authz-signing-payload.md`) governs `sig_version=1` for `authorizations` rows. The two payloads share encoding rules (NFC, LF, no trailing LF, UTF-8, no CR) but have **different field lists**. Distinct `sig_version` values prevent cross-payload replay — a signature produced over a sig_version=1 payload cannot verify as a sig_version=2 payload even if the byte sequences happened to coincide, because the verifier dispatches on `sig_version` before computing the expected payload.
+The v1.5 canonical payload (see `docs/canon/authz-signing-payload.md`) governs `sig_version=1` for `authorizations` rows. The two payloads share encoding rules (NFC, LF separators, no embedded or trailing LF, UTF-8, and no control characters) but have **different field lists**. Distinct `sig_version` values prevent cross-payload replay — a signature produced over a sig_version=1 payload cannot verify as a sig_version=2 payload even if the byte sequences happened to coincide, because the verifier dispatches on `sig_version` before computing the expected payload.
 
 ## 1. Field order
 
@@ -47,7 +47,7 @@ Identical to v1.5 (`docs/canon/authz-signing-payload.md §Encoding rules`), rest
 3. **NULL representation:** the empty string. A SQL NULL and an empty string in the row both encode as zero bytes at that position.
 4. **Unicode normalization:** NFC. All text fields must be NFC-normalized before concatenation. Fields that are strictly hex/int (`id`, `parent_token`, `root_token`) are not text but pass through NFC as a no-op.
 5. **Integer formatting:** decimal, no leading zeros, no leading `+`, no thousands separators. `depth`, `expires_at`, `created_at` use their unsigned integer representation (Go `strconv.FormatInt(n, 10)`). Negative values are prohibited by the schema and signer rejects them explicitly.
-6. **Forbidden characters:** `\r` (0x0D) and control characters in `[0x00, 0x1F] \ {\n}` are not permitted in any text field. The signer MUST reject rows containing them rather than silently stripping. Strip at insertion time, not at signing time.
+6. **Forbidden characters:** every control character in `[0x00, 0x1F]`, including `\r` and `\n`, is forbidden in field values. LF is reserved exclusively as the separator between fields; permitting it inside a value would make different field assignments share one payload. The signer MUST reject rows containing control characters rather than silently stripping or transliterating them. Reject them at insertion time too.
 7. **Output format:** `Sign()` returns the raw 64-byte Ed25519 signature. Callers that need a text form (e.g., for the opaque `<ulid>.<sighex>` string carried via env var) use lowercase hex (no prefix, no separator). The `signature BLOB` column stores raw bytes.
 
 ## 3. Worked examples
@@ -178,14 +178,14 @@ Identical rationale to v1.5 (`docs/canon/authz-signing-payload.md §Why not JSON
 2. **Number encoding is ambiguous.** `1776739200` vs `1776739200.0` vs `1.7767392e+09` — all valid JSON, different bytes. Signing needs ONE form.
 3. **Whitespace is free.** Canonicalizers strip it, but the rule must be spelled out.
 
-A LF-delimited ordered sequence avoids all of this. Spec tight, implementation trivial (`strings.Join(parts, "\n")` after NFC + control-char validation).
+A LF-delimited ordered sequence avoids all of this. Spec tight, implementation trivial (`strings.Join(parts, "\n")` after NFC normalization and rejection of control characters in every field value).
 
 ## 5. Forbidden deviations
 
 - No trailing newline.
 - No BOM.
 - No UTF-16 / UTF-32 encodings — UTF-8 only.
-- No CRLF. LF only. Inputs with CR must be rejected, not transliterated.
+- No CRLF and no embedded LF. LF appears only between fields. Inputs with control characters must be rejected, not transliterated.
 - No field reordering across signer versions. A new field requires a new `sig_version` and a parallel signer path; the old path continues to sign using the old field set for backward compatibility.
 - No re-canonicalization of stored fields at sign time. Stored bytes are authoritative. If a field is not NFC-normalized at insertion time, it is likewise not NFC-normalized at sign time (asymmetry forbidden). The v2 schema does not have any field analogous to v1.5's `vetting` JSON blob that requires this caveat — all v2 fields are plain text or integer — but the discipline is stated for uniformity.
 

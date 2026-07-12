@@ -59,10 +59,12 @@ manifest described below.
    If the stored JSON is not NFC-normalized at store time, it is
    likewise not NFC-normalized at sign time (asymmetry forbidden; use
    the stored bytes exactly).
-7. **Forbidden characters:** `\r` (0x0D) and control characters in
-   [0x00, 0x1F] \ {\n} are not permitted in text fields. The signer
-   MUST reject rows containing them rather than silently stripping.
-   Strip at insertion time, not at signing time.
+7. **Forbidden characters:** all control characters in [0x00, 0x1F],
+   including `\r` and `\n`, are not permitted in field values. LF is reserved
+   exclusively as the separator between fields; permitting it inside a value
+   would make different field assignments share one payload. The signer
+   MUST reject rows containing them rather than silently stripping or
+   transliterating them. Reject them at insertion time too.
 
 ## Output format
 
@@ -247,7 +249,8 @@ implementation trivial.
 - No trailing newline.
 - No BOM.
 - No UTF-16 / UTF-32 encodings — UTF-8 only.
-- No CRLF. LF only. Inputs with CR must be rejected, not transliterated.
+- No CRLF and no embedded LF. LF appears only between fields. Inputs with
+  control characters must be rejected, not transliterated.
 - No field reordering across signer versions. A new field requires a
   new `sig_version` and a parallel signer path; the old path continues
   to sign using the old field set for backward compatibility.
