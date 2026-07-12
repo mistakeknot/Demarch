@@ -30,13 +30,14 @@ cannot turn it into trusted vintage.
 
 The v1.5 system does **not** claim:
 
-1. **Tamper-proof-at-write.** An attacker with permission to invoke
-   `clavain-cli policy sign` (i.e. read access to
+1. **Tamper-proof-at-write.** An attacker with permission to invoke the
+   signing commands (i.e. read access to
    `.clavain/keys/authz-project.key`) can produce forged rows that
    verify cleanly. The signing key read path is minimized but not
-   separated from the gate wrapper in v1.5 — the gate wrapper invokes
-   `policy sign` as a sub-process after `policy record`. True
-   separation of duties (out-of-band signer daemon) ships in v1.6.
+   separated from the gate wrapper in v1.5: the gate wrapper invokes
+   `policy record-signed`, which inserts and signs the row atomically in
+   one subprocess and database transaction. True separation of duties
+   (an out-of-band signer daemon) ships in v1.6.
 
 2. **Protection against host compromise.** Root on the host reads the
    key file. If an adversary can read the key, signatures prove
