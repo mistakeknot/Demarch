@@ -20,15 +20,29 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Overlay latest trajectory from oyrf-data
+        run: |
+          git fetch origin oyrf-data
+          git checkout origin/oyrf-data -- data/cost-trajectory.csv || echo "no oyrf-data copy yet; using main's"
+
       - name: Append cost trajectory sample
         run: bash estimate-costs.sh
 
       - name: Validate OYRF cost-calibration artifacts
         run: python3 scripts/validate_oyrf_cost_infra.py --run-dry-run
 
-      - name: Commit updated cost-trajectory.csv
+      - name: Check out oyrf-data branch
+        uses: actions/checkout@v4
+        with:
+          ref: oyrf-data
+          path: oyrf-data-branch
+
+      - name: Commit updated cost-trajectory.csv to oyrf-data
         run: |
-          if git diff --quiet -- data/cost-trajectory.csv; then
+          mkdir -p oyrf-data-branch/data
+          cp data/cost-trajectory.csv oyrf-data-branch/data/cost-trajectory.csv
+          cd oyrf-data-branch
+          if git diff --quiet -- data/cost-trajectory.csv && [ -z "$(git status --porcelain -- data/cost-trajectory.csv)" ]; then
             echo "No cost-trajectory.csv changes to commit."
             exit 0
           fi
@@ -36,4 +50,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/cost-trajectory.csv
           git commit -m "data: update OYRF cost trajectory"
-          git push
+          git push origin HEAD:oyrf-data

@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "target": 10,
+  "proof_epoch": "v2-c1f757f27c6903bdfe7b9168",
+  "proof_started_at": "2026-07-11T04:25:20.789164108Z",
+  "next_sequence": 0,
+  "aggregate_current": 0,
+  "aggregate_best": 0,
+  "loops": {
+    "gate_threshold": {
+      "current": 0,
+      "best": 0
+    },
+    "phase_cost": {
+      "current": 0,
+      "best": 0
+    },
+    "routing": {
+      "current": 0,
+      "best": 0
+    }
+  },
+  "receipts": []
+}
