@@ -29,6 +29,7 @@ def main() -> int:
     print(
         f"Interverse inventory written to {OUTPUT.relative_to(ROOT)}: "
         f"{summary['plugin_count']} plugins, "
+        f"{summary['agency_count']} agencies, "
         f"{summary['high_drift_count']} high drift, "
         f"{summary['warning_drift_count']} warnings.",
         file=sys.stderr,

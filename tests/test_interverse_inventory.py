@@ -75,6 +75,52 @@ def write_marketplace(root: Path, *names: str) -> Path:
     return path
 
 
+def write_agency(root: Path, name: str, *, install_script: bool = True) -> Path:
+    agency_root = root / "os" / name.title()
+    write_json(agency_root / "schemas" / "agency-v1.json", {"type": "object"})
+    write_json(
+        agency_root / "agency.json",
+        {
+            "$schema": "./schemas/agency-v1.json",
+            "schema_version": "interverse.agency/v1",
+            "kind": "agency",
+            "name": name,
+            "display_name": name.title(),
+            "description": f"{name} test agency",
+            "version": "1.0.0",
+            "layer": "L2",
+            "class": "portfolio",
+            "repository": f"https://example.invalid/{name}",
+            "install": {
+                "script": "scripts/install.sh",
+                "check_args": ["--check"],
+                "default_args": ["--no-enable"],
+                "supported_os": ["linux", "darwin"],
+            },
+            "runtime": {
+                "binary": name,
+                "doctor_args": ["doctor", "--json"],
+                "status_args": ["status", "--json"],
+                "service_manager": "systemd-user",
+                "service": f"{name}.service",
+                "timer": f"{name}.timer",
+            },
+            "capabilities": ["portfolio.observe"],
+            "authority": {
+                "may": ["evidence.read"],
+                "requires_approval": ["experiment.execute"],
+                "never": ["git.push", "git.merge", "deployment.deploy", "release.publish"],
+            },
+            "contracts": [f"{name}.cycle/v1"],
+        },
+    )
+    if install_script:
+        script = agency_root / "scripts" / "install.sh"
+        script.parent.mkdir(parents=True, exist_ok=True)
+        script.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    return agency_root
+
+
 def test_inventory_lists_plugins_component_counts_and_presence(tmp_path: Path) -> None:
     write_plugin(
         tmp_path,
@@ -214,6 +260,39 @@ def test_inventory_assigns_profile_taxonomy_and_install_packs(tmp_path: Path) ->
     assert ledger["profiles"]["packs"]["review"] == ["interflux"]
     assert ledger["profiles"]["packs"]["mcp"] == ["intercache"]
     assert set(ledger["profiles"]["taxonomy"]) >= {"default", "core", "review", "mcp", "all"}
+
+
+def test_inventory_lists_agencies_separately_from_plugins(tmp_path: Path) -> None:
+    write_agency(tmp_path, "remontoire")
+    rig_path = write_rig(tmp_path)
+    marketplace_path = write_marketplace(tmp_path)
+
+    ledger = inventory.build_inventory(tmp_path, rig_path=rig_path, marketplace_path=marketplace_path)
+
+    assert ledger["summary"]["plugin_count"] == 0
+    assert ledger["summary"]["agency_count"] == 1
+    assert len(ledger["agencies"]) == 1
+    agency = ledger["agencies"][0]
+    assert agency["kind"] == "agency"
+    assert agency["name"] == "remontoire"
+    assert agency["path"].endswith("os/Remontoire")
+    assert agency["install"]["script"] == "scripts/install.sh"
+    assert agency["install"]["default_args"] == ["--no-enable"]
+    assert agency["runtime"]["binary"] == "remontoire"
+    assert agency["drift"]["status"] == "ok"
+
+
+def test_inventory_fails_when_agency_installer_is_missing(tmp_path: Path) -> None:
+    write_agency(tmp_path, "remontoire", install_script=False)
+    rig_path = write_rig(tmp_path)
+    marketplace_path = write_marketplace(tmp_path)
+
+    ledger = inventory.build_inventory(tmp_path, rig_path=rig_path, marketplace_path=marketplace_path)
+
+    assert ledger["summary"]["agency_count"] == 1
+    assert ledger["summary"]["failing_agency_count"] == 1
+    assert ledger["summary"]["high_drift_count"] == 1
+    assert ledger["agencies"][0]["drift"]["high"][0]["code"] == "missing_agency_install_script"
 
 
 def test_cli_json_check_returns_nonzero_only_for_high_drift(tmp_path: Path, capsys) -> None:

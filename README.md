@@ -30,6 +30,20 @@ bash install.sh --uninstall   # Remove all Sylveste components
 bash install.sh --dry-run     # Preview what would happen
 ```
 
+First-class agencies are discovered separately from plugins and installed only
+when explicitly selected. For example, on a supported Linux host:
+
+```bash
+python3 scripts/interverse_agency.py --root . list
+bash install.sh --agency=remontoire
+python3 scripts/interverse_agency.py --root . doctor remontoire
+```
+
+The shared installer delegates to the agency's declared installer and uses its
+safe defaults. Remontoire installs with its timer disabled; enabling or running
+it remains an explicit operator action documented in
+[the Remontoire README](https://github.com/mistakeknot/Remontoire#readme).
+
 Then open Claude Code in your project and run:
 
 ```
@@ -99,6 +113,7 @@ Sylveste is a monorepo with six current pillars. This table is a map for contrib
 |--------|-------|-------------|
 | [Intercore](https://github.com/mistakeknot/intercore) | L1 (Core) | Orchestration kernel: runs, dispatches, gates, events |
 | [Clavain](https://github.com/mistakeknot/Clavain) | L2 (OS) | Self-improving Claude Code agent rig |
+| [Remontoire](https://github.com/mistakeknot/Remontoire) | L2 (Agency) | Bounded portfolio research and experiment agency |
 | [Skaffen](os/Skaffen/) | L2 (OS) | Sovereign Go agent runtime |
 | [Interverse](https://github.com/mistakeknot/interagency-marketplace) | L2-L3 | Companion plugin ecosystem |
 | [Autarch](https://github.com/mistakeknot/Autarch) | L3 (Apps) | TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |

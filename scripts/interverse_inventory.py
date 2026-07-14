@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import sys
 from pathlib import Path
 from typing import Any
@@ -17,6 +18,7 @@ from typing import Any
 COMPONENT_ORDER = ("skills", "commands", "agents", "hooks", "mcpServers", "lspServers")
 DECLARED_PATH_KEYS = ("skills", "commands", "agents")
 INTERAGENCY_MARKETPLACE = "interagency-marketplace"
+AGENCY_SCHEMA_VERSION = "interverse.agency/v1"
 PROFILE_TAXONOMY: dict[str, str] = {
     "default": "Small daily-use pack for fast Claude Code and Codex startup.",
     "core": "Workflow, coordination, test discipline, and local code-context essentials.",
@@ -144,6 +146,21 @@ def discover_plugin_roots(root: Path) -> list[Path]:
         roots.append(clavain.parents[1])
 
     return roots
+
+
+def discover_agency_roots(root: Path) -> list[Path]:
+    agencies = root / "os"
+    if not agencies.is_dir():
+        return []
+    return [manifest.parent for manifest in sorted(agencies.glob("*/agency.json"))]
+
+
+def current_platform() -> str:
+    return {
+        "Darwin": "darwin",
+        "Linux": "linux",
+        "Windows": "windows",
+    }.get(platform.system(), platform.system().lower())
 
 
 def rig_source(payload: Any) -> str:
@@ -642,6 +659,205 @@ def analyze_plugin(
     }
 
 
+def agency_string_list(
+    value: Any,
+    *,
+    field: str,
+    high: list[dict[str, str]],
+    required: bool = True,
+) -> list[str]:
+    if not isinstance(value, list) or (required and not value):
+        high.append(
+            {
+                "code": "invalid_agency_manifest_field",
+                "severity": "high",
+                "path": f"agency.json:{field}",
+                "message": f"agency manifest field '{field}' must be a non-empty array of strings",
+            }
+        )
+        return []
+    if not all(isinstance(item, str) and item for item in value):
+        high.append(
+            {
+                "code": "invalid_agency_manifest_field",
+                "severity": "high",
+                "path": f"agency.json:{field}",
+                "message": f"agency manifest field '{field}' must contain only non-empty strings",
+            }
+        )
+        return []
+    return list(value)
+
+
+def agency_required_string(manifest: dict[str, Any], key: str, high: list[dict[str, str]]) -> str:
+    value = manifest.get(key)
+    if not isinstance(value, str) or not value:
+        high.append(
+            {
+                "code": "invalid_agency_manifest_field",
+                "severity": "high",
+                "path": f"agency.json:{key}",
+                "message": f"agency manifest field '{key}' must be a non-empty string",
+            }
+        )
+        return ""
+    return value
+
+
+def analyze_agency(root: Path, agency_root: Path) -> dict[str, Any]:
+    manifest_path = agency_root / "agency.json"
+    high: list[dict[str, str]] = []
+    warnings: list[dict[str, str]] = []
+    try:
+        manifest = read_json(manifest_path)
+        if not isinstance(manifest, dict):
+            raise ValueError("agency.json top-level value is not an object")
+    except Exception as exc:  # noqa: BLE001 - doctor output must retain parse failures
+        manifest = {}
+        high.append(
+            {
+                "code": "invalid_agency_manifest",
+                "severity": "high",
+                "path": relpath(manifest_path, root),
+                "message": f"agency.json could not be parsed: {exc}",
+            }
+        )
+
+    name = agency_required_string(manifest, "name", high)
+    for key in ("display_name", "description", "version", "layer", "class", "repository"):
+        agency_required_string(manifest, key, high)
+    if manifest.get("schema_version") != AGENCY_SCHEMA_VERSION:
+        high.append(
+            {
+                "code": "invalid_agency_schema_version",
+                "severity": "high",
+                "path": relpath(manifest_path, root),
+                "message": f"schema_version must be {AGENCY_SCHEMA_VERSION!r}",
+            }
+        )
+    if manifest.get("kind") != "agency":
+        high.append(
+            {
+                "code": "invalid_agency_kind",
+                "severity": "high",
+                "path": relpath(manifest_path, root),
+                "message": "kind must be 'agency'",
+            }
+        )
+
+    schema_entry = manifest.get("$schema")
+    if not isinstance(schema_entry, str) or not schema_entry:
+        high.append(
+            {
+                "code": "missing_agency_schema",
+                "severity": "high",
+                "path": relpath(manifest_path, root),
+                "message": "$schema must name a repository-local schema",
+            }
+        )
+    else:
+        stripped, schema_path, schema_error = declared_rel(schema_entry, agency_root)
+        if schema_error or not schema_path.is_file():
+            high.append(
+                {
+                    "code": "missing_agency_schema",
+                    "severity": "high",
+                    "path": stripped,
+                    "message": schema_error or "declared agency schema does not exist",
+                }
+            )
+
+    install = manifest.get("install") if isinstance(manifest.get("install"), dict) else {}
+    install_script = install.get("script")
+    if not isinstance(install_script, str) or not install_script:
+        high.append(
+            {
+                "code": "missing_agency_install_script",
+                "severity": "high",
+                "path": "agency.json:install.script",
+                "message": "install.script must name a repository-local installer",
+            }
+        )
+        install_script = ""
+    else:
+        stripped, script_path, script_error = declared_rel(install_script, agency_root)
+        if script_error or not script_path.is_file():
+            high.append(
+                {
+                    "code": "missing_agency_install_script",
+                    "severity": "high",
+                    "path": stripped,
+                    "message": script_error or "declared agency installer does not exist",
+                }
+            )
+    check_args = agency_string_list(install.get("check_args"), field="install.check_args", high=high)
+    default_args = agency_string_list(
+        install.get("default_args"),
+        field="install.default_args",
+        high=high,
+        required=False,
+    )
+    supported_os = agency_string_list(install.get("supported_os"), field="install.supported_os", high=high)
+
+    runtime = manifest.get("runtime") if isinstance(manifest.get("runtime"), dict) else {}
+    runtime_binary = runtime.get("binary")
+    if not isinstance(runtime_binary, str) or not runtime_binary:
+        high.append(
+            {
+                "code": "invalid_agency_runtime",
+                "severity": "high",
+                "path": "agency.json:runtime.binary",
+                "message": "runtime.binary must be a non-empty command name",
+            }
+        )
+        runtime_binary = ""
+    doctor_args = agency_string_list(runtime.get("doctor_args"), field="runtime.doctor_args", high=high)
+    status_args = agency_string_list(runtime.get("status_args"), field="runtime.status_args", high=high)
+
+    agency_string_list(manifest.get("capabilities"), field="capabilities", high=high)
+    agency_string_list(manifest.get("contracts"), field="contracts", high=high)
+    authority = manifest.get("authority") if isinstance(manifest.get("authority"), dict) else {}
+    for key in ("may", "requires_approval", "never"):
+        agency_string_list(authority.get(key), field=f"authority.{key}", high=high)
+
+    status = "fail" if high else "warn" if warnings else "ok"
+    platform_name = current_platform()
+    return {
+        "kind": "agency",
+        "name": name or agency_root.name.lower(),
+        "display_name": manifest.get("display_name", agency_root.name),
+        "description": manifest.get("description", ""),
+        "version": manifest.get("version", ""),
+        "layer": manifest.get("layer", ""),
+        "class": manifest.get("class", ""),
+        "path": relpath(agency_root, root),
+        "manifest_path": relpath(manifest_path, root),
+        "install": {
+            "script": install_script,
+            "check_args": check_args,
+            "default_args": default_args,
+            "supported_os": supported_os,
+        },
+        "runtime": {
+            "binary": runtime_binary,
+            "doctor_args": doctor_args,
+            "status_args": status_args,
+            "service_manager": runtime.get("service_manager", ""),
+            "service": runtime.get("service", ""),
+            "timer": runtime.get("timer", ""),
+        },
+        "platform": {
+            "current": platform_name,
+            "supported": platform_name in supported_os,
+        },
+        "drift": {
+            "status": status,
+            "high": high,
+            "warnings": warnings,
+        },
+    }
+
+
 def profile_summary(plugins: list[dict[str, Any]]) -> dict[str, Any]:
     packs: dict[str, list[str]] = {name: [] for name in PROFILE_TAXONOMY}
     for plugin in plugins:
@@ -679,6 +895,8 @@ def build_inventory(
     ]
     plugins.sort(key=lambda plugin: plugin["name"])
     plugin_names = {plugin["name"] for plugin in plugins}
+    agencies = [analyze_agency(root_path, agency_root) for agency_root in discover_agency_roots(root_path)]
+    agencies.sort(key=lambda agency: agency["name"])
 
     orphaned_rig = [
         {
@@ -704,14 +922,19 @@ def build_inventory(
 
     plugin_high = sum(len(plugin["drift"]["high"]) for plugin in plugins)
     plugin_warnings = sum(len(plugin["drift"]["warnings"]) for plugin in plugins)
+    agency_high = sum(len(agency["drift"]["high"]) for agency in agencies)
+    agency_warnings = sum(len(agency["drift"]["warnings"]) for agency in agencies)
     global_high = sum(1 for item in rig_global_drift + marketplace_global_drift if item["severity"] == "high")
     global_warnings = sum(1 for item in rig_global_drift + marketplace_global_drift if item["severity"] == "warning")
-    high_drift_count = plugin_high + len(orphaned_rig) + global_high
-    warning_drift_count = plugin_warnings + len(orphaned_marketplace) + global_warnings
+    high_drift_count = plugin_high + agency_high + len(orphaned_rig) + global_high
+    warning_drift_count = plugin_warnings + agency_warnings + len(orphaned_marketplace) + global_warnings
 
     ok_count = sum(1 for plugin in plugins if plugin["drift"]["status"] == "ok")
     warn_count = sum(1 for plugin in plugins if plugin["drift"]["status"] == "warn")
     failing_plugin_count = sum(1 for plugin in plugins if plugin["drift"]["status"] == "fail")
+    agency_ok_count = sum(1 for agency in agencies if agency["drift"]["status"] == "ok")
+    agency_warn_count = sum(1 for agency in agencies if agency["drift"]["status"] == "warn")
+    failing_agency_count = sum(1 for agency in agencies if agency["drift"]["status"] == "fail")
 
     return {
         "root": root_path.as_posix(),
@@ -725,9 +948,13 @@ def build_inventory(
         },
         "summary": {
             "plugin_count": len(plugins),
+            "agency_count": len(agencies),
             "ok_count": ok_count,
             "warn_count": warn_count,
             "failing_plugin_count": failing_plugin_count,
+            "agency_ok_count": agency_ok_count,
+            "agency_warn_count": agency_warn_count,
+            "failing_agency_count": failing_agency_count,
             "fail_count": high_drift_count,
             "high_drift_count": high_drift_count,
             "warning_drift_count": warning_drift_count,
@@ -739,6 +966,7 @@ def build_inventory(
         },
         "profiles": profile_summary(plugins),
         "plugins": plugins,
+        "agencies": agencies,
     }
 
 
@@ -747,6 +975,10 @@ def print_human(ledger: dict[str, Any], *, verbose: bool = False) -> None:
     print("Interverse Inventory Doctor")
     print(f"Root: {ledger['root']}")
     print(f"Plugins: {summary['plugin_count']} ok={summary['ok_count']} warn={summary['warn_count']} fail={summary['failing_plugin_count']}")
+    print(
+        f"Agencies: {summary['agency_count']} ok={summary['agency_ok_count']} "
+        f"warn={summary['agency_warn_count']} fail={summary['failing_agency_count']}"
+    )
     print(f"High drift: {summary['high_drift_count']}  Warning drift: {summary['warning_drift_count']}")
     print(f"Rig: {ledger['rig']['path']} ({ledger['rig']['first_party_count']} first-party entries)")
     print(f"Marketplace: {ledger['marketplace']['path']} ({ledger['marketplace']['first_party_count']} entries)")
@@ -772,6 +1004,19 @@ def print_human(ledger: dict[str, Any], *, verbose: bool = False) -> None:
             + f" rig={plugin['rig']['tier'] or 'none'} marketplace={plugin['marketplace']['present']}"
             + f" profile={plugin['profile']['primary']} visibility={plugin['profile']['visibility']}"
         )
+        for item in drift["high"]:
+            print(f"  [HIGH] {item['code']}: {item['message']} ({item.get('path', '')})")
+        if verbose or drift["status"] == "warn":
+            for item in drift["warnings"]:
+                print(f"  [WARNING] {item['code']}: {item['message']} ({item.get('path', '')})")
+
+    for agency in ledger["agencies"]:
+        drift = agency["drift"]
+        if drift["status"] == "ok" and not verbose:
+            continue
+        support = "supported" if agency["platform"]["supported"] else f"unsupported on {agency['platform']['current']}"
+        print(f"\n{agency['name']} [agency:{drift['status']}] {agency['path']}")
+        print(f"  class={agency['class']} layer={agency['layer']} platform={support}")
         for item in drift["high"]:
             print(f"  [HIGH] {item['code']}: {item['message']} ({item.get('path', '')})")
         if verbose or drift["status"] == "warn":

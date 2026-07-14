@@ -3,7 +3,7 @@
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/mistakeknot/Sylveste/main/install.sh | bash
-#   bash install.sh [--help] [--dry-run] [--verbose] [--update] [--uninstall]
+#   bash install.sh [--help] [--dry-run] [--verbose] [--update] [--uninstall] [--agency=<name>]
 #
 # Flags:
 #   --help        Show this usage message and exit
@@ -11,6 +11,7 @@
 #   --verbose     Enable debug output
 #   --update      Update existing installation (skip first-time setup)
 #   --uninstall   Remove Sylveste components (Clavain, companions, ic, Codex/Gemini skills)
+#   --agency=NAME Explicitly install one first-class agency and exit
 
 set -euo pipefail
 
@@ -23,6 +24,7 @@ source "$SCRIPT_DIR/lib/installer-common.sh"
 VERBOSE=false
 UPDATE_ONLY=false
 UNINSTALL=false
+AGENCY=""
 HAS_BD=false
 CACHE_DIR="${HOME}/.claude/plugins/cache"
 
@@ -35,7 +37,7 @@ install.sh -- Curl-fetchable installer for Sylveste (Clavain + Interverse)
 
 Usage:
   curl -fsSL https://raw.githubusercontent.com/mistakeknot/Sylveste/main/install.sh | bash
-  bash install.sh [--help] [--dry-run] [--verbose] [--update] [--uninstall]
+  bash install.sh [--help] [--dry-run] [--verbose] [--update] [--uninstall] [--agency=<name>]
 
 Flags:
   --help        Show this usage message and exit
@@ -43,6 +45,7 @@ Flags:
   --verbose     Enable debug output
   --update      Update existing installation (skip first-time setup)
   --uninstall   Remove Sylveste components (prompts for confirmation)
+  --agency=NAME Explicitly install one discovered first-class agency and exit
 
 Prerequisites:
   Required: jq, Go 1.22+ (builds ic kernel and clavain-cli), git
@@ -57,6 +60,13 @@ USAGE
         --verbose) VERBOSE=true ;;
         --update) UPDATE_ONLY=true ;;
         --uninstall) UNINSTALL=true ;;
+        --agency=*)
+            AGENCY=${arg#*=}
+            if [[ -z "$AGENCY" ]]; then
+                printf '%s%s%s\n' "$RED" '--agency requires a name' "$RESET"
+                exit 1
+            fi
+            ;;
         *)
             printf "${RED}Unknown flag: %s${RESET}\n" "$arg"
             printf "Run with --help for usage.\n"
@@ -64,6 +74,17 @@ USAGE
             ;;
     esac
 done
+
+if [[ -n "$AGENCY" ]]; then
+    if [[ "$UNINSTALL" == true ]]; then
+        printf '%s%s%s\n' "$RED" '--agency cannot be combined with --uninstall' "$RESET"
+        exit 1
+    fi
+    AGENCY_ROOT="${SYLVESTE_ROOT:-$SCRIPT_DIR}"
+    AGENCY_ARGS=(--root "$AGENCY_ROOT" install "$AGENCY")
+    [[ "$DRY_RUN" == true ]] && AGENCY_ARGS+=(--dry-run)
+    exec python3 "$SCRIPT_DIR/scripts/interverse_agency.py" "${AGENCY_ARGS[@]}"
+fi
 
 debug() {
     if [[ "$VERBOSE" == true ]]; then
