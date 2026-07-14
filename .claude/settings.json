@@ -15,7 +15,7 @@
       {
         "hooks": [
           {
-            "command": "bash -c 'cd \"$PROJECT_DIR\" || exit 0; bash scripts/session-freshness-gate.sh || true; [ -f .beads/heal-dolt.sh ] && bash .beads/heal-dolt.sh .beads 2>&1 || true; bd --sandbox stats 2>/dev/null | head -1 || echo \"beads: Dolt unavailable, JSONL backup is source of truth\"; bash scripts/beads-sync-guard.sh'",
+            "command": "bash -c 'cd \"$CLAUDE_PROJECT_DIR\" || exit 0; bash scripts/session-freshness-gate.sh || true; [ -f .beads/heal-dolt.sh ] && bash .beads/heal-dolt.sh .beads 2>&1 || true; bd --sandbox stats 2>/dev/null | head -1 || echo \"beads: Dolt unavailable, JSONL backup is source of truth\"; bash scripts/beads-sync-guard.sh'",
             "type": "command"
           }
         ],
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 $PROJECT_DIR/scripts/gen-skill-prefix-table.py >/dev/null 2>&1 &"
+            "command": "python3 $CLAUDE_PROJECT_DIR/scripts/gen-skill-prefix-table.py >/dev/null 2>&1 &"
           }
         ]
       }
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $PROJECT_DIR/scripts/skill-prefix-router-hook.sh"
+            "command": "bash $CLAUDE_PROJECT_DIR/scripts/skill-prefix-router-hook.sh"
           }
         ]
       }
