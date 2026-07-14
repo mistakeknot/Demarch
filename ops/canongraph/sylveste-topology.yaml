@@ -1,0 +1,131 @@
+# CanonGraph topology for the Sylveste ecosystem.
+# Canonical source — installed into the `sylveste` profile via:
+#   canongraph init --name sylveste --from-spec ops/canongraph/sylveste-topology.yaml
+# Extend with `canongraph extend --from-spec <delta>` — never edit the installed copy directly.
+#
+# Lane discipline: this graph holds ENTITIES AND RELATIONSHIPS (who/what/why-decided).
+# Behavioral prefs → auto-memory/intermem; engineering patterns → interknow;
+# repo task insights → bd remember. See memory-lanes.md next to this file.
+vertical: sylveste
+entities:
+  - key: person
+    label: Person
+    properties: [name, role, email, github]
+    resolution_keys: [name]
+  - key: machine
+    label: Machine
+    properties: [name, description, tailscale_ip, status]
+    resolution_keys: [name]
+  - key: project
+    label: Project
+    properties: [name, status, description, repo_url, canonical_home]
+    resolution_keys: [name]
+  - key: plugin
+    label: Plugin
+    properties: [name, version, description, layer]
+    resolution_keys: [name]
+  - key: client
+    label: Client
+    properties: [name, kind, description]
+    resolution_keys: [name]
+  - key: decision
+    label: Decision
+    properties: [title, rationale, status, decided_on]
+    resolution_keys: [title]
+  - key: run
+    label: Run
+    properties: [run_id, goal, started_on]
+    resolution_keys: [run_id]
+relationships:
+  - key: works_on
+    from: person
+    to: project
+    rel_type: WORKS_ON
+    properties: [role]
+  - key: maintains
+    from: person
+    to: plugin
+    rel_type: MAINTAINS
+  - key: hosted_on
+    from: project
+    to: machine
+    rel_type: HOSTED_ON
+    properties: [path]
+  - key: companion_of
+    from: plugin
+    to: plugin
+    rel_type: COMPANION_OF
+  - key: upstream_of
+    from: project
+    to: plugin
+    rel_type: UPSTREAM_OF
+  - key: for_client
+    from: project
+    to: client
+    rel_type: FOR_CLIENT
+    properties: [engagement]
+  - key: made_by
+    from: decision
+    to: person
+    rel_type: MADE_BY
+  - key: concerns_project
+    from: decision
+    to: project
+    rel_type: CONCERNS_PROJECT
+  - key: concerns_plugin
+    from: decision
+    to: plugin
+    rel_type: CONCERNS_PLUGIN
+  - key: decided_in
+    from: decision
+    to: run
+    rel_type: DECIDED_IN
+  - key: ran_for
+    from: run
+    to: project
+    rel_type: RAN_FOR
+queries:
+  - id: decisions_for_project
+    description: "Decisions concerning a project, with who made them and why"
+    params: [name]
+    cypher: |
+      MATCH (d:Decision)-[:CONCERNS_PROJECT]->(p:Project {name: $name})
+      OPTIONAL MATCH (d)-[:MADE_BY]->(who:Person)
+      RETURN d.title AS decision, d.rationale AS rationale, d.status AS status,
+             d.decided_on AS decided_on, who.name AS made_by
+      ORDER BY decided_on
+  - id: projects_on_machine
+    description: "Projects hosted on a machine, with their paths"
+    params: [name]
+    cypher: |
+      MATCH (p:Project)-[h:HOSTED_ON]->(m:Machine {name: $name})
+      RETURN p.name AS project, p.status AS status, h.path AS path
+      ORDER BY project
+  - id: plugins_maintained_by
+    description: "Plugins a person maintains"
+    params: [name]
+    cypher: |
+      MATCH (per:Person {name: $name})-[:MAINTAINS]->(pl:Plugin)
+      RETURN pl.name AS plugin, pl.version AS version, pl.layer AS layer
+      ORDER BY plugin
+  - id: upstreams
+    description: "External projects tracked as upstreams, and the plugins they feed"
+    params: []
+    cypher: |
+      MATCH (p:Project)-[:UPSTREAM_OF]->(pl:Plugin)
+      RETURN p.name AS upstream, p.repo_url AS repo, pl.name AS plugin
+      ORDER BY upstream
+  - id: decisions_in_run
+    description: "Decisions recorded during a specific run/session"
+    params: [run_id]
+    cypher: |
+      MATCH (d:Decision)-[:DECIDED_IN]->(r:Run {run_id: $run_id})
+      RETURN d.title AS decision, d.rationale AS rationale, d.status AS status
+      ORDER BY decision
+  - id: projects_for_client
+    description: "Projects for a client engagement"
+    params: [name]
+    cypher: |
+      MATCH (p:Project)-[f:FOR_CLIENT]->(c:Client {name: $name})
+      RETURN p.name AS project, p.status AS status, f.engagement AS engagement
+      ORDER BY project
