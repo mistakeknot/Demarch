@@ -104,7 +104,7 @@ Sylveste is a monorepo with six current pillars. This table is a map for contrib
 | [Autarch](https://github.com/mistakeknot/Autarch) | L3 (Apps) | TUI interfaces (Bigend, Gurgeh, Coldwine, Pollard) |
 | [Interspect](interverse/interspect/) | Cross-cutting | Agent performance profiler and routing optimizer |
 
-Additional infrastructure: [Intermute](https://github.com/mistakeknot/intermute) (multi-agent coordination), [interbase](https://github.com/mistakeknot/interbase) (SDK), [interbench](https://github.com/mistakeknot/interbench), [interband](https://github.com/mistakeknot/interband).
+Additional infrastructure: [Intermute](https://github.com/mistakeknot/intermute) (multi-agent coordination), [Intermesh](https://github.com/mistakeknot/intermesh) (retrieval-gated Agent Skills registry/router), [interbase](https://github.com/mistakeknot/interbase) (SDK), [interbench](https://github.com/mistakeknot/interbench), [interband](https://github.com/mistakeknot/interband).
 
 ### Naming convention
 

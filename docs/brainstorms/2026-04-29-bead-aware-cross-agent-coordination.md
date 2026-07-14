@@ -16,7 +16,7 @@ Working names:
 
 - **Substrate:** extend `intermux` + `intermute` + `interlock` first. Do not mint a new `Inter*` plugin yet.
 - **Hermes adapter:** `Athenmesh`.
-- **Future substrate name:** reserve `Intermesh` or `Interlink` only if this outgrows the existing `intermux` / `intermute` / `interlock` split.
+- **Future substrate name:** reserve `Interlink` only if this outgrows the existing `intermux` / `intermute` / `interlock` split. `Intermesh` was assigned on 2026-07-14 to the retrieval-gated Agent Skills registry/router (`sylveste-qn2c`).
 
 Alignment: supports Sylveste's composition-over-capability principle by wiring small existing coordination tools around a shared Beads work-state handle.
 
@@ -178,7 +178,7 @@ Evidence:
 
 Recommendation:
 
-- Decline `/mesh` for v1. The name implies a broader coordination substrate and risks confusing the Athenverse operator view with a future `Intermesh`/`Interlink` substrate.
+- Decline `/mesh` for v1. The name implies substrate ownership and now conflicts directly with Intermesh, the skill-registry/router project; Athenmesh remains the coordination adapter.
 - Do not add `/presence` in this slice. Continue using Athenmesh as a mounted Hermes skill/operator workflow.
 - If repeated dogfood proves that a native command materially lowers operator friction, create a separate Hermes implementation bead and prefer `/presence` as a prompt-style, read-only command that invokes Athenmesh and cannot dispatch, reserve files, or mutate Beads.
 
@@ -191,7 +191,7 @@ Operator workflow without a command:
 
 Revisit trigger: implement `/presence` only after at least two more real coordination dogfoods show repeated command-shaped demand or fresh live presence/reservation evidence that the skill-only path is too slow.
 
-### Future substrate — only then consider `Intermesh`
+### Future substrate — only then consider `Interlink`
 
 Mint a new `Inter*` plugin only if at least two of these become true:
 
@@ -200,7 +200,7 @@ Mint a new `Inter*` plugin only if at least two of these become true:
 - Multiple non-Hermes clients need the same coordination read model.
 - The integration starts accumulating code that would otherwise be duplicated across existing plugins.
 
-Until then, `Intermesh` / `Interlink` remains a reserved future name, not a repo.
+Until then, `Interlink` remains a reserved future name, not a repo. `Intermesh` is no longer reserved here; its separate skill-routing ownership does not change the coordination boundaries in this document.
 
 ## Follow-up beads
 
@@ -236,7 +236,7 @@ Until then, `Intermesh` / `Interlink` remains a reserved future name, not a repo
 - Do not make Discord channel history the coordination source of truth.
 - Do not require every agent to use Hermes.
 - Do not require every coding agent to run in tmux forever; tmux observation is a high-value v0 path, not the universal identity model.
-- Do not build a new `Inter*` plugin before the existing trio proves insufficient.
+- Do not build a new coordination `Inter*` plugin before the existing trio proves insufficient.
 
 ## Open questions
 
@@ -245,4 +245,4 @@ Until then, `Intermesh` / `Interlink` remains a reserved future name, not a repo
 2. Should presence records live as `intermute` agent metadata or as first-class records?
    - Recommendation: metadata in v0; first-class table only if query pressure justifies it.
 3. Should Athenmesh expose `/mesh`, `/presence`, or no command initially?
-   - Resolved 2026-04-30: no first-party command initially. Keep Athenmesh as the skill/operator workflow. If repeated dogfood later proves native command demand, prefer `/presence` for read-only clarity and keep `/mesh` reserved/declined to avoid substrate confusion.
+   - Resolved 2026-04-30 and clarified 2026-07-14: no first-party command initially. Keep Athenmesh as the skill/operator workflow. If repeated dogfood later proves native command demand, prefer `/presence` for read-only clarity; `/mesh` remains declined because Intermesh now names the skill-routing substrate.

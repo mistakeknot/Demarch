@@ -71,6 +71,7 @@ Pillars describe *what* makes up Sylveste. The three-layer model below describes
 | L2 OS | Clavain + Skaffen + Drivers | Workflow semantics, sprint lifecycle, agent supervision, provider/tool runtime, brainstorm-to-ship pipeline | Calls L1 via `ic` CLI; consumes the generic bus plus typed evidence queries while the measurement read model is still converging |
 | L3 Apps | Autarch (TUIs) | User-facing dashboards, visualizations | Reads L1 state via `ic` queries; sends intents to L2 |
 | Cross-cutting | Interspect | Observability, profiling, pattern detection | Consumes L1 event surfaces; today this includes `ic events tail`, `ic events list-review`, and `ic interspect query` rather than one fully unified stream. Writes only to L2 (OS config). Kernel boundary softens as trust is earned. |
+| Cross-cutting | Intermesh | Derived Agent Skills discovery, routing, and relationship resolution | Reads canonical `SKILL.md`/`intermesh.yaml` files through a standalone CLI; emits outcome-neutral receipts for Interspect. Does not write Intercore state. |
 
 ## Write-Path Contract
 
@@ -99,6 +100,7 @@ Current-state note: the generic event bus is not yet the full measurement-grade 
 | L3 → L2 | Intent protocol | `start-run`, `advance-run`, `override-gate`, `submit-artifact` |
 | L3 → L1 | Read-only queries | `ic run status <id> --json`, `ic state get ...` |
 | * → Interspect | Event consumption | Interspect consumes kernel event surfaces; today this is not one fully unified stream |
+| Hosts → Intermesh | Local CLI + canonical files | Host adapters request top candidates; Intermesh returns paths and emits route receipts without entering the kernel write path |
 
 ## Drivers (L2 Extensions)
 
