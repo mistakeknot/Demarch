@@ -10,6 +10,8 @@ are prose/derived surfaces that rot. Checks:
   3. stale hostnames      — a hostname in a catalog status that lives under a domain the
                             serving map governs but is NOT a live served host
   4. registry parity      — gsvdotcom registry.json designation/project/layer vs catalog
+  5. plugin publish-drift — marketplace.json version vs each locally-present plugin.json
+                            (plugin.json ahead of marketplace = unpublished work)
 
 Reads CG_AUTH_TOKEN from ~/.config/canongraph/canongraph.env. Stdlib only. Exit 1 when
 drift found, 0 clean (usable as a cron/CI gate).
@@ -21,6 +23,11 @@ import argparse, json, os, re, sys, urllib.request
 URL = "http://100.78.63.67:3943/mcp"
 CATALOG = os.path.expanduser("~/projects/gsv-portfolio/strategy/GSV-CATALOG.md")
 REGISTRY = os.path.expanduser("~/projects/gsvdotcom/src/data/registry.json")
+MARKETPLACE = os.path.expanduser(
+    "~/projects/Sylveste/core/marketplace/.claude-plugin/marketplace.json")
+PLUGIN_ROOTS = ["~/projects/Sylveste/interverse/{n}", "~/projects/Sylveste/{n}",
+                "~/projects/Sylveste/core/{n}", "~/projects/Sylveste/apps/{n}",
+                "~/projects/{n}"]
 LAYERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "X", "studio"]
 HOST_RE = re.compile(r"\b((?:[a-z0-9-]+\.)+[a-z]{2,})\b")
 
@@ -90,6 +97,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--catalog", default=CATALOG)
     ap.add_argument("--registry", default=REGISTRY)
+    ap.add_argument("--marketplace", default=MARKETPLACE)
     args = ap.parse_args()
 
     tool = graph_client()
@@ -153,8 +161,33 @@ def main():
     except FileNotFoundError:
         findings.append(f"REGISTRY-UNREADABLE {args.registry}")
 
+    # 5. plugin publish-drift (fleet-audit follow-up: plugin.json ahead of marketplace)
+    try:
+        mkt = json.load(open(os.path.expanduser(args.marketplace)))
+        local_seen = 0
+        for pl in mkt.get("plugins", []):
+            name, mv = pl.get("name"), pl.get("version")
+            if not name or not mv:
+                continue
+            for root in PLUGIN_ROOTS:
+                pj = os.path.expanduser(root.format(n=name)) + "/.claude-plugin/plugin.json"
+                if os.path.exists(pj):
+                    local_seen += 1
+                    try:
+                        lv = json.load(open(pj)).get("version")
+                    except Exception:
+                        lv = None
+                    if lv and lv != mv:
+                        findings.append(f"PUBLISH-DRIFT {name}: plugin.json={lv} "
+                                        f"marketplace={mv}")
+                    break
+        plugin_note = f"{local_seen}/{len(mkt.get('plugins', []))} plugins locally checkable"
+    except FileNotFoundError:
+        plugin_note = "marketplace unreadable"
+        findings.append(f"MARKETPLACE-UNREADABLE {args.marketplace}")
+
     print(f"estate-drift: {len(catalog)} catalog rows, {len(graph)} graph hulls, "
-          f"{len(serving)} serving edges, {len(live_hosts)} live hosts")
+          f"{len(serving)} serving edges, {len(live_hosts)} live hosts, {plugin_note}")
     if findings:
         print(f"\n{len(findings)} finding(s):")
         for f in findings:
