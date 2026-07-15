@@ -20,3 +20,18 @@ answer; "—" = lane silent (correctly or not).
 
 Shipped in `/clavain:recall` (C3 graph step 1.5, qmd-preferred legacy, bd step 4.5,
 provenance-ranked merge) — Clavain 52d5237; lane map in `recall-lanes.md`.
+
+## Re-run 2026-07-15 (post lane-migration, goal mk-1ei)
+
+After migrating 38 world-fact memory files into graph documents (files → pointers,
+MEMORY.md 152→72 lines): **unified 5/5 maintained.**
+- Q1 graph decisions unchanged (4 jawncloud auth decisions w/ rationale).
+- Q2 now answers **graph-complete**: `project_card` (live shape) + `search` (rehome
+  rationale/rollback from migrated doc) — previously required the file lane.
+- Q3/Q5 unchanged: how-do-I files (`reference_zklw_beads_new_repo`,
+  `reference_tmux_copy_macos_terminal`) deliberately NOT migrated — the file lane
+  keeps behavioral/how-to content per memory-lanes policy.
+- Q4 graph gained the `works_on` Joe Vattimo→canongraph edge; watch file kept.
+- Consumer fix shipped same day: recall step 1.5 gained the `mcp__canongraph__search`
+  document-lane call (Clavain 0.6.274) — without it, migrated content was invisible
+  to unified recall.

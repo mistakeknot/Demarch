@@ -153,6 +153,13 @@ queries:
       RETURN p.designation AS designation, p.name AS project, p.status AS status,
              p.ecosystem AS ecosystem
       ORDER BY designation
+  - id: runs_for_project
+    description: "Recent runs/sessions that worked on a project (sibling-session freshness signal)"
+    params: [name]
+    cypher: |
+      MATCH (r:Run)-[:RAN_FOR]->(p:Project {name: $name})
+      RETURN r.run_id AS run_id, r.goal AS goal, r.started_on AS started_on
+      ORDER BY started_on DESC
   - id: serving_map
     description: "What serves where: project -> machine serving edges with url/port/unit"
     params: []
