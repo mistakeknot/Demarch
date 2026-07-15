@@ -35,14 +35,17 @@ services:
     restart: unless-stopped
     # No GPU on zklw (ASPEED BMC only) — the 5950X handles CPU transcode.
 
-  # NOTE: Overseerr + Jellyseerr reportedly merged into "Seerr"
-  # (seerr-team/seerr) in early 2026. Verify the current image before
-  # switching — until then jellyseerr is known-good and (if the merge is real)
-  # auto-migrates. To switch: image -> ghcr.io/seerr-team/seerr:latest and
-  # check the config volume path in their docs.
+  # Overseerr + Jellyseerr merged into "Seerr" (seerr-team/seerr) in early 2026.
+  # Migrated 2.7.3 -> 3.3.0 on 2026-07-08. Image moved fallenbagel/jellyseerr ->
+  # ghcr.io/seerr-team/seerr; config path /app/config UNCHANGED; DB auto-migrates
+  # on first boot (one-way — back up config first). GOTCHA: 3.x runs as node
+  # (UID 1000), old 2.x wrote config as root -> EACCES crash-loop on the logs
+  # dir. Fix: chown config tree to the run-UID + pin `user:` + `init: true`.
   jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+    image: ghcr.io/seerr-team/seerr:latest
     container_name: jellyseerr
+    user: "${PUID}:${PGID}"       # match chowned config (was root under 2.x)
+    init: true                    # 3.x expects an init to reap the node process
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
