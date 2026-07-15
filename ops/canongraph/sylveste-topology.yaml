@@ -18,7 +18,8 @@ entities:
     resolution_keys: [name]
   - key: project
     label: Project
-    properties: [name, status, description, repo_url, canonical_home]
+    properties: [name, status, description, repo_url, canonical_home,
+                 designation, layer, ecosystem, constellation]
     resolution_keys: [name]
   - key: plugin
     label: Plugin
@@ -84,6 +85,11 @@ relationships:
     from: run
     to: project
     rel_type: RAN_FOR
+  - key: serves
+    from: project
+    to: machine
+    rel_type: SERVES
+    properties: [url, port, unit]
 queries:
   - id: decisions_for_project
     description: "Decisions concerning a project, with who made them and why"
@@ -128,4 +134,29 @@ queries:
     cypher: |
       MATCH (p:Project)-[f:FOR_CLIENT]->(c:Client {name: $name})
       RETURN p.name AS project, p.status AS status, f.engagement AS engagement
+      ORDER BY project
+  - id: project_card
+    description: "Full catalog card for one project — designation, layer, ecosystem, status, hosting"
+    params: [name]
+    cypher: |
+      MATCH (p:Project {name: $name})
+      OPTIONAL MATCH (p)-[h:HOSTED_ON]->(m:Machine)
+      RETURN p.name AS project, p.designation AS designation, p.layer AS layer,
+             p.ecosystem AS ecosystem, p.constellation AS constellation,
+             p.status AS status, p.description AS description, p.repo_url AS repo,
+             m.name AS machine, h.path AS path
+  - id: projects_in_layer
+    description: "All projects on one pace layer (A-L, X), by designation"
+    params: [layer]
+    cypher: |
+      MATCH (p:Project) WHERE p.layer = $layer
+      RETURN p.designation AS designation, p.name AS project, p.status AS status,
+             p.ecosystem AS ecosystem
+      ORDER BY designation
+  - id: serving_map
+    description: "What serves where: project -> machine serving edges with url/port/unit"
+    params: []
+    cypher: |
+      MATCH (p:Project)-[s:SERVES]->(m:Machine)
+      RETURN p.name AS project, s.url AS url, s.port AS port, s.unit AS unit, m.name AS machine
       ORDER BY project
