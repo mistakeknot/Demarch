@@ -32,3 +32,13 @@ EMAIL_FROM=
 DISCORD_ALLOWED_USERS=
 TELEGRAM_ALLOWED_USERS=
 EMAIL_ALLOWED_SENDERS=
+
+# --- scarcity nudge (zklw doctrine: only host what you can't buy/stream) ---
+# Before queuing a request, check TMDB watch-providers; if the title is
+# buyable/rentable on any of these providers in WATCH_REGION, the reply nudges
+# the requester to watch it there (soft nudge — the download still queues).
+# Matching is casefolded + substring, so "Apple TV" also catches the legacy
+# "Apple iTunes" storefront and "YouTube" catches "YouTube (Movies)".
+# UNSET => default "Apple TV,YouTube". Set NUDGE_PROVIDERS= (empty) to DISABLE.
+NUDGE_PROVIDERS=Apple TV,YouTube
+WATCH_REGION=US

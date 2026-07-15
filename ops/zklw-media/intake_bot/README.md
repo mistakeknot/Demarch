@@ -85,12 +85,32 @@ Per channel, `*_ALLOWED_*` is a comma-separated list of channel-native IDs
 (Discord/Telegram numeric user IDs; email addresses). Blank = open channel, and
 Seerr's own per-user quotas/permissions are the backstop downstream.
 
+## Scarcity nudge
+
+Per the zklw scarcity doctrine (only host what you *can't* buy/stream), a
+confidently-resolved request is checked against TMDB watch-providers before it
+queues. If the title is buyable/rentable on a `NUDGE_PROVIDERS` storefront in
+`WATCH_REGION`, the reply prepends a soft nudge ("available to buy or rent on
+Apple TV or YouTube — consider watching it there") and **still queues the
+download** — it's a nudge, not a gate, so preservation-grade copies of
+rentable-only titles are still possible.
+
+- `NUDGE_PROVIDERS` — comma-separated provider names. **Unset ⇒ `Apple TV,YouTube`.**
+  Set it *empty* (`NUDGE_PROVIDERS=`) to disable the nudge entirely.
+- `WATCH_REGION` — TMDB region code for provider availability (default `US`).
+- Matching is casefolded + substring, so `Apple TV` also catches TMDB's legacy
+  `Apple iTunes` and `YouTube` catches `YouTube (Movies)`.
+- Best-effort: a TMDB provider-lookup failure degrades silently to the normal
+  download flow — it never blocks a request.
+
 ## Tests
 
 The resolver heuristics, parser, and dispatch payload shape have a no-dep smoke
-test path (mock TMDB + mock Seerr `_post`). To re-run the structure check:
+test path (mock TMDB + mock Seerr `_post`). To re-run the structure check and
+the scarcity-nudge tests:
 ```bash
 python3 -m py_compile intake_bot/*.py intake_bot/adapters/*.py
+python3 -m unittest intake_bot.test_nudge      # from ops/zklw-media/
 ```
 
 ## Status / next

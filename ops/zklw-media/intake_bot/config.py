@@ -61,6 +61,18 @@ class Config:
     telegram_allowed: frozenset[str]
     email_allowed: frozenset[str]
 
+    # --- scarcity nudge -------------------------------------------------
+    # Per the zklw scarcity doctrine: only host what you CAN'T buy/stream.
+    # Before dispatching, check whether the title is purchasable on these
+    # providers in `watch_region`; if so, nudge the requester there. Empty
+    # set disables the nudge entirely.
+    nudge_providers: frozenset[str]
+    watch_region: str
+
+    @property
+    def nudge_enabled(self) -> bool:
+        return bool(self.nudge_providers)
+
     @property
     def llm_enabled(self) -> bool:
         return bool(self.anthropic_api_key)
@@ -80,6 +92,16 @@ class Config:
 
 def _csv_set(name: str) -> frozenset[str]:
     raw = os.environ.get(name, "")
+    return frozenset(p.strip() for p in raw.split(",") if p.strip())
+
+
+def _csv_set_default(name: str, default: str) -> frozenset[str]:
+    """Like _csv_set but uses `default` when the var is UNSET. An explicitly
+    empty string ("") still yields the empty set, so the feature can be turned
+    off without editing the default — set-but-empty means "off", not "default"."""
+    raw = os.environ.get(name)
+    if raw is None:
+        raw = default
     return frozenset(p.strip() for p in raw.split(",") if p.strip())
 
 
@@ -103,6 +125,10 @@ def load() -> Config:
         discord_allowed=_csv_set("DISCORD_ALLOWED_USERS"),
         telegram_allowed=_csv_set("TELEGRAM_ALLOWED_USERS"),
         email_allowed=_csv_set("EMAIL_ALLOWED_SENDERS"),
+        # Default ON with Apple TV + YouTube per the scarcity doctrine; set
+        # NUDGE_PROVIDERS="" to disable, or override the list/region.
+        nudge_providers=_csv_set_default("NUDGE_PROVIDERS", "Apple TV,YouTube"),
+        watch_region=_opt("WATCH_REGION", "US"),
     )
     if not (cfg.discord_enabled or cfg.telegram_enabled or cfg.email_enabled):
         raise ConfigError(

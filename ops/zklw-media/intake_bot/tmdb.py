@@ -81,3 +81,60 @@ def search(
             cands = exact
     cands.sort(key=lambda c: c.popularity, reverse=True)
     return cands[:limit]
+
+
+# Watch-provider names that TMDB reports for the buy/rent storefronts we nudge
+# toward. TMDB spells Apple's storefront "Apple TV" (formerly "Apple iTunes");
+# both are matched so the check survives their rename. Comparison is casefolded
+# and substring-based, so "YouTube" matches "YouTube (Movies)" etc.
+def _provider_names(block: dict) -> set[str]:
+    """Collect provider display names from a region block across the buy/rent/
+    flatrate offer types. We care about buy+rent (purchasable); flatrate is
+    included so a caller can tell 'it's on a sub you have' apart if it wants."""
+    names: set[str] = set()
+    for offer in ("buy", "rent", "flatrate"):
+        for p in block.get(offer, []) or []:
+            name = (p.get("provider_name") or "").strip()
+            if name:
+                names.add(name)
+    return names
+
+
+def purchasable_on(
+    tmdb_id: int,
+    media_type: str,
+    api_key: str,
+    *,
+    region: str,
+    providers: frozenset[str],
+) -> list[str]:
+    """Return the subset of `providers` that can buy/rent this title in `region`,
+    per TMDB's watch/providers endpoint. Empty list = not purchasable there (or
+    unknown). Best-effort: any TMDB error returns [] so the caller proceeds with
+    the normal download flow — a provider lookup must never block a request.
+
+    `providers` is matched casefolded + substring, so "Apple TV" matches TMDB's
+    "Apple TV" and the legacy "Apple iTunes"; "YouTube" matches "YouTube (Movies)".
+    """
+    if not providers:
+        return []
+    kind = "tv" if media_type == "tv" else "movie"
+    try:
+        data = _get(f"/{kind}/{tmdb_id}/watch/providers", api_key)
+    except TMDBError:
+        return []
+    block = (data.get("results") or {}).get(region) or {}
+    available = _provider_names(block)
+    if not available:
+        return []
+    avail_cf = [a.casefold() for a in available]
+    hits: list[str] = []
+    for want in providers:
+        wcf = want.casefold()
+        # "Apple TV" should also catch the legacy "Apple iTunes" storefront.
+        needles = [wcf]
+        if wcf.startswith("apple"):
+            needles.append("apple itunes")
+        if any(n in a for a in avail_cf for n in needles):
+            hits.append(want)
+    return hits
