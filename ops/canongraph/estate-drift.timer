@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly estate drift check (Mon 04:37)
+
+[Timer]
+OnCalendar=Mon 04:37
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

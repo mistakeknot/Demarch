@@ -1,0 +1,7 @@
+[Unit]
+Description=Estate drift check — CanonGraph vs GSV catalog/registry/marketplace
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/estate-drift-check.sh
+Nice=10
