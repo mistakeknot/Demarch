@@ -111,3 +111,8 @@ docs/research/*/
 # Keep local Interstat/session data ignored while publishing OYRF's public CSV.
 data/*
 !data/cost-trajectory.csv
+
+# interspect-audit reports are durable research evidence (spike reports +
+# quarterly calibration audits), exempt from the local-only research-subdir rule
+!docs/research/interspect-audit/
+!docs/research/interspect-audit/**
