@@ -1,0 +1,61 @@
+{
+  "n_items": 30,
+  "n_rounds": 3,
+  "severity": {
+    "fleiss_kappa": 0.5629299878591663,
+    "fleiss_kappa_bootstrap_ci95": [
+      0.37418513689700117,
+      0.7452486858067126
+    ],
+    "P_bar_observed_agreement": 0.7333333333333333,
+    "P_e_expected_agreement": 0.3898765432098765,
+    "pairwise_cohens_kappa": {
+      "round1_vs_round2": {
+        "kappa": 0.7302158273381295,
+        "percent_agreement": 0.8333333333333334,
+        "pe": 0.38222222222222224
+      },
+      "round1_vs_round3": {
+        "kappa": 0.43502824858757055,
+        "percent_agreement": 0.6666666666666666,
+        "pe": 0.41
+      },
+      "round2_vs_round3": {
+        "kappa": 0.536082474226804,
+        "percent_agreement": 0.7,
+        "pe": 0.35333333333333333
+      }
+    },
+    "mean_pairwise_cohens_kappa": 0.5671088500508347,
+    "mean_pairwise_cohens_kappa_bootstrap_ci95": [
+      0.37500000000000006,
+      0.7348484848484848
+    ],
+    "mean_pairwise_percent_agreement": 0.7333333333333333,
+    "exact_match_rate_all_3_rounds": 0.6,
+    "round_severity_distributions": [
+      {
+        "MEDIUM": 15,
+        "HIGH": 13,
+        "LOW": 2
+      },
+      {
+        "MEDIUM": 12,
+        "HIGH": 12,
+        "CRITICAL": 2,
+        "LOW": 4
+      },
+      {
+        "MEDIUM": 18,
+        "HIGH": 7,
+        "CRITICAL": 1,
+        "LOW": 4
+      }
+    ]
+  },
+  "verdict_confirm_reject": {
+    "cohens_kappa_pooled_pairs": 1.0,
+    "percent_agreement_pooled_pairs": 1.0,
+    "exact_match_rate_all_3_rounds": 1.0
+  }
+}
