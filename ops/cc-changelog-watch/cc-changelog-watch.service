@@ -1,0 +1,7 @@
+[Unit]
+Description=Claude Code changelog watcher — diff releases vs last-seen, file one delta bead
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/cc-changelog-watch.sh
+Nice=10

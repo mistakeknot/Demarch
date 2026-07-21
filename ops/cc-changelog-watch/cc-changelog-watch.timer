@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly Claude Code changelog watch (Tue 05:17)
+
+[Timer]
+OnCalendar=Tue 05:17
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
