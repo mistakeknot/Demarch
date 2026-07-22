@@ -102,3 +102,15 @@ At close, propose a successor per Goal Cadence. Natural candidates: the
 myyw.16 streak-to-10 completion goal once sprints accumulate (closing A:L3
 and the myyw epic), post-launch iteration driven by Show HN / preprint
 feedback, or the Sylveste-ktz small-fix bundle if launch fires clean.
+
+## Disposition — PARKED before binding (2026-07-22)
+
+mk reconsidered the same day: the drop-window timing leverage the epic was
+designed around is spent (Fable 5 shipped in CC 2.1.170, weeks before this
+charter), and there is no current interest in Show HN — which was the
+distribution leg of the plan. Goal 4898696f closed unbound with successor
+Sylveste-ktz. Bead record: 3rod and oyrf parked P0→P3 with the decision in
+notes; oyrf.5 closed (launch framing dead; a standalone methods write-up on
+the longitudinal data remains a future option); oyrf.3 (asciicast) survives
+as a standalone P3 demo asset; myyw/A:L3 untouched on its own clock. The
+interview rulings above stand as the record of what WOULD have fired.
