@@ -20,6 +20,9 @@
         "-c",
         "exec \"$(git rev-parse --show-toplevel)/interverse/interlock/bin/launch-mcp.sh\""
       ]
+    },
+    "alwe": {
+      "command": "alwe"
     }
   }
 }
