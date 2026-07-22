@@ -28,7 +28,7 @@ The installer:
 1. Symlinks `~/.agents/skills/clavain` → the Clavain `skills/` directory.
 2. Runs `scripts/gen-kimi-manifests.py` to (re)generate `kimi.plugin.json` manifests.
 3. Merges Clavain's MCP servers (context7, qmd) into `~/.kimi-code/mcp.json`.
-4. Writes a managed hooks block into `~/.kimi-code/config.toml` (markers `# BEGIN/END CLAVAIN KIMI HOOKS`).
+4. Writes a managed hooks block into `~/.kimi-code/config.toml` (markers `# BEGIN/END CLAVAIN KIMI HOOKS`) — **unless the clavain plugin is installed and enabled** in Kimi's plugin manager, in which case the block is removed/skipped (the plugin's `kimi.plugin.json` already carries the full hook set; a config block would double-fire every hook).
 5. Writes a managed tool-map block into `~/.kimi-code/AGENTS.md` (markers `<!-- BEGIN/END CLAVAIN KIMI TOOL MAP -->`).
 
 All user-config writes are backup-first and idempotent. Paths are overridable via `KIMI_CODE_HOME` and `AGENTS_SKILLS_DIR`.
@@ -61,8 +61,17 @@ python3 scripts/gen-kimi-manifests.py --check  # CI check: fail if stale
 
 Translation rules: `skills`/`commands` directories are referenced as `./`-relative paths; stdio MCP commands have `${CLAUDE_PLUGIN_ROOT}` rewritten to `./`; hooks are flattened to Kimi's `{event, matcher, command, timeout}` schema with `${KIMI_PLUGIN_ROOT}` substituted and Claude-only tool names (`MultiEdit`, `TodoWrite`, `Task`) remapped; `agents` definitions are dropped (Kimi has no equivalent).
 
+## Plugin route (recommended for full functionality)
+
+Installing Clavain as a real Kimi plugin (`/plugins install /path/to/Sylveste/os/Clavain` in the TUI) enables everything the generated manifest carries — the full 16-hook set, 58 `/clavain:*` slash commands, and the `using-clavain` session-start skill. The symlink + `mcp.json` route alone does **not** register slash commands.
+
+Caveats of the plugin route:
+
+- Kimi copies the plugin into `~/.kimi-code/plugins/managed/clavain/`; later edits to the source checkout have no effect until you reinstall (`/plugins remove clavain`, then install again).
+- Plugins are per-user only (no project-level install scope yet).
+- `install-kimi.sh` detects an enabled clavain plugin and skips its config.toml hooks block, so the two routes can coexist without hooks double-firing.
+
 ## Known gaps
 
 - **Custom subagent definitions** (Clavain's 6 agents, interflux's 17, `fd-*` fleets) do not load in Kimi. Their instructions can be ported as skills if needed.
 - **`session-start.sh`** depends on `CLAUDE_ENV_FILE`, which has no Kimi equivalent; env-export behavior degrades gracefully (the rest of the script's logic runs).
-- Kimi plugins are per-user only (no project-level install scope yet); the symlink + `mcp.json` + `config.toml` route used by `install-kimi.sh` is the scripted alternative to the `/plugins` TUI.
