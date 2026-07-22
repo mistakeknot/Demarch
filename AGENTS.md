@@ -43,6 +43,8 @@ bd backup && bash .beads/push.sh && git push  # Complete work after commit
 
 ## Recent Changes
 
+**Kimi Code host support.** Kimi Code CLI is now a fourth supported host alongside Claude Code, Codex, and Gemini. `scripts/gen-kimi-manifests.py` translates every `.claude-plugin/plugin.json` into a native `kimi.plugin.json` (skills/commands paths, MCP `${CLAUDE_PLUGIN_ROOT}` resolution, hook flattening with tool-matcher mapping); `scripts/kimi-hook-bridge.sh` lets Claude-format hook scripts run under Kimi's hook protocol; `os/Clavain/scripts/install-kimi.sh` (mirroring `install-codex.sh`) handles skills symlinks into `~/.agents/skills/`, MCP merge into `~/.kimi-code/mcp.json`, managed hooks block in `config.toml`, doctor, and uninstall. Top-level `install.sh`/`uninstall.sh` gained `command -v kimi`-gated blocks. User guide: [docs/guide-kimi-host.md](docs/guide-kimi-host.md). Known gap: Claude-format custom subagent definitions (`agents/*.md`) have no Kimi equivalent.
+
 **interlab v0.4.2 — Mutation store and provenance tracking.** The `internal/mutation/` package adds a SQLite-backed mutation history store at `~/.local/share/interlab/mutations.db` with three new MCP tools:
 - `mutation_record` — Persist an approach attempt with hypothesis, quality signal, and provenance (inspired_by, session_id, campaign_id). Returns `is_new_best` status.
 - `mutation_query` — Query mutation history by task_type, campaign, quality threshold. Returns mutations sorted by quality (best first). Use at campaign start to seed hypotheses.

@@ -138,6 +138,35 @@ if command -v gemini &>/dev/null; then
     fi
 fi
 
+# --- Kimi Code CLI ---
+if command -v kimi &>/dev/null; then
+    log ""
+    log "${BOLD}Uninstalling Kimi integration...${RESET}"
+
+    KIMI_SOURCE=""
+    if [[ -f "os/Clavain/scripts/install-kimi.sh" ]]; then
+        KIMI_SOURCE="$(cd "os/Clavain" && pwd)"
+    elif [[ -f "$SCRIPT_DIR/os/Clavain/scripts/install-kimi.sh" ]]; then
+        KIMI_SOURCE="$SCRIPT_DIR/os/Clavain"
+    elif [[ -f "${HOME}/.local/share/Sylveste/os/Clavain/scripts/install-kimi.sh" ]]; then
+        KIMI_SOURCE="${HOME}/.local/share/Sylveste/os/Clavain"
+    fi
+
+    if [[ -n "$KIMI_SOURCE" ]]; then
+        if [[ "$DRY_RUN" == true ]]; then
+            log "  ${DIM}[DRY RUN] Would run bash ${KIMI_SOURCE}/scripts/install-kimi.sh uninstall --source ${KIMI_SOURCE}${RESET}"
+        else
+            if bash "$KIMI_SOURCE/scripts/install-kimi.sh" uninstall --source "$KIMI_SOURCE" >/dev/null 2>&1; then
+                success "Kimi integration uninstalled"
+            else
+                warn "Could not uninstall Kimi integration"
+            fi
+        fi
+    else
+        warn "Kimi uninstall script not found. Remove manually: ~/.agents/skills/clavain symlink and managed blocks in ~/.kimi-code/"
+    fi
+fi
+
 # --- Done ---
 log ""
 if [[ "$DRY_RUN" == true ]]; then

@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "intermap": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "exec \"$(git rev-parse --show-toplevel)/interverse/intermap/bin/launch-mcp.sh\""
+      ]
+    },
+    "intermux": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "exec \"$(git rev-parse --show-toplevel)/interverse/intermux/bin/launch-mcp.sh\""
+      ]
+    },
+    "interlock": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "exec \"$(git rev-parse --show-toplevel)/interverse/interlock/bin/launch-mcp.sh\""
+      ]
+    }
+  }
+}
