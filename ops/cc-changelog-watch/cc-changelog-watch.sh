@@ -61,7 +61,7 @@ Next: in-session mapping pass — map new capabilities to Sylveste plugins, file
 
 existing="$(bd list --status=open 2>/dev/null | grep -Fi "cc-changelog:" | head -1 | awk '{print $1}')"
 if [ -n "$existing" ]; then
-    if bd comment "$existing" -m "$body" >/dev/null 2>&1; then
+    if bd comment "$existing" "$body" >/dev/null 2>&1; then
         echo "cc-changelog-watch: delta ${last_seen} → ${latest} appended to open bead ${existing}"
     else
         echo "cc-changelog-watch: bd comment failed; state NOT advanced (will retry next run)" >&2
