@@ -546,6 +546,30 @@ else
     warn "Skipping ic build (source not available)"
 fi
 
+# --- Zaka + Alwe (agent steering and observation) ---
+# Same pattern as ic: build from the local checkout when present.
+for tool in Zaka Alwe; do
+    lc=$(echo "$tool" | tr '[:upper:]' '[:lower:]')
+    SRC=""
+    if [[ -f "os/$tool/cmd/$lc/main.go" ]]; then
+        SRC="os/$tool"
+    elif [[ -f "../os/$tool/cmd/$lc/main.go" ]]; then
+        SRC="../os/$tool"
+    fi
+
+    if [[ -z "$SRC" ]]; then
+        warn "Skipping $lc build (source not available). Install later with: go install github.com/mistakeknot/$tool/cmd/$lc@latest"
+        continue
+    fi
+
+    run mkdir -p "${HOME}/.local/bin"
+    if run go build -C "$SRC" -mod=readonly -o "${HOME}/.local/bin/$lc" ./cmd/$lc; then
+        [[ "$DRY_RUN" != true ]] && success "$lc built and installed to ~/.local/bin/$lc"
+    else
+        warn "$lc build failed — continuing (non-fatal). Try manually: go build -C $SRC -o ~/.local/bin/$lc ./cmd/$lc"
+    fi
+done
+
 log ""
 
 # --- Codex CLI (optional) ---
