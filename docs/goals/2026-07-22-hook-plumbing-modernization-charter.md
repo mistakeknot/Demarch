@@ -80,3 +80,14 @@ any failing suites.
 At close, propose a successor per Goal Cadence: remaining CC-digest
 candidates (Sylveste-oqo intermux agents-json, Sylveste-nwv publish
 tagging), or the next capability digest when the changelog watcher fires.
+
+## Operational amendment (2026-07-22, pre-bind)
+
+mk chose single-session execution with worktree isolation over the
+two-session split. Goal B's code items (a3a scripts, 1zu Go+test) run in a
+worktree-isolated executor agent (model: sonnet, explicit); ALL bd
+operations, the nested os/Skaffen pull, branch merge and the single final
+publish wave stay in the main checkout/session. B's publish-deferral clause
+is superseded — one publish wave ships everything. Both goal entities
+(ceb0f3a6, 48d16471) close from this session. The merged /goal condition is
+the union of both charters' conditions with those adjustments.
