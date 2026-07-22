@@ -83,18 +83,26 @@ if [ -f "$PLUGIN_ROOT/server/package.json" ]; then
 fi
 
 # --- Find marketplace (same walk-up as interbump.sh) ---
-MARKETPLACE_JSON=""
-dir="$PLUGIN_ROOT"
-for _ in 1 2 3 4; do
-    dir="$(dirname "$dir")"
-    if [ -f "$dir/core/marketplace/.claude-plugin/marketplace.json" ]; then
-        MARKETPLACE_JSON="$dir/core/marketplace/.claude-plugin/marketplace.json"
-        break
+# Standalone publishers can provide their canonical registered checkout. This
+# must take precedence over a stale sibling clone left by an older layout.
+MARKETPLACE_JSON="${INTERCHECK_MARKETPLACE_JSON:-}"
+if [ -n "$MARKETPLACE_JSON" ] && [ ! -f "$MARKETPLACE_JSON" ]; then
+    echo -e "${RED}Error: INTERCHECK_MARKETPLACE_JSON does not exist: $MARKETPLACE_JSON${NC}" >&2
+    exit 1
+fi
+if [ -z "$MARKETPLACE_JSON" ]; then
+    dir="$PLUGIN_ROOT"
+    for _ in 1 2 3 4; do
+        dir="$(dirname "$dir")"
+        if [ -f "$dir/core/marketplace/.claude-plugin/marketplace.json" ]; then
+            MARKETPLACE_JSON="$dir/core/marketplace/.claude-plugin/marketplace.json"
+            break
+        fi
+    done
+    # Legacy sibling layout
+    if [ -z "$MARKETPLACE_JSON" ] && [ -f "$PLUGIN_ROOT/../interagency-marketplace/.claude-plugin/marketplace.json" ]; then
+        MARKETPLACE_JSON="$PLUGIN_ROOT/../interagency-marketplace/.claude-plugin/marketplace.json"
     fi
-done
-# Legacy sibling layout
-if [ -z "$MARKETPLACE_JSON" ] && [ -f "$PLUGIN_ROOT/../interagency-marketplace/.claude-plugin/marketplace.json" ]; then
-    MARKETPLACE_JSON="$PLUGIN_ROOT/../interagency-marketplace/.claude-plugin/marketplace.json"
 fi
 
 if [ -n "$MARKETPLACE_JSON" ]; then
