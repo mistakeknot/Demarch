@@ -23,6 +23,13 @@
     },
     "alwe": {
       "command": "alwe"
+    },
+    "intergraph": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "exec \"$(git rev-parse --show-toplevel)/interverse/intergraph/bin/serve-mcp.sh\""
+      ]
     }
   }
 }
