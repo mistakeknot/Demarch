@@ -123,11 +123,14 @@ read back from the main checkout).
 
 ## 7. Doctor checks (the contract, enforced)
 
-- **root-worktree nested-repo absence** — if the session runs in a root-repo
-  worktree, warn and list the nested repos not present (so publish/sweep ops
-  don't silently no-op).
-- **bd-from-worktree resolution** — verify a mutating bd command from a worktree
-  reaches the main-checkout Dolt (green once element 3 lands).
+- **root-worktree nested-repo absence** — `scripts/check-worktree-nested-repos.sh`:
+  silent + exit 0 in the main checkout or a nested-repo worktree; WARN + exit 1
+  from a root-repo worktree, listing the absent nested repos and naming the main
+  checkout to run publish/sweeps from. Wired into `/clavain:doctor` (check 2e2).
+  Covered by `scripts/tests/check_worktree_nested_repos.bats`.
+- **bd-from-worktree resolution** — `scripts/tests/bd_worktree_redirect.bats`
+  proves a mutating bd command from a `bd worktree create` worktree reaches the
+  main-checkout Dolt (element 3).
 
 ## 8. Autosync lane discipline
 
