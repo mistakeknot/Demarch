@@ -99,12 +99,27 @@ Beads writes go through a Dolt server whose port/state lives in the **main
 checkout's** `.clavain/`. A fresh worktree has no `.clavain/`, so a naive `bd
 close` from a worktree can't find the store.
 
-**Contract rule:** `bd` resolves the main-checkout Dolt state automatically when
-run from a worktree (implemented under this goal, element 3) — mutating bd
-commands work transparently from any worktree, with concurrent-writer safety on
-the shared Dolt server. Until a given host ships that resolution, the fallback is
-read-only beads from worktrees (`bd-grep`/`bd-show` against committed
-`.beads/issues.jsonl`) with mutations run from the main checkout.
+**Contract rule:** create worktrees with **`bd worktree create <name>`**, NOT raw
+`git worktree add`. `bd worktree create` installs a redirect file so bd reaches
+the main checkout's `.beads` store; mutating bd commands then work transparently
+from the worktree and land in the main store. This is verified end-to-end by
+`scripts/tests/bd_worktree_redirect.bats` (a write from inside the worktree is
+read back from the main checkout).
+
+- **Why raw `git worktree add` is forbidden for beads work:** a worktree not
+  created by bd has no redirect, so bd auto-discovers the worktree's own
+  (empty/divergent) `.beads/` — `bd worktree list` shows it as `local` rather
+  than `redirect → <repo>`. Writes there never reach the canonical store. If you
+  already have such a worktree, run `bd worktree create` against the same name or
+  recreate it.
+- **Concurrent-writer safety:** the redirect points every worktree at the same
+  per-project Dolt `sql-server` (one server, `dolt.shared-server: false`), which
+  serializes writes at the SQL layer; bd additionally guards with
+  `.beads/dolt-access.lock` and a socket start-lock. Two worktrees writing
+  concurrently serialize through that one server rather than forking the store.
+- **Fallback (host without a running server / cloud):** read-only beads from
+  worktrees (`bd-grep`/`bd-show` against committed `.beads/issues.jsonl`) with
+  mutations run from the main checkout.
 
 ## 7. Doctor checks (the contract, enforced)
 
