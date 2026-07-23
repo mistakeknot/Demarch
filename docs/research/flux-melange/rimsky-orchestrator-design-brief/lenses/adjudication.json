@@ -1,0 +1,24 @@
+{
+  "id": "adjudication",
+  "kind": "fusion",
+  "parents": [],
+  "domain": "cross-round factual adjudication of prior findings' evidentiary claims (grep/read-verification of contested characterizations in the c-safe-abort-primitive-missing cluster)",
+  "axioms": [
+    "A characterization of shipped code is a factual claim, not a taste call — it is adjudicated by reading the call sites, not by weighing which lens's narrative is more compelling",
+    "Refuting a sub-claim (drain flag is unread) does not overturn the parent finding's core confirmation (pause/resume exists, brief has no abort vocabulary) when the two are severable",
+    "A verified evidentiary correction changes how synthesis may phrase reused prior art, but does not by itself open a new scope gap unless the correction removes a capability synthesis was relying on"
+  ],
+  "primitives": [
+    "claim severability (which sub-claims survive a factual correction to a sibling sub-claim)",
+    "call-site verification (grep for reads, not just registration, before crediting a mechanism as wired)",
+    "citation hygiene (how a corrected characterization should be worded going forward)"
+  ],
+  "failure_mode": [
+    "Confined to re-litigating claims already on the ledger for this cluster — does not independently discover new locations or new clusters, so it cannot surface novel scope gaps outside what round 1-2 lenses already flagged",
+    "Because it operates only on the c-safe-abort-primitive-missing cluster, it cannot adjudicate contested claims elsewhere in the brief (e.g., c-lbkd-splice-defect, c-bzy-dual-tracked-fanout-eligibility) even if similar factual disputes exist there"
+  ],
+  "findings": [
+    "f-011",
+    "f-012"
+  ]
+}

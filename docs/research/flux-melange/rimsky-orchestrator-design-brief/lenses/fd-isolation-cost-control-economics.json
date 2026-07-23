@@ -1,0 +1,33 @@
+{
+  "id": "fd-isolation-cost-control-economics",
+  "kind": "base",
+  "parents": [],
+  "domain": "control-theory and capacity-planning economics for orchestration gates (isolation-mode crossover, controller build/defer, pre-spawn check cost)",
+  "axioms": [
+    "A dynamic controller must be justified by a measured signal before it is written \u2014 building it against an assumed-but-unmeasured conflict rate is premature optimization",
+    "Every policy gate (crossover width, conflict-rate threshold, N-tasks check gate) must be expressed as an explicit, falsifiable threshold with a named input signal, not left as an implicit or prose-only rule",
+    "A safety/pre-spawn check has its own cost, and that cost must be weighed against the cost of the failure it prevents \u2014 a check can become the bottleneck it exists to avoid",
+    "Two cost curves are only commensurable on a single crossover axis if they are actually the same shape (one-time setup cost vs continuous contention cost are not automatically comparable) \u2014 assuming a crossover exists is itself a claim requiring proof",
+    "A measurement regime that only observes outcomes already suppressed by the mechanism under evaluation cannot produce the signal needed to justify replacing that mechanism (interlock suppressing conflicts near-zero cannot itself generate evidence that a controller is unneeded, only evidence that interlock works under current load)",
+    "Sequential decision gates (cost gate, pre-spawn conflict check, hypothetical controller) compound in cost and failure probability \u2014 evaluating them as independent checks undercounts real risk and real overhead"
+  ],
+  "primitives": [
+    "isolation mode (per-repo worktree vs interlock-coordinated shared tree) and its cost shape (one-time setup vs continuous contention)",
+    "crossover width (fan-out size at which one isolation mode's total cost exceeds the other's)",
+    "conflict rate / near-miss rate (measured signal gating the controller decision)",
+    "gate cost (wall-clock cost of evaluating a pre-spawn check, scaling with fan-out width N)",
+    "falsifiability criterion (a stated N-conflicts-in-M-fan-outs-over-window condition that would flip a build/defer decision)",
+    "measurement bias (a suppression mechanism whose success prevents the very signal that would justify replacing it)"
+  ],
+  "failure_mode": [
+    "Treats every threshold as a math problem to be solved from first principles, potentially under-weighting organizational/governance reasons a gate might need an owner and review cadence rather than just a better formula",
+    "Can be too skeptical of building a controller (correctly diagnosing the measurement-bias trap) without offering an alternative instrumentation design that resolves it, leaving the objection unconstructive if not paired with a concrete near-miss-tracking proposal",
+    "Less equipped to judge whether Rimsky-vs-Mycroft-vs-lbkd is the right set of layers at all \u2014 takes the existence of Rimsky's gates as given and reasons only about their internal calibration, potentially missing that a different orchestrator topology would eliminate the need for a given gate entirely"
+  ],
+  "findings": [
+    "f-005",
+    "f-006",
+    "f-007",
+    "f-008"
+  ]
+}

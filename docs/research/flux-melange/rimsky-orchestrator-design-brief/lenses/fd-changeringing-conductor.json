@@ -1,0 +1,34 @@
+{
+  "id": "fd-changeringing-conductor",
+  "kind": "base",
+  "parents": [],
+  "domain": "English full-circle change-ringing / method ringing (tower-captain and peal-conductor discipline: ringing bells up and committed momentum, striking accuracy and true rows vs firing, method-matched-to-band, the conductor who calls and stands the band but rings only his own bell, and coming-round-true vs the false peal)",
+  "axioms": [
+    "A bell rung up is committed motion: once N tasks are pulled off they store momentum and cannot be cheaply paused mid-stroke, so the capacity to spawn N is worthless without a coordinated 'stand the band' that sets every parallel task safely at rest and releases every held resource.",
+    "The method must be strikeable by the band that is actually present: flat depth-1 is the plain course the real runtime/token/cap band can ring true, and any showier method (a dynamic controller, recursive sub-coordinators, an always-on timed pre-spawn check) produces firing rather than a true peal.",
+    "Success is a true, correctly-ordered row, not merely that every bell sounded: N parallel results have a striking order they must land in (per-nested-repo commits, then the root-spanning op struck last from the main checkout), and striking the shared intermediate all at once is 'firing' — a false row.",
+    "The conductor calls, he does not pull every rope: the orchestrator is a policy+telemetry caller above interlock/worktrees/bd-redirect, and two conductors calling different changes to one band (Rimsky plus Mycroft, or Rimsky seizing lbkd's handoff rope) is a false peal and a danger.",
+    "A peal that sounded fine can still be false and then does not count: telemetry must verify the touch came round TRUE (all N landed, complete, in order, no dropped artifact or double-struck row), not merely that it ran without a thrown error.",
+    "Never begin a peal the band cannot ring to the end: an all-or-nothing C4/C5 scope the band will be stood on mid-course strands a half-rung orchestrator, so v1 must be a short touch that comes round true and counts with the controller permanently absent."
+  ],
+  "primitives": [
+    "ringing up / pulling off (spawning N parallel tasks into committed motion)",
+    "standing the band (a single coordinated safe-abort: quiesce every parallel task, release interlock reservations, close worktrees, record partial state)",
+    "method and the band that can strike it (flat depth-1 as the plain course vs a showier controller/recursion that fires)",
+    "true row vs firing/clashing (correct striking ORDER of parallel results at the join vs all striking the shared intermediate at once)",
+    "the join / shared intermediate (main-checkout Dolt redirect, root worktree, root-spanning publish wave where a row can go false)",
+    "conductor-as-caller (policy+telemetry that calls fan-out shape and 'stand', ringing only its own bell, never seizing the coordination mechanism)",
+    "coming round true vs the false peal (a fan-out with a defined, verified true completion vs one that sounded fine but silently dropped/duplicated work)",
+    "touch vs peal length (a short shippable v1 course that counts on its own vs a full peal the band cannot finish — the anti-abandonment cut)"
+  ],
+  "failure_mode": [
+    "Blind to resource scarcity and account ownership: it does not price the token multiplier or the worktree crossover (canal-lock's ground) and does not adjudicate whether a capability is posted to two ledgers (double-entry's ground) — it only asks whether the band can strike the method, stand safely, and come round true.",
+    "May treat the Q1/Q2 subsumption calls only as 'a second conductor / a seized rope' and miss overlaps that are organizational rather than a synchronization or committed-motion hazard.",
+    "Assumes correctness lives in timing, striking order, and safe-abort, and can under-weight cases where the real risk is a static scope-boundary, a threshold calibration, or a governance cadence that no ringing frame surfaces.",
+    "Can over-read a deliberately-serial join as 'firing' when a small, cheap serialization at the root op is actually the correct true striking order rather than a fault."
+  ],
+  "findings": [
+    "f-002",
+    "f-003"
+  ]
+}

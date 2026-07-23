@@ -1,0 +1,124 @@
+{
+  "runtime": "claude",
+  "rounds": 4,
+  "halt_reason": "DRY",
+  "gain_history": [
+    {
+      "round": 0,
+      "yield": 0,
+      "novel_cluster_rate": 1
+    },
+    {
+      "round": 1,
+      "yield": 0,
+      "novel_cluster_rate": 1
+    },
+    {
+      "round": 2,
+      "yield": 2,
+      "novel_cluster_rate": 0.29
+    },
+    {
+      "round": 3,
+      "yield": 0,
+      "novel_cluster_rate": 0
+    }
+  ],
+  "spice_trail": [
+    {
+      "round": 0,
+      "event": "assay",
+      "findings": 1,
+      "agents_dispatched": 2
+    },
+    {
+      "round": 1,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "STEER-WIDE",
+          "rationale": "novel_cluster_rate 1.00 >= 0.6 — widening still pays",
+          "lens": "fd-changeringing-conductor"
+        }
+      ],
+      "findings": 2,
+      "failed": 0
+    },
+    {
+      "round": 1,
+      "event": "assay",
+      "findings": 2,
+      "agents_dispatched": 1
+    },
+    {
+      "round": 2,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "DEEPEN",
+          "rationale": "risk 6, unconfirmed — confirm or refute",
+          "lens": "fd-orchestration-subsumption-topology"
+        },
+        {
+          "type": "STEER-WIDE",
+          "rationale": "novel_cluster_rate 1.00 >= 0.6 — widening still pays",
+          "lens": "fd-timberframe-joinery"
+        }
+      ],
+      "findings": 7,
+      "failed": 0
+    },
+    {
+      "round": 2,
+      "event": "assay",
+      "findings": 7,
+      "agents_dispatched": 2
+    },
+    {
+      "round": 3,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "PROBE-DISAGREEMENT",
+          "rationale": "open contradiction — adjudicate",
+          "lens": null
+        }
+      ],
+      "findings": 2,
+      "failed": 0
+    },
+    {
+      "round": 3,
+      "event": "assay",
+      "findings": 2,
+      "agents_dispatched": 1
+    }
+  ],
+  "slots_spent": 8,
+  "directive_history": [
+    {
+      "round": 1,
+      "type": "STEER-WIDE",
+      "lens": "fd-changeringing-conductor",
+      "rationale": "novel_cluster_rate 1.00 >= 0.6 — widening still pays"
+    },
+    {
+      "round": 2,
+      "type": "DEEPEN",
+      "lens": "fd-orchestration-subsumption-topology",
+      "rationale": "risk 6, unconfirmed — confirm or refute"
+    },
+    {
+      "round": 2,
+      "type": "STEER-WIDE",
+      "lens": "fd-timberframe-joinery",
+      "rationale": "novel_cluster_rate 1.00 >= 0.6 — widening still pays"
+    },
+    {
+      "round": 3,
+      "type": "PROBE-DISAGREEMENT",
+      "lens": null,
+      "rationale": "open contradiction — adjudicate"
+    }
+  ]
+}

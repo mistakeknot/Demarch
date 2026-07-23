@@ -1,0 +1,36 @@
+{
+  "id": "fd-orchestration-subsumption-topology",
+  "kind": "base",
+  "parents": [],
+  "domain": "multi-layer workflow-orchestration topology and subsumption analysis",
+  "axioms": [
+    "A new orchestration component is guilty of redundancy until proven innocent — the default posture toward a proposed new layer is suspicion, not acceptance",
+    "A layer boundary is only real if drawn on a stable axis (lifecycle stage, fan-out granularity, session vs sub-task scope) — naming two systems differently does not make them different layers",
+    "Exactly one system must own in-flight state for any given concern (dispatch concurrency, artifact location, completion status); two systems independently tracking the same state is a drift hazard even if their APIs never directly conflict",
+    "Refusing to build a needed thin layer because an adjacent system 'could' technically do it produces a worse outcome (Frankenstein integration) than building the layer — subsumption avoidance is not costless",
+    "An unstarted/OPEN dependency (lbkd) forces its own subsumption answer the moment a consuming system's v1 needs the capability it would provide — deferring the question does not defer the sequencing hazard",
+    "Consumption model (event-driven vs poll, staged/escrowed vs immediate spawn, library vs command) is itself a variable that can change which subsumption answer is correct, not a downstream implementation detail"
+  ],
+  "primitives": [
+    "layer (isolation / coordination / policy+telemetry / fleet-monitor / artifact-bus)",
+    "channel ownership (which system is source of truth for a given piece of in-flight state)",
+    "consumption model (event-driven, poll, escrowed/staged fan-out, immediate spawn)",
+    "invocation shape (orchestrator-as-library vs orchestrator-as-command)",
+    "subsumption relation (dependency / subsumed / orthogonal / consumer / different-layer / same-thing-rediscovered)",
+    "session vs sub-task vs goal scope boundary"
+  ],
+  "failure_mode": [
+    "Accepts a naming distinction (Rimsky vs Mycroft, Rimsky vs the artifact bus) as evidence of a real layer boundary without checking whether the underlying state/channel is actually singly-owned",
+    "Under-weights cost-economics and control-theory detail (exact crossover thresholds, gate falsifiability) that belongs to a different lens — can misjudge the SEVERITY of a subsumption ambiguity if the resolution depends on a measurement plan rather than a structural argument",
+    "May over-index on prior-art shape (Mycroft's existing suggest/approve loop) as the template for what Rimsky 'must' avoid duplicating, missing genuinely novel orchestrator shapes that don't map cleanly onto either existing system's topology"
+  ],
+  "findings": [
+    "f-001",
+    "f-002",
+    "f-003",
+    "f-004",
+    "f-005",
+    "f-006",
+    "f-007"
+  ]
+}
