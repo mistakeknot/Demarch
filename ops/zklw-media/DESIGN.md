@@ -205,16 +205,26 @@ checkout).
 | 4. Intake bot | partial | Code in `intake_bot/`; scarcity nudge shipped. |
 | 5. autobrr | not built | Correctly last. |
 
-**The routing trap (why the box earns almost nothing).** Prowlarr syncs indexers
-to apps through a *tag filter*, and the estate is split: tag `usenet` →
-Radarr/Sonarr (the real library, `/data/movies` 4.2 TB), tag `trackers` → only
-Radarr4K/Sonarr4K (`/data/movies-4k` 6.4 GB, `/data/tv-4k` 24 KB). So every
-automated grab for the main library goes to SABnzbd over usenet — and **usenet
-never seeds, so it cannot earn ratio by construction**. All five indexers are
-enabled, credentialed, and testing valid; nothing is broken. Do *not* "fix" this
-by adding the `trackers` tag to Radarr/Sonarr: that makes the main library grab
-torrents on user demand, which is still demand-driven, earns little, and exposes
-the account to Hit-and-Run on every request. Ratio is earned supply-side.
+**Why the box earns almost nothing.** Prowlarr syncs indexers to apps through a
+*tag filter*, and the estate is split: tag `usenet` → Radarr/Sonarr (the real
+library, `/data/movies` 4.2 TB), tag `trackers` → only Radarr4K/Sonarr4K
+(`/data/movies-4k` 6.4 GB, `/data/tv-4k` 24 KB). Every automated grab for the
+main library therefore goes to SABnzbd over usenet — and **usenet never seeds,
+so it cannot earn ratio by construction**.
+
+This is not a misconfiguration. It is the ratio-*protection* posture working as
+designed: the delay profiles set `preferredProtocol=usenet` precisely so family
+requests are served without spending tracker ratio ("the un-downloaded torrent
+is ratio never spent"), and the 4K split put the trackers on the instances only
+mk drives. Both decisions are correct on their own terms.
+
+The gap is that **protecting ratio and building ratio are different problems,
+and only the first was ever built.** Nothing on the box was ever supposed to earn
+— that was always Tier 3 (cross-seed, autobrr), designed here and never
+deployed. So do *not* "fix" this by adding the `trackers` tag to Radarr/Sonarr:
+that spends ratio on demand-driven grabs and exposes the account to Hit-and-Run
+on every family request, which is exactly what the current posture avoids. Ratio
+is earned supply-side, by seeding — which is what levers 1 and 2 above are for.
 
 **Measured, 2026-07-25 baseline.** 436 torrents, 6.51 TB, 85.6 GB uploaded
 lifetime, ratio 0.0139, **362 of 436 torrents have never uploaded a byte**.
