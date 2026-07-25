@@ -156,7 +156,16 @@ def main() -> int:
     if args.status:
         rules = json.loads(qb.call("/api/v2/rss/rules") or "{}")
         feeds = json.loads(qb.call("/api/v2/rss/items?withData=false") or "{}")
+        prefs = json.loads(qb.call("/api/v2/app/preferences") or "{}")
         r = rules.get(RULE_NAME)
+        # A rule with enabled=True is NOT sufficient. qBittorrent has two global
+        # master switches, both OFF by default, and with either off the rule sits
+        # there looking armed while silently never grabbing anything.
+        print(f"GLOBAL rss_processing_enabled       = {prefs.get('rss_processing_enabled')}")
+        print(f"GLOBAL rss_auto_downloading_enabled = {prefs.get('rss_auto_downloading_enabled')}")
+        print(f"GLOBAL rss_refresh_interval         = {prefs.get('rss_refresh_interval')} min")
+        if not (prefs.get("rss_processing_enabled") and prefs.get("rss_auto_downloading_enabled")):
+            print("  !! RSS subsystem is OFF — no rule can fire. Run with --arm.")
         print(f"feeds subscribed: {list(feeds.keys())}")
         if not r:
             print(f"rule {RULE_NAME!r}: ABSENT")
@@ -178,6 +187,19 @@ def main() -> int:
         "ruleName": RULE_NAME,
         "ruleDef": json.dumps(rule_def(enabled, feed_url)),
     })
+
+    # The two global master switches. Both default to False, and a per-rule
+    # enabled=True does nothing without them -- the rule reports as armed,
+    # qBittorrent's own matchingArticles happily lists matches, and not one
+    # byte is ever grabbed. Found the hard way: rule armed, 15 matching
+    # articles confirmed by qbit itself, zero downloads.
+    qb.call("/api/v2/app/setPreferences", {"json": json.dumps({
+        "rss_processing_enabled": enabled,
+        "rss_auto_downloading_enabled": enabled,
+    })})
+    prefs = json.loads(qb.call("/api/v2/app/preferences") or "{}")
+    print(f"global rss_processing_enabled       = {prefs.get('rss_processing_enabled')}")
+    print(f"global rss_auto_downloading_enabled = {prefs.get('rss_auto_downloading_enabled')}")
     state = "ARMED — grey will now grab new HDBits uploads" if enabled else "DISARMED (created, not grabbing)"
     print(f"rule {RULE_NAME!r} written: {state}")
     print(f"  category={CATEGORY} savePath={SAVE_PATH}")
