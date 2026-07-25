@@ -1,6 +1,6 @@
 # intersight
 
-Automated UI/UX design analysis for Claude Code. Extracts W3C DTCG design tokens, component inventories, and layout analysis from any URL.
+Automated UI/UX design analysis for Claude Code, Codex, and Kimi Code. Extracts W3C DTCG design tokens, component inventories, and layout analysis from any URL.
 
 ## Usage
 
