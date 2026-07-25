@@ -93,18 +93,15 @@ bd close <id>         # Complete work
 
 - Use `bd` for Sylveste-internal task tracking — do not duplicate it via TodoWrite, TaskCreate, or markdown TODO lists. External rigs with their own task surfaces (superpowers, GSD, compound-engineering) are unaffected.
 - Run `bd prime` for detailed command reference and session close protocol
-- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 
 ## Session Completion
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
-
-**MANDATORY WORKFLOW:**
+When ending a work session, work through the steps below before handing off — the change isn't landed until `git push` succeeds.
 
 1. **File issues for remaining work** - Create issues for anything that needs follow-up
 2. **Run quality gates** (if code changed) - Tests, linters, builds
 3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
+4. **Push to remote**:
    ```bash
    bd backup
    bash .beads/push.sh
@@ -114,10 +111,4 @@ bd close <id>         # Complete work
 5. **Clean up** - Clear stashes, prune remote branches
 6. **Verify** - All changes committed AND pushed
 7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
 <!-- END BEADS INTEGRATION -->
