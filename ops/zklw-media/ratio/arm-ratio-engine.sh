@@ -37,7 +37,11 @@ fi
 
 echo
 echo "=== 2/3  verify the HnR firewall is still closed before arming ==="
-CLEANUP_TRUE=$(grep -c "cleanup: true" /home/mk/grey-media/config/qbit-manage/config.yml 2>/dev/null || echo 0)
+# NB: `grep -c` PRINTS "0" and ALSO exits non-zero when there are no matches, so
+# `|| echo 0` appends a second line and yields "0\n0" -- which is != "0" and made
+# this abort precisely when the firewall was correctly closed. Use `|| true`.
+CLEANUP_TRUE=$(grep -c "cleanup: true" /home/mk/grey-media/config/qbit-manage/config.yml 2>/dev/null || true)
+CLEANUP_TRUE=${CLEANUP_TRUE:-0}
 if [ "$CLEANUP_TRUE" != "0" ]; then
   echo "  ABORT: qbit-manage has cleanup:true somewhere. Arming the racer now could"
   echo "  let a raced torrent be deleted before its HnR obligation is satisfied."
