@@ -1,0 +1,24 @@
+{
+  "id": "adjudication",
+  "kind": "adjudication",
+  "parents": [],
+  "domain": "cross-round adjudication -- resolves contradictions between prior rounds' findings via direct code-reading, not a semantic-distance lens",
+  "axioms": [
+    "Adjudication does not invent new findings from a fresh domain lens; it re-verifies contested claims already in the ledger against the actual source, and reports which claim holds, which is an error, and what new-precision insight the correction itself exposes.",
+    "A verdict is reportable only when it changes the actionable content of the ledger: narrows an over-broad claim, corrects a mischaracterization, or surfaces a follow-on gap the correction reveals."
+  ],
+  "primitives": [
+    "verdict-with-evidence: line-cited confirmation or refutation of a specific prior claim",
+    "narrowing-insight: what remains true and useful once an over-broad bundled claim is split into its correct and incorrect parts"
+  ],
+  "failure_mode": [
+    "Does not re-litigate settled, uncontested findings; only claims with a live tension (disagreement_refs or an internal bundling error) are in scope.",
+    "Does not introduce claims that were not already implied by the two sides of a documented contradiction."
+  ],
+  "findings": [
+    "f-023",
+    "f-024",
+    "f-028",
+    "f-029"
+  ]
+}

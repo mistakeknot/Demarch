@@ -1,0 +1,176 @@
+{
+  "runtime": "claude",
+  "rounds": 6,
+  "halt_reason": "DRY",
+  "gain_history": [
+    {
+      "round": 0,
+      "yield": 9,
+      "novel_cluster_rate": 1
+    },
+    {
+      "round": 1,
+      "yield": 6,
+      "novel_cluster_rate": 0.88
+    },
+    {
+      "round": 2,
+      "yield": 2,
+      "novel_cluster_rate": 0.5
+    },
+    {
+      "round": 3,
+      "yield": 4,
+      "novel_cluster_rate": 0.8
+    },
+    {
+      "round": 4,
+      "yield": 2,
+      "novel_cluster_rate": 0.4
+    }
+  ],
+  "spice_trail": [
+    {
+      "round": 0,
+      "event": "assay",
+      "findings": 10,
+      "agents_dispatched": 2
+    },
+    {
+      "round": 1,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "DEEPEN",
+          "rationale": "risk 6, unconfirmed — confirm or refute",
+          "lens": "fd-orchestration-terminal-consistency"
+        },
+        {
+          "type": "STEER-WIDE",
+          "rationale": "novel_cluster_rate 1.00 >= 0.6 — widening still pays",
+          "lens": "fd-waqf-perpetual-trust"
+        }
+      ],
+      "findings": 8,
+      "failed": 0
+    },
+    {
+      "round": 1,
+      "event": "assay",
+      "findings": 8,
+      "agents_dispatched": 2
+    },
+    {
+      "round": 2,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "STEER-WIDE",
+          "rationale": "novel_cluster_rate 0.88 >= 0.6 — widening still pays",
+          "lens": "fd-liminal-rite-passage"
+        }
+      ],
+      "findings": 4,
+      "failed": 0
+    },
+    {
+      "round": 2,
+      "event": "assay",
+      "findings": 4,
+      "agents_dispatched": 1
+    },
+    {
+      "round": 3,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "PROBE-DISAGREEMENT",
+          "rationale": "open contradiction — adjudicate",
+          "lens": null
+        },
+        {
+          "type": "FUSE",
+          "rationale": "shared_heat 2, complementarity 2, redundancy 1",
+          "lens": "fd-fused-witnessed-transaction"
+        }
+      ],
+      "findings": 5,
+      "failed": 0
+    },
+    {
+      "round": 3,
+      "event": "assay",
+      "findings": 5,
+      "agents_dispatched": 2
+    },
+    {
+      "round": 4,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "PROBE-DISAGREEMENT",
+          "rationale": "open contradiction — adjudicate",
+          "lens": null
+        },
+        {
+          "type": "STEER-WIDE",
+          "rationale": "novel_cluster_rate 0.80 >= 0.6 — widening still pays",
+          "lens": "fd-calendrical-intercalation"
+        }
+      ],
+      "findings": 5,
+      "failed": 0
+    },
+    {
+      "round": 4,
+      "event": "assay",
+      "findings": 5,
+      "agents_dispatched": 2
+    }
+  ],
+  "slots_spent": 16,
+  "directive_history": [
+    {
+      "round": 1,
+      "type": "DEEPEN",
+      "lens": "fd-orchestration-terminal-consistency",
+      "rationale": "risk 6, unconfirmed — confirm or refute"
+    },
+    {
+      "round": 1,
+      "type": "STEER-WIDE",
+      "lens": "fd-waqf-perpetual-trust",
+      "rationale": "novel_cluster_rate 1.00 >= 0.6 — widening still pays"
+    },
+    {
+      "round": 2,
+      "type": "STEER-WIDE",
+      "lens": "fd-liminal-rite-passage",
+      "rationale": "novel_cluster_rate 0.88 >= 0.6 — widening still pays"
+    },
+    {
+      "round": 3,
+      "type": "PROBE-DISAGREEMENT",
+      "lens": null,
+      "rationale": "open contradiction — adjudicate"
+    },
+    {
+      "round": 3,
+      "type": "FUSE",
+      "lens": "fd-fused-witnessed-transaction",
+      "rationale": "shared_heat 2, complementarity 2, redundancy 1"
+    },
+    {
+      "round": 4,
+      "type": "PROBE-DISAGREEMENT",
+      "lens": null,
+      "rationale": "open contradiction — adjudicate"
+    },
+    {
+      "round": 4,
+      "type": "STEER-WIDE",
+      "lens": "fd-calendrical-intercalation",
+      "rationale": "novel_cluster_rate 0.80 >= 0.6 — widening still pays"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "fd-diplomatics-provenance",
+  "kind": "base",
+  "parents": [],
+  "domain": "Medieval diplomatics — the pre-modern scholarly craft of authenticating charters, deeds, and legal instruments by their chain of transmission, internal formulae, seals, hands, and custody, assigning evidentiary weight by provenance rather than by the plausibility of the claim.",
+  "axioms": [
+    "A document's authority derives from its chain of custody, not from how well-formed or legible it is; a well-formed forgery is the most dangerous artifact.",
+    "Authenticity is graded, not binary: an autograph original, a notarized copy, and an uncertified transcript carry different evidentiary weight even when their text is identical.",
+    "Every transfer of custody is an opportunity for silent alteration; the number of hops and hands between source and reader bounds how much authority can be granted.",
+    "A gradation of authenticity must travel inseparably with the document — once the seal is detached from the parchment, the copy can be mistaken for the original.",
+    "A sole uncorroborated authority is a single point of forgery; genuine confidence requires a corroborating witness or an attested regeneration path.",
+    "Two copyists transcribing a common exemplar will drift apart over time unless bound to a single shared source; agreement today is not proof against future divergence.",
+    "The reader weeks hence must be able to reconstruct the provenance of a stored claim, or its evidentiary weight has already been lost."
+  ],
+  "primitives": [
+    "custody chain (source chancery -> copyists -> holding archive)",
+    "confidence/authenticity tier (verified original / declared copy / missing-or-inferred transcript)",
+    "the transfer hop (each point where evidence changes hands and tier can be dropped)",
+    "the seal (the provenance marker that must stay bound to the payload)",
+    "the corroborating witness (backup copy, regeneration path, second attestation)",
+    "the exemplar (the single shared source two codepaths transcribe from)",
+    "evidentiary weight (what a given provenance licenses a finding to assert)"
+  ],
+  "failure_mode": [
+    "Systematically blind to whether a claim is TRUE — it only judges how the claim's evidence arrived and what that path licenses, so a correctly-reasoned finding resting on a broken custody chain is condemned while a shaky claim with impeccable provenance is spared.",
+    "Over-indexes on transmission integrity and can treat freshness, timing, resource-contention, and staged delivery as out of scope even when a stale-but-authentic document is the actual problem.",
+    "Can demand corroborating witnesses and inseparable seals past the point of practical cost, mistaking a pragmatic single-copy design for a forgery risk.",
+    "Assumes bad transmission is the primary threat; misses failure modes where the source itself is corrupt but faithfully transmitted."
+  ],
+  "findings": [
+    "f-010",
+    "f-011",
+    "f-012",
+    "f-013",
+    "f-014"
+  ]
+}

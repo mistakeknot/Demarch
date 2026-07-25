@@ -1,0 +1,27 @@
+{
+  "id": "adjudication",
+  "kind": "adjudication",
+  "parents": [
+    "fd-evidence-substrate-architect",
+    "fd-qanat-delivery"
+  ],
+  "domain": "Adjudication pass — reconciles tension between prior-round findings that target the same decision, ruling whether they contradict (pick-one) or compound (both hold), and correcting imprecise premises without discarding the underlying substantive point.",
+  "axioms": [
+    "Two findings at one decision point are not automatically in tension — independent, compounding objections to the same conclusion both stand.",
+    "A finding's stated premise can be imprecise while its substantive conclusion remains correct; correct the premise, keep the point.",
+    "A deferred trigger condition that arrives inside the same committed plan is not a future contingency but a present decision owed now."
+  ],
+  "primitives": [
+    "tension classification (contradiction vs. compounding)",
+    "premise correction (skill-vs-agent, consumer-vs-dispatchable)",
+    "trigger-condition status ruling (already-met / imminently-met / genuinely-deferred)"
+  ],
+  "failure_mode": [
+    "Adjudicates only findings already surfaced by prior lenses — introduces no new location or defect of its own, so it inherits the parents' blind spots.",
+    "Can over-reconcile, declaring compounding where a genuine pick-one tradeoff was owed."
+  ],
+  "findings": [
+    "f-019",
+    "f-020"
+  ]
+}

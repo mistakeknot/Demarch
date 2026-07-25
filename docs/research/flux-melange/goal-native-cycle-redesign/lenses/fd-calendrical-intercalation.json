@@ -1,0 +1,39 @@
+{
+  "id": "fd-calendrical-intercalation",
+  "kind": "base",
+  "parents": [],
+  "domain": "Pre-modern luni-solar calendrical intercalation — the astronomer-priest's craft of holding a fast recurring count (the lunar month) in agreement with a slow count tied to an observed phenomenon (the solar/agricultural year), by inserting intercalary months on a dependable rule, carrying the epact, and re-anchoring against the re-observed phenomenon so the two counts never silently drift out of lock",
+  "axioms": [
+    "Two cyclic counts of different length that are never reconciled DRIFT: run the fast lunar count as if it were the slow solar year and within a few cycles the month named for the harvest arrives while the fields are bare — internal consistency of each count does not prevent the two together coming un-locked.",
+    "A correction owed on the SLOW cadence must fire against the slow phenomenon, not the fast counter: insert the leap-month when the SEASON demands it (the solstice has slipped a full month from its named date), never merely because a fast cycle happened to end — firing at every fast tick over-corrects into chaos; firing at none lets the drift run a full season deep.",
+    "Intercalation must be BOUND TO A STANDING OFFICE firing on an observed rule, not left to whoever remembers: a leap-month declared at royal whim (or skipped in a distracted year) produces a calendar no one can plan against — the schedule is a law, not a courtesy.",
+    "A count RE-ANCHORED against a re-observed phenomenon each cycle self-corrects; a count COMPUTED once from a start-value and trusted forever accumulates every small error — an arithmetically almost-right rule (the Julian year, 11 minutes too long) drifts ten days over centuries because nothing re-checks it against the sky.",
+    "The EPACT — the standing count of how far the fast cycle currently leads or lags the slow one — must be carried and inspected, because it is the single number that says whether a correction is owed; a calendar that keeps no epact cannot even tell it has drifted.",
+    "Two authorities each keeping their own leap-schedule (two cities' calendars) diverge until a date in one cannot be honored in the other — concurrent cadences need a promulgated reconciliation rule with a common epoch, or every cross-reference silently mis-times.",
+    "A calendar reform (a redefinition of the count) is worthless unless PUBLICLY ANNOUNCED with an adoption point so every office adopts the new count on the same day — an unannounced reform leaves half the community dated on the old calendar."
+  ],
+  "primitives": [
+    "the fast clock (the session/run cadence — a Stop hook, a /goal-met, a session close: ticks often)",
+    "the slow clock (the Goal cadence tied to its charter-condition actually being met: ticks rarely)",
+    "the non-even division (the doc's 'sessions close often while goals span many runs' — a fast cycle that does not divide evenly into a slow one)",
+    "the intercalary duty (successor-proposal / reflect+compound+verify / dormancy-notice — an act owed on the slow clock that must be inserted on a dependable schedule)",
+    "the intercalation office (the standing office bound to fire the correction on an observed rule — the Stop-hook goal-cadence tier or an obligation object, vs. whichever session happens to remember)",
+    "re-anchoring vs. computed drift (re-observing the durable Goal-entity/charter each terminal check vs. the /goal Haiku evaluator judging only surfaced session output — the Julian-drift hazard)",
+    "the epact (the standing lead/lag count the Goal entity must carry — sessions-since-a-run-advanced-it, runs-owed-vs-observed, turns-budget-consumed — that alone makes drift detectable)",
+    "over-correction vs. under-correction (a once-per-Goal duty fired per-session — leap-month every month — vs. owed at the true close but observed at no session)",
+    "the two-calendars fork (the strategized-collapse running old-chain and new-chain runs on different counts with no reconciliation rule)",
+    "the unannounced reform (a sylveste-lbkd/sylveste-3kol supersession decreed but never promulgated to the offices that schedule against the old count)"
+  ],
+  "failure_mode": [
+    "Reasons about cadence-alignment (which cycle triggers an act, whether two counts stay locked), not about concurrency mechanics — cannot judge whether two sessions race the same close, at-least-once semantics, or fencing; it sees a duty fired on the wrong clock where the saga lens sees a write-race, and may miss a genuine idempotency hazard.",
+    "Frames a dormant Goal as 'drifted out of calendar-lock, epact un-inspected', not as an ownerless office (waqf) nor a stranded liminal subject (rite) nor unconsolidated sediment — cannot judge succession-of-custodian, single-crossing validity, or settling residence-time; where those lenses see vacancy/strandedness/erosion, this lens only sees two counts un-locked.",
+    "Treats the strategized-collapse as two calendars needing a promulgated reconciliation rule, not as schema-versioning/in-flight-compatibility mechanics (kernel-migration) nor mechanical load transfer (joinery) — can flag a cadence-fork while missing whether the DefaultChain migration is technically safe or whether a seam is cut on the load-bearing member.",
+    "Does not evaluate whether the elicitation ritual elicited the RIGHT goal — treats the ritual only as what SETS the slow cadence's phenomenon (the charter condition the re-anchoring observes), so it can certify the clocks stay locked while missing that the condition itself is poorly elicited.",
+    "May over-apply the anti-drift terror to genuinely ephemeral C1 goals, insisting on a carried epact and a bound intercalation office where an intentionally throwaway session-goal correctly just ends — flagging a deliberate non-reconciliation as a drift defect."
+  ],
+  "findings": [
+    "f-030",
+    "f-031",
+    "f-032"
+  ]
+}

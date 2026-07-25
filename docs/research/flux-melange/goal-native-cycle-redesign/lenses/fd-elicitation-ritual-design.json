@@ -1,0 +1,33 @@
+{
+  "id": "fd-elicitation-ritual-design",
+  "kind": "base",
+  "parents": [],
+  "domain": "human-AI collaborative elicitation and requirements-interview design, cross-applied to evaluator-graded autonomous-agent task specification",
+  "axioms": [
+    "'The agent never asks what it can derive' requires a concrete, checkable boundary between derivable facts (repo state, prior art) and non-derivable facts (stakes, taste, priority) — without that boundary the doctrine is unenforceable and can fail in either direction (over-interrogating or silently assuming)",
+    "Presenting the agent's recommended option first in a single-question interview is a known anchoring-bias pattern; absent a counter-measure, repeated use degrades genuine comparative-advantage judgment into rubber-stamping",
+    "A completion condition is only as good as its judgeability by the actual evaluator — a Haiku model that sees only surfaced conversation output cannot judge conditions that require live system state, metrics, or codebase inspection, regardless of how clear the condition reads to a human",
+    "Charter validation (does the entity/narrative hold up) and completion-condition validation (is it judgeable by the evaluator from transcript alone) are two distinct validity requirements on two different artifacts (per the doc's own 'twofold terminal artifact' framing) and neither substitutes for the other",
+    "A metric built to measure implementation complexity (classify-complexity, C1-C5) is not automatically a valid proxy for specification/mis-scoping risk — a technically simple goal can carry high blast-radius if mis-specified",
+    "Seeding draft charters from ranked-but-unvetted candidates (next-goal's `bd ready` ranking) re-introduces an anchor before the interview even starts, unless the ritual treats the seed as one candidate among genuine alternatives rather than the default"
+  ],
+  "primitives": [
+    "derivable vs. non-derivable fact boundary (research-first doctrine's enforcement surface)",
+    "single-question interview turn, with a recommended-option-first slot and implicit/explicit alternative-surfacing",
+    "charter narrative (entity fields, why/scope/acceptance-criteria) as one artifact",
+    "machine-evaluable completion condition (≤4000 chars, 'or stop after N turns', judged from surfaced output only) as a second, distinct artifact",
+    "stakes tier (C1-C5) as an elicitation-risk proxy, distinct from its use as an implementation-complexity or review-gate-routing proxy",
+    "melange review as a document/design-review mechanism, scoped to the charter narrative, not necessarily to the completion condition"
+  ],
+  "failure_mode": [
+    "Focused on the interview/charter/evaluator-fit problem, it does not natively evaluate whether the terminal-gate/close mechanism enforces the successor-proposal doctrine once a charter exists and a goal is executing — that's a downstream concern outside its lens",
+    "Does not natively assess kernel-chain migration mechanics (DefaultChain versioning, interphase retirement, transition ownership) even where the ritual absorbs strategy's former job — it can flag that the ritual's content is sound while missing that landing it as a kernel-chain-head is technically unsafe",
+    "Can over-index on textbook elicitation/UX bias patterns (anchoring, leading questions) without weighting how much they actually matter given the ritual's stated stakes-scaling (C1 gets one confirming question by design, so some 'bias' at low stakes may be an intentional and acceptable tradeoff, not a defect)"
+  ],
+  "findings": [
+    "f-007",
+    "f-008",
+    "f-009",
+    "f-010"
+  ]
+}

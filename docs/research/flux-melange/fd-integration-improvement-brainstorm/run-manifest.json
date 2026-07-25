@@ -1,0 +1,74 @@
+{
+  "runtime": "claude",
+  "rounds": 3,
+  "halt_reason": "DRY",
+  "gain_history": [
+    {
+      "round": 0,
+      "yield": 9,
+      "novel_cluster_rate": 0.67
+    },
+    {
+      "round": 1,
+      "yield": 2,
+      "novel_cluster_rate": 0.33
+    }
+  ],
+  "spice_trail": [
+    {
+      "round": 0,
+      "event": "assay",
+      "findings": 18,
+      "agents_dispatched": 2
+    },
+    {
+      "round": 1,
+      "event": "probe",
+      "directives": [
+        {
+          "type": "PROBE-DISAGREEMENT",
+          "rationale": "open contradiction — adjudicate",
+          "lens": null
+        },
+        {
+          "type": "STEER-WIDE",
+          "rationale": "novel_cluster_rate 0.67 >= 0.6 — widening still pays",
+          "lens": "fd-heraldic-registry"
+        }
+      ],
+      "findings": 6,
+      "failed": 0
+    },
+    {
+      "round": 1,
+      "event": "assay",
+      "findings": 6,
+      "agents_dispatched": 2
+    }
+  ],
+  "slots_spent": 9,
+  "directive_history": [
+    {
+      "round": 1,
+      "type": "PROBE-DISAGREEMENT",
+      "rationale": "open contradiction — adjudicate",
+      "lens": null,
+      "resolved": [
+        "f-019",
+        "f-020"
+      ]
+    },
+    {
+      "round": 1,
+      "type": "STEER-WIDE",
+      "rationale": "novel_cluster_rate 0.67 >= 0.6 — widening still pays",
+      "lens": "fd-heraldic-registry",
+      "produced": [
+        "f-021",
+        "f-022",
+        "f-023",
+        "f-024"
+      ]
+    }
+  ]
+}

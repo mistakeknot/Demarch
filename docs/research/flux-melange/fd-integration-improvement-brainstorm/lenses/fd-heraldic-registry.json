@@ -1,0 +1,39 @@
+{
+  "id": "fd-heraldic-registry",
+  "kind": "base",
+  "parents": [],
+  "domain": "Pre-modern heraldry and the office of arms — the craft of armory in which a herald governs coats of arms as a rigorous identity system: granting arms only after a collision check against the single authoritative roll, keying identity to a precise canonical blazon rather than to resemblance, lawfully differencing cadet branches by cadency marks so near-duplicates never collapse, striking (attainting) the arms of extinct or attainted houses, and reconciling the same device appearing across multiple rolls to determine one lawful bearer versus a usurpation.",
+  "axioms": [
+    "Identity is granted once against ONE authoritative roll of arms; a coat asserted by whoever paints the shield, with no grant against the roll, is not a lawful identity but a usurpation waiting to be discovered.",
+    "The canonical identity is the registered blazon — a precise, language-independent description that reconstructs exactly one bearer — not the painted picture; two coats that 'look the same' are adjudicated by blazon-against-the-roll, never by resemblance.",
+    "The herald's first duty before any grant is a collision check: confirm the device is not already borne and the grant is complete across every facet, so a half-grant (borne in one roll, absent or conflicting in another) is caught at grant-time, not when the bearer silently fails.",
+    "Near-duplicate arms of one family must be lawfully DIFFERENCED by a cadency mark — kept distinct while showing kinship — or the cadet branches collapse into one another and their records become inseparable.",
+    "Only the office of arms may GRANT; every other party merely RESOLVES against the roll. If more than one authority can grant identity, the single roll is a fiction and fragmentation is re-created under a new name.",
+    "Extinct or attainted arms must be STRUCK from the roll, or a dormant grant lingers and a later colliding name silently inherits an extinct house's arms and its accumulated meaning.",
+    "All augmentations an identity accretes — history, calibration, overrides — must stay bound to the one registered bearer, or identity re-fragments across the very authorities the roll was meant to unify.",
+    "Joining authorities on a bare name string is resemblance-matching, not registration; a canonical collision-proof key keyed to the roll is the only lawful join."
+  ],
+  "primitives": [
+    "the single roll of arms (one authoritative registry all others resolve against)",
+    "the canonical blazon (a precise identifier that pins exactly one bearer, versus a bare name-string / display slug)",
+    "the collision check at grant-time (confirm not-already-borne and grant-complete before registering)",
+    "lawful differencing / cadency mark (keeping near-duplicate branches distinct yet recognizably kin)",
+    "authority-to-grant versus authority-to-resolve (one office grants; many resolve)",
+    "attainder / striking arms from the roll (lawful retirement of a disabled or extinct identity)",
+    "augmentation binding (all accreted meaning stays bound to one registered identity)",
+    "usurpation / silent collapse-or-fork (two identities becoming one, or one splitting, undetected)"
+  ],
+  "failure_mode": [
+    "Systematically blind to whether the EVIDENCE is authentic or arrives with its confidence tier intact — it judges only whether the agent or evidence is lawfully and uniquely IDENTIFIED against one roll, so a perfectly authenticated finding borne under a colliding or forked identity is condemned while a shaky claim under an impeccably registered identity is spared.",
+    "Indifferent to delivery timing, freshness, apportionment, and staged commissioning — a coat correctly blazoned but delivered stale or late is out of scope, so it can miss defects that are purely about when and how evidence flows.",
+    "Can demand a single roll, collision checks, and attainder paths past the point of practical cost, mistaking a pragmatic name-string join with genuinely disjoint namespaces for a usurpation risk that will never actually collide.",
+    "Assumes fragmentation-of-identity is the primary threat; misses failures where identity is perfectly unified but the thing identified is itself wrong, or where the roll is authoritative but stale in content rather than in identity.",
+    "Over-indexes on differencing near-duplicates and can over-engineer cadency where two branches were always meant to be genuinely one identity."
+  ],
+  "findings": [
+    "f-021",
+    "f-022",
+    "f-023",
+    "f-024"
+  ]
+}
