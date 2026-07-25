@@ -193,3 +193,38 @@ sensitive sits in plaintext config or git. See `agent/secrets-1password.md`.
 
 Tracked as deferred next-actions in `README.md` (file as beads from main
 checkout).
+
+### Status as built — audited 2026-07-25 (epic `sylveste-aado`)
+
+| Step | State | Notes |
+|---|---|---|
+| 1. Base stack | **done** | Jellyfin, Radarr/Sonarr (+4K), Prowlarr, SABnzbd, Jellyseerr, qBittorrent, qbit-manage, Caddy all up on grey. 7.0 TB / 44 TB used. |
+| 2a. qbit_manage | **done** | Running 30-min loop. HnR firewall in force: `rem_unregistered:false`, every `share_limits` group `cleanup:false` / `max_seeding_time:-1`. Floors pre-wired: hdbits 14 d, karagarga 30 d, torrentleech 10 d. |
+| 2b. cross-seed | **NOT DEPLOYED** | The design's "biggest free win" is the largest unbuilt item. No container present. |
+| 3. RSS baseline | **not built** | See the routing trap below. |
+| 4. Intake bot | partial | Code in `intake_bot/`; scarcity nudge shipped. |
+| 5. autobrr | not built | Correctly last. |
+
+**The routing trap (why the box earns almost nothing).** Prowlarr syncs indexers
+to apps through a *tag filter*, and the estate is split: tag `usenet` →
+Radarr/Sonarr (the real library, `/data/movies` 4.2 TB), tag `trackers` → only
+Radarr4K/Sonarr4K (`/data/movies-4k` 6.4 GB, `/data/tv-4k` 24 KB). So every
+automated grab for the main library goes to SABnzbd over usenet — and **usenet
+never seeds, so it cannot earn ratio by construction**. All five indexers are
+enabled, credentialed, and testing valid; nothing is broken. Do *not* "fix" this
+by adding the `trackers` tag to Radarr/Sonarr: that makes the main library grab
+torrents on user demand, which is still demand-driven, earns little, and exposes
+the account to Hit-and-Run on every request. Ratio is earned supply-side.
+
+**Measured, 2026-07-25 baseline.** 436 torrents, 6.51 TB, 85.6 GB uploaded
+lifetime, ratio 0.0139, **362 of 436 torrents have never uploaded a byte**.
+Upload per torrent by tracker: TorrentLeech ~5.6 GB, HDBits ~0.21 GB, Karagarga
+~0.027 GB. The three TL torrents are the only fresh, arr-grabbed content on the
+box and have moved more than the entire 125-torrent Karagarga catalog — by a
+factor of five. Treat the tracker-vs-freshness split as unresolved (n=3), but
+both readings agree: catalog does not pay, fresh does.
+
+**Telemetry.** `ratio/ratio_snapshot.py` runs on grey via cron (`0 */6 * * *`)
+appending to `/data/backups/ratio-telemetry.jsonl`; `ratio/ratio_report.py`
+renders the trend. Any claim that the ratio engine is working must cite this
+series — before it existed the goal was unfalsifiable.
