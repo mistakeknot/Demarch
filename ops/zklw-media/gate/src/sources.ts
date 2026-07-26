@@ -23,7 +23,15 @@ const QBIT = process.env.QBIT_URL ?? "http://100.123.250.67:8080";
 const PROWLARR_XML = "/home/mk/grey-media/config/prowlarr/config.xml";
 const QBM_CONFIG = "/home/mk/grey-media/config/qbit-manage/config.yml";
 
-/** HDBits. Not Karagarga — unresolved datacenter-IP exposure, bead sylveste-e3fh. */
+/**
+ * HDBits.
+ *
+ * Karagarga is not wired in yet, but it is not forbidden either: KG explicitly
+ * permits seedboxes, and its full migration to grey was ratified 2026-07-14.
+ * Since KG is a rare/arthouse catalogue it is arguably a BETTER fit for an
+ * acclaim gate than HDBits is — worth adding as a second indexer once this one
+ * has run in production.
+ */
 const INDEXER_ID = 1;
 
 export async function prowlarrKey(): Promise<string> {

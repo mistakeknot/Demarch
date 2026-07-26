@@ -15,8 +15,9 @@
 # What it does, in order:
 #   1. Stops 6 Karagarga "featured torrent" torrents. KG's tracker explicitly
 #      asks seeders to step back on these; all 6 have 9-13 seeds against ZERO
-#      leechers, so stopping costs no upload anybody wants, and it shrinks
-#      grey's KG announce footprint from a datacenter IP (bead sylveste-e3fh).
+#      leechers, so stopping costs no upload anybody wants. (This is about
+#      honouring a tracker request, NOT about datacenter exposure -- KG permits
+#      seedboxes and the cutover to grey was ratified 2026-07-14.)
 #      The script re-checks the live tracker message and refuses to stop
 #      anything with a live leecher or non-zero upload speed.
 #   2. Arms the HDBits RSS racer. Against the live feed this matches 15 of 50

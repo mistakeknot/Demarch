@@ -48,11 +48,18 @@ CATEGORY = "ratio-race"
 SAVE_PATH = "/data/torrents/race"
 FEED_NAME = "hdbits-new"
 
-# HDBits only. TorrentLeech is the tracker where grey's upload measurably
-# converts, but TL mandates the seedbox be declared in-profile and enforces
-# strict 4-10 day HnR -- arming a racer there before that is verified risks the
-# account. Karagarga is excluded outright: it is seedbox-hostile and grey
-# already carries unresolved datacenter-IP exposure there.
+# HDBits only, for now. TorrentLeech is the tracker where grey's upload
+# measurably converts, but TL mandates the seedbox be declared in-profile and
+# enforces strict 4-10 day HnR -- arming a racer there before that is verified
+# risks the account.
+#
+# Karagarga is excluded for a WORKFLOW reason, not a safety one. KG explicitly
+# permits seedboxes ("The use of a seedbox is allowed"; bans are for cheating --
+# modified .torrents, foreign announce URLs, shared passkey -- not datacenter
+# IPs), and the full cutover of KG to grey was ratified 2026-07-14. It stays out
+# of the racer only because KG is a rare/arthouse catalogue where almost nothing
+# is a fresh race; it is a much better fit for the acclaim GATE than for a
+# first-seeder race.
 INDEXER_ID = 1
 
 # Bound what a race is allowed to pull. A fresh 1080p ENCODE is the sweet spot:
