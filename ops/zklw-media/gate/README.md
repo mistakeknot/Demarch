@@ -83,9 +83,37 @@ npm run replay                                # judge both fixtures, assert
 npm run gate -- --fixture fixtures/hdbits-feed-50.json
 ```
 
-## Not yet wired
+## Live operation
 
-Live feed polling and the push-to-qBittorrent step. `gate.ts` deliberately
-refuses to run without `--fixture` so that a dry run cannot grab anything. The
-push should use category+tag `ratio-race` so the existing qbit-manage priority-0
-group applies the 14-day HnR floor.
+```bash
+npm run gate                      # poll the live feed, report, push NOTHING
+npm run gate -- --push            # actually grab the admitted releases
+npm run gate -- --fixture fixtures/hdbits-feed-50.json --offline
+```
+
+**Pushing is opt-in.** Without `--push` the gate is a report and nothing else —
+the same arm/disarm discipline the ratio scripts use. An outward-facing act
+against a private tracker should never be the default behaviour of running a
+command to see what it thinks. `--push` also refuses to run from a fixture,
+since that would grab against stale data.
+
+Three guards fire before anything is added:
+
+1. **`assertRssDisarmed()`** — refuses to push if either qBittorrent RSS master
+   switch is on. The old regex rule racing this gate over the same feed would
+   reintroduce exactly the slop the gate exists to stop.
+2. **Already-present check** — admitted releases already in the client are
+   skipped rather than re-added.
+3. **Category *and* tag `ratio-race`** — so the existing qbit-manage priority-0
+   group governs the torrent, carrying the 14-day HnR floor and `cleanup:false`.
+   Grabbing outside that group would put a private-tracker torrent under no
+   retention policy at all.
+
+### Deployment
+
+The gate must run **on grey**: it reads the Prowlarr API key and the qBittorrent
+password from `/home/mk/grey-media/config/...` at call time, so the secrets never
+become arguments. It also needs `JAWNCITE_DATABASE_URL` pointing at the shared
+Neon project — which means deployment is naturally sequenced *after* the Neon
+apply (bead `sylveste-p9ox.6`). grey needs Node ≥20 and an `npm install` of this
+directory plus the two linked packages.
