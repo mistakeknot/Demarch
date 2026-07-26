@@ -1,0 +1,157 @@
+# Rig Self-Checks
+
+> What runs on its own, where, how often, and how long before you hear about it.
+> Companions: `plugin-enablement-policy.md`, `publish-machine-roles.md`.
+
+A check nobody invokes is a check that exits 0. `guard-enabled-plugins.sh`
+protected nothing for four months (`mk-1wj0`) while looking healthy in the
+SessionStart list, and its test suite existed the whole time — nothing ran it.
+This page exists so that never depends on someone remembering.
+
+## What is automatic
+
+| Check | Clavain | zklw | Cadence |
+|---|---|---|---|
+| `guard-tests` — the 13-test guard suite | launchd | systemd timer | daily 09:15 |
+| `settings-reference` — does a reference actually resolve | launchd | systemd timer | daily 09:15 |
+| `marketplace-divergence` — do the clones agree | launchd | systemd timer | daily 09:15 |
+| settings.json history | SessionStart + daily | **continuous, 10s poll** | see below |
+
+Runner: `~/.local/bin/rig-health-check.sh` → writes one JSON status file per check
+to `~/.claude/health/`. Exits non-zero if any check failed, so the scheduler's own
+state agrees with the status files.
+
+Schedulers:
+
+```
+Clavain   ~/Library/LaunchAgents/com.arouth.rig-health.plist   (RunAtLoad + 09:15 daily)
+zklw      ~/.config/systemd/user/rig-health.timer              (09:15 daily, Persistent)
+zklw      ~/.config/systemd/user/settings-watchdog.service     (continuous)
+```
+
+A separate LaunchAgent from `com.arouth.claude-plugin-cleanup` on purpose: cleanup
+is weekly, these want daily, and a failing check must not be able to stop cache
+pruning or vice versa.
+
+## How you hear about it
+
+`report-rig-health.py`, a SessionStart hook on both machines, reads
+`~/.claude/health/` and prints to stderr — which Claude Code surfaces. It is
+**silent when everything passes**, so output always means something.
+
+It reports three conditions, and the third is the point:
+
+- **FAIL** — a check ran and found a problem.
+- **NEVER** — no status file at all; the scheduled job has not run here.
+- **STALE** — a status file older than twice its interval. *A check reporting
+  "fail" is working as designed; a check whose status has stopped being updated
+  has itself died.* That is exactly what happened to the guard, so a stale `pass`
+  is reported as loudly as a failure.
+
+Deleting the whole health directory produces three findings, not silence.
+
+## Detection latency
+
+| Event | Detected within | Then surfaced |
+|---|---|---|
+| Guard tests break | 24h | next session start |
+| Settings reference stops resolving | 24h | next session start |
+| Marketplace clones diverge | 24h | next session start |
+| settings.json changes, **zklw** | ~10s | in the git history immediately |
+| settings.json changes, **Clavain** | next session start, or 24h | recorded, not alerted |
+| **A check stops running** | 48h (2× interval) | next session start |
+
+Caveats that are real, not theoretical:
+
+- **launchd does not fire while the Mac is asleep.** A closed laptop defers the
+  09:15 run until wake. `RunAtLoad` covers boot/login. This is why the stale
+  threshold is 2× rather than 1×: a laptop shut for a weekend would otherwise
+  cry wolf every Monday.
+- zklw adds `RandomizedDelaySec=300`, so the real fire time is 09:15–09:20.
+- zklw's timer is `Persistent=true`: a run missed while the box was down fires
+  after boot instead of being skipped. A skipped run and a healthy day must not
+  look alike.
+- Both survive logout/reboot: launchd agents are per-user and load at login;
+  zklw has `Linger=yes`, so user units run without an active session.
+
+## The marketplace check runs from outside the tree
+
+`rig-health-check.sh` runs `ic publish doctor` with `cwd=$HOME`, deliberately.
+
+`ic publish` resolves the marketplace by walking up from cwd: inside the Sylveste
+tree it finds `core/marketplace`, outside it finds the Claude Code checkout. The
+old doctor check opened with `if absMarket == absCCPath { return }` — true
+precisely when run from outside — so it disabled itself in the one directory where
+divergence gets created. That vantage point is therefore the one worth automating.
+
+## The watchdog decision
+
+**Decision: run it, on zklw, in polling mode.** (`mk-1wj0` follow-through.)
+
+It had been installed at `~/.local/bin/settings-watchdog.sh` since March and never
+running. The reason was not neglect: **`inotify-tools` is not installed on zklw**,
+installing it needs root that mk does not have, and the script required
+`inotifywait` at startup — so it exited 1 and nothing said so. Requiring a tool
+absent on both machines is the same silent-no-op shape as the dead reference path.
+
+It now prefers `inotifywait` and falls back to polling size+mtime every 10s. One
+stat per interval is free. What is genuinely lost: a change made *and reverted*
+between polls is invisible.
+
+This history is not decoration. zklw's 340+ snapshots are the only reason the
+2026-07-24 `enabledPlugins` drift could be reconstructed at all — mtimes alone
+could not say who changed what.
+
+**Clavain runs no watchdog daemon.** macOS has no `inotifywait`, and a persistent
+poller on a laptop is not worth the battery. Instead the SessionStart hook takes a
+snapshot, so a change made during session N is captured at the start of session
+N+1, plus the daily scheduled run. Say it plainly: **on Clavain, a settings change
+made and reverted within one session is not recorded.** zklw catches that; Clavain
+does not.
+
+```
+~/.claude/settings-history/     # git repo, one commit per observed change
+git -C ~/.claude/settings-history log --oneline
+```
+
+## What is still manual
+
+- **`ic publish doctor` per-plugin checks.** Only clone divergence is automated.
+  The `installed=` vs `marketplace` findings (7 open on zklw) are not watched.
+- **The intercore Go test suite.** Not wired to anything.
+- **Acting on findings.** The reporter tells you; nothing self-heals. That is
+  deliberate — `--approve` and `--fix` stay human-triggered.
+- **Re-copying units after a dotfiles change** — see below.
+
+## Runbook
+
+```bash
+# Run every check now
+rig-health-check.sh ; echo "exit=$?"
+
+# See what a new session would say
+python3 ~/.claude/hooks/report-rig-health.py </dev/null
+
+# Current status, machine-readable
+cat ~/.claude/health/*.json
+
+# zklw: reinstall/refresh the systemd units after editing them in dotfiles
+bash ~/projects/dotfiles/server/.local/bin/install-rig-health-units.sh --enable
+
+# Clavain: reload the LaunchAgent after editing the plist
+launchctl unload ~/Library/LaunchAgents/com.arouth.rig-health.plist
+launchctl load   ~/Library/LaunchAgents/com.arouth.rig-health.plist
+launchctl kickstart -k gui/$(id -u)/com.arouth.rig-health   # run it now
+```
+
+**systemd units are copied, not symlinked.** `systemctl --user disable` deletes a
+unit file that is itself a symlink — `settings-watchdog.service` vanished that way
+mid-setup. Copies can drift from the dotfiles checkout, which is what
+`install-rig-health-units.sh` is for: re-run it after any unit edit.
+
+## Related
+
+- `mk-1wj0` — the four-month guard outage this all descends from
+- `mk-963o` — marketplace clone divergence
+- `mk-ldnb` — publish machine roles
+- dotfiles `902cef3`, `fbb8e6b`, `47ba9eb`, `55b2fb1`, `c518309`
