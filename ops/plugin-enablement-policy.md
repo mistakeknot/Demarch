@@ -1,7 +1,15 @@
 # Plugin Enablement Policy
 
-> Governs `~/.claude/enabledPlugins` on Clavain. Companion to the 2026-07-16 doctor
-> cleanup and to `dotfiles-yadm.md`. Measured against the **plugin cache**, never source.
+> Governs `~/.claude/enabledPlugins` on **both machines**. Companion to the 2026-07-16
+> doctor cleanup and to `dotfiles-yadm.md`. Measured against the **plugin cache**, never
+> source, by `ops/scripts/advertisement-budget.py` and checked daily (`rig-self-checks.md`).
+
+| | enabled | budget | status |
+|---|---|---|---|
+| Clavain (laptop) | 44 of 85 | **29,496** | warn — 504 from the ceiling |
+| zklw (dev server) | 62 of 77 | **29,360** | warn — 640 from the ceiling |
+
+Ceiling is **30,000 rig-wide**, not per machine. See "One ceiling" below.
 
 Every enabled plugin's skill, command, and agent `description` fields are concatenated into
 the system prompt at session start. That is the **advertisement budget** — paid on every
@@ -21,8 +29,22 @@ live.enabledPlugins = { ...refPlugins, ...livePlugins };
 
 Live wins only for keys present in **both**. A key *missing* from live silently adopts the
 reference's value — including `true`. An explicit `false` is drift-proof; a deleted key is
-not. (That hook is currently dead — see "Known-broken machinery" — but write for the
-revived case.)
+not.
+
+This is live, not hypothetical: the guard was rebuilt 2026-07-26 (`mk-1wj0`) and now
+diff-reports by default, merges nothing without approval, and exits **non-zero** when no
+reference resolves. `claude plugin disable` writes explicit `false` and preserves the key —
+verified on both machines — so it is the safe way to disable. Hand-editing the JSON is not.
+
+After any deliberate enablement change, re-adopt the reference:
+
+```bash
+bash ~/.claude/hooks/guard-enabled-plugins.sh --adopt
+```
+
+Skipping that leaves the reference describing the *old* intent, so a restore would quietly
+undo the change. This bit us on zklw: 13 freshly-disabled plugins still read `true` in the
+reference until it was re-adopted.
 
 ## Where drift actually comes from
 
@@ -51,17 +73,21 @@ Four or more sessions run concurrently on this machine, all sharing one global
 | `com.arouth.claude-plugin-cleanup` (launchd, Sun 09:30) | Prunes stale **cache version dirs** only; never opens settings.json |
 | Marketplace refresh / plugin install | No evidence; every entry-count change traced to a session Edit |
 
-## Known-broken machinery
+## Machinery — repaired 2026-07-26
 
-`guard-enabled-plugins.sh` reads `~/projects/dotfiles/common/.claude/settings.json` and
-exits 0 when absent. Dotfiles commit `848b445` (2026-03-28) renamed that path to
-`.claude/settings.json`. The hook has therefore protected nothing for four months while
-appearing healthy in the SessionStart list. Tracked as `mk-1wj0`.
+`guard-enabled-plugins.sh` read `~/projects/dotfiles/common/.claude/settings.json` and
+exited 0 when absent. Dotfiles commit `848b445` (2026-03-28) renamed that path, so the hook
+protected nothing for four months while appearing healthy in the SessionStart list.
 
-**Do not revive it by simply repointing the path.** The surviving reference is from
-2026-05-17 and holds 75 entries against the live 85. Union-merging it would silently enable
-`intertrack@interagency-marketplace`, which is exactly the failure this policy exists to
-prevent. Any revival must diff-then-approve.
+Rebuilt under `mk-1wj0`: it diff-reports by default, merges nothing without `--approve`,
+exits **non-zero** when no reference resolves, and carries a 13-test suite that fails if the
+reference path stops resolving. The suite runs daily on both machines
+(`ops/rig-self-checks.md`), which is the actual fix — the tests existed before and nothing
+ran them.
+
+It was **not** revived by repointing the path. The surviving 2026-05-17 reference held 75
+entries against the live 85, and union-merging it would have silently enabled
+`intertrack@interagency-marketplace` — the exact failure this policy exists to prevent.
 
 ## What the instruments can and cannot see
 
@@ -225,41 +251,131 @@ previous version until Claude Code restarts. Until then the script reports the p
 number and is not wrong — the old descriptions really are what this session loaded. Measure
 the published state by pointing the script at the plugin repos instead.
 
-## This policy has only ever been applied to Clavain
+## zklw — the machine this policy never reached
 
-Found 2026-07-26, the first time the budget was measured on the other machine:
+Everything above was written as rig-wide policy and applied to one machine. On
+2026-07-26 the budget was measured on zklw for the first time: **52,537 chars**,
+22,537 over the ceiling, 75 of 77 plugins enabled. Nobody knew, because until
+that week nothing measured the budget anywhere.
 
-| | enabled | total |
+Resolved the same day (`mk-zysa`). **52,537 → 29,360.**
+
+### The free half: 4,659 chars, no decision required
+
+zklw's caches trailed the marketplace. `clavain` was pinned at `0.6.284` — 89
+live entries, **0 demoted** — while the marketplace was at `0.6.289`, where 41 of
+those 89 are demoted. Seven plugins were behind in total.
+
+```bash
+claude plugin update <plugin>@<marketplace>     # the supported path
+```
+
+52,537 → 47,878. `clavain` alone accounted for 4,838; the other six netted +179
+because some genuinely grew.
+
+**Correction worth keeping:** `ic publish doctor` tells you a trailing install
+"resolves itself on the next Claude Code restart". On zklw that was **false** —
+sessions had been starting daily for days with `clavain` stuck at 0.6.284.
+Claude Code does not silently upgrade installed plugins at session start;
+`claude plugin update` is an explicit action. Tracked for correction as `mk-ja1j`.
+
+This also prices a decision made the same day. Doctor now treats
+installed-behind-marketplace as `info` rather than `error` because it self-heals.
+That is still right for *alerting* — but 4,838 chars is what the trailing state
+cost while it lasted. The two checks are complementary: one stopped shouting
+about a condition that resolves, the other bills it.
+
+### There is no usage data on zklw
+
+The goal was to justify each disable against zklw's own instruments. **They are
+dead.** `audit.log` holds 25 lines, last written 2026-07-14. `tool-time/
+events.jsonl` last recorded 2026-07-14; `stats.json` regenerates daily and
+reports `total_events: 0`. Invoking the hook by hand *does* append, so it works
+and is simply never called. Cause unresolved after a bounded search (`mk-q6bl`).
+
+So **every zklw decision below is a capability call**, not a counter call. Said
+plainly because the alternative — implying evidence that does not exist — is how
+the 34,141 / 46,416 / 36,837 baselines happened.
+
+### The line that was drawn: third-party first
+
+Not a port of Clavain's answers. The principle is about **which lever exists**:
+
+- **Third-party plugins get the strictest treatment, because disabling is the
+  only durable lever.** We cannot slim what we do not publish — a plugin update
+  overwrites any local edit. This is the same reasoning that settled `plugin-dev`
+  on Clavain.
+- **Our own `inter*` plugins keep the benefit of the doubt**, because demotion and
+  example-relocation remain available. Disabling them is not the only option, so
+  it should not be decided blind on a machine with no usage data.
+
+Disabled on zklw, 2026-07-26 (13 plugins, −18,518):
+
+| Plugin | chars | Rationale |
 |---|---|---|
-| Clavain | 44 of 85 | 29,496 |
-| **zklw** | **75 of 77** | **52,537** (~13,134 tok) |
+| `pr-review-toolkit` | 10,761 | 22% of zklw's entire budget in 7 entries. Claude Code's own projection agrees: ~2,680 always-on tokens. Review work is served by `/code-review` and flux-drive. |
+| `notion` | 1,898 | ODST client engagements. The OneDrive context path is `/Users/arouth/...` — Mac-only by construction. |
+| `hookify` | 1,261 | Hook authoring; done interactively where mk works. |
+| `interfluence` | 1,107 | Voice/stylometry for mk's own writing — a Mac activity. Already a capability call on Clavain. |
+| `interjawn` | 590 | **Security, not budget.** Embedded DB credentials; the reason it is off on Clavain applies more forcefully on a server. |
+| `feature-dev` `agent-sdk-dev` `claude-md-management` `claude-code-setup` `commit-commands` `frontend-design` `code-simplifier` `code-review` | 2,901 | The 2026-07-16 doctor-cleanup set, never applied here. |
 
-Everything above — the 07-16 doctor cleanup, the 07-25/26 disables, the
-demotions — was written as rig-wide policy and applied to one machine. zklw runs
-**22,537 chars over the ceiling** in every session and nobody knew, because until
-now nothing measured it anywhere but here.
+**Third-party advertisement on zklw is now 0.** Everything it pays for is ours,
+and therefore slimmable rather than only disableable.
 
-Top costs on zklw that are already disabled on Clavain:
+### Kept on zklw, deliberately
+
+The `inter*` long tail Clavain disabled stays on: `intertrace` 920,
+`tldr-swinton` 837, `interplug` 629, `intercraft` 519, `intertest` 455,
+`interlab` 403, `interskill` 402, `interdeep` 398, `interdev` 391, and ~10 more
+at 100–350 each. Roughly 5,600 chars.
+
+zklw is where these are developed and published. Turning them off on the
+development machine to buy headroom, with no usage data and a slimming pass still
+available, is the wrong order of operations.
+
+`intertrack` (284) is enabled here and **absent from Clavain's settings
+entirely** — the exact key the guard's union-merge test was written around. Left
+enabled, flagged: it should be a deliberate entry on both machines or neither.
+
+### One ceiling, 30,000, for both machines
+
+The obvious move after seeing 52,537 was to give the dev server its own larger
+number. **Rejected.** A per-machine ceiling derived from what a machine currently
+spends is the same mistake as widening a warn band to make today's reading green:
+the threshold ends up describing the rig instead of constraining it.
+
+The substantive argument is that zklw has no *plugin* need Clavain lacks. Its
+distinct roles — publish signer, canonical repo host, autosync, hermes agents —
+are served by binaries and services, not advertised entries. Both machines now sit
+136 chars apart under the same ceiling, which is evidence one contract fits.
+
+The reasoning lives in `rig-budget-eval.py` beside the constant, so the next
+person to consider a second number reads why there is not one.
+
+### Reversibility
+
+Every change used `claude plugin disable`, which writes an explicit `false` and
+**preserves the key** — verified: 77 keys before and after, 15 now false. That
+matters because the guard union-merges a reference over live, and a key *missing*
+from live adopts the reference's `true`. Explicit `false` is drift-proof.
+
+Backups on zklw:
 
 ```
-10,761  pr-review-toolkit      1,898  notion       1,261  hookify
- 1,107  interfluence             761  feature-dev    660  agent-sdk-dev
+~/.claude/settings.json.bak-enablement-20260726-222641
+~/.claude/plugins/installed_plugins.json.bak-enablement-20260726-222641
+~/.claude/settings.reference.json.bak-adopt-20260726-223024
 ```
 
-**One of these is free.** zklw caches `clavain 0.6.284` — 89 live entries, 0
-demoted — while the marketplace is at `0.6.289`, where 41 of those 89 are
-demoted. A Claude Code restart on zklw picks up the newer cache and reclaims
-**~4,838 chars with no decision required**.
+The guard reference was re-adopted after the change (0 differing keys). Without
+that, a restore-from-reference would have silently re-enabled all 13.
 
-That is worth noting against a decision made the same day: `ic publish doctor`
-now treats installed-behind-marketplace as `info` rather than `error`, because it
-self-heals on restart. That remains right for *alerting* — but this is what the
-trailing state costs while it lasts, and the budget check is what makes it
-visible. The two checks are complementary: one stopped shouting about a
-self-healing condition, the other prices it.
+Re-enable any one of them in a line:
 
-Tracked as `mk-zysa`. Until it is acted on, zklw reports `advertisement-budget`
-FAIL at every session start. That is correct and should not be tuned away.
+```bash
+ssh zklw 'claude plugin enable pr-review-toolkit@claude-plugins-official'
+```
 
 ## Verifying
 
