@@ -1,5 +1,0 @@
-cache_entries	cache_gb	startup_s	mean_tps	median_tps	min_tps	max_tps	cache_hits	cache_misses	hit_rate	predict
-2581	14.0	6	10.60	11.73	6.51	12.60	N/A	N/A	99.4%	off
-5000	27.1	4	11.54	11.09	10.17	13.56	N/A	N/A	99.4%	off
-10000	54.3	9	12.21	12.55	9.93	14.21	N/A	N/A	99.4%	off
-15000	81.5	27	10.57	11.19	8.20	12.94	N/A	N/A	99.4%	off
