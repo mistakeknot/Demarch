@@ -40,21 +40,45 @@ on-disk file count unchanged and all three nested repos' status untouched
 (`interfer` kept its 4 pre-existing dirty entries, which the monorepo never
 tracked; `intersight` and `intership` stayed clean).
 
-## Surviving trap: two of these have no local git presence
+## Resolved: all five are now real repos
 
-`interverse/interhelm/` and `interverse/interseed/` are **plain directories with
-no `.git`**. They are not clones and not worktrees — just copies, now unversioned
-locally and already behind their upstreams (interhelm was pushed 2026-07-23, two
-days before this was measured).
+`interverse/interhelm/` and `interverse/interseed/` used to be **plain
+directories with no `.git`** — not clones, not worktrees, just copies, and by
+2026-07-26 already behind their upstreams. Editing either edited a stale,
+unversioned copy of a repo that had moved on, with nothing to warn you: the
+monorepo ignores the path, and there was no nested repo to report the change.
 
-Editing either directory therefore edits a stale, unversioned copy of a repo that
-has moved on, with nothing to warn you: the monorepo ignores the path, and there
-is no nested repo to report the change. Before working on either, clone the real
-repository. Whether to replace or remove the orphan copies is a separate
-decision, deliberately not taken here — the same call `POINTER.md` deferred.
+Both were replaced with real clones on 2026-07-26 (goal `0f119188`), so all five
+subtrees now report their own status normally:
 
-The other three (`interfer`, `intersight`, `intership`) are real nested repos and
-report their own status normally.
+| Directory | HEAD | matches upstream `main` |
+|---|---|---|
+| `interverse/interhelm` | `2db77348626f` | yes |
+| `interverse/interseed` | `785573db335c` | yes |
+
+### What the swap replaced
+
+The stale copies held four files the clones do not. None was real work, and all
+were archived before the swap:
+
+- `interhelm/kimi.plugin.json`, `interseed/kimi.plugin.json` — generated
+  manifests. interhelm's declared v0.2.2, derived from the stale local
+  `plugin.json`, while upstream was already v0.2.3.
+- `interhelm/tests/uv.lock` — the only file where the local copy was *ahead*
+  (packaging 26.2 vs 26.0, pygments 2.20.0 vs 2.19.2). A lockfile refresh from
+  someone running `uv` locally; regenerable.
+- `interseed/POINTER.md` — the extraction tombstone this document replaced.
+
+### Open: `kimi.plugin.json` is missing from both upstreams
+
+61 of 64 `interverse/` directories carry a `kimi.plugin.json`, and the ones that
+are real repos (`interflux`, `interlock`, `intermux`) all track it. Upstream
+`interhelm` and `interseed` do not have one at all, which looks like a
+publishing gap in those two repos rather than a local artefact.
+
+It was not fixed by copying the local files up: interhelm's was generated from
+the stale v0.2.2 manifest and would have contradicted upstream's v0.2.3. The
+right fix is to regenerate both in their own repos.
 
 ## See also
 
