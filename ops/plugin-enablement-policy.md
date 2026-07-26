@@ -225,6 +225,42 @@ previous version until Claude Code restarts. Until then the script reports the p
 number and is not wrong — the old descriptions really are what this session loaded. Measure
 the published state by pointing the script at the plugin repos instead.
 
+## This policy has only ever been applied to Clavain
+
+Found 2026-07-26, the first time the budget was measured on the other machine:
+
+| | enabled | total |
+|---|---|---|
+| Clavain | 44 of 85 | 29,496 |
+| **zklw** | **75 of 77** | **52,537** (~13,134 tok) |
+
+Everything above — the 07-16 doctor cleanup, the 07-25/26 disables, the
+demotions — was written as rig-wide policy and applied to one machine. zklw runs
+**22,537 chars over the ceiling** in every session and nobody knew, because until
+now nothing measured it anywhere but here.
+
+Top costs on zklw that are already disabled on Clavain:
+
+```
+10,761  pr-review-toolkit      1,898  notion       1,261  hookify
+ 1,107  interfluence             761  feature-dev    660  agent-sdk-dev
+```
+
+**One of these is free.** zklw caches `clavain 0.6.284` — 89 live entries, 0
+demoted — while the marketplace is at `0.6.289`, where 41 of those 89 are
+demoted. A Claude Code restart on zklw picks up the newer cache and reclaims
+**~4,838 chars with no decision required**.
+
+That is worth noting against a decision made the same day: `ic publish doctor`
+now treats installed-behind-marketplace as `info` rather than `error`, because it
+self-heals on restart. That remains right for *alerting* — but this is what the
+trailing state costs while it lasts, and the budget check is what makes it
+visible. The two checks are complementary: one stopped shouting about a
+self-healing condition, the other prices it.
+
+Tracked as `mk-zysa`. Until it is acted on, zklw reports `advertisement-budget`
+FAIL at every session start. That is correct and should not be tuned away.
+
 ## Verifying
 
 ```bash

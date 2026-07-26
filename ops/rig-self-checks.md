@@ -24,10 +24,16 @@ Expected steady state, so a drift is auditable against something:
 
 ```
 Clavain   guard-tests pass   settings-reference pass   marketplace-divergence pass
-          intercore-tests PASS    ic-provenance pass    advertisement-budget warn
+          intercore-tests PASS    ic-provenance pass    advertisement-budget WARN
 zklw      guard-tests pass   settings-reference pass   marketplace-divergence pass
-          intercore-tests SKIP    ic-provenance pass    advertisement-budget warn
+          intercore-tests SKIP    ic-provenance pass    advertisement-budget FAIL
 ```
+
+**zklw's budget FAIL is real, not a misconfiguration.** Its first measurement
+came back at 52,537 chars against a 30,000 ceiling, because 75 of 77 plugins are
+enabled there versus 44 on Clavain — the enablement policy was only ever applied
+to this Mac. Tracked as `mk-zysa`; see `plugin-enablement-policy.md`. It will
+report FAIL every session until acted on, and that is the check working.
 
 **If Clavain ever reports `intercore-tests = skip`, the build marker went missing.**
 
