@@ -8,7 +8,8 @@
     "typecheck": "tsc --noEmit",
     "pedigree": "tsx src/build-pedigree.ts",
     "replay": "tsx src/replay.ts",
-    "gate": "tsx src/gate.ts"
+    "gate": "tsx src/gate.ts",
+    "disposition": "tsx src/disposition.ts"
   },
   "dependencies": {
     "@jawnverse/jawncite": "file:../../../../../../jawncite",
