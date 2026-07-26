@@ -1,0 +1,32 @@
+{
+  "id": "fd-federation-discovery-generalization",
+  "kind": "base",
+  "parents": [],
+  "domain": "workspace-root-detection-and-config-fallback-resolution",
+  "axioms": [
+    "A discovery mechanism must be validated against the ecosystem's actual boundary topologies (nested standalone repos, symlinked compatibility paths, varying nesting depth), not just a hand-picked representative case.",
+    "Resolution order is a correctness-bearing decision, not an implementation detail — different discovery mechanics (upward walk, marker file, existing-tool reuse) fail differently at the same boundary case and must be evaluated on that basis.",
+    "A fallback path must not silently reproduce the failure mode it was built to eliminate; an empty-but-successful fallback result must be distinguishable from a genuinely-absent-integration-surface result.",
+    "Graceful degradation claims are only verified once tested against the specific boundary case named as a requirement (e.g., a nested standalone repo), not asserted from the general shape of the design.",
+    "A calibration mechanism that depends on a category of finding (inferred-edge noise) cannot be validated before that category exists in practice — sequencing between the stage that produces the data and the stage that calibrates against it is load-bearing.",
+    "0/N baseline adoption stats motivate the need for a fallback but do not by themselves validate that the fallback works across all N topologies; the stat is a motivation, not a test."
+  ],
+  "primitives": [
+    "workspace/federation root",
+    "upward directory walk vs. marker file vs. reused detection heuristic",
+    "repo boundary (.git directory) as a resolution stopping condition",
+    "resolution-order determinism",
+    "graceful-degradation vs. silent-failure distinguishability",
+    "noise-calibration data dependency (which stage produces it vs. which stage consumes it)"
+  ],
+  "failure_mode": [
+    "Does not own agent identity/registration or evidence-acquisition shape — sees those as prerequisites assumed correct, focuses only on whether the agent can locate the right hub documents from a given working directory.",
+    "Blind to trust/registry migration concerns and to whether tracer evidence itself is fresh or stale — a repo could resolve hub docs perfectly and still get grounded-but-stale evidence, which this lens would not catch.",
+    "Reasons in path-resolution and boundary-case terms; may underweight organizational rollout sequencing (e.g., who tests against which of the 61 repos first) that isn't itself a resolution-mechanics question."
+  ],
+  "findings": [
+    "f-007",
+    "f-008",
+    "f-009"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "fd-tidalsediment-accretion",
+  "kind": "base",
+  "parents": [],
+  "domain": "Estuarine tidal-marsh sediment dynamics — physical deposition/resuspension at tidal and geological timescales",
+  "axioms": [
+    "Suspended material deposits only when the current slackens and particles have residence time to settle; deposited into a fast current, it is resuspended.",
+    "A platform persists only when accretion (trapping) keeps pace with subsidence and flushing; if flushing outpaces trapping, the platform erodes to open water.",
+    "Different materials have different settling rates — coarse settles fast, fine needs long slack water; forcing one deposition time strands the slow material.",
+    "Material not yet consolidated is carried off by the next flood tide; consolidation, not deposition, is what makes a layer permanent.",
+    "Abandoned channels leave ghost features that never fill and never drain — a formal void that persists precisely because nothing is depositing there.",
+    "Stability is a balance of rates over thousands of cycles, not a state achieved in a single tide."
+  ],
+  "primitives": [
+    "deposition rate (how often an element is written/committed)",
+    "residence time (how long material has to settle before the next flush)",
+    "flush / flood tide (a session close that can carry off unconsolidated material)",
+    "consolidation (evidence becoming durable entity state that survives flushes)",
+    "accretion vs. subsidence (Goal gaining consolidated evidence vs. context eroding away)",
+    "ghost channel (a formally closed/dormant Goal that is functionally abandoned)",
+    "settling-rate mismatch (a gate timed faster than its slowest material can settle)"
+  ],
+  "failure_mode": [
+    "Blind to mechanical load transfer and joint reversibility — sees persistence as a settling problem, not a structural one; cannot judge whether a seam is cut on the right member.",
+    "May over-favor asynchrony and slack time, flagging any synchronous gate as premature even when instantaneous close is correct and cheap.",
+    "Reasons about material persistence, not about who holds authority or how a piece is deliberately removed — retirement reads as erosion, missing intentional withdrawal.",
+    "Cannot assess the elicitation ritual's information economics — treats it only as a deposition event, indifferent to comparative-advantage quality."
+  ],
+  "findings": []
+}

@@ -1,0 +1,40 @@
+{
+  "id": "fd-waqf-perpetual-trust",
+  "kind": "base",
+  "parents": [],
+  "domain": "Pre-modern Islamic law of waqf (charitable endowment) — perpetual inalienable trusteeship, lawful succession of the administrator, the founder's binding stipulations, and the structural refusal to let an endowment become ownerless",
+  "axioms": [
+    "An endowment that outlives its administrators must be constituted so it can NEVER become ownerless — at every moment either a trustee holds it or an office is bound to appoint the next; a corpus with no trustee and no one bound to appoint is a defect the law will not tolerate.",
+    "The administrator's discharge and the endowment's discharge are two different acts: a trustee renders his account and is released (frequently, on his own schedule) but that release does NOT dissolve the endowment, which is discharged only when its stipulated purpose is fulfilled (rarely).",
+    "The succession of the trustee must fire STRUCTURALLY on his departure — the supervisor or the court MUST appoint the next — not depend on the departing trustee remembering to name a successor; appointment is a law, not a courtesy.",
+    "The founder's stipulated conditions are irrevocable and bind every future administrator; a later administrator may not silently relax the terms on which the endowment is to be discharged, and any mutation of the conditions requires fresh ratification by the court.",
+    "A purpose that has become impossible must be lawfully converted to the next-nearest purpose (cy-près) or the endowment formally wound up with its corpus preserved — it may not simply lapse into an ownerless ghost that is neither discharged nor dissolved.",
+    "Supervision must watch the trustee for NEGLECT between account-renderings — a corpus falling to ruin while nominally still endowed (a trustee present but the purpose unadvanced) is a silent death the supervisory office exists to catch; supervision that fires only at the trustee's voluntary account-rendering leaves the dormant interval unwatched.",
+    "A small endowment is still an endowment: the lightest administration weight (self-administered, no separate supervisor) still may not become ownerless, so the anti-ownerless and appointment-of-successor guarantees must survive even the lightest ceremony."
+  ],
+  "primitives": [
+    "the perpetual endowment (the Goal entity that spans many runs and is discharged only on purpose-fulfilled)",
+    "the transient administrator / mutawalli (a session that renders its /goal surfaced-output account and is released without ending the Goal)",
+    "the trustee-office and its vacancy (the interval between administrators where no session holds the Goal)",
+    "lawful succession / appointment-of-next-trustee (the successor-proposal doctrine as a structural obligation, not a completion courtesy)",
+    "the founder's shurut (the charter's acceptance criteria and machine-evaluable completion condition made binding on every future run)",
+    "the qadi's ratification (melange review of high-stakes charters as what makes the shurut binding, and what must re-ratify a mutated condition)",
+    "the nazir / supervisory office (whichever intercore office is bound to notice a dormant or neglected Goal and compel action)",
+    "cy-près conversion / lawful dissolution (the path for a Goal whose purpose became impossible or was superseded)",
+    "the ownerless corpus (the between-sessions dormant Goal no successor was proposed for — the core abandonment failure)",
+    "administration weight scaled to stakes (C1-C5 as the founder's choice of trustee/supervisor formality, without dropping the anti-ownerless guarantee on the lightest path)"
+  ],
+  "failure_mode": [
+    "Reasons about succession-of-office and the ownerless corpus, not about concurrency mechanics — cannot judge whether two administrators race the same close, at-least-once semantics, or fencing tokens; it sees a vacant office where the saga lens sees a write-race, and may miss a genuine idempotency hazard.",
+    "Frames a dormant Goal as 'office-vacant / ownerless', blind to the temporal settling economics — cannot assess whether close-evidence has residence time to consolidate or is resuspended; where the sediment lens sees erosion, this lens only sees an unappointed office.",
+    "Treats containment, absorption, and retirement as 'lawful succession / conversion of the office', not as mechanical load transfer or joint reversibility — cannot judge whether a seam is cut on the load-bearing member or whether a retirement has a physical withdrawal sequence.",
+    "Does not natively evaluate the elicitation ritual's information economics or the kernel-chain migration mechanics — treats the ritual only as the act that produces the founder's binding stipulations and the chain change only as a lawful conversion of the office, so it can certify succession is sound while missing that the charter's content is poorly elicited or the DefaultChain migration is technically unsafe.",
+    "May over-apply the anti-ownerless terror to genuinely throwaway session goals, insisting on a bound successor and supervisory office where an intentionally ephemeral C1 goal correctly just ends — flagging a deliberate lapse as an abandonment defect."
+  ],
+  "findings": [
+    "f-015",
+    "f-016",
+    "f-017",
+    "f-018"
+  ]
+}

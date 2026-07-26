@@ -1,0 +1,37 @@
+{
+  "id": "fd-liminal-rite-passage",
+  "kind": "base",
+  "parents": [],
+  "domain": "Pre-modern rite-of-passage / initiation-mastery — the officiant's craft of validly conferring an irreversible status-transition through separation, liminal margin, and witnessed reincorporation",
+  "axioms": [
+    "A valid status-transition must pass through three phases in order — separation from the old status, a liminal threshold, and witnessed reincorporation into the new; skip a phase and the passage is not real.",
+    "A passage begun must be carried all the way through: the most dangerous state is a subject stranded in the liminal margin, holding neither the old status nor the new.",
+    "A new status is only binding when it is witnessed — a conferral no community attests to is not real and silently reverts.",
+    "Reincorporation without separation makes a subject hold two incompatible statuses at once; the old status must be cut before the new is conferred.",
+    "Every crossing has a single point of no return: before it the subject is wholly in the old status, after it wholly in the new — an interruption between the first mutation and the last strands the subject mid-threshold.",
+    "A half-crossed passage left unresolved is polluting — an ambiguous being that contaminates the next candidate's rite until a resolution rite completes or reverses it."
+  ],
+  "primitives": [
+    "separation (cutting a subject from its old status — free-text intent leaving unformed state, a Goal leaving open, a tracker leaving live)",
+    "liminal margin (the betwixt-and-between interruption window: a half-formed Goal, a half-closed Goal, a half-subsumed tracker)",
+    "reincorporation (the witnessed conferral of the new status, made binding on the community — a minted Goal, a discharged Goal, a retired phase)",
+    "witness / attestation (durable community-visible entity state that binds later sessions and the kernel to treat the change as real)",
+    "point of no return (the single irreversible moment a crossing becomes binding)",
+    "the interrupted rite (a session dying / hook failing / ordered step aborting between the first and last mutation, stranding the subject)",
+    "missing-separation double-status defect (a subject acquiring a new status it was never cut from the old for — the strategized-collapse for new-vs-in-flight runs)",
+    "liminal pollution / resolution rite (accumulated half-transitions with no cleanup mechanism bound to detect and resolve them)"
+  ],
+  "failure_mode": [
+    "Blind to who holds an office ACROSS TIME and to succession-over-many-administrators — sees only the single crossing, so it cannot judge ownerless-drift or perpetual trusteeship (the waqf lens owns that); may flag a valid multi-session Goal as 'stranded' when it is merely dormant-but-validly-open.",
+    "Reasons about the completeness of a discrete transition, not about temporal settling — cannot judge residence time, consolidation, or erosion (the sediment lens owns that); a delay before a status is conferred reads as a stranded threshold rather than legitimate slack.",
+    "Indifferent to mechanical load transfer and joint reversibility — retirement reads as a death-and-rebirth passage to be witnessed, not as a withdrawal sequence or load path (the joinery lens owns that); may over-ritualize a cheap reversible toggle that needs no rite.",
+    "Cannot assess the elicitation ritual's information quality or comparative-advantage economics — treats the ritual only as the formation passage that must complete three phases to confer a valid Goal status, indifferent to whether the interview elicited the RIGHT goal.",
+    "May over-detect pollution — flag any transient in-between state as a dangerous liminal being even when the interruption window is trivially short, atomic, or self-healing on the next session."
+  ],
+  "findings": [
+    "f-019",
+    "f-020",
+    "f-021",
+    "f-022"
+  ]
+}

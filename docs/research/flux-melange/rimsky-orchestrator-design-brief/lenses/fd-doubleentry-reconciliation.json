@@ -1,0 +1,37 @@
+{
+  "id": "fd-doubleentry-reconciliation",
+  "kind": "base",
+  "parents": [],
+  "domain": "Late-medieval Venetian/Genoese double-entry mercantile bookkeeping and reconciliation (Pacioli-codified account discipline, trial balance, suspense accounts, book-closing)",
+  "axioms": [
+    "Every transaction is posted twice and to exactly one pair of accounts: a capability must have exactly one owning account; posting it to two ledgers (duplication) or to none (a floating value) is the cardinal error.",
+    "Overlapping ventures require a consolidation decision before the books open: two related accounts are either merged into one, kept separate with an explicit inter-account transfer, or unrelated \u2014 deciding wrong compounds through every later entry.",
+    "A suspense account is legitimate only with a written clearing condition: a value whose home is unknown may be parked, but it is a debt against clarity that must be cleared, not left to become permanent.",
+    "The trial balance proves state without declaring profit: an instrument reports whatever the ledger actually holds, including zero, and must never present a conclusion (a threshold, a tuned number) whose producing transactions have not been posted.",
+    "The books are never closed while any account stands unreconciled: no dividend is distributed and no year is declared done while an obligation floats open.",
+    "Boundary discipline is the master virtue: each venture, partner, and warehouse gets its own account, and duplicate recording of one warehouse in two ledgers must be reconciled as a precondition."
+  ],
+  "primitives": [
+    "account (single owner of a capability: Rimsky, interlock, native worktrees, bd redirect, lbkd, Mycroft)",
+    "posting (assigning a capability/transaction to its owning account)",
+    "double-posting (a capability duplicated across two accounts \u2014 the accidental second fleet orchestrator)",
+    "floating value (a capability in no account \u2014 lbkd left unassigned)",
+    "consolidation decision (subsume / separate-ledger-with-transfer / unrelated for lbkd and Mycroft)",
+    "inter-account transfer (a declared dependency edge between ledgers)",
+    "trial balance (the conflict-economics telemetry as an honest state instrument, not asserted thresholds)",
+    "suspense account (the deferred controller / anti-abandonment obligation with a written clearing condition)",
+    "book-closing gate (the internal gate that forbids marking the epic done while an account is unreconciled)"
+  ],
+  "failure_mode": [
+    "Blind to resource scarcity and throughput dynamics: it will not price the token multiplier, the priming cost of the pre-spawn check, or the worktree crossover \u2014 it only asks which account a thing is posted to, not whether the reservoir can afford it.",
+    "May treat a genuinely economic runtime trade-off (Q3 crossover, Q5 check cost) as a mere posting question and miss that the real answer is a break-even, not a boundary.",
+    "Over-indexes on clean boundaries; can flag an overlap as double-posting when a small deliberate redundancy is actually cheaper than the coordination to eliminate it.",
+    "Assumes correctness lives in reconciliation and can undervalue emergent/dynamic failure modes (conflict cascades, rate exhaustion) that no static ledger discipline would catch."
+  ],
+  "findings": [
+    "f-015",
+    "f-016",
+    "f-017",
+    "f-019"
+  ]
+}

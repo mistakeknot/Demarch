@@ -1,0 +1,30 @@
+{
+  "id": "fd-timberjoinery-loadpaths",
+  "kind": "base",
+  "parents": [],
+  "domain": "Japanese timber-frame joinery (miyadaiku / sashimono) — fastener-free structural carpentry",
+  "axioms": [
+    "Load must flow along the grain into a member sized to bear it; force that concentrates at a joint too small for it will shear.",
+    "Every joint should be reversible — a piece can be withdrawn and replaced in a known sequence without dismantling the surrounding frame.",
+    "A structure survives not by rigidity but by joints that flex and re-seat under repeated shock (seismic events) rather than fracturing.",
+    "No hidden fasteners: a joint whose failure mode is invisible until stressed is a defect the maker is accountable for.",
+    "The same interlock that resists pull-out under load must be releasable deliberately by a craftsman who knows the sequence — resistance and reversibility are cut into one joint.",
+    "A cut must land on the member whose grain can carry it; making the same cut across several members at once leaves the joint with no single grain to follow."
+  ],
+  "primitives": [
+    "load path (where force flows through the structure)",
+    "joint / interlock (containment binding, absorption seam, retirement point)",
+    "member (a sized component that bears load — an owner, a hook, an entity field)",
+    "withdrawal sequence (the ordered steps to reversibly remove a piece)",
+    "shock event (a session close, a chain change, a phase retirement)",
+    "fastener vs. floating joint (a rigid pin that shears vs. an interlock that re-seats)",
+    "grain (the canonical member a structural cut must follow)"
+  ],
+  "failure_mode": [
+    "Blind to whether a joint is worth cutting at all — treats every persistence as a structural problem, may over-engineer reversibility where a throwaway pin is fine.",
+    "Reasons about static load transfer and misses time-based settling/consolidation dynamics (how long evidence needs to persist before it is trustworthy).",
+    "Cannot judge the elicitation ritual's information quality — only whether its charter output is a member other pieces can be jointed to.",
+    "May mistake tightness for correctness, flagging any rigid coupling as a defect even when the design intends a permanent weld."
+  ],
+  "findings": []
+}

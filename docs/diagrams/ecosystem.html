@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Demarch Ecosystem</title>
+  <title>Sylveste Ecosystem</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -161,8 +161,27 @@ body {
 }
 #search-box:focus { outline: none; border-color: #58a6ff; }
 
+/* Label + select wrap as one unit when the toolbar wraps. */
+.select-group { display: flex; align-items: center; gap: 4px; }
+
 #graph { width: 100vw; height: 100vh; padding-top: 44px; }
 #graph svg { width: 100%; height: 100%; }
+
+/* Mobile: the toolbar row is wider than a phone viewport — wrap instead of
+   clipping, drop the stats readout, give search its own full row. Must come
+   after the base #graph rule — same specificity, source order decides. */
+@media (max-width: 640px) {
+  #toolbar {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 6px;
+    padding: 8px 12px;
+  }
+  #toolbar .stats { display: none; }
+  #search-box { flex: 1 1 100%; width: auto; margin-left: 0; }
+  /* wrapped toolbar is ~3 rows; keep the graph clear of it */
+  #graph { padding-top: 108px; }
+}
 
 .node circle { cursor: pointer; transition: opacity 0.2s; }
 .node circle:hover { filter: brightness(1.3); }
@@ -431,25 +450,29 @@ body {
 <body>
 
 <div id="toolbar">
-  <span class="title">Demarch</span>
+  <span class="title">Sylveste</span>
   <div id="toggle-bar">
     <button class="toggle-btn active" id="toggle-ecosystem" onclick="toggleLayer('ecosystem')">Ecosystem</button>
     <button class="toggle-btn active" id="toggle-sprint" onclick="toggleLayer('sprint')">Sprint</button>
     <button class="toggle-btn" id="toggle-hooks" onclick="toggleHookEdges()" style="font-size:11px;padding:4px 8px;opacity:0.6">Hooks</button>
   </div>
-  <span class="workflow-select-label" id="view-mode-label">View:</span>
-  <select class="workflow-select" id="view-mode" onchange="changeViewMode(this.value)">
-    <option value="force" selected>Force Graph</option>
-    <option value="sequence">Swimlane</option>
-    <option value="sankey">Sankey Flow</option>
-    <option value="statemachine">State Machine</option>
-  </select>
-  <span class="workflow-select-label" id="depth-label">Depth:</span>
-  <select class="workflow-select" id="depth-level" onchange="changeDepth(parseInt(this.value))">
-    <option value="1">1 — Plugins</option>
-    <option value="2" selected>2 — Skills/Agents</option>
-    <option value="3">3 — Full Trace</option>
-  </select>
+  <span class="select-group">
+    <span class="workflow-select-label" id="view-mode-label">View:</span>
+    <select class="workflow-select" id="view-mode" onchange="changeViewMode(this.value)">
+      <option value="force" selected>Force Graph</option>
+      <option value="sequence">Swimlane</option>
+      <option value="sankey">Sankey Flow</option>
+      <option value="statemachine">State Machine</option>
+    </select>
+  </span>
+  <span class="select-group">
+    <span class="workflow-select-label" id="depth-label">Depth:</span>
+    <select class="workflow-select" id="depth-level" onchange="changeDepth(parseInt(this.value))">
+      <option value="1">1 — Plugins</option>
+      <option value="2" selected>2 — Skills/Agents</option>
+      <option value="3">3 — Full Trace</option>
+    </select>
+  </span>
   <span class="stats" id="stats"></span>
   <input type="text" id="search-box" placeholder="Search nodes..." oninput="onSearch(this.value)">
 </div>
@@ -490,19 +513,20 @@ body {
 <script>
 // DATA_PLACEHOLDER is replaced by the generator with scanned JSON
 const data = {
-  "generated": "2026-04-02T19:27:57.983Z",
+  "generated": "2026-07-23T14:53:42.000Z",
   "stats": {
-    "nodes": 145,
-    "edges": 176,
-    "overlaps": 18,
+    "nodes": 244,
+    "edges": 320,
+    "overlaps": 38,
     "byType": {
       "monorepo": 1,
       "ecosystem": 1,
-      "plugin": 42,
-      "mcp-server": 17,
-      "skill": 52,
-      "hook-event": 5,
-      "agent": 23,
+      "plugin": 59,
+      "skill": 116,
+      "mcp-server": 20,
+      "hook-event": 7,
+      "agent": 35,
+      "hub": 1,
       "kernel": 1,
       "service": 1,
       "sdk": 1,
@@ -511,12 +535,12 @@ const data = {
   },
   "nodes": [
     {
-      "id": "demarch",
+      "id": "sylveste",
       "type": "monorepo",
-      "label": "Demarch",
+      "label": "Sylveste",
       "description": "Open-source autonomous software development agency platform",
       "meta": {
-        "repoUrl": "https://github.com/mistakeknot/Demarch"
+        "repoUrl": "https://github.com/mistakeknot/Sylveste"
       }
     },
     {
@@ -529,12 +553,35 @@ const data = {
       }
     },
     {
+      "id": "cujgel",
+      "type": "plugin",
+      "label": "cujgel",
+      "description": "CUJ design system: discover → teardown → provoke → capture → derive → consume; evidence-first schema; agent-consumable",
+      "meta": {
+        "version": "0.2.1",
+        "path": "interverse/cujgel",
+        "repoUrl": "https://github.com/mistakeknot/cujgel",
+        "commandCount": 7
+      }
+    },
+    {
+      "id": "cujgel:cujgel-engine",
+      "type": "skill",
+      "label": "cujgel-engine",
+      "description": "Internal engine skill for the cujgel pipeline (discover → teardown → provoke → capture → derive → consume). Invoked via",
+      "meta": {
+        "plugin": "cujgel",
+        "path": "interverse/cujgel/skills/cujgel-engine",
+        "repoUrl": "https://github.com/mistakeknot/cujgel"
+      }
+    },
+    {
       "id": "intercache",
       "type": "plugin",
       "label": "intercache",
       "description": "Cross-session semantic cache for Claude Code. Content-addressed blob storage, per-project manifests, and session",
       "meta": {
-        "version": "0.2.0",
+        "version": "0.2.1",
         "path": "interverse/intercache",
         "repoUrl": "https://github.com/mistakeknot/intercache"
       }
@@ -549,18 +596,6 @@ const data = {
         "type": "stdio",
         "command": "bash",
         "repoUrl": "https://github.com/mistakeknot/intercache"
-      }
-    },
-    {
-      "id": "intercept",
-      "type": "plugin",
-      "label": "intercept",
-      "description": "Smart decision gates — haiku LLM decisions that distill into local models over time",
-      "meta": {
-        "version": "0.1.3",
-        "path": "interverse/intercept",
-        "repoUrl": "https://github.com/mistakeknot/intercept",
-        "commandCount": 0
       }
     },
     {
@@ -600,7 +635,7 @@ const data = {
       "label": "intercraft",
       "description": "Agent-native architecture patterns — design, review, and audit for agent-first applications.",
       "meta": {
-        "version": "0.1.2",
+        "version": "0.1.3",
         "path": "interverse/intercraft",
         "repoUrl": "https://github.com/mistakeknot/intercraft",
         "commandCount": 1
@@ -610,7 +645,7 @@ const data = {
       "id": "intercraft:agent-native-architecture",
       "type": "skill",
       "label": "agent-native-architecture",
-      "description": "Build applications where agents are first-class citizens. Use this skill when designing autonomous agents, creating MCP",
+      "description": "Build agent-native applications where agents are first-class citizens. Use when designing autonomous agents, creating",
       "meta": {
         "plugin": "intercraft",
         "path": "interverse/intercraft/skills/agent-native-architecture",
@@ -626,6 +661,27 @@ const data = {
         "plugin": "intercraft",
         "path": "./agents/review/agent-native-reviewer.md",
         "repoUrl": "https://github.com/mistakeknot/intercraft"
+      }
+    },
+    {
+      "id": "intercut",
+      "type": "plugin",
+      "label": "intercut",
+      "description": "Friction journal: papercut CLI + /papercuts review — log small friction in the moment, cluster it later",
+      "meta": {
+        "version": "0.1.0",
+        "path": "interverse/intercut",
+        "repoUrl": "https://github.com/mistakeknot/intercut",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "hook:SessionStart",
+      "type": "hook-event",
+      "label": "SessionStart",
+      "description": "Fires when a Claude Code session begins — initialize state, check prerequisites, load context",
+      "meta": {
+        "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
       }
     },
     {
@@ -732,19 +788,19 @@ const data = {
       "id": "interdoc",
       "type": "plugin",
       "label": "interdoc",
-      "description": "Recursive AGENTS.md generator with integrated GPT 5.2 Pro critique, CLAUDE.md harmonization, incremental updates, diff",
+      "description": "Recursive AGENTS.md generator with integrated Oracle critique, CLAUDE.md harmonization, incremental updates, diff",
       "meta": {
-        "version": "5.2.1",
+        "version": "5.2.3",
         "path": "interverse/interdoc",
         "repoUrl": "https://github.com/mistakeknot/interdoc",
         "commandCount": 1
       }
     },
     {
-      "id": "interdoc:interdoc",
+      "id": "interdoc:interdoc-engine",
       "type": "skill",
-      "label": "interdoc",
-      "description": "Generate, update, and review AGENTS.md. Use when asked to \"generate AGENTS.md\", \"update AGENTS.md\", \"document this",
+      "label": "interdoc-engine",
+      "description": "Invoked from /interdoc command — runs the AGENTS.md generation, harmonization, and Oracle-critique pipeline. Internal",
       "meta": {
         "plugin": "interdoc",
         "path": "interverse/interdoc/skills/interdoc",
@@ -778,9 +834,9 @@ const data = {
       "id": "interfluence",
       "type": "plugin",
       "label": "interfluence",
-      "description": "Analyze your writing style and adapt Claude's output to sound like you. Ingest writing samples, build a voice profile",
+      "description": "[DEPRECATED — use intervox] Analyze your writing style and adapt Claude's output to sound like you. Replaced by intervox",
       "meta": {
-        "version": "0.2.10",
+        "version": "0.2.13",
         "path": "interverse/interfluence",
         "repoUrl": "https://github.com/mistakeknot/interfluence",
         "commandCount": 1
@@ -790,7 +846,7 @@ const data = {
       "id": "interfluence:voice-analyze",
       "type": "skill",
       "label": "voice-analyze",
-      "description": "Generate or update a voice profile from the writing corpus. Use when the user says \"analyze my writing\", \"build voice",
+      "description": "Generate/update a voice profile from the corpus. Use on \"analyze my writing\", \"build voice profile\", or \"generate voice",
       "meta": {
         "plugin": "interfluence",
         "path": "interverse/interfluence/skills/analyze",
@@ -801,7 +857,7 @@ const data = {
       "id": "interfluence:apply",
       "type": "skill",
       "label": "apply",
-      "description": "Rewrite a file or text in the user's voice using the voice profile. Use when the user says \"apply my voice\", \"rewrite in",
+      "description": "Rewrite a file or text in the user's voice. Use on \"apply my voice\", \"rewrite in my style\", \"make this sound like me\"",
       "meta": {
         "plugin": "interfluence",
         "path": "interverse/interfluence/skills/apply",
@@ -812,7 +868,7 @@ const data = {
       "id": "interfluence:compare",
       "type": "skill",
       "label": "compare",
-      "description": "Compare AI-generated text against the user's voice profile. Use when the user says \"compare\", \"does this sound like me\"",
+      "description": "Compare AI-generated text against the user's voice profile. Use on \"compare\", \"does this sound like me\", or",
       "meta": {
         "plugin": "interfluence",
         "path": "interverse/interfluence/skills/compare",
@@ -823,7 +879,7 @@ const data = {
       "id": "interfluence:ingest",
       "type": "skill",
       "label": "ingest",
-      "description": "Add writing samples to the interfluence corpus. Use when the user says \"ingest\", \"add writing sample\", \"analyze my",
+      "description": "Add writing samples to the interfluence corpus. Use on \"ingest\", \"add writing sample\", \"add my blog post\", or a URL/path",
       "meta": {
         "plugin": "interfluence",
         "path": "interverse/interfluence/skills/ingest",
@@ -834,7 +890,7 @@ const data = {
       "id": "interfluence:optimize",
       "type": "skill",
       "label": "optimize",
-      "description": "Optimize a voice profile for token efficiency — deduplicate rules, cut meta-commentary, convert atmosphere to",
+      "description": "Optimize voice profile for token efficiency — dedup rules, cut meta, convert atmosphere to directives. Target 20%+",
       "meta": {
         "plugin": "interfluence",
         "path": "interverse/interfluence/skills/optimize",
@@ -845,7 +901,7 @@ const data = {
       "id": "interfluence:refine",
       "type": "skill",
       "label": "refine",
-      "description": "Review and refine the voice profile interactively. Use when the user says \"refine my voice profile\", \"update voice",
+      "description": "Refine voice profile interactively. Use on \"refine voice\", \"adjust my style\", \"that's not how I'd say it\", or",
       "meta": {
         "plugin": "interfluence",
         "path": "interverse/interfluence/skills/refine",
@@ -881,152 +937,53 @@ const data = {
       "label": "interflux",
       "description": "Multi-agent review and research with scored triage, domain detection, content slicing, intermediate finding sharing, and",
       "meta": {
-        "version": "0.2.56",
+        "version": "0.2.82",
         "path": "interverse/interflux",
         "repoUrl": "https://github.com/mistakeknot/interflux",
-        "commandCount": 6
+        "commandCount": 8
       }
     },
     {
-      "id": "interflux:flux-drive",
+      "id": "interflux:flux-engine",
       "type": "skill",
-      "label": "flux-drive",
-      "description": "Reviewing documents or codebases with multi-agent analysis, or researching topics with multi-agent research — triages",
+      "label": "flux-engine",
+      "description": "Invoked from /flux-drive or /flux-research — runs multi-agent triage, dispatch, synthesis. Internal engine; users invoke",
       "meta": {
         "plugin": "interflux",
-        "path": "interverse/interflux/skills/flux-drive",
+        "path": "interverse/interflux/skills/flux-engine",
         "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
     {
-      "id": "interflux:agent:fd-architecture",
-      "type": "agent",
-      "label": "fd-architecture",
-      "description": "Flux-drive Architecture & Design reviewer — evaluates module boundaries, coupling, design patterns, anti-patterns, code",
+      "id": "interflux:flux-review-engine",
+      "type": "skill",
+      "label": "flux-review-engine",
+      "description": "Invoked from /flux-review — runs multi-track deep review across semantic-distance tiers (adjacent → orthogonal → distant",
       "meta": {
         "plugin": "interflux",
-        "path": "./agents/review/fd-architecture.md",
+        "path": "interverse/interflux/skills/flux-review-engine",
         "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
     {
-      "id": "interflux:agent:fd-safety",
-      "type": "agent",
-      "label": "fd-safety",
-      "description": "Flux-drive Safety reviewer — evaluates security threats, credential handling, trust boundaries, deployment risk",
+      "id": "interflux:flux-melange-engine",
+      "type": "skill",
+      "label": "flux-melange-engine",
+      "description": "Invoked from /flux-melange — runs a goal-seeking, multi-round review loop. A single append-only HEAT LEDGER is threaded",
       "meta": {
         "plugin": "interflux",
-        "path": "./agents/review/fd-safety.md",
+        "path": "interverse/interflux/skills/flux-melange-engine",
         "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
     {
-      "id": "interflux:agent:fd-correctness",
+      "id": "interflux:agent:best-practices-researcher",
       "type": "agent",
-      "label": "fd-correctness",
-      "description": "Flux-drive Correctness reviewer — evaluates data consistency, transaction safety, race conditions, async bugs, and",
+      "label": "best-practices-researcher",
+      "description": "Researches and synthesizes external best practices, documentation, and examples for any technology or framework. Use",
       "meta": {
         "plugin": "interflux",
-        "path": "./agents/review/fd-correctness.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-user-product",
-      "type": "agent",
-      "label": "fd-user-product",
-      "description": "Flux-drive User & Product reviewer — evaluates user flows, UX friction, value proposition, problem validation, scope",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-user-product.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-quality",
-      "type": "agent",
-      "label": "fd-quality",
-      "description": "Flux-drive Quality & Style reviewer — evaluates naming, conventions, test approach, error handling, and",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-quality.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-game-design",
-      "type": "agent",
-      "label": "fd-game-design",
-      "description": "Flux-drive Game Design reviewer — evaluates balance, pacing, player psychology, feedback loops, emergent behavior, and",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-game-design.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-performance",
-      "type": "agent",
-      "label": "fd-performance",
-      "description": "Flux-drive Performance reviewer — evaluates rendering bottlenecks, data access patterns, algorithmic complexity, memory",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-performance.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-systems",
-      "type": "agent",
-      "label": "fd-systems",
-      "description": "Flux-drive Systems Thinking reviewer — evaluates feedback loops, emergence, causal reasoning, unintended consequences",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-systems.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-decisions",
-      "type": "agent",
-      "label": "fd-decisions",
-      "description": "Flux-drive Decision Quality reviewer — evaluates decision traps, cognitive biases, uncertainty handling, strategic",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-decisions.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-people",
-      "type": "agent",
-      "label": "fd-people",
-      "description": "Flux-drive Human Systems reviewer — evaluates trust dynamics, power structures, communication patterns, team culture",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-people.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-resilience",
-      "type": "agent",
-      "label": "fd-resilience",
-      "description": "Flux-drive Adaptive Capacity reviewer — evaluates antifragility, creative constraints, resource allocation, innovation",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-resilience.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:fd-perception",
-      "type": "agent",
-      "label": "fd-perception",
-      "description": "Flux-drive Sensemaking reviewer — evaluates mental models, information quality, temporal reasoning, and perceptual blind",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/review/fd-perception.md",
+        "path": "./agents/research/best-practices-researcher.md",
         "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
@@ -1038,17 +995,6 @@ const data = {
       "meta": {
         "plugin": "interflux",
         "path": "./agents/research/framework-docs-researcher.md",
-        "repoUrl": "https://github.com/mistakeknot/interflux"
-      }
-    },
-    {
-      "id": "interflux:agent:repo-research-analyst",
-      "type": "agent",
-      "label": "repo-research-analyst",
-      "description": "Conducts thorough research on repository structure, documentation, conventions, and implementation patterns. Use when",
-      "meta": {
-        "plugin": "interflux",
-        "path": "./agents/research/repo-research-analyst.md",
         "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
@@ -1075,13 +1021,145 @@ const data = {
       }
     },
     {
-      "id": "interflux:agent:best-practices-researcher",
+      "id": "interflux:agent:repo-research-analyst",
       "type": "agent",
-      "label": "best-practices-researcher",
-      "description": "Researches and synthesizes external best practices, documentation, and examples for any technology or framework. Use",
+      "label": "repo-research-analyst",
+      "description": "Conducts thorough research on repository structure, documentation, conventions, and implementation patterns. Use when",
       "meta": {
         "plugin": "interflux",
-        "path": "./agents/research/best-practices-researcher.md",
+        "path": "./agents/research/repo-research-analyst.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-architecture",
+      "type": "agent",
+      "label": "fd-architecture",
+      "description": "Flux-drive Architecture & Design reviewer — evaluates module boundaries, coupling, design patterns, anti-patterns, code",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-architecture.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-correctness",
+      "type": "agent",
+      "label": "fd-correctness",
+      "description": "Flux-drive Correctness reviewer — evaluates data consistency, transaction safety, race conditions, async bugs, and",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-correctness.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-decisions",
+      "type": "agent",
+      "label": "fd-decisions",
+      "description": "Flux-drive Decision Quality reviewer — evaluates decision traps, cognitive biases, uncertainty handling, strategic",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-decisions.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-game-design",
+      "type": "agent",
+      "label": "fd-game-design",
+      "description": "Flux-drive Game Design reviewer — evaluates balance, pacing, player psychology, feedback loops, emergent behavior, and",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-game-design.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-people",
+      "type": "agent",
+      "label": "fd-people",
+      "description": "Flux-drive Human Systems reviewer — evaluates trust dynamics, power structures, communication patterns, team culture",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-people.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-perception",
+      "type": "agent",
+      "label": "fd-perception",
+      "description": "Flux-drive Sensemaking reviewer — evaluates mental models, information quality, temporal reasoning, and perceptual blind",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-perception.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-performance",
+      "type": "agent",
+      "label": "fd-performance",
+      "description": "Flux-drive Performance reviewer — evaluates rendering bottlenecks, data access patterns, algorithmic complexity, memory",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-performance.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-quality",
+      "type": "agent",
+      "label": "fd-quality",
+      "description": "Flux-drive Quality & Style reviewer — evaluates naming, conventions, test approach, error handling, and",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-quality.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-resilience",
+      "type": "agent",
+      "label": "fd-resilience",
+      "description": "Flux-drive Adaptive Capacity reviewer — evaluates antifragility, creative constraints, resource allocation, innovation",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-resilience.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-safety",
+      "type": "agent",
+      "label": "fd-safety",
+      "description": "Flux-drive Safety reviewer — evaluates security threats, credential handling, trust boundaries, deployment risk",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-safety.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-systems",
+      "type": "agent",
+      "label": "fd-systems",
+      "description": "Flux-drive Systems Thinking reviewer — evaluates feedback loops, emergence, causal reasoning, unintended consequences",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-systems.md",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
+      }
+    },
+    {
+      "id": "interflux:agent:fd-user-product",
+      "type": "agent",
+      "label": "fd-user-product",
+      "description": "Flux-drive User & Product reviewer — evaluates user flows, UX friction, value proposition, problem validation, scope",
+      "meta": {
+        "plugin": "interflux",
+        "path": "./agents/review/fd-user-product.md",
         "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
@@ -1098,12 +1176,15 @@ const data = {
       }
     },
     {
-      "id": "hook:SessionStart",
-      "type": "hook-event",
-      "label": "SessionStart",
-      "description": "Fires when a Claude Code session begins — initialize state, check prerequisites, load context",
+      "id": "mcp:interflux:openrouter-dispatch",
+      "type": "mcp-server",
+      "label": "openrouter-dispatch",
+      "description": "MCP server for interflux — provides openrouter-dispatch tools via stdio",
       "meta": {
-        "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
+        "plugin": "interflux",
+        "type": "stdio",
+        "command": "${CLAUDE_PLUGIN_ROOT}/scripts/launch-openrouter.sh",
+        "repoUrl": "https://github.com/mistakeknot/interflux"
       }
     },
     {
@@ -1134,7 +1215,7 @@ const data = {
       "label": "interhelm",
       "description": "Agent-as-operator runtime diagnostics — teaches agents to observe and control running applications via diagnostic HTTP",
       "meta": {
-        "version": "0.2.0",
+        "version": "0.2.2",
         "path": "interverse/interhelm",
         "repoUrl": "https://github.com/mistakeknot/interhelm"
       }
@@ -1143,7 +1224,7 @@ const data = {
       "id": "interhelm:runtime-diagnostics",
       "type": "skill",
       "label": "runtime-diagnostics",
-      "description": "You need to verify a running native app works correctly after code changes, can't use browser DevTools, need to check",
+      "description": "Verifying a running native app works after code changes, you cannot use browser DevTools, or need to check runtime state",
       "meta": {
         "plugin": "interhelm",
         "path": "interverse/interhelm/skills/runtime-diagnostics",
@@ -1176,7 +1257,7 @@ const data = {
       "id": "interhelm:diagnostic-maturation",
       "type": "skill",
       "label": "diagnostic-maturation",
-      "description": "You have a basic diagnostic server scaffold and need to evolve it into a production-grade operator toolkit. Guides",
+      "description": "Evolving a basic diagnostic server scaffold into a production-grade operator toolkit. Guides 6 maturation levels (domain",
       "meta": {
         "plugin": "interhelm",
         "path": "interverse/interhelm/skills/diagnostic-maturation",
@@ -1389,7 +1470,7 @@ const data = {
       "label": "interlab",
       "description": "Autonomous experiment loop with mutation provenance tracking — init, run, log experiments with JSONL persistence, git",
       "meta": {
-        "version": "0.4.6",
+        "version": "0.4.8",
         "path": "interverse/interlab",
         "repoUrl": "https://github.com/mistakeknot/interlab"
       }
@@ -1409,7 +1490,7 @@ const data = {
       "id": "interlab:autoresearch-multi",
       "type": "skill",
       "label": "autoresearch-multi",
-      "description": "Run a multi-campaign optimization — decompose a broad goal into focused campaigns, dispatch them in parallel via",
+      "description": "Multi-campaign optimization — decompose a broad goal into focused campaigns, dispatch via parallel subagents, synthesize",
       "meta": {
         "plugin": "interlab",
         "path": "interverse/interlab/skills/autoresearch-multi",
@@ -1487,7 +1568,7 @@ const data = {
       "label": "interlens",
       "description": "288 FLUX cognitive lenses for structured thinking — MCP server with lens search, thinking mode workflows, belief",
       "meta": {
-        "version": "2.2.4",
+        "version": "2.2.5",
         "path": "interverse/interlens",
         "repoUrl": "https://github.com/mistakeknot/interlens"
       }
@@ -1500,7 +1581,7 @@ const data = {
       "meta": {
         "plugin": "interlens",
         "type": "stdio",
-        "command": "node",
+        "command": "bash",
         "repoUrl": "https://github.com/mistakeknot/interlens"
       }
     },
@@ -1510,7 +1591,7 @@ const data = {
       "label": "interline",
       "description": "Dynamic statusline for Claude Code — shows workflow phase, bead context, and Codex dispatch state. Integrates with",
       "meta": {
-        "version": "0.2.13",
+        "version": "0.2.17",
         "path": "interverse/interline",
         "repoUrl": "https://github.com/mistakeknot/interline",
         "commandCount": 2
@@ -1522,7 +1603,7 @@ const data = {
       "label": "interlock",
       "description": "MCP server for intermute file reservation and agent coordination. 12 tools: reserve, release, conflict check, messaging",
       "meta": {
-        "version": "0.2.10",
+        "version": "0.2.18",
         "path": "interverse/interlock",
         "repoUrl": "https://github.com/mistakeknot/interlock",
         "commandCount": 4
@@ -1572,6 +1653,37 @@ const data = {
       }
     },
     {
+      "id": "hook:SubagentStop",
+      "type": "hook-event",
+      "label": "SubagentStop",
+      "description": "Hook event: SubagentStop",
+      "meta": {
+        "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
+      }
+    },
+    {
+      "id": "interloop",
+      "type": "plugin",
+      "label": "interloop",
+      "description": "Proof-oriented agent loops for multi-project solo-lab work.",
+      "meta": {
+        "version": "0.1.1",
+        "path": "interverse/interloop",
+        "repoUrl": "https://github.com/mistakeknot/interloop"
+      }
+    },
+    {
+      "id": "interloop:project-loops",
+      "type": "skill",
+      "label": "project-loops",
+      "description": "Selects, adapts, runs, and drafts proof-oriented AI agent loops for multi-project solo-lab work. Use when the user asks",
+      "meta": {
+        "plugin": "interloop",
+        "path": "interverse/interloop/skills/project-loops",
+        "repoUrl": "https://github.com/mistakeknot/interloop"
+      }
+    },
+    {
       "id": "interlore",
       "type": "plugin",
       "label": "interlore",
@@ -1600,7 +1712,7 @@ const data = {
       "label": "intermap",
       "description": "Project-level code mapping: project registry, call graphs, architecture analysis, agent overlay, cross-project",
       "meta": {
-        "version": "0.1.6",
+        "version": "0.1.7",
         "path": "interverse/intermap",
         "repoUrl": "https://github.com/mistakeknot/intermap"
       }
@@ -1701,7 +1813,7 @@ const data = {
       "label": "intermonk",
       "description": "Hegelian dialectic reasoning — Electric Monk subagents for structured contradiction analysis and synthesis",
       "meta": {
-        "version": "0.1.1",
+        "version": "0.1.2",
         "path": "interverse/intermonk",
         "repoUrl": "https://github.com/mistakeknot/intermonk"
       }
@@ -1710,7 +1822,7 @@ const data = {
       "id": "intermonk:dialectic",
       "type": "skill",
       "label": "dialectic",
-      "description": "Hegelian dialectic reasoning — Electric Monk subagents for structured contradiction analysis and synthesis. Use when the",
+      "description": "Hegelian dialectic reasoning — Electric Monk subagents for structured contradiction analysis and synthesis. Use when you",
       "meta": {
         "plugin": "intermonk",
         "path": "interverse/intermonk/skills/dialectic",
@@ -1723,7 +1835,7 @@ const data = {
       "label": "intermux",
       "description": "Agent activity visibility -- tmux monitoring, activity feeds, health detection. Enriches intermute with live context.",
       "meta": {
-        "version": "0.1.5",
+        "version": "0.1.8",
         "path": "interverse/intermux",
         "repoUrl": "https://github.com/mistakeknot/intermux"
       }
@@ -1791,7 +1903,7 @@ const data = {
       "label": "interpath",
       "description": "Product artifact generator — roadmaps, PRDs, vision docs, changelogs, CUJs, and status reports from beads, brainstorms",
       "meta": {
-        "version": "0.3.2",
+        "version": "0.3.3",
         "path": "interverse/interpath",
         "repoUrl": "https://github.com/mistakeknot/interpath",
         "commandCount": 8
@@ -1801,7 +1913,7 @@ const data = {
       "id": "interpath:artifact-gen",
       "type": "skill",
       "label": "artifact-gen",
-      "description": "Generate product artifacts (roadmaps, PRDs, vision docs, changelogs, status reports) from beads state, brainstorms, and",
+      "description": "Generate product artifacts (roadmaps, PRDs, vision, changelogs, status) from beads, brainstorms, and project context",
       "meta": {
         "plugin": "interpath",
         "path": "interverse/interpath/skills/artifact-gen",
@@ -1814,17 +1926,17 @@ const data = {
       "label": "interpeer",
       "description": "Cross-AI peer review — quick (Claude↔Codex), deep (Oracle), council (multi-model), mine (disagreement extraction).",
       "meta": {
-        "version": "0.1.0",
+        "version": "0.1.1",
         "path": "interverse/interpeer",
         "repoUrl": "https://github.com/mistakeknot/interpeer",
         "commandCount": 1
       }
     },
     {
-      "id": "interpeer:interpeer",
+      "id": "interpeer:interpeer-engine",
       "type": "skill",
-      "label": "interpeer",
-      "description": "Model-diversity layer — the canonical path for non-Claude perspectives. Quick (Claude↔Codex, seconds), deep (Oracle/GPT",
+      "label": "interpeer-engine",
+      "description": "Invoked from /interpeer command — runs the model-diversity layer (Claude↔Codex quick mode, Oracle deep mode",
       "meta": {
         "plugin": "interpeer",
         "path": "interverse/interpeer/skills/interpeer",
@@ -1837,7 +1949,7 @@ const data = {
       "label": "interphase",
       "description": "Phase tracking, gate validation, and work discovery for the Beads issue tracker. Companion plugin for Clavain — adds",
       "meta": {
-        "version": "0.3.17",
+        "version": "0.3.19",
         "path": "interverse/interphase",
         "repoUrl": "https://github.com/mistakeknot/interphase"
       }
@@ -1903,7 +2015,7 @@ const data = {
       "label": "interpub",
       "description": "Safe plugin publishing — bumps all version locations, validates sync, commits and pushes with confirmation.",
       "meta": {
-        "version": "0.1.8",
+        "version": "0.1.9",
         "path": "interverse/interpub",
         "repoUrl": "https://github.com/mistakeknot/interpub",
         "commandCount": 2
@@ -1915,7 +2027,7 @@ const data = {
       "label": "interpulse",
       "description": "Session context monitoring — pressure tracking, token estimation, threshold warnings",
       "meta": {
-        "version": "0.1.5",
+        "version": "0.1.8",
         "path": "interverse/interpulse",
         "repoUrl": "https://github.com/mistakeknot/interpulse"
       }
@@ -1937,7 +2049,7 @@ const data = {
       "label": "interrank",
       "description": "Snapshot-backed model/benchmark ranking MCP server for AgMoDB",
       "meta": {
-        "version": "0.3.0",
+        "version": "0.3.1",
         "path": "interverse/interrank",
         "repoUrl": "https://github.com/mistakeknot/interrank"
       }
@@ -1960,7 +2072,7 @@ const data = {
       "label": "interscribe",
       "description": "Documentation quality toolkit — enforces CLAUDE.md/AGENTS.md boundaries, applies progressive disclosure, deduplicates",
       "meta": {
-        "version": "0.1.1",
+        "version": "0.1.2",
         "path": "interverse/interscribe",
         "repoUrl": "https://github.com/mistakeknot/interscribe"
       }
@@ -1982,7 +2094,7 @@ const data = {
       "label": "intersearch",
       "description": "Shared embedding and search infrastructure for the Interverse ecosystem — sentence-transformer embeddings, persistent",
       "meta": {
-        "version": "0.2.1",
+        "version": "0.2.2",
         "path": "interverse/intersearch",
         "repoUrl": "https://github.com/mistakeknot/intersearch"
       }
@@ -2038,7 +2150,7 @@ const data = {
       "label": "intership",
       "description": "Culture ship names as Claude Code spinner verbs. Because why would you settle for 'Thinking...' when you could have",
       "meta": {
-        "version": "0.3.1",
+        "version": "0.3.5",
         "path": "interverse/intership",
         "repoUrl": "https://github.com/mistakeknot/intership",
         "commandCount": 1
@@ -2067,14 +2179,1021 @@ const data = {
       }
     },
     {
-      "id": "intersite",
+      "id": "interskill",
       "type": "plugin",
-      "label": "intersite",
-      "description": "GSV portfolio site content generation and pipeline management",
+      "label": "interskill",
+      "description": "Skill authoring toolkit — unified skill creation, TDD-adapted testing, and audit. Consolidated from interdev's",
+      "meta": {
+        "version": "0.1.3",
+        "path": "interverse/interskill",
+        "repoUrl": "https://github.com/mistakeknot/interskill"
+      }
+    },
+    {
+      "id": "interskill:skill",
+      "type": "skill",
+      "label": "skill",
+      "description": "Expert guidance for creating Claude Code skills and slash commands — SKILL.md authoring, frontmatter, TDD pressure",
+      "meta": {
+        "plugin": "interskill",
+        "path": "interverse/interskill/skills/skill",
+        "repoUrl": "https://github.com/mistakeknot/interskill"
+      }
+    },
+    {
+      "id": "interskill:audit",
+      "type": "skill",
+      "label": "audit",
+      "description": "Audit an existing skill against best practices — checks structure, frontmatter, invocation control, description quality",
+      "meta": {
+        "plugin": "interskill",
+        "path": "interverse/interskill/skills/audit",
+        "repoUrl": "https://github.com/mistakeknot/interskill"
+      }
+    },
+    {
+      "id": "interslack",
+      "type": "plugin",
+      "label": "interslack",
+      "description": "Slack integration for Claude Code — send messages, read channels, test integrations.",
       "meta": {
         "version": "0.1.0",
-        "path": "interverse/intersite",
-        "repoUrl": "https://github.com/mistakeknot/intersite"
+        "path": "interverse/interslack",
+        "repoUrl": "https://github.com/mistakeknot/interslack"
+      }
+    },
+    {
+      "id": "interslack:slack-messaging",
+      "type": "skill",
+      "label": "slack-messaging",
+      "description": "Asked to send or read Slack messages, check Slack channels, test Slack integrations, or interact with a Slack workspace",
+      "meta": {
+        "plugin": "interslack",
+        "path": "interverse/interslack/skills/slack-messaging",
+        "repoUrl": "https://github.com/mistakeknot/interslack"
+      }
+    },
+    {
+      "id": "interspect",
+      "type": "plugin",
+      "label": "interspect",
+      "description": "Agent and skill performance profiler and routing optimizer. Collects evidence about flux-drive agent accuracy and skill",
+      "meta": {
+        "version": "0.1.23",
+        "path": "interverse/interspect",
+        "repoUrl": "https://github.com/mistakeknot/interspect"
+      }
+    },
+    {
+      "id": "interstat",
+      "type": "plugin",
+      "label": "interstat",
+      "description": "Token efficiency benchmarking, session analytics, and API-equivalent cost analysis for agent workflows",
+      "meta": {
+        "version": "0.3.1",
+        "path": "interverse/interstat",
+        "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "interstat:interstat-analyze",
+      "type": "skill",
+      "label": "interstat-analyze",
+      "description": "Parse conversation JSONL files and backfill token counts into SQLite",
+      "meta": {
+        "plugin": "interstat",
+        "path": "interverse/interstat/skills/analyze",
+        "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "interstat:interstat-report",
+      "type": "skill",
+      "label": "interstat-report",
+      "description": "Show token efficiency analysis and decision gate verdict",
+      "meta": {
+        "plugin": "interstat",
+        "path": "interverse/interstat/skills/report",
+        "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "interstat:interstat-status",
+      "type": "skill",
+      "label": "interstat-status",
+      "description": "Show collection progress and pending parse status",
+      "meta": {
+        "plugin": "interstat",
+        "path": "interverse/interstat/skills/status",
+        "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "interstat:interstat-cost",
+      "type": "skill",
+      "label": "interstat-cost",
+      "description": "Show API-equivalent cost analysis with model-specific pricing and subscription leverage",
+      "meta": {
+        "plugin": "interstat",
+        "path": "interverse/interstat/skills/cost",
+        "repoUrl": "https://github.com/mistakeknot/interstat"
+      }
+    },
+    {
+      "id": "hook:PostToolUseFailure",
+      "type": "hook-event",
+      "label": "PostToolUseFailure",
+      "description": "Hook event: PostToolUseFailure",
+      "meta": {
+        "docsUrl": "https://docs.anthropic.com/en/docs/claude-code/hooks"
+      }
+    },
+    {
+      "id": "intersynth",
+      "type": "plugin",
+      "label": "intersynth",
+      "description": "Multi-agent synthesis engine — collects findings from parallel review/research agents, deduplicates, writes verdicts",
+      "meta": {
+        "version": "0.1.13",
+        "path": "interverse/intersynth",
+        "repoUrl": "https://github.com/mistakeknot/intersynth"
+      }
+    },
+    {
+      "id": "intersynth:agent:synthesize-review",
+      "type": "agent",
+      "label": "synthesize-review",
+      "description": "Synthesis agent for multi-agent code reviews — reads agent output files, validates structure, deduplicates findings",
+      "meta": {
+        "plugin": "intersynth",
+        "path": "./agents/synthesize-review.md",
+        "repoUrl": "https://github.com/mistakeknot/intersynth"
+      }
+    },
+    {
+      "id": "intersynth:agent:synthesize-research",
+      "type": "agent",
+      "label": "synthesize-research",
+      "description": "Synthesis agent for multi-agent research — reads research agent output files, merges findings with source attribution",
+      "meta": {
+        "plugin": "intersynth",
+        "path": "./agents/synthesize-research.md",
+        "repoUrl": "https://github.com/mistakeknot/intersynth"
+      }
+    },
+    {
+      "id": "intersynth:agent:synthesize-documents",
+      "type": "agent",
+      "label": "synthesize-documents",
+      "description": "'Synthesizes multiple related documents (compound, reflect, research) into categorized docs/solutions/ entries.'",
+      "meta": {
+        "plugin": "intersynth",
+        "path": "./agents/synthesize-documents.md",
+        "repoUrl": "https://github.com/mistakeknot/intersynth"
+      }
+    },
+    {
+      "id": "intertest",
+      "type": "plugin",
+      "label": "intertest",
+      "description": "Engineering quality disciplines — systematic debugging, test-driven development, and verification gates.",
+      "meta": {
+        "version": "0.1.3",
+        "path": "interverse/intertest",
+        "repoUrl": "https://github.com/mistakeknot/intertest"
+      }
+    },
+    {
+      "id": "intertest:systematic-debugging",
+      "type": "skill",
+      "label": "systematic-debugging",
+      "description": "Encountering any bug, test failure, or unexpected behavior, before proposing fixes",
+      "meta": {
+        "plugin": "intertest",
+        "path": "interverse/intertest/skills/systematic-debugging",
+        "repoUrl": "https://github.com/mistakeknot/intertest"
+      }
+    },
+    {
+      "id": "intertest:test-driven-development",
+      "type": "skill",
+      "label": "test-driven-development",
+      "description": "Implementing any feature or bugfix, before writing implementation code",
+      "meta": {
+        "plugin": "intertest",
+        "path": "interverse/intertest/skills/test-driven-development",
+        "repoUrl": "https://github.com/mistakeknot/intertest"
+      }
+    },
+    {
+      "id": "intertest:verification-before-completion",
+      "type": "skill",
+      "label": "verification-before-completion",
+      "description": "About to claim work is complete, fixed, or passing, or before committing/creating PRs — requires running verification",
+      "meta": {
+        "plugin": "intertest",
+        "path": "interverse/intertest/skills/verification-before-completion",
+        "repoUrl": "https://github.com/mistakeknot/intertest"
+      }
+    },
+    {
+      "id": "intertrace",
+      "type": "plugin",
+      "label": "intertrace",
+      "description": "Cross-module integration gap tracer — traces data flows from shipped features to find unverified consumer edges.",
+      "meta": {
+        "version": "0.1.2",
+        "path": "interverse/intertrace",
+        "repoUrl": "https://github.com/mistakeknot/intertrace"
+      }
+    },
+    {
+      "id": "intertrace:intertrace",
+      "type": "skill",
+      "label": "intertrace",
+      "description": "Cross-module integration gap tracer. Given a bead ID, traces data flows from changed files to find unverified consumer",
+      "meta": {
+        "plugin": "intertrace",
+        "path": "interverse/intertrace/skills/intertrace",
+        "repoUrl": "https://github.com/mistakeknot/intertrace"
+      }
+    },
+    {
+      "id": "intertrace:agent:fd-integration",
+      "type": "agent",
+      "label": "fd-integration",
+      "description": "Flux-drive Integration reviewer — evaluates cross-module data flow completeness, event consumer registration, contract",
+      "meta": {
+        "plugin": "intertrace",
+        "path": "./agents/review/fd-integration.md",
+        "repoUrl": "https://github.com/mistakeknot/intertrace"
+      }
+    },
+    {
+      "id": "intertrack",
+      "type": "plugin",
+      "label": "intertrack",
+      "description": "Feature-level success metric tracking for Demarch",
+      "meta": {
+        "version": "0.1.4",
+        "path": "interverse/intertrack",
+        "repoUrl": "https://github.com/mistakeknot/intertrack"
+      }
+    },
+    {
+      "id": "intertrack:feature-report",
+      "type": "skill",
+      "label": "feature-report",
+      "description": "Detailed metric analysis for a specific feature or all features.",
+      "meta": {
+        "plugin": "intertrack",
+        "path": "interverse/intertrack/skills/report",
+        "repoUrl": "https://github.com/mistakeknot/intertrack"
+      }
+    },
+    {
+      "id": "intertrack:metrics",
+      "type": "skill",
+      "label": "metrics",
+      "description": "Show the current state of all tracked feature metrics — per-feature success rates, targets, baselines. Not for context",
+      "meta": {
+        "plugin": "intertrack",
+        "path": "interverse/intertrack/skills/metrics",
+        "repoUrl": "https://github.com/mistakeknot/intertrack"
+      }
+    },
+    {
+      "id": "intertree",
+      "type": "plugin",
+      "label": "intertree",
+      "description": "Project hierarchy management — filesystem discovery, parent-child relationships, tagging, and layout orchestration",
+      "meta": {
+        "version": "0.1.2",
+        "path": "interverse/intertree",
+        "repoUrl": "https://github.com/mistakeknot/intertree"
+      }
+    },
+    {
+      "id": "intertree:tree",
+      "type": "skill",
+      "label": "tree",
+      "description": "Visualize project hierarchy — filesystem tree, parent-child relationships, signal analysis. For full interactive project",
+      "meta": {
+        "plugin": "intertree",
+        "path": "interverse/intertree/skills/tree",
+        "repoUrl": "https://github.com/mistakeknot/intertree"
+      }
+    },
+    {
+      "id": "intertrust",
+      "type": "plugin",
+      "label": "intertrust",
+      "description": "Agent trust scoring — reputation tracking, severity-weighted decay, and suppression candidates.",
+      "meta": {
+        "version": "0.1.3",
+        "path": "interverse/intertrust",
+        "repoUrl": "https://github.com/mistakeknot/intertrust",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "intervoice",
+      "type": "plugin",
+      "label": "intervoice",
+      "description": "[DEPRECATED — use intervox] Generate and edit prose in your voice from a global multi-register profile. Replaced by",
+      "meta": {
+        "version": "0.1.1",
+        "path": "interverse/intervoice",
+        "repoUrl": "https://github.com/mistakeknot/intervoice",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "intervoice:apply",
+      "type": "skill",
+      "label": "apply",
+      "description": "Rewrite a file or text in the user's voice using the right register. Use on \"apply my voice\", \"rewrite in my style\"",
+      "meta": {
+        "plugin": "intervoice",
+        "path": "interverse/intervoice/skills/apply",
+        "repoUrl": "https://github.com/mistakeknot/intervoice"
+      }
+    },
+    {
+      "id": "intervoice:compare",
+      "type": "skill",
+      "label": "compare",
+      "description": "Score how well a piece of text matches the user's voice and list specific deviations. Use on \"does this sound like me?\"",
+      "meta": {
+        "plugin": "intervoice",
+        "path": "interverse/intervoice/skills/compare",
+        "repoUrl": "https://github.com/mistakeknot/intervoice"
+      }
+    },
+    {
+      "id": "intervoice:analyze",
+      "type": "skill",
+      "label": "analyze",
+      "description": "Read writing samples and synthesize or update a register in the user's voice profile. Use on \"learn my voice from",
+      "meta": {
+        "plugin": "intervoice",
+        "path": "interverse/intervoice/skills/analyze",
+        "repoUrl": "https://github.com/mistakeknot/intervoice"
+      }
+    },
+    {
+      "id": "intervoice:optimize",
+      "type": "skill",
+      "label": "optimize",
+      "description": "Tighten the voice profile's prose so it costs fewer tokens to load without losing any rules. Use on \"shrink my voice",
+      "meta": {
+        "plugin": "intervoice",
+        "path": "interverse/intervoice/skills/optimize",
+        "repoUrl": "https://github.com/mistakeknot/intervoice"
+      }
+    },
+    {
+      "id": "intervoice:agent:voice-analyzer",
+      "type": "agent",
+      "label": "voice-analyzer",
+      "description": "Deep literary-analysis agent that characterizes authorial voice from writing samples. Use from the analyze skill when a",
+      "meta": {
+        "plugin": "intervoice",
+        "path": "./agents/voice-analyzer.md",
+        "repoUrl": "https://github.com/mistakeknot/intervoice"
+      }
+    },
+    {
+      "id": "intervox",
+      "type": "plugin",
+      "label": "intervox",
+      "description": "Voice engine with a closed loop: generate and edit prose in your voice, then verify it against your measured",
+      "meta": {
+        "version": "0.2.0",
+        "path": "interverse/intervox",
+        "repoUrl": "https://github.com/mistakeknot/intervox",
+        "commandCount": 1
+      }
+    },
+    {
+      "id": "intervox:apply",
+      "type": "skill",
+      "label": "apply",
+      "description": "Closed-loop rewrite in the user's voice. Use on \"apply my voice\", \"rewrite in my style\", \"make this sound like me\"",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/apply",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:lint",
+      "type": "skill",
+      "label": "lint",
+      "description": "Score text against the user's voice fingerprint — 18 LLMism/voice features with concrete revision hints. Use on \"lint",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/lint",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:fingerprint",
+      "type": "skill",
+      "label": "fingerprint",
+      "description": "Compute or refresh the user's stylometric baseline from their corpus. Use on \"fingerprint my writing\", \"rebuild my",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/fingerprint",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:ingest",
+      "type": "skill",
+      "label": "ingest",
+      "description": "Add writing samples to the user's voice corpus with provenance and AI-contamination screening. Use on \"ingest these",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/ingest",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:analyze",
+      "type": "skill",
+      "label": "analyze",
+      "description": "Run the voice-analyzer agent over corpus + fingerprint to write or update the prose voice profile. Use on \"analyze my",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/analyze",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:compare",
+      "type": "skill",
+      "label": "compare",
+      "description": "Score how closely existing text matches the user's voice, with deviations. Use on \"compare this to my voice\", \"how close",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/compare",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:optimize",
+      "type": "skill",
+      "label": "optimize",
+      "description": "Tighten the prose voice profile's token cost without dropping rules. Use on \"optimize my profile\", \"my profile is too",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/optimize",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:migrate",
+      "type": "skill",
+      "label": "migrate",
+      "description": "Import predecessor data — the intervoice global profile and interfluence per-project corpora — into intervox. Use on",
+      "meta": {
+        "plugin": "intervox",
+        "path": "interverse/intervox/skills/migrate",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "intervox:agent:voice-analyzer",
+      "type": "agent",
+      "label": "voice-analyzer",
+      "description": "Deep analysis agent for generating the voice profile from corpus + fingerprint evidence. Use when analyzing writing",
+      "meta": {
+        "plugin": "intervox",
+        "path": "./agents/voice-analyzer.md",
+        "repoUrl": "https://github.com/mistakeknot/intervox"
+      }
+    },
+    {
+      "id": "interwatch",
+      "type": "plugin",
+      "label": "interwatch",
+      "description": "Doc freshness and correctness monitoring — auto-discovers watchable docs, detects drift via 17 signal types, scores",
+      "meta": {
+        "version": "0.6.0",
+        "path": "interverse/interwatch",
+        "repoUrl": "https://github.com/mistakeknot/interwatch",
+        "commandCount": 5
+      }
+    },
+    {
+      "id": "interwatch:doc-watch",
+      "type": "skill",
+      "label": "doc-watch",
+      "description": "Detect documentation drift, score confidence, and orchestrate refresh via generator plugins (interpath for product docs",
+      "meta": {
+        "plugin": "interwatch",
+        "path": "interverse/interwatch/skills/doc-watch",
+        "repoUrl": "https://github.com/mistakeknot/interwatch"
+      }
+    },
+    {
+      "id": "tldr-swinton",
+      "type": "plugin",
+      "label": "tldr-swinton",
+      "description": "Adaptive code reconnaissance for LLMs. Forked skills, compact CLI output, semantic search, and MCP tools narrow large or",
+      "meta": {
+        "version": "0.8.1",
+        "path": "interverse/tldr-swinton",
+        "repoUrl": "https://github.com/mistakeknot/tldr-swinton",
+        "commandCount": 6
+      }
+    },
+    {
+      "id": "tldr-swinton:tldrs-session-start",
+      "type": "skill",
+      "label": "tldrs-session-start",
+      "description": "Use for large or unfamiliar codebases, multi-file or diff-heavy changes, call-graph investigation, or reconnaissance",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "interverse/tldr-swinton/.claude-plugin/skills/tldrs-session-start",
+        "repoUrl": "https://github.com/mistakeknot/tldr-swinton"
+      }
+    },
+    {
+      "id": "tldr-swinton:tldrs-map-codebase",
+      "type": "skill",
+      "label": "tldrs-map-codebase",
+      "description": "Asked to understand a codebase's architecture, explore an unfamiliar project, onboard to a new repo, identify which",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "interverse/tldr-swinton/.claude-plugin/skills/tldrs-map-codebase",
+        "repoUrl": "https://github.com/mistakeknot/tldr-swinton"
+      }
+    },
+    {
+      "id": "tldr-swinton:tldrs-interbench-sync",
+      "type": "skill",
+      "label": "tldrs-interbench-sync",
+      "description": "Sync interbench eval coverage with tldrs capabilities. Run when tldrs gains new formats, flags, or commands. Reads the",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "interverse/tldr-swinton/.claude-plugin/skills/tldrs-interbench-sync",
+        "repoUrl": "https://github.com/mistakeknot/tldr-swinton"
+      }
+    },
+    {
+      "id": "tldr-swinton:finding-duplicate-functions",
+      "type": "skill",
+      "label": "finding-duplicate-functions",
+      "description": "Auditing a codebase for semantic duplication - functions that do the same thing but have different names or",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "path": "interverse/tldr-swinton/.claude-plugin/skills/finding-duplicate-functions",
+        "repoUrl": "https://github.com/mistakeknot/tldr-swinton"
+      }
+    },
+    {
+      "id": "mcp:tldr-swinton:tldr-code",
+      "type": "mcp-server",
+      "label": "tldr-code",
+      "description": "MCP server for tldr-swinton — provides tldr-code tools via stdio",
+      "meta": {
+        "plugin": "tldr-swinton",
+        "type": "stdio",
+        "command": "${CLAUDE_PLUGIN_ROOT}/bin/launch-mcp.sh",
+        "repoUrl": "https://github.com/mistakeknot/tldr-swinton"
+      }
+    },
+    {
+      "id": "tool-time",
+      "type": "plugin",
+      "label": "tool-time",
+      "description": "Tool usage analytics for Claude Code. Tracks tool patterns via hooks, detects inefficiencies, and offers community",
+      "meta": {
+        "version": "0.4.0",
+        "path": "interverse/tool-time",
+        "repoUrl": "https://github.com/mistakeknot/tool-time"
+      }
+    },
+    {
+      "id": "tool-time:tool-time",
+      "type": "skill",
+      "label": "tool-time",
+      "description": "Analyze tool usage patterns and suggest improvements to your workflow",
+      "meta": {
+        "plugin": "tool-time",
+        "path": "interverse/tool-time/skills/tool-time",
+        "repoUrl": "https://github.com/mistakeknot/tool-time"
+      }
+    },
+    {
+      "id": "tool-time:tool-time-codex",
+      "type": "skill",
+      "label": "tool-time-codex",
+      "description": "Analyze tool usage patterns and suggest improvements to your workflow (Codex CLI)",
+      "meta": {
+        "plugin": "tool-time",
+        "path": "interverse/tool-time/skills/tool-time-codex",
+        "repoUrl": "https://github.com/mistakeknot/tool-time"
+      }
+    },
+    {
+      "id": "tuivision",
+      "type": "plugin",
+      "label": "tuivision",
+      "description": "TUI automation and visual testing - Playwright for terminal applications. Spawn, interact with, and screenshot TUI apps.",
+      "meta": {
+        "version": "0.2.2",
+        "path": "interverse/tuivision",
+        "repoUrl": "https://github.com/mistakeknot/tuivision"
+      }
+    },
+    {
+      "id": "tuivision:tui-test",
+      "type": "skill",
+      "label": "tui-test",
+      "description": "Guided TUI automation and visual testing workflow. Use when testing terminal applications, validating TUI layouts, or",
+      "meta": {
+        "plugin": "tuivision",
+        "path": "interverse/tuivision/skills/tui-test",
+        "repoUrl": "https://github.com/mistakeknot/tuivision"
+      }
+    },
+    {
+      "id": "mcp:tuivision:tuivision",
+      "type": "mcp-server",
+      "label": "tuivision",
+      "description": "MCP server for tuivision — provides tuivision tools via stdio",
+      "meta": {
+        "plugin": "tuivision",
+        "type": "stdio",
+        "command": "bash",
+        "repoUrl": "https://github.com/mistakeknot/tuivision"
+      }
+    },
+    {
+      "id": "clavain",
+      "type": "hub",
+      "label": "clavain",
+      "description": "Self-improving agent rig: codifies product and engineering discipline into composable workflows from brainstorm to ship",
+      "meta": {
+        "version": "0.6.284",
+        "path": "os/clavain",
+        "repoUrl": "https://github.com/mistakeknot/Clavain",
+        "commandCount": 57
+      }
+    },
+    {
+      "id": "clavain:code-review-discipline",
+      "type": "skill",
+      "label": "code-review-discipline",
+      "description": "Requesting or receiving code review — dispatch reviewers, handle feedback rigorously, avoid performative agreement.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/code-review-discipline",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:dispatching-parallel-agents",
+      "type": "skill",
+      "label": "dispatching-parallel-agents",
+      "description": "Use for 2+ independent tasks with no shared state or sequential dependency.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/dispatching-parallel-agents",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:engineering-docs",
+      "type": "skill",
+      "label": "engineering-docs",
+      "description": "Capturing a solved problem as categorized documentation with YAML frontmatter for fast lookup",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/engineering-docs",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:executing-plans",
+      "type": "skill",
+      "label": "executing-plans",
+      "description": "Execute a written implementation plan in a separate session with review checkpoints.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/executing-plans",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:file-todos",
+      "type": "skill",
+      "label": "file-todos",
+      "description": "Managing the file-based todo tracking system in the todos/ directory. It provides workflows for creating todos, managing",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/file-todos",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:galiana",
+      "type": "skill",
+      "label": "galiana",
+      "description": "Show discipline analytics — defect escape rate, override rate, cost metrics, and agent scorecard",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/galiana",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:interserve-engine",
+      "type": "skill",
+      "label": "interserve-engine",
+      "description": "Invoked from /clavain:interserve — dispatches tasks to Codex CLI agents (megaprompt or parallel), with debate triggers",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/interserve-engine",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:landing-a-change",
+      "type": "skill",
+      "label": "landing-a-change",
+      "description": "Implementation is complete and tests pass — verify, document, and land on trunk.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/landing-a-change",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:lane",
+      "type": "skill",
+      "label": "lane",
+      "description": "Manage thematic work lanes — discover, create, tag beads, show velocity and starvation scores",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/lane",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:project-onboard",
+      "type": "skill",
+      "label": "project-onboard",
+      "description": "Use to set up any Sylveste project (new or existing) — introspects, creates repo, scaffolds",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/project-onboard",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:refactor-safely",
+      "type": "skill",
+      "label": "refactor-safely",
+      "description": "Use for significant refactoring — duplication detection, characterization tests, staged execution, simplicity review.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/refactor-safely",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:remontoire",
+      "type": "skill",
+      "label": "remontoire",
+      "description": "Operating the Remontoire portfolio agency - inspect status, run shadow or proposal cycles, make an explicit approval",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/remontoire",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:subagent-driven-development",
+      "type": "skill",
+      "label": "subagent-driven-development",
+      "description": "Executing implementation plans with independent tasks in the current session",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/subagent-driven-development",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:upstream-sync-engine",
+      "type": "skill",
+      "label": "upstream-sync-engine",
+      "description": "Invoked from /clavain:upstream-sync — checks beads/oracle/superpowers/compound for updates, generates upgrade checklist",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/upstream-sync-engine",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:using-clavain",
+      "type": "skill",
+      "label": "using-clavain",
+      "description": "Use at start of any conversation — how to find/use skills, agents, commands. Requires Skill invocation before ANY",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/using-clavain",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:ship",
+      "type": "skill",
+      "label": "ship",
+      "description": "Work is done and you need to commit, push, close beads, and sync in one shot. The quick session-close ceremony.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/ship",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:using-tmux-for-interactive-commands",
+      "type": "skill",
+      "label": "using-tmux-for-interactive-commands",
+      "description": "Use for interactive CLI tools (vim, git rebase -i, REPLs) that need a real terminal — drives tmux detached sessions via",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/using-tmux-for-interactive-commands",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:writing-plans",
+      "type": "skill",
+      "label": "writing-plans",
+      "description": "You have a spec or requirements for a multi-step task, before touching code",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/writing-plans",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:interop-with-gsd",
+      "type": "skill",
+      "label": "interop-with-gsd",
+      "description": "If gsd-plugin is not installed, this skill is informational only. Use when the user mentions /gsd:* commands, references",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/interop-with-gsd",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:interop-with-superpowers",
+      "type": "skill",
+      "label": "interop-with-superpowers",
+      "description": "If superpowers is not installed, this skill is informational only. Use when the user mentions /superpowers:* commands or",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/interop-with-superpowers",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:plan-reviewer",
+      "type": "skill",
+      "label": "plan-reviewer",
+      "description": "A major project step has been completed and needs to be reviewed against the original plan and coding standards.",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/plan-reviewer",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:data-migration-expert",
+      "type": "skill",
+      "label": "data-migration-expert",
+      "description": "PRs involve data migrations, backfills, or production data transformations — ID mappings, column renames, enum",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/data-migration-expert",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:bug-reproduction-validator",
+      "type": "skill",
+      "label": "bug-reproduction-validator",
+      "description": "You receive a bug report or issue that needs verification — systematically reproduces and validates reported behavior to",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/bug-reproduction-validator",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:codex-delegate",
+      "type": "skill",
+      "label": "codex-delegate",
+      "description": "Use proactively for well-scoped implementation, exploration, search, test generation, and code review tasks with clear",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/codex-delegate",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:pr-comment-resolver",
+      "type": "skill",
+      "label": "pr-comment-resolver",
+      "description": "PR review comments need to be resolved with code changes — implements the requested changes and reports clearly on each",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/pr-comment-resolver",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:ui-polish",
+      "type": "skill",
+      "label": "ui-polish",
+      "description": "The user provides visual feedback about a web or TUI interface — iterates on UI refinements (tooltips, labels, layouts",
+      "meta": {
+        "plugin": "clavain",
+        "path": "os/clavain/skills/ui-polish",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:data-migration-expert",
+      "type": "agent",
+      "label": "data-migration-expert",
+      "description": "Validates data migrations, backfills, and production data transformations against reality. Use when PRs involve ID",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/review/data-migration-expert.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:plan-reviewer",
+      "type": "agent",
+      "label": "plan-reviewer",
+      "description": "Use this agent when a major project step has been completed and needs to be reviewed against the original plan and",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/review/plan-reviewer.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:bug-reproduction-validator",
+      "type": "agent",
+      "label": "bug-reproduction-validator",
+      "description": "Systematically reproduces and validates bug reports to confirm whether reported behavior is an actual bug. Use when you",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/workflow/bug-reproduction-validator.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:codex-delegate",
+      "type": "agent",
+      "label": "codex-delegate",
+      "description": "Delegates well-scoped tasks to Codex CLI for cost-efficient execution. Use proactively for implementation, exploration",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/workflow/codex-delegate.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:pr-comment-resolver",
+      "type": "agent",
+      "label": "pr-comment-resolver",
+      "description": "Addresses PR review comments by implementing requested changes and reporting resolutions. Use when code review feedback",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/workflow/pr-comment-resolver.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
+      }
+    },
+    {
+      "id": "clavain:agent:ui-polish",
+      "type": "agent",
+      "label": "ui-polish",
+      "description": "Iterates on UI refinements — tooltips, labels, layouts, mobile fixes, spacing, chart styling. Takes a screenshot or URL",
+      "meta": {
+        "plugin": "clavain",
+        "path": "./agents/workflow/ui-polish.md",
+        "repoUrl": "https://github.com/mistakeknot/Clavain"
       }
     },
     {
@@ -2120,8 +3239,13 @@ const data = {
   "edges": [
     {
       "source": "interverse",
-      "target": "demarch",
+      "target": "sylveste",
       "type": "part-of"
+    },
+    {
+      "source": "cujgel",
+      "target": "cujgel:cujgel-engine",
+      "type": "provides-skill"
     },
     {
       "source": "intercache",
@@ -2147,6 +3271,11 @@ const data = {
       "source": "intercraft",
       "target": "intercraft:agent:agent-native-reviewer",
       "type": "provides-agent"
+    },
+    {
+      "source": "intercut",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
     },
     {
       "source": "interdeep",
@@ -2185,7 +3314,7 @@ const data = {
     },
     {
       "source": "interdoc",
-      "target": "interdoc:interdoc",
+      "target": "interdoc:interdoc-engine",
       "type": "provides-skill"
     },
     {
@@ -2234,83 +3363,28 @@ const data = {
       "type": "provides-mcp"
     },
     {
-      "source": "interfluence",
-      "target": "hook:PostToolUse",
-      "type": "fires-hook"
-    },
-    {
       "source": "interflux",
-      "target": "interflux:flux-drive",
+      "target": "interflux:flux-engine",
       "type": "provides-skill"
     },
     {
       "source": "interflux",
-      "target": "interflux:agent:fd-architecture",
-      "type": "provides-agent"
+      "target": "interflux:flux-review-engine",
+      "type": "provides-skill"
     },
     {
       "source": "interflux",
-      "target": "interflux:agent:fd-safety",
-      "type": "provides-agent"
+      "target": "interflux:flux-melange-engine",
+      "type": "provides-skill"
     },
     {
       "source": "interflux",
-      "target": "interflux:agent:fd-correctness",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-user-product",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-quality",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-game-design",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-performance",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-systems",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-decisions",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-people",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-resilience",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:fd-perception",
+      "target": "interflux:agent:best-practices-researcher",
       "type": "provides-agent"
     },
     {
       "source": "interflux",
       "target": "interflux:agent:framework-docs-researcher",
-      "type": "provides-agent"
-    },
-    {
-      "source": "interflux",
-      "target": "interflux:agent:repo-research-analyst",
       "type": "provides-agent"
     },
     {
@@ -2325,7 +3399,67 @@ const data = {
     },
     {
       "source": "interflux",
-      "target": "interflux:agent:best-practices-researcher",
+      "target": "interflux:agent:repo-research-analyst",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-architecture",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-correctness",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-decisions",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-game-design",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-people",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-perception",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-performance",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-quality",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-resilience",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-safety",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-systems",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interflux",
+      "target": "interflux:agent:fd-user-product",
       "type": "provides-agent"
     },
     {
@@ -2335,8 +3469,18 @@ const data = {
     },
     {
       "source": "interflux",
+      "target": "mcp:interflux:openrouter-dispatch",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "interflux",
       "target": "hook:SessionStart",
       "type": "fires-hook"
+    },
+    {
+      "source": "interflux",
+      "target": "clavain",
+      "type": "companion-of"
     },
     {
       "source": "interform",
@@ -2534,6 +3678,21 @@ const data = {
       "type": "fires-hook"
     },
     {
+      "source": "interlock",
+      "target": "hook:SubagentStop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interlock",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "interloop",
+      "target": "interloop:project-loops",
+      "type": "provides-skill"
+    },
+    {
       "source": "interlore",
       "target": "interlore:observe",
       "type": "provides-skill"
@@ -2604,8 +3763,13 @@ const data = {
       "type": "provides-skill"
     },
     {
+      "source": "interpath",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
       "source": "interpeer",
-      "target": "interpeer:interpeer",
+      "target": "interpeer:interpeer-engine",
       "type": "provides-skill"
     },
     {
@@ -2622,6 +3786,11 @@ const data = {
       "source": "interphase",
       "target": "hook:SessionEnd",
       "type": "fires-hook"
+    },
+    {
+      "source": "interphase",
+      "target": "clavain",
+      "type": "companion-of"
     },
     {
       "source": "interplug",
@@ -2684,27 +3853,512 @@ const data = {
       "type": "provides-skill"
     },
     {
+      "source": "interskill",
+      "target": "interskill:skill",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interskill",
+      "target": "interskill:audit",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interslack",
+      "target": "interslack:slack-messaging",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interspect",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interspect",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interspect",
+      "target": "hook:Stop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interspect",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "interstat",
+      "target": "interstat:interstat-analyze",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "interstat:interstat-report",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "interstat:interstat-status",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "interstat:interstat-cost",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:PostToolUseFailure",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interstat",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intersynth",
+      "target": "intersynth:agent:synthesize-review",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intersynth",
+      "target": "intersynth:agent:synthesize-research",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intersynth",
+      "target": "intersynth:agent:synthesize-documents",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intersynth",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intertest",
+      "target": "intertest:systematic-debugging",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertest",
+      "target": "intertest:test-driven-development",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertest",
+      "target": "intertest:verification-before-completion",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrace",
+      "target": "intertrace:intertrace",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrace",
+      "target": "intertrace:agent:fd-integration",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intertrack",
+      "target": "intertrack:feature-report",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrack",
+      "target": "intertrack:metrics",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intertrack",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "intertree",
+      "target": "intertree:tree",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervoice",
+      "target": "intervoice:apply",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervoice",
+      "target": "intervoice:compare",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervoice",
+      "target": "intervoice:analyze",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervoice",
+      "target": "intervoice:optimize",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervoice",
+      "target": "intervoice:agent:voice-analyzer",
+      "type": "provides-agent"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:apply",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:lint",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:fingerprint",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:ingest",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:analyze",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:compare",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:optimize",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:migrate",
+      "type": "provides-skill"
+    },
+    {
+      "source": "intervox",
+      "target": "intervox:agent:voice-analyzer",
+      "type": "provides-agent"
+    },
+    {
+      "source": "interwatch",
+      "target": "interwatch:doc-watch",
+      "type": "provides-skill"
+    },
+    {
+      "source": "interwatch",
+      "target": "hook:PreToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "interwatch",
+      "target": "clavain",
+      "type": "companion-of"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:tldrs-session-start",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:tldrs-map-codebase",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:tldrs-interbench-sync",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "tldr-swinton:finding-duplicate-functions",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "mcp:tldr-swinton:tldr-code",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "tool-time",
+      "target": "tool-time:tool-time",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tool-time",
+      "target": "tool-time:tool-time-codex",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:PreToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "tool-time",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
+      "source": "tuivision",
+      "target": "tuivision:tui-test",
+      "type": "provides-skill"
+    },
+    {
+      "source": "tuivision",
+      "target": "mcp:tuivision:tuivision",
+      "type": "provides-mcp"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:code-review-discipline",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:dispatching-parallel-agents",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:engineering-docs",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:executing-plans",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:file-todos",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:galiana",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:interserve-engine",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:landing-a-change",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:lane",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:project-onboard",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:refactor-safely",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:remontoire",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:subagent-driven-development",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:upstream-sync-engine",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:using-clavain",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:ship",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:using-tmux-for-interactive-commands",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:writing-plans",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:interop-with-gsd",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:interop-with-superpowers",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:plan-reviewer",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:data-migration-expert",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:bug-reproduction-validator",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:codex-delegate",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:pr-comment-resolver",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:ui-polish",
+      "type": "provides-skill"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:data-migration-expert",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:plan-reviewer",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:bug-reproduction-validator",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:codex-delegate",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:pr-comment-resolver",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "clavain:agent:ui-polish",
+      "type": "provides-agent"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:SessionStart",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:PreToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:PostToolUse",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:Stop",
+      "type": "fires-hook"
+    },
+    {
+      "source": "clavain",
+      "target": "hook:SessionEnd",
+      "type": "fires-hook"
+    },
+    {
       "source": "intercore",
-      "target": "demarch",
+      "target": "sylveste",
       "type": "part-of"
     },
     {
       "source": "intermute-service",
-      "target": "demarch",
+      "target": "sylveste",
       "type": "part-of"
     },
     {
       "source": "interbase-sdk",
-      "target": "demarch",
+      "target": "sylveste",
       "type": "part-of"
     },
     {
-      "source": "intercache",
+      "source": "clavain",
+      "target": "sylveste",
+      "type": "part-of"
+    },
+    {
+      "source": "clavain",
+      "target": "intercore",
+      "type": "depends-on"
+    },
+    {
+      "source": "cujgel",
       "target": "interverse",
       "type": "part-of"
     },
     {
-      "source": "intercept",
+      "source": "intercache",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2715,6 +4369,11 @@ const data = {
     },
     {
       "source": "intercraft",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intercut",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2800,6 +4459,11 @@ const data = {
     },
     {
       "source": "interlock",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interloop",
       "target": "interverse",
       "type": "part-of"
     },
@@ -2904,13 +4568,124 @@ const data = {
       "type": "part-of"
     },
     {
-      "source": "intersite",
+      "source": "interskill",
       "target": "interverse",
       "type": "part-of"
     },
     {
+      "source": "interslack",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interspect",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interstat",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intersynth",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertest",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertrace",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertrack",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertree",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intertrust",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intervoice",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intervox",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "interwatch",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "tldr-swinton",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "tool-time",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "tuivision",
+      "target": "interverse",
+      "type": "part-of"
+    },
+    {
+      "source": "intercheck",
+      "target": "interstat",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "analytics-observability",
+          "analytics-quality-stack"
+        ]
+      }
+    },
+    {
+      "source": "intercheck",
+      "target": "tool-time",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "analytics-observability",
+          "analytics-quality-stack"
+        ]
+      }
+    },
+    {
       "source": "intercraft",
       "target": "interform",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.1,
+        "domains": [
+          "quality-review",
+          "design-product"
+        ]
+      }
+    },
+    {
+      "source": "intercraft",
+      "target": "tuivision",
       "type": "overlaps-with",
       "meta": {
         "score": 2.1,
@@ -2954,6 +4729,17 @@ const data = {
       }
     },
     {
+      "source": "interdoc",
+      "target": "interwatch",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 0.9,
+        "domains": [
+          "doc-lifecycle-stack"
+        ]
+      }
+    },
+    {
       "source": "interflux",
       "target": "interject",
       "type": "overlaps-with",
@@ -3001,6 +4787,42 @@ const data = {
       }
     },
     {
+      "source": "interflux",
+      "target": "intersynth",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "quality-review",
+          "discovery-research"
+        ]
+      }
+    },
+    {
+      "source": "interflux",
+      "target": "tldr-swinton",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 1.9,
+        "domains": [
+          "discovery-research",
+          "discovery-context-stack"
+        ]
+      }
+    },
+    {
+      "source": "interform",
+      "target": "tuivision",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.1,
+        "domains": [
+          "quality-review",
+          "design-product"
+        ]
+      }
+    },
+    {
       "source": "interject",
       "target": "interlearn",
       "type": "overlaps-with",
@@ -3036,6 +4858,18 @@ const data = {
       }
     },
     {
+      "source": "interject",
+      "target": "tldr-swinton",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 1.9,
+        "domains": [
+          "discovery-research",
+          "discovery-context-stack"
+        ]
+      }
+    },
+    {
       "source": "interkasten",
       "target": "intermem",
       "type": "overlaps-with",
@@ -3056,6 +4890,42 @@ const data = {
         "domains": [
           "docs-artifacts",
           "doc-lifecycle-stack"
+        ]
+      }
+    },
+    {
+      "source": "interkasten",
+      "target": "interwatch",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2,
+        "domains": [
+          "docs-artifacts",
+          "doc-lifecycle-stack"
+        ]
+      }
+    },
+    {
+      "source": "interlens",
+      "target": "intersynth",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "quality-review",
+          "discovery-research"
+        ]
+      }
+    },
+    {
+      "source": "interline",
+      "target": "interwatch",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.2,
+        "domains": [
+          "analytics-observability",
+          "coordination-dispatch"
         ]
       }
     },
@@ -3084,8 +4954,31 @@ const data = {
       }
     },
     {
+      "source": "interlore",
+      "target": "clavain",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2,
+        "domains": [
+          "docs-artifacts",
+          "design-product"
+        ]
+      }
+    },
+    {
       "source": "intermap",
       "target": "intersearch",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 0.8,
+        "domains": [
+          "discovery-context-stack"
+        ]
+      }
+    },
+    {
+      "source": "intermap",
+      "target": "tldr-swinton",
       "type": "overlaps-with",
       "meta": {
         "score": 0.8,
@@ -3107,6 +5000,53 @@ const data = {
       }
     },
     {
+      "source": "intermem",
+      "target": "interwatch",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2,
+        "domains": [
+          "docs-artifacts",
+          "doc-lifecycle-stack"
+        ]
+      }
+    },
+    {
+      "source": "interpath",
+      "target": "interwatch",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2,
+        "domains": [
+          "docs-artifacts",
+          "doc-lifecycle-stack"
+        ]
+      }
+    },
+    {
+      "source": "interpath",
+      "target": "clavain",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2,
+        "domains": [
+          "docs-artifacts",
+          "design-product"
+        ]
+      }
+    },
+    {
+      "source": "interphase",
+      "target": "clavain",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 1.4,
+        "domains": [
+          "phase-gate-control"
+        ]
+      }
+    },
+    {
       "source": "interphase",
       "target": "intercore",
       "type": "overlaps-with",
@@ -3114,6 +5054,41 @@ const data = {
         "score": 2.7,
         "domains": [
           "phase-gates",
+          "phase-gate-control"
+        ]
+      }
+    },
+    {
+      "source": "intersearch",
+      "target": "tldr-swinton",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 1.9,
+        "domains": [
+          "discovery-research",
+          "discovery-context-stack"
+        ]
+      }
+    },
+    {
+      "source": "interstat",
+      "target": "tool-time",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 2.3,
+        "domains": [
+          "analytics-observability",
+          "analytics-quality-stack"
+        ]
+      }
+    },
+    {
+      "source": "clavain",
+      "target": "intercore",
+      "type": "overlaps-with",
+      "meta": {
+        "score": 1.4,
+        "domains": [
           "phase-gate-control"
         ]
       }
@@ -3132,10 +5107,54 @@ const data = {
       ]
     },
     {
+      "source": "intercheck",
+      "sourceLabel": "intercheck",
+      "target": "interstat",
+      "targetLabel": "interstat",
+      "score": 2.3,
+      "domains": [
+        "analytics-observability",
+        "analytics-quality-stack"
+      ]
+    },
+    {
+      "source": "intercheck",
+      "sourceLabel": "intercheck",
+      "target": "tool-time",
+      "targetLabel": "tool-time",
+      "score": 2.3,
+      "domains": [
+        "analytics-observability",
+        "analytics-quality-stack"
+      ]
+    },
+    {
       "source": "interflux",
       "sourceLabel": "interflux",
       "target": "interlens",
       "targetLabel": "interlens",
+      "score": 2.3,
+      "domains": [
+        "quality-review",
+        "discovery-research"
+      ]
+    },
+    {
+      "source": "interflux",
+      "sourceLabel": "interflux",
+      "target": "intersynth",
+      "targetLabel": "intersynth",
+      "score": 2.3,
+      "domains": [
+        "quality-review",
+        "discovery-research"
+      ]
+    },
+    {
+      "source": "interlens",
+      "sourceLabel": "interlens",
+      "target": "intersynth",
+      "targetLabel": "intersynth",
       "score": 2.3,
       "domains": [
         "quality-review",
@@ -3154,6 +5173,17 @@ const data = {
       ]
     },
     {
+      "source": "interstat",
+      "sourceLabel": "interstat",
+      "target": "tool-time",
+      "targetLabel": "tool-time",
+      "score": 2.3,
+      "domains": [
+        "analytics-observability",
+        "analytics-quality-stack"
+      ]
+    },
+    {
       "source": "interject",
       "sourceLabel": "interject",
       "target": "interlearn",
@@ -3165,10 +5195,43 @@ const data = {
       ]
     },
     {
+      "source": "interline",
+      "sourceLabel": "interline",
+      "target": "interwatch",
+      "targetLabel": "interwatch",
+      "score": 2.2,
+      "domains": [
+        "analytics-observability",
+        "coordination-dispatch"
+      ]
+    },
+    {
       "source": "intercraft",
       "sourceLabel": "intercraft",
       "target": "interform",
       "targetLabel": "interform",
+      "score": 2.1,
+      "domains": [
+        "quality-review",
+        "design-product"
+      ]
+    },
+    {
+      "source": "intercraft",
+      "sourceLabel": "intercraft",
+      "target": "tuivision",
+      "targetLabel": "tuivision",
+      "score": 2.1,
+      "domains": [
+        "quality-review",
+        "design-product"
+      ]
+    },
+    {
+      "source": "interform",
+      "sourceLabel": "interform",
+      "target": "tuivision",
+      "targetLabel": "tuivision",
       "score": 2.1,
       "domains": [
         "quality-review",
@@ -3198,10 +5261,32 @@ const data = {
       ]
     },
     {
+      "source": "interkasten",
+      "sourceLabel": "interkasten",
+      "target": "interwatch",
+      "targetLabel": "interwatch",
+      "score": 2,
+      "domains": [
+        "docs-artifacts",
+        "doc-lifecycle-stack"
+      ]
+    },
+    {
       "source": "interlore",
       "sourceLabel": "interlore",
       "target": "interpath",
       "targetLabel": "interpath",
+      "score": 2,
+      "domains": [
+        "docs-artifacts",
+        "design-product"
+      ]
+    },
+    {
+      "source": "interlore",
+      "sourceLabel": "interlore",
+      "target": "clavain",
+      "targetLabel": "clavain",
       "score": 2,
       "domains": [
         "docs-artifacts",
@@ -3217,6 +5302,39 @@ const data = {
       "domains": [
         "docs-artifacts",
         "doc-lifecycle-stack"
+      ]
+    },
+    {
+      "source": "intermem",
+      "sourceLabel": "intermem",
+      "target": "interwatch",
+      "targetLabel": "interwatch",
+      "score": 2,
+      "domains": [
+        "docs-artifacts",
+        "doc-lifecycle-stack"
+      ]
+    },
+    {
+      "source": "interpath",
+      "sourceLabel": "interpath",
+      "target": "interwatch",
+      "targetLabel": "interwatch",
+      "score": 2,
+      "domains": [
+        "docs-artifacts",
+        "doc-lifecycle-stack"
+      ]
+    },
+    {
+      "source": "interpath",
+      "sourceLabel": "interpath",
+      "target": "clavain",
+      "targetLabel": "clavain",
+      "score": 2,
+      "domains": [
+        "docs-artifacts",
+        "design-product"
       ]
     },
     {
@@ -3242,6 +5360,17 @@ const data = {
       ]
     },
     {
+      "source": "interflux",
+      "sourceLabel": "interflux",
+      "target": "tldr-swinton",
+      "targetLabel": "tldr-swinton",
+      "score": 1.9,
+      "domains": [
+        "discovery-research",
+        "discovery-context-stack"
+      ]
+    },
+    {
       "source": "interject",
       "sourceLabel": "interject",
       "target": "intersearch",
@@ -3250,6 +5379,48 @@ const data = {
       "domains": [
         "discovery-research",
         "discovery-context-stack"
+      ]
+    },
+    {
+      "source": "interject",
+      "sourceLabel": "interject",
+      "target": "tldr-swinton",
+      "targetLabel": "tldr-swinton",
+      "score": 1.9,
+      "domains": [
+        "discovery-research",
+        "discovery-context-stack"
+      ]
+    },
+    {
+      "source": "intersearch",
+      "sourceLabel": "intersearch",
+      "target": "tldr-swinton",
+      "targetLabel": "tldr-swinton",
+      "score": 1.9,
+      "domains": [
+        "discovery-research",
+        "discovery-context-stack"
+      ]
+    },
+    {
+      "source": "clavain",
+      "sourceLabel": "clavain",
+      "target": "intercore",
+      "targetLabel": "Intercore",
+      "score": 1.4,
+      "domains": [
+        "phase-gate-control"
+      ]
+    },
+    {
+      "source": "interphase",
+      "sourceLabel": "interphase",
+      "target": "clavain",
+      "targetLabel": "clavain",
+      "score": 1.4,
+      "domains": [
+        "phase-gate-control"
       ]
     },
     {
@@ -3283,6 +5454,16 @@ const data = {
       ]
     },
     {
+      "source": "interdoc",
+      "sourceLabel": "interdoc",
+      "target": "interwatch",
+      "targetLabel": "interwatch",
+      "score": 0.9,
+      "domains": [
+        "doc-lifecycle-stack"
+      ]
+    },
+    {
       "source": "interflux",
       "sourceLabel": "interflux",
       "target": "intermap",
@@ -3307,6 +5488,16 @@ const data = {
       "sourceLabel": "intermap",
       "target": "intersearch",
       "targetLabel": "intersearch",
+      "score": 0.8,
+      "domains": [
+        "discovery-context-stack"
+      ]
+    },
+    {
+      "source": "intermap",
+      "sourceLabel": "intermap",
+      "target": "tldr-swinton",
+      "targetLabel": "tldr-swinton",
       "score": 0.8,
       "domains": [
         "discovery-context-stack"

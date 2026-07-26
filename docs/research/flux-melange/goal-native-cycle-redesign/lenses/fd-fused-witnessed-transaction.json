@@ -1,0 +1,41 @@
+{
+  "id": "fd-fused-witnessed-transaction",
+  "kind": "fusion",
+  "parents": [
+    "fd-orchestration-terminal-consistency",
+    "fd-liminal-rite-passage"
+  ],
+  "domain": "witnessed-transaction (distributed-transaction close semantics x pre-modern rite-of-passage) -- the status crossing that is simultaneously a fenced/idempotent/compensable transaction AND a witnessed three-phase status-rite",
+  "axioms": [
+    "TENSION (unresolved, this lens's home): the orchestration frame treats a status crossing as a TRANSACTION and its favorite fixes -- at-least-once retry, idempotent replay, provisional-accept-then-async-verify, silent single-writer fencing -- each either MANUFACTURE an intermediate state or HIDE it from witnesses; the rite frame treats the same crossing as a RITE whose central hazard IS an intermediate state (the stranded liminal subject belonging to neither status) and whose validity requires a witnessed, ordered, all-the-way-through, community-attested passage. One frame wants the in-between made safe-and-invisible; the other wants it made visible-and-resolved. A crossing can be transactionally correct yet leave a subject socially stranded or un-witnessed; a crossing can be ritually valid yet have no fence, no checkpoint, no compensation protecting its witness. This lens lives exactly on that seam and does not resolve it.",
+    "Every status crossing in the redesign is ONE object with two obligations at once: it must survive interruption/concurrency/retry/late-verification-failure as a transaction, AND confer a witnessed, ordered, non-polluting new status as a rite -- and the sharpest defects are where satisfying one obligation violates the other.",
+    "A mechanism that makes the transaction correct can be the mechanism that makes the rite invalid: idempotent replay re-confers a status onto an already-reincorporated subject (double-status); provisional-accept strands the subject in the liminal margin during async verify; a compensating revert becomes a silently-reverting conferral the community already witnessed downstream.",
+    "A mechanism that makes the rite valid can lack any transactional guarantee protecting its witness: an un-fenced witnessed reincorporation (the Goal-entity close write) lets two sessions each perform a valid-looking crossing, double-minting or double-discharging one Goal; a witnessed status with no per-step checkpoint cannot resume the remaining phases of an interrupted terminal rite.",
+    "Session-scoped completion (/goal-met) and goal-scoped completion (Goal-entity close) are different cardinalities AND different rites: collapsing them fires the goal-level reincorporation from a session-level separation -- a phase-skip that reincorporates a many-run goal on the strength of one session ending.",
+    "An optional consumer of a close event is neither an enforcement mechanism (orchestration) NOR a binding final phase (rite): making the mandatory successor-proposal a best-effort unordered consumer leaves the passage closed-yet-unfinished, its final witness un-fired.",
+    "Concurrent chain cohorts with no fence and no resolution ceremony strand the in-flight cohort: the strategized-collapse separates in-flight runs from a retired chain without reincorporating them into the new one, leaving polluting double-/no-status runs the goal-cadence hook mis-reads.",
+    "HARD CONSTRAINT: report a finding ONLY if it requires BOTH parent perspectives -- every finding must name a transactional mechanism (fence/idempotency/provisional-accept/compensation/checkpoint/consumer-optionality/consistency-window) AND a rite consequence (stranded subject / missing-separation double-status / un-witnessed or silently-reverting conferral / phase-skip / hollow witness / polluting half-crossing with no resolution rite), with an intersection_justification showing that deleting either half collapses the finding into a single-parent concern."
+  ],
+  "primitives": [
+    "witnessed-transaction: a status crossing crossed with BOTH its transactional guarantees (fence, idempotency, checkpoint, compensation) and its rite obligations (separation-before-reincorporation, ordered phases, durable witness, no stranded subject, resolution rite)",
+    "idempotency-manufactures-double-status: at-least-once replay of a terminal step re-confers a status onto an already-reincorporated subject, or replays a reincorporation whose separation already ran",
+    "provisional-accept strands-the-subject: accept-then-async-verify leaves the Goal witnessed-closed during the verify window; the compensating revert is a silently-reverting conferral the community already acted on downstream",
+    "un-fenced witness / double-conferral: the Goal-entity close as the community witness with no fencing token, letting two concurrent sessions each perform a valid-looking reincorporation",
+    "cardinality-phase-skip: /goal-met (session-scoped) collapsed onto Goal close (goal-scoped) fires goal-level reincorporation from session-level separation",
+    "optional-consumer-as-un-bound-terminal-phase: the mandatory successor-proposal wired as a best-effort unordered close-event consumer, leaving the rite's final witness un-fired",
+    "concurrent-cohort strand: strategized-collapse with two chain definitions and no fence/resolution-ceremony, stranding in-flight runs as double-/no-status subjects",
+    "hollow-witness-outliving-authority: interphase retirement preserving the daily statusline witness while cutting the phase authority, so the community attests to a status no living authority confers",
+    "no-checkpoint-cannot-resume-the-rite: a single open/closed bit instead of per-step checkpoints, so an interrupted terminal sequence either re-runs (double-witnessing) or marks closed with an unfinished passage"
+  ],
+  "failure_mode": [
+    "Declines any finding whose defect is purely transactional -- a race, a duplicate write, a missing checkpoint, a compensation gap -- with no stranded-subject, missing-separation, un-witnessed-conferral, or pollution consequence; that belongs to fd-orchestration-terminal-consistency alone.",
+    "Declines any finding whose defect is purely ritual -- a skipped phase, an un-witnessed status, a pollution, an interrupted rite -- that does not depend on a transactional mechanism (retry, fencing, provisional-accept, concurrent writers, checkpoint, consumer-optionality, consistency-window) to arise; that belongs to fd-liminal-rite-passage alone.",
+    "Does not evaluate whether the formation interview elicited the RIGHT goal (fd-elicitation-ritual-design), nor the DefaultChain change / three-way transition-ownership sequencing as a migration-engineering problem (fd-kernel-phase-migration), nor ownerless-drift and succession-across-custodians over long horizons (fd-waqf-perpetual-trust); it touches those seams only where a status crossing is simultaneously transactionally-and-ritually defective.",
+    "By construction cannot report a finding that only one parent frame would surface -- the intersection-only constraint is the lens's failure mode when the transaction frame and the rite frame do not actually cross at a specific status crossing in the doc."
+  ],
+  "findings": [
+    "f-025",
+    "f-026",
+    "f-027"
+  ]
+}

@@ -116,3 +116,29 @@ data/*
 # quarterly calibration audits), exempt from the local-only research-subdir rule
 !docs/research/interspect-audit/
 !docs/research/interspect-audit/**
+# bd worktree
+n2ma-bdtest/
+# bd worktree
+n2ma-redirect-test-18358/
+# bd worktree
+n2ma-redirect-test-18879/
+# bd worktree
+n2ma-redirect-test-19575/
+# bd worktree
+n2ma-redirect-test-69698/
+# bd worktree
+n2ma-redirect-test-69998/
+# bd worktree
+n2ma-redirect-test-70291/
+
+# Editor/OS and Python bytecode noise. These recur constantly and made
+# `git status` unreadable in this monorepo, which is how .DS_Store came to be
+# tracked in the first place.
+.DS_Store
+**/.DS_Store
+__pycache__/
+*.py[cod]
+
+# Advisory lock files from flux-drive/flux-melange runs. Transient by nature:
+# the owning process is gone, so a stale one only misleads a future run.
+*.jsonl.lock

@@ -1,0 +1,36 @@
+{
+  "id": "fd-timberframe-joinery",
+  "kind": "base",
+  "parents": [],
+  "domain": "Japanese temple-and-shrine timber-frame joinery (miyadaiku tōryō kigumi tradition: nailless mortise-and-tenon carpentry — reading each timber's individual grain and cutting to the piece actually delivered, hand-cut tsugite/shiguchi joints, the mandatory cheap dry-fit kari-gumi, matching joint to load with 200+ kigumi types up to the virtuoso locked scarf kanawa-tsugi, pegging/keying for deliberate disassembly and member-replacement kaitai/kaishu, and raising the frame one self-standing bent at a time)",
+  "axioms": [
+    "A member is cut TO the timber actually delivered, never to a nominal drawing dimension: each parallel task is an individual timber whose real grain, defects, and origin (a nested repo's actual change surface and isolation need) must be read before it is assigned a place, or it will split on drive — a naive fan-out cut to the nominal shape treats distinct timbers as one board.",
+    "The dry-fit (kari-gumi) is cheap and MANDATORY precisely because driving a mis-cut joint home is the expensive, near-irreversible act: the pre-spawn conflict check is a loose trial assembly that proves the joint seats, and if that check has grown as heavy as a second full cutting of the joint, the joint design is wrong, not the dry-fit rule.",
+    "The reversibility of the whole assembly is the master virtue: a frame must be PEGGED and KEYED so a single rotten member can be knocked out and re-cut (kaitai) without felling the structure — a fan-out whose partial work is GLUED into the shared root (irreversible commits into the main-checkout Dolt store / root worktree) so one bad member condemns the entire run is the cardinal error.",
+    "The joint is matched to the MEASURED load and never showier than needed: a virtuoso mechanically-locked keyed scarf (kanawa-tsugi) is cut only where a splice carries real, lockable tension, while a plain lap serves elsewhere — cutting an elaborate joint (the dynamic controller) into a member carrying no measured tension yet wastes the timber and weakens it by over-mortising.",
+    "A joint can only be cut to two faces that actually exist and are not already sound: you cannot cut a splice to an un-felled, un-delivered timber (lbkd, OPEN/unstarted — a joint cut to air), and you do not cut a fresh duplicate joint into a face where a sound joint already stands (Mycroft's shipped fleet frame — seat into it, do not re-cut beside it).",
+    "The frame is raised one self-standing bent at a time: each structural bay must stand true and load-bearing on its own before the next member is committed, so a v1 whose value silently leans on the un-cut v2 member (the deferred controller) is a frame that can never be partially raised, inspected, or safely stopped at."
+  ],
+  "primitives": [
+    "timber and its grain (each parallel task / nested repo as an individual piece read for its real change surface, defects, and isolation need — cut-to-the-timber vs cut-to-nominal)",
+    "joint cut to the meeting faces (a fan-out slot cut to the two pieces that actually mate, on-site, not to a spec)",
+    "dry-fit / kari-gumi (the pre-spawn conflict check as a cheap, always-on, discarded trial assembly that proves seating before commit)",
+    "driving the joint home / glued vs pegged (irreversible partial commit into the shared root vs reversible per-member work that can be excised and re-cut)",
+    "kaitai / member replacement (excising one bad fan-out task — worktree discarded, reservation released, partial work removed — without scrapping the whole run)",
+    "joint-to-load match (plain lap = flat depth-1 for trivial load; virtuoso kanawa-tsugi = the dynamic controller, cut only under measured tension)",
+    "un-delivered timber / already-sound joint face (lbkd as a piece not yet felled; Mycroft as a standing joint face to seat into, not duplicate)",
+    "the first self-standing bent (the smallest fan-out increment — instrument + flat fan-out + cost gate — that stands true with the controller-member permanently un-cut)"
+  ],
+  "failure_mode": [
+    "Blind to resource scarcity and throughput dynamics: it will not price the token multiplier, the reservoir/rate budget, or a chamber-sizing break-even (canal-lock's ground) — it only asks whether each piece was read and cut to its grain, whether the dry-fit stayed cheap, and whether the frame can be taken apart.",
+    "May treat Q1/Q2 subsumption only as fit (an un-delivered timber, an already-cut joint face) and miss overlaps that are about single-account ownership/consolidation (double-entry's ground) rather than whether the mating piece exists.",
+    "Reads abort as REVERSIBILITY of one member (pegged vs glued) and can under-weight cases where the real hazard is a mis-timed striking ORDER or committed simultaneous motion (change-ringing's ground) rather than an irreversible per-member commit.",
+    "Can over-read a deliberately-irreversible commit as 'glued' when a small, cheap, intentional permanence at the root op is actually correct — assumes reversibility is always the goal, when some joins are meant to be final.",
+    "Assumes correctness lives in per-piece fit and replaceability, so it can undervalue emergent/dynamic failure modes (conflict cascades, rate exhaustion, threshold calibration, governance cadence) that no joinery reading of a static frame would surface."
+  ],
+  "findings": [
+    "f-008",
+    "f-009",
+    "f-010"
+  ]
+}

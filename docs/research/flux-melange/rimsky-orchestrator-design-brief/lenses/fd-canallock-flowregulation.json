@@ -1,0 +1,35 @@
+{
+  "id": "fd-canallock-flowregulation",
+  "kind": "base",
+  "parents": [],
+  "domain": "18th-19th-century inland-navigation lock-keeping and summit-level canal water management (pound-lock hydraulics, reservoir economy)",
+  "axioms": [
+    "The summit reservoir is finite: every lockage spends water that cannot be recovered until the next feed, so throughput is bounded by a scarce shared resource that must be metered against its actual current level, not a nominal capacity.",
+    "Isolation is a build-time chamber-sizing choice: a lock is cut wide (broad) or narrow before any vessel arrives; two vessels share a chamber only if it was deliberately constructed to hold them, so the isolation granularity of parallel work is largely a structural property of the work, not a free runtime dial.",
+    "Priming a lock costs water: opening and filling a chamber to pass a vessel has a fixed cost, so a regulation check or setup step is only worth running when the passage it guards is worth more than its priming.",
+    "A staircase lock couples passages a flight keeps independent: when chambers share an intermediate gate, one vessel's exit is the next's entrance, silently serializing what looked parallel.",
+    "A dry lockage wastes the whole fill: cycling a chamber for a vessel that never comes spends water for nothing, so building capacity ahead of demonstrated traffic is a loss until traffic is measured.",
+    "Drought discipline forbids starting a flight you cannot finish: a vessel stranded between chambers on an empty summit blocks the entire canal, so each stage of passage must be able to hold a vessel at rest."
+  ],
+  "primitives": [
+    "reservoir level (real remaining token / rate budget)",
+    "lockage (a single fan-out of width N)",
+    "chamber and its width (isolation domain: per-repo worktree vs interlock-shared tree)",
+    "water spent per lockage (token multiplier, wall-time, rate consumption)",
+    "priming cost (pre-spawn intermap change_impact + interlock dry-run; ~200-500ms+disk worktree setup)",
+    "gate-and-paddle ordering (sequence of pre-dispatch checks before the top gate opens)",
+    "flight vs staircase (independent per-nested-repo passages vs shared intermediate gate: main-checkout Dolt redirect, root worktree, root-spanning publish waves)",
+    "dry lockage (dead-code-until-proven controller capacity built ahead of measured conflict)"
+  ],
+  "failure_mode": [
+    "Blind to ledger/ownership double-counting: it will not notice that a capability is posted to two orchestrators (Rimsky and Mycroft) or that lbkd is left in no account \u2014 it only sees water and chambers, not who owns which book.",
+    "Treats subsumption (Q1/Q2) as a flow-coupling question (staircase vs flight) and can miss it entirely when the overlap is organizational rather than a serialization in the water path.",
+    "Assumes scarcity is the dominant constraint; if the real risk is correctness of scope boundaries or reconciliation rather than resource exhaustion, it over-weights budget/priming economics.",
+    "May treat the isolation crossover as purely an economic break-even and undervalue cases where shared-tree coordination is chosen for correctness reasons unrelated to water cost."
+  ],
+  "findings": [
+    "f-013",
+    "f-014",
+    "f-018"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "fd-scope-governance-anti-abandonment",
+  "kind": "base",
+  "parents": [],
+  "domain": "increment decomposition and anti-abandonment governance for high-uncertainty C4/C5 infrastructure goals",
+  "axioms": [
+    "A v1 scope-cut is only a real increment if it delivers standalone value with all deferred pieces (e.g., the controller) permanently absent \u2014 if v1's claimed value silently depends on v2 landing, it is a checkpoint mislabeled as shippable",
+    "Every internal gate between a shippable v1 and a gated v2 needs a named owner, a named trigger condition, and a named consequence for what happens if the trigger never fires \u2014 a gate without a stated non-trigger consequence becomes ownerless scope debt",
+    "A subsumption or dependency verdict (Q1/Q2-style) that resolves to 'this expands scope' must be caught BEFORE a goal is chartered, not discovered mid-execution \u2014 sequencing the verdict-production inside the same goal as delivery risks the exact stall the verdict was meant to prevent",
+    "High architectural uncertainty (multiple open questions, no measurement plan for the goal's own gates, empty epic description) is itself a signal that goal-formation is premature or that the goal needs narrower first-slice scoping, not incidental metadata to route around",
+    "Low-risk, low-collision, high-signal-value pieces (e.g., telemetry that starts a measurement clock other gates depend on) should be sequenced early and independently rather than bundled with harder, higher-uncertainty pieces, so their value and signal accrue sooner",
+    "A deferred decision with no review cadence or expiration is a slow-motion abandonment even if no one ever declares the goal dead \u2014 it must have a stated revisit point with a default verdict if the signal is still absent"
+  ],
+  "primitives": [
+    "increment (a scope-cut that must independently deliver value with later increments absent)",
+    "gate (a decision point with owner, trigger condition, evaluation cadence, and non-trigger consequence)",
+    "verdict (a subsumption/dependency answer that may expand or hold scope, and must be resolved pre-charter if it can expand scope)",
+    "stakes tier (C4/C5 vs smaller; governs whether goal-form's research-first ritual is a precondition)",
+    "bundling decision (which pieces ship as one goal vs which de-risk independently first)",
+    "abandonment tripwire (an explicit if-X-hasn't-happened-by-Y re-scope or close condition)"
+  ],
+  "failure_mode": [
+    "Focuses on process/governance structure (ownership, cadence, sequencing) and can under-weight whether a given gate's trigger condition is technically achievable at all \u2014 defers that judgment to whichever lens owns the measurement/falsifiability question rather than re-deriving it, which means a governance-only read can misjudge urgency if it doesn't know a gate is structurally unfalsifiable",
+    "Reasons primarily about THIS codebase's stated anti-abandonment and goal-bundling doctrine as ground truth, and may be less sensitive to cases where following that doctrine literally produces a worse outcome than deviating from it for this specific epic's uncertainty profile",
+    "Less equipped to judge whether Rimsky and an adjacent system (Mycroft, lbkd) are the same layer rediscovered \u2014 takes the existence of the subsumption questions as given inputs to sequence around, rather than adjudicating the substantive topology answer itself"
+  ],
+  "findings": [
+    "f-009",
+    "f-010",
+    "f-011",
+    "f-012"
+  ]
+}

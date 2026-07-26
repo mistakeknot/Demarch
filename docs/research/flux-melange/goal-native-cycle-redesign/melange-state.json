@@ -1,0 +1,14 @@
+{
+  "objective": "Find the best architecture for a goal-native Clavain/intercore cycle built around a collaborative goal-formation ritual (comparative-advantage inter-elicitation: research-first, single-question interviews, charter doc, melange review of high-stakes charters) and a first-class intercore Goal entity that contains runs. PRIORITY 1 (user explicitly requested alternatives): surface and score terminal-gate shapes BEYOND the three candidates in the doc (two-layer ordered close; single-layer /goal-met; event-driven consumers) — e.g. lease/heartbeat models, escrowed close with async verify, successor-proposal as a separate obligation object, or shapes not yet considered — honoring that sessions close often while goals span many runs, and that the successor-proposal doctrine needs enforcement somewhere. Also stress-test: strategy-phase absorption into the ritual (a kernel chain change), optional stakes-scaled bead binding, ceremony stakes-routing (C1-C5) as the anti-abandonment lever, interphase retirement, the /goal built-in's evaluator constraints (judges only surfaced output) as a design input for charter conditions, and whether sylveste-lbkd (Sprint v2 artifact bus) and sylveste-3kol (Conductor) are subsumed, superseded, or orthogonal to this redesign.",
+  "weights": "balanced",
+  "round": 0,
+  "min_rounds": 2,
+  "max_rounds": 4,
+  "budget": { "total": 15, "remaining": 15, "round_cost_floor": 3 },
+  "coverage": { "regions": [], "tiers_used": [], "lens_pairs_fused": [] },
+  "heat_map": { "regions": [], "lens_pairs": [], "disagreement_flags": [] },
+  "gain_history": [],
+  "frontier": [],
+  "should_stop": false,
+  "halt_reason": null
+}

@@ -1,0 +1,14 @@
+{
+  "objective": "Find the best architecture and scope-cut for Rimsky (N-parallel flat-fan-out sprint orchestrator, epic sylveste-3kol) — resolve Q1 lbkd subsumption, Q2 Mycroft overlap; stress-test Q3 isolation-crossover, Q4 controller-build-gate, Q5 pre-spawn-check cost, Q6 anti-abandonment scope-cut; surface alternative orchestrator shapes scored on nested-repo hazard + token multiplier + anti-abandonment.",
+  "weights": "balanced",
+  "round": 0,
+  "min_rounds": 2,
+  "max_rounds": 4,
+  "budget": { "total": 15, "remaining": 15, "round_cost_floor": 3 },
+  "coverage": { "regions": [], "tiers_used": [], "lens_pairs_fused": [] },
+  "heat_map": { "regions": [], "lens_pairs": [], "disagreement_flags": [] },
+  "gain_history": [],
+  "frontier": [],
+  "should_stop": false,
+  "halt_reason": null
+}

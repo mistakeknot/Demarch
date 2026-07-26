@@ -1,0 +1,33 @@
+{
+  "id": "fd-kernel-phase-migration",
+  "kind": "base",
+  "parents": [],
+  "domain": "workflow-orchestration kernel migration (chain/schema versioning, in-flight-instance compatibility, live consumer-contract preservation)",
+  "axioms": [
+    "A chain definition (DefaultChain) that is edited in place without a version field will eventually be evaluated against an in-flight run instance that started under the old definition, producing undefined behavior at the seam",
+    "'Not a prompt edit — a kernel phase in DefaultChain' implies real migration mechanics exist (schema bump, per-run chain pinning, gate code keyed on phase name) that a rationale bullet does not automatically specify",
+    "A daily-visible consumer of a phase-authority (interphase's statusline) cannot be retired by deletion alone — retirement requires a replacement data source and an explicit cutover point, or the consumer silently breaks or goes stale",
+    "When three artifacts (sprint.md prompt, lib-sprint.sh bash, clavain-cli Go port) concurrently claim ownership of phase-sequencing logic and one is stated to be mid-migration, landing a chain change on the wrong owner creates a fork that the in-progress migration must reconcile a second time",
+    "Per-run `--phases` override is necessary but not obviously sufficient for transition safety — sufficiency requires confirming that resuming an old run after an upgrade doesn't silently inherit new-chain gates against old-chain state",
+    "Stakes-scaled ceremony (C1-C5) expressed as chain variation risks either forking DefaultChain per tier (multiplying migration surface) or making every step conditionally skippable (eroding kernel gate guarantees) — a single clean chain shape for both is not free",
+    "Kernel-side containment logic (gates, chain hooks, `bd ready`-ranked successor logic) may carry an implicit assumption that a bead always exists; making bead-binding optional for C1 goals can violate that assumption unless checked explicitly"
+  ],
+  "primitives": [
+    "chain definition version / per-run chain-pin reference",
+    "phase (named kernel step, e.g. `strategized`, goal-formation head) as an addressable unit gates and hooks key on",
+    "in-flight run instance vs. chain-definition-at-time-of-run distinction",
+    "consumer contract (interphase → statusline) as a data-shape/cadence guarantee independent of its current implementation",
+    "transition-owner (sprint.md, lib-sprint.sh, clavain-cli Go) as a locus where a chain change must land exactly once",
+    "stakes tier (C1-C5) as a chain-shape parameter (which steps are present/skippable) rather than only a routing input"
+  ],
+  "failure_mode": [
+    "Focused on migration/versioning mechanics, it can miss whether the destination chain shape (goal-formation head replacing `strategized`) is itself a good design — it evaluates the path, not the target",
+    "May under-weight the human-elicitation quality of what happens inside the new goal-formation head, treating it as an opaque kernel phase rather than scrutinizing the interview/charter mechanics within it",
+    "Does not natively reason about goal-close concurrency/idempotency (terminal-gate races) — it can certify that a chain migrates cleanly while missing that the terminal phase within the new chain still has an unresolved concurrency hazard"
+  ],
+  "findings": [
+    "f-004",
+    "f-005",
+    "f-006"
+  ]
+}

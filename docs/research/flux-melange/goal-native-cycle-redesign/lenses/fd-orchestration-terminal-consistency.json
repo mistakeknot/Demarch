@@ -1,0 +1,36 @@
+{
+  "id": "fd-orchestration-terminal-consistency",
+  "kind": "base",
+  "parents": [],
+  "domain": "distributed systems / workflow-completion protocols (saga coordinators, distributed transaction close semantics, job-scheduler completion)",
+  "axioms": [
+    "Terminal logic expressed only as ordered prose ('then reflect, then compound, then propose successor') is not yet a state machine and cannot be trusted until it has explicit failure/retry/idempotency semantics",
+    "A goal-close transaction with no fencing token or single-writer designation will eventually be attempted concurrently by two actors, because the doc itself states sessions close far more often than the goals they belong to",
+    "At-least-once execution is the default failure mode of any multi-step terminal sequence unless idempotency or a resumable checkpoint is explicitly designed in",
+    "An 'optional consumer' of a completion event is definitionally not an enforcement mechanism for a doctrine framed as mandatory ('never leave a finished goal without a proposed successor')",
+    "Session-scoped completion signals (/goal-met) and goal-scoped completion (Goal entity close) are different cardinalities and must be reconciled explicitly, not assumed to collapse into one signal",
+    "Any shape that accepts a close provisionally and verifies asynchronously must define a compensating action for the case where verification later fails, or the design silently assumes verification never fails"
+  ],
+  "primitives": [
+    "terminal sequence / step (reflect, compound, verify-against-charter, successor-proposal) as a unit of work with its own completion state",
+    "fencing token / lease / single-writer designation on the goal-close transaction",
+    "idempotency key distinguishing a retried terminal step from a duplicate execution",
+    "per-step checkpoint on the Goal entity (not a single closed/open bit)",
+    "session-local completion signal (/goal-met) vs. goal-level terminal state",
+    "compensating transaction for late verification failure under escrow/async-verify shapes"
+  ],
+  "failure_mode": [
+    "Treats the terminal-gate design question as purely a sequencing/UX question and misses that it's fundamentally a concurrency-control problem the moment more than one session can touch the same goal",
+    "May over-index on textbook distributed-systems machinery (fencing tokens, sagas, compensating transactions) without checking whether intercore's actual primitives (kernel gates, ParentRunID, bd state) can cheaply support them, producing correct-but-unimplementable recommendations",
+    "Does not natively evaluate the human/elicitation quality of the ritual or the correctness of the kernel-chain migration path — it can flag that a terminal shape is consistent while missing that it's a poor fit for how the ritual or migration actually produces charters and phase transitions"
+  ],
+  "findings": [
+    "f-001",
+    "f-002",
+    "f-003",
+    "f-011",
+    "f-012",
+    "f-013",
+    "f-014"
+  ]
+}

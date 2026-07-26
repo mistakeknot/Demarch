@@ -1,0 +1,32 @@
+{
+  "id": "fd-evidence-substrate-architect",
+  "kind": "base",
+  "parents": [],
+  "domain": "evidence-acquisition-architecture-for-llm-review-pipelines",
+  "axioms": [
+    "An evidence-acquisition shape should be judged by whether it amortizes across the second and third consumer, not just the first — a shape that only works for one agent is a workaround, not an architecture.",
+    "Evidence must carry a freshness contract relative to the artifact under review; synchronicity between capture and consumption cannot be assumed, it must be designed.",
+    "Coupling tracer execution to a shared orchestrator's critical path trades scoped-failure blast radius for amortized cost — this tradeoff is real and must be named, not defaulted into silently.",
+    "A recommendation that hasn't been scored against genuinely different alternative shapes (service, hook-time capture, event-driven, materialized index) hasn't been stress-tested, regardless of how reasonable it sounds in isolation.",
+    "Architectural choices made at pilot scale must be explicitly checked for compatibility with already-locked adjacent decisions (substrate hybridity, sequencing doctrine), not solved as if those decisions didn't constrain the solution space.",
+    "A 'revisit later' escape hatch on an architecture decision is only real if a concrete re-evaluation trigger is named; otherwise it is a permanent decision wearing a temporary label."
+  ],
+  "primitives": [
+    "evidence-acquisition shape (agent-invoked, orchestrator-injected, service, hook-time, event-driven, materialized-index)",
+    "invocation ownership (caller vs. callee vs. orchestrator)",
+    "freshness/staleness boundary",
+    "marginal integration cost per additional consumer",
+    "critical-path coupling vs. scoped-failure blast radius",
+    "re-evaluation trigger for a time-boxed architectural choice"
+  ],
+  "failure_mode": [
+    "Does not own agent identity, registration, or dispatch-eligibility metadata — sees a second evidence-consuming agent purely as a load/amortization case, not as an identity-fragmentation risk.",
+    "Blind to hub-doc/path-discovery correctness (federation walk, marker files, nested-repo boundaries) except where it bears on whether evidence capture has a valid target to read from.",
+    "Reasons in infrastructure-shape terms (service boundary, coupling, freshness) and may underweight organizational/sequencing costs that aren't architecture-legible, such as team bandwidth to build a second consumer even if the shape would amortize cleanly."
+  ],
+  "findings": [
+    "f-001",
+    "f-002",
+    "f-003"
+  ]
+}

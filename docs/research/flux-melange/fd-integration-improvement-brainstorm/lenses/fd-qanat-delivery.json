@@ -1,0 +1,36 @@
+{
+  "id": "fd-qanat-delivery",
+  "kind": "base",
+  "parents": [],
+  "domain": "Traditional qanat/falaj hydrology and water-rights adjudication — the ancient non-Western engineering-and-commons-governance craft of gravity-fed underground water delivery from a mother-well to fields, time-share apportionment by a mirab (water-master), staged channel commissioning, and graceful degradation in drought.",
+  "axioms": [
+    "Water is a scarce and perishable resource: where and when it is drawn (at the tap on demand versus released upstream on a cycle) determines its freshness and who can share it.",
+    "A qanat is commissioned in stages, and each stage must independently hold water — a half-dug gallery irrigates nothing regardless of how sound the final plan is.",
+    "When the source runs low, a shared apportioned channel serves many plots from one draw, whereas every plot digging its own well wastes the source and cannot be scheduled.",
+    "Freshness decays along the channel: water (evidence) drawn upstream and early may arrive stale relative to what the field (review) actually needs now.",
+    "A well-designed system degrades gracefully — it trickles in drought rather than failing all at once; a hard single-point dependency is a channel that fails all-at-once.",
+    "The deepest failure is silting: a slow invisible accumulation no single day reveals; robust designs are self-scouring rather than requiring constant desilting.",
+    "Apportionment is adjudicated, not assumed — contention among consumers is a scheduling problem the mirab must solve before the dry season, not after."
+  ],
+  "primitives": [
+    "draw-point (tap/on-demand pull versus upstream/scheduled release)",
+    "freshness / staleness decay relative to consumption time",
+    "the shared channel versus the per-plot private well (reuse versus duplication)",
+    "the commissioning stage (a unit of infrastructure that must independently hold water)",
+    "apportionment / time-share schedule among multiple consumers",
+    "graceful degradation (trickle) versus all-at-once failure (dry channel / 404)",
+    "silting (slow invisible drift) versus self-scouring flow"
+  ],
+  "failure_mode": [
+    "Systematically blind to whether the water is CLEAN — it judges timing, freshness, apportionment, and staged delivery, not the authenticity or confidence-tier integrity of the evidence itself, so contaminated-but-timely water passes.",
+    "Over-indexes on the multi-consumer and drought cases and can over-engineer shared-channel apportionment for a single-agent load that never actually contends.",
+    "Frames every problem as a delivery-topology or scheduling problem and may miss defects that are about the meaning or correctness of the payload rather than its flow.",
+    "Assumes staged commissioning is always virtuous and can undervalue a monolithic delivery that is simpler when independent-shippability is not actually needed."
+  ],
+  "findings": [
+    "f-015",
+    "f-016",
+    "f-017",
+    "f-018"
+  ]
+}

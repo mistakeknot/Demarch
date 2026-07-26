@@ -1,0 +1,32 @@
+{
+  "id": "fd-registry-identity-fragmentation",
+  "kind": "base",
+  "parents": [],
+  "domain": "identity-registry-consolidation-under-live-consumers",
+  "axioms": [
+    "A registry only eliminates fragmentation on the day every existing consumer resolves identity through it — a registry that some consumers still bypass via name-string joins is a fifth source of truth, not a single one.",
+    "Migrating a live registrant carries its accumulated history (trust scores, dispatch outcomes) as first-class state that must be explicitly re-attributed, not implicitly discarded by re-keying.",
+    "A registry's boundary (identity-only vs. identity-plus-lifecycle-plus-routing) determines how many systems a downstream consumer must still join across to make a decision — a narrow boundary can leave the net join-count unchanged even while claiming consolidation.",
+    "'Thin plugin' claims about blast radius must be evaluated against the number of consumers requiring read-path AND write-path changes, not just the size of the new plugin itself.",
+    "Rejecting a candidate home for a registry on architectural grounds (e.g., 'runtime substrate vs. plugin-layer concern') must hold up against how that candidate already touches the entities the registry would own, not just its stated charter.",
+    "Extraction precedent (thin single-responsibility plugins) only transfers cleanly when the new case has comparable consumer-cardinality to the precedent; a registry with N required consumers is a structurally different migration than a precedent with effectively one."
+  ],
+  "primitives": [
+    "canonical identity key",
+    "dual-write/dual-read migration window",
+    "consumer (read-path vs. write-path dependency)",
+    "registry boundary (identity+eligibility vs. +lifecycle vs. +routing)",
+    "accumulated evidence carry-forward (trust rows, dispatch history)",
+    "single-source-of-truth convergence vs. relocation of fragmentation"
+  ],
+  "failure_mode": [
+    "Does not own how tracer evidence reaches an agent at review time or the freshness of that evidence — sees evidence-acquisition shape as out of scope, only cares that identity resolution is consistent regardless of what evidence backs a finding.",
+    "Blind to path-discovery/federation mechanics (hub doc resolution, nested-repo boundary walks) — treats 'where does the agent find companion-graph.json' as someone else's problem entirely.",
+    "Reasons in migration/consolidation terms and may underweight cases where staying fragmented is actually cheaper than a registry migration whose consumer-cardinality makes it expensive — can over-index on consolidation as inherently virtuous."
+  ],
+  "findings": [
+    "f-004",
+    "f-005",
+    "f-006"
+  ]
+}

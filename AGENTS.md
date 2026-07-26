@@ -27,6 +27,7 @@ bd backup && bash .beads/push.sh && git push  # Complete work after commit
 | Critical Patterns | [agents/critical-patterns.md](agents/critical-patterns.md) | Six must-know patterns from production failures |
 | Prerequisites | [agents/prerequisites.md](agents/prerequisites.md) | Required tools, secrets, Go module path convention |
 | Operational Guides | [agents/operational-guides.md](agents/operational-guides.md) | Guide index, prior solutions search, prior art pipeline, operational notes |
+| Worktree-first Coordination | [docs/guide-worktree-first-coordination.md](docs/guide-worktree-first-coordination.md) | When worktrees are required, native isolation vs interlock coordination, beads-from-worktrees, nested-repo rule, doctor checks |
 | v1.0 Roadmap | [docs/roadmap-v1.md](docs/roadmap-v1.md) | Parallel track model (Autonomy, Safety, Adoption), version gates, milestone exit criteria |
 
 ## Conventions
@@ -38,6 +39,8 @@ bd backup && bash .beads/push.sh && git push  # Complete work after commit
 **Work tracking:** Beads (`bd create/close`) is the canonical tracker for Sylveste-internal work. All Sylveste agents and contributors track work in beads inside this repo — do not duplicate it via TODO files or markdown checklists. External rigs (superpowers, GSD, compound-engineering) ship their own task surfaces; that tracking belongs to those rigs and is not displaced by this rule. See [agents/beads-workflow.md](agents/beads-workflow.md).
 
 **Git workflow:** Owner/agents commit directly to `main` (trunk-based). External contributors: Fork + PR (branch protection enabled). See [docs/guide-contributing.md](docs/guide-contributing.md).
+
+**Worktrees:** Native Claude Code worktrees isolate file edits; interlock coordinates agents that share a tree. Mutating agent/workflow fan-outs default to `isolation: worktree`, **per nested repo** — a root-repo worktree materializes almost none of the nested plugins, so root operations that touch nested repos (publish waves, cross-repo sweeps) run against the main checkout. See [docs/guide-worktree-first-coordination.md](docs/guide-worktree-first-coordination.md).
 
 **Philosophy alignment:** When planning, brainstorming, or reviewing changes in any module, read that module's `PHILOSOPHY.md`. Add two short lines to planning outputs: **Alignment** (how it supports the module's purpose) and **Conflict/Risk** (any tension, or 'none'). If a high-value change conflicts, either adjust the plan or create follow-up to update the module's `PHILOSOPHY.md`.
 
@@ -90,18 +93,15 @@ bd close <id>         # Complete work
 
 - Use `bd` for Sylveste-internal task tracking — do not duplicate it via TodoWrite, TaskCreate, or markdown TODO lists. External rigs with their own task surfaces (superpowers, GSD, compound-engineering) are unaffected.
 - Run `bd prime` for detailed command reference and session close protocol
-- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 
 ## Session Completion
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
-
-**MANDATORY WORKFLOW:**
+When ending a work session, work through the steps below before handing off — the change isn't landed until `git push` succeeds.
 
 1. **File issues for remaining work** - Create issues for anything that needs follow-up
 2. **Run quality gates** (if code changed) - Tests, linters, builds
 3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
+4. **Push to remote**:
    ```bash
    bd backup
    bash .beads/push.sh
@@ -111,10 +111,4 @@ bd close <id>         # Complete work
 5. **Clean up** - Clear stashes, prune remote branches
 6. **Verify** - All changes committed AND pushed
 7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
 <!-- END BEADS INTEGRATION -->

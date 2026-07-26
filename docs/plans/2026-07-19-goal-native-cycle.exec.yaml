@@ -1,0 +1,81 @@
+version: 1
+mode: dependency-driven
+tier: deep
+max_parallel: 3
+timeout_per_task: 600
+
+stages:
+  - name: "Wave 1 — schema foundation (intercore)"
+    tasks:
+      - id: task-1
+        title: "Migration 039 — goals table + runs.goal_id"
+        files: [core/intercore/internal/db/migrations/039_goals.sql]
+        depends: []
+  - name: "Wave 2 — entity + run attach"
+    tasks:
+      - id: task-2
+        title: "internal/goal package — Goal struct + Store CRUD"
+        files: [core/intercore/internal/goal/goal.go, core/intercore/internal/goal/goal_test.go]
+        depends: [task-1]
+      - id: task-7
+        title: "Run attach — --goal-id + advance touch"
+        files: [core/intercore/internal/phase/phase.go, core/intercore/internal/phase/store.go, core/intercore/cmd/ic/run_create.go]
+        depends: [task-1]
+  - name: "Wave 3 — close machinery + chain"
+    tasks:
+      - id: task-3
+        title: "Fenced close lease + per-step terminal sequence"
+        files: [core/intercore/internal/goal/goal.go, core/intercore/internal/goal/close_test.go]
+        depends: [task-2]
+      - id: task-4
+        title: "Condition linter (tier-independent gate)"
+        files: [core/intercore/internal/goal/lint.go, core/intercore/internal/goal/lint_test.go]
+        depends: [task-2]
+      - id: task-8
+        title: "GoalNativeChain + goal-formed gate"
+        files: [core/intercore/pkg/phase/phase.go, core/intercore/internal/phase/phase.go, core/intercore/internal/phase/gate.go]
+        depends: [task-7]
+  - name: "Wave 4 — auditor"
+    tasks:
+      - id: task-5
+        title: "Successor auditor + dormancy sweep"
+        files: [core/intercore/internal/goal/audit.go, core/intercore/internal/goal/audit_test.go]
+        depends: [task-3]
+  - name: "Wave 5 — CLI + race proof"
+    tasks:
+      - id: task-6
+        title: "ic goal CLI noun"
+        files: [core/intercore/cmd/ic/goal.go, core/intercore/cmd/ic/main.go]
+        depends: [task-3, task-4, task-5]
+      - id: task-13
+        title: "Two-session race test under -race"
+        files: [core/intercore/internal/goal/race_test.go]
+        depends: [task-3]
+        tier: fast
+  - name: "Wave 6 — E2E"
+    tasks:
+      - id: task-14
+        title: "E2E lifecycle test"
+        files: [core/intercore/internal/goal/e2e_test.go]
+        depends: [task-3, task-4, task-5, task-7]
+        tier: fast
+  - name: "Wave 7 — Clavain CLI"
+    tasks:
+      - id: task-9
+        title: "clavain-cli goal-mint + blast-radius bump"
+        files: [os/Clavain/cmd/clavain-cli/goal.go, os/Clavain/cmd/clavain-cli/main.go, os/Clavain/cmd/clavain-cli/complexity.go]
+        depends: [task-6]
+  - name: "Wave 8 — Clavain surfaces"
+    tasks:
+      - id: task-10
+        title: "Formation ritual command + route/next-goal wiring"
+        files: [os/Clavain/commands/goal-form.md, os/Clavain/commands/route.md, os/Clavain/commands/next-goal.md]
+        depends: [task-9]
+      - id: task-11
+        title: "Entity-backed goal-cadence hook"
+        files: [os/Clavain/hooks/lib-goal-audit.sh, os/Clavain/hooks/auto-stop-actions.sh, os/Clavain/tests/shell/goal_audit.bats]
+        depends: [task-6]
+      - id: task-12
+        title: "Interband sideband parity from sprint-advance"
+        files: [os/Clavain/cmd/clavain-cli/sideband.go, os/Clavain/cmd/clavain-cli/phase.go]
+        depends: [task-9]
