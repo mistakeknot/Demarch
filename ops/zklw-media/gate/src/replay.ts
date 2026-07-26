@@ -41,18 +41,20 @@ const MUST_REJECT = [
 ];
 
 /**
- * Open judgment calls — REPORTED, deliberately NOT asserted.
+ * RESOLVED 2026-07-26. L'Orphéline avec en plus un bras en moins (2012) is now
+ * asserted above rather than flagged.
  *
- * L'Orphéline avec en plus un bras en moins (2012, dir. Jacques Richard) was on
- * my first-pass keeper list purely because the title reads as French arthouse.
- * The gate rejects it: Richard has no film in the canon corpus. That may be the
- * right answer or a real miss, but it is mk's call, not the harness's — so it
- * is surfaced here rather than silently fixed by adding Richard to
- * MANUAL_DIRECTORS, which would be tuning the allowlist to make a test pass.
+ * It was rejected while the pedigree path looked at DIRECTORS only: Jacques
+ * Richard has no canon feature. Investigating on mk's instruction turned up the
+ * real signal — the film was co-written by Roland Topor, who has two films in
+ * the corpus (Fantastic Planet in Criterion, The Tenant in TSPDT). Extending
+ * pedigree to screenwriters (Wikidata P58 alongside P57) admits it on its own
+ * merits, with no hand-added name.
  *
- * To admit it: add "Jacques Richard" to MANUAL_DIRECTORS in policy.ts.
+ * The correction was cheap in precision: the allowlist roughly doubled
+ * (718 -> 1619 creators) but admissions rose by exactly one in each replay set.
  */
-const JUDGMENT_CALLS = ["L.Orpheline"];
+const JUDGMENT_CALLS: string[] = [];
 
 interface RacedRow {
   name: string;

@@ -21,7 +21,11 @@
  *  5. otherwise reject as no_signal.
  */
 import { readFile } from "node:fs/promises";
-import { acclaimForNaturalKeys, getMigrationsDb, type MigrationsDb } from "@jawnverse/jawnlink";
+import {
+  acclaimForNaturalKeys,
+  getMigrationsDb,
+  type MigrationsDb,
+} from "@jawnverse/jawnlink";
 import {
   DEFAULT_THRESHOLDS,
   PEDIGREE_STUDIOS,
@@ -34,8 +38,12 @@ import {
 } from "./policy.js";
 import { directorsFor } from "./wikidata.js";
 
-const DIRECTOR_CACHE = new URL("../.cache/wikidata-directors.json", import.meta.url).pathname;
-const PEDIGREE_FILE = new URL("../pedigree-directors.json", import.meta.url).pathname;
+const DIRECTOR_CACHE = new URL(
+  "../.cache/wikidata-directors.json",
+  import.meta.url,
+).pathname;
+const PEDIGREE_FILE = new URL("../pedigree-directors.json", import.meta.url)
+  .pathname;
 
 export interface FeedItem {
   title: string;
@@ -50,9 +58,27 @@ export interface Judged extends FeedItem {
   verdict: Verdict;
 }
 
+/**
+ * Render a creator for humans without pretending a bare Wikidata id is a name.
+ *
+ * Some people have a Wikidata item and an enwiki article but NO English label —
+ * Roland Topor (Q550806) is one, labelled only in arz/fa/he/ja/ru/zh. The SPARQL
+ * label service then returns the raw q-id, and that turns out to be a feature
+ * rather than a bug: matching on q-ids caught Topor as the shared creator
+ * between Fantastic Planet and L'Orphéline, which name-matching would have
+ * missed outright. So keep the id, just don't print it as if it were a name.
+ */
+function creatorLabel(hit: string): string {
+  return /^Q\d+$/.test(hit)
+    ? `creator wikidata:${hit} (no English label; matched by id)`
+    : `creator ${hit}`;
+}
+
 export async function loadPedigreeDirectors(): Promise<Set<string>> {
   try {
-    const raw = JSON.parse(await readFile(PEDIGREE_FILE, "utf8")) as { directors: string[] };
+    const raw = JSON.parse(await readFile(PEDIGREE_FILE, "utf8")) as {
+      directors: string[];
+    };
     // Case-folded: Wikidata labels and hand-typed names disagree on case often
     // enough that an exact-match set would silently miss.
     return new Set(raw.directors.map((d) => d.toLowerCase()));
@@ -74,8 +100,13 @@ export async function judge(
 
   // Resolve keys up front so acclaim is ONE query for the whole batch rather
   // than one per release.
-  const keyed = items.map((it) => ({ it, naturalKey: imdbNaturalKey(it.imdbid) }));
-  const keys = keyed.map((k) => k.naturalKey).filter((k): k is string => k !== null);
+  const keyed = items.map((it) => ({
+    it,
+    naturalKey: imdbNaturalKey(it.imdbid),
+  }));
+  const keys = keyed
+    .map((k) => k.naturalKey)
+    .filter((k): k is string => k !== null);
   const acclaim = await acclaimForNaturalKeys(db.drizzle, "screen", keys);
 
   // Only look up directors for releases acclaim did not already settle.
@@ -84,14 +115,21 @@ export async function judge(
       if (freeAdTierTag(it.title)) return false;
       if (!naturalKey) return false;
       const a = acclaim.get(naturalKey);
-      return !(a && (Number(a.score) >= thresholds.minScore || a.listCount >= thresholds.minListCount));
+      return !(
+        a &&
+        (Number(a.score) >= thresholds.minScore ||
+          a.listCount >= thresholds.minListCount)
+      );
     })
     .map(({ naturalKey }) => naturalKey!.replace(/^imdb:/, ""));
 
   const directorIndex = opts.offline
     ? await (async () => {
         try {
-          return JSON.parse(await readFile(DIRECTOR_CACHE, "utf8")) as Record<string, string[]>;
+          return JSON.parse(await readFile(DIRECTOR_CACHE, "utf8")) as Record<
+            string,
+            string[]
+          >;
         } catch {
           return {};
         }
@@ -101,14 +139,26 @@ export async function judge(
   return keyed.map(({ it, naturalKey }): Judged => {
     const adTag = freeAdTierTag(it.title);
     if (adTag) {
-      return { ...it, naturalKey, verdict: reject("free_ad_tier", `${adTag}-sourced release`) };
+      return {
+        ...it,
+        naturalKey,
+        verdict: reject("free_ad_tier", `${adTag}-sourced release`),
+      };
     }
     if (!naturalKey) {
-      return { ...it, naturalKey, verdict: reject("no_imdb_id", "feed article carried no imdbid") };
+      return {
+        ...it,
+        naturalKey,
+        verdict: reject("no_imdb_id", "feed article carried no imdbid"),
+      };
     }
 
     const a = acclaim.get(naturalKey);
-    if (a && (Number(a.score) >= thresholds.minScore || a.listCount >= thresholds.minListCount)) {
+    if (
+      a &&
+      (Number(a.score) >= thresholds.minScore ||
+        a.listCount >= thresholds.minListCount)
+    ) {
       return {
         ...it,
         naturalKey,
@@ -122,19 +172,28 @@ export async function judge(
     const tt = naturalKey.replace(/^imdb:/, "");
     const directors = directorIndex[tt] ?? [];
     const hit = directors.find((d) => pedigree.has(d.toLowerCase()));
-    if (hit) return { ...it, naturalKey, verdict: admit("pedigree_director", `dir. ${hit}`) };
+    if (hit) {
+      return {
+        ...it,
+        naturalKey,
+        verdict: admit("pedigree_creator", creatorLabel(hit)),
+      };
+    }
 
     const studio = PEDIGREE_STUDIOS.find((s) =>
       it.title.toLowerCase().includes(s.toLowerCase()),
     );
-    if (studio) return { ...it, naturalKey, verdict: admit("pedigree_studio", studio) };
+    if (studio)
+      return { ...it, naturalKey, verdict: admit("pedigree_studio", studio) };
 
     return {
       ...it,
       naturalKey,
       verdict: reject(
         "no_signal",
-        directors.length ? `dir. ${directors.join(", ")} — not in canon or allowlist` : "no acclaim, no director resolved",
+        directors.length
+          ? `dir. ${directors.join(", ")} — not in canon or allowlist`
+          : "no acclaim, no director resolved",
       ),
     };
   });
@@ -159,7 +218,9 @@ async function main() {
 
   let items: FeedItem[];
   if (fixtureIdx >= 0) {
-    items = JSON.parse(await readFile(process.argv[fixtureIdx + 1]!, "utf8")) as FeedItem[];
+    items = JSON.parse(
+      await readFile(process.argv[fixtureIdx + 1]!, "utf8"),
+    ) as FeedItem[];
     console.log(`judging ${items.length} articles from fixture`);
   } else {
     const { fetchFeed } = await import("./sources.js");
@@ -175,17 +236,22 @@ async function main() {
       console.log(
         `${mark} ${j.verdict.decision.padEnd(6)} ${j.verdict.reason.padEnd(18)} ${j.title.slice(0, 62)}`,
       );
-      if (j.verdict.decision === "ADMIT") console.log(`         ${j.verdict.detail}`);
+      if (j.verdict.decision === "ADMIT")
+        console.log(`         ${j.verdict.detail}`);
     }
     const admitted = judged.filter((j) => j.verdict.decision === "ADMIT");
     console.log(`\n${admitted.length}/${judged.length} admitted`);
 
     if (!push) {
-      console.log("dry run — nothing pushed. Re-run with --push to grab the admitted releases.");
+      console.log(
+        "dry run — nothing pushed. Re-run with --push to grab the admitted releases.",
+      );
       return;
     }
     if (fixtureIdx >= 0) {
-      throw new Error("refusing to --push from a fixture; that would grab against stale data");
+      throw new Error(
+        "refusing to --push from a fixture; that would grab against stale data",
+      );
     }
 
     const { Qbit } = await import("./sources.js");
@@ -196,14 +262,18 @@ async function main() {
 
     const already = await qb.existingHashesByName();
     const toAdd = admitted.filter(
-      (j) => !already.has(j.title.replace(/\.(mkv|mp4|avi)$/i, "")) && !already.has(j.title),
+      (j) =>
+        !already.has(j.title.replace(/\.(mkv|mp4|avi)$/i, "")) &&
+        !already.has(j.title),
     );
     const urls = toAdd
       .map((j) => (j as { downloadUrl?: string }).downloadUrl)
       .filter((u): u is string => !!u);
 
     if (urls.length === 0) {
-      console.log("nothing new to push (all admitted releases are already in the client)");
+      console.log(
+        "nothing new to push (all admitted releases are already in the client)",
+      );
       return;
     }
     await qb.add(urls);
@@ -218,4 +288,8 @@ async function main() {
   }
 }
 
-if (process.argv[1]?.endsWith("gate.ts") || process.argv[1]?.endsWith("gate.js")) await main();
+if (
+  process.argv[1]?.endsWith("gate.ts") ||
+  process.argv[1]?.endsWith("gate.js")
+)
+  await main();

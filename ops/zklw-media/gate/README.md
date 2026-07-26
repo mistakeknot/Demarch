@@ -37,13 +37,27 @@ Satan (2011, Dumont), Mank (2020, Fincher) — **none appear in TSPDT 2026, Sigh
 & Sound 2022 or the Criterion Collection.** Canonical lists skew hard to
 pre-2000. An acclaim-only gate rejects all three.
 
-So the director allowlist carries the design, and it is derived from jawncite's
-own canon rather than hand-curated: *if you directed something the canon
+So the creator allowlist carries the design, and it is derived from jawncite's
+own canon rather than hand-curated: *if you made something the canon
 recognises, your next film is worth grabbing before anyone has written about
 it.* `build-pedigree.ts` resolves every canon film above score 1.0 to its
-director via Wikidata (keyless, no account) — currently **718 directors from
-1,504 of 1,559 canon films**, plus a short manual list for people whose work is
-clearly worth grabbing but who have not yet charted.
+directors **and screenwriters** via Wikidata (keyless, no account) — currently
+**1,619 creators from 1,504 of 1,559 canon films**, plus a short manual list for
+people whose work is clearly worth grabbing but who have not yet charted.
+
+**Writers count, and leaving them out was a real gap.** L'Orphéline avec en plus
+un bras en moins (2012) has a director with no canon feature, but was co-written
+by Roland Topor — who has two films in the corpus (*Fantastic Planet* in
+Criterion, *The Tenant* in TSPDT). Adding P58 alongside P57 admits it on its own
+merits rather than by hand-adding a name. The correction cost almost nothing in
+precision: the allowlist roughly doubled but admissions rose by exactly one in
+each replay set.
+
+A related accident worth keeping: Wikidata has no English *label* for Topor
+(only arz/fa/he/ja/ru/zh), so the SPARQL label service returns the bare q-id
+`Q550806`. Matching on that id is what linked Fantastic Planet to L'Orphéline —
+**name-matching would have missed him entirely.** The gate prints such matches as
+`wikidata:Q550806` rather than pretending an id is a name.
 
 The allowlist grows automatically as jawncite ingests more lists.
 
@@ -54,23 +68,13 @@ resolved by asking Prowlarr rather than by hand:
 
 | | regex rule | gate |
 |---|---|---|
-| admitted | 24 / 24 | **4 / 24** |
+| admitted | 24 / 24 | **5 / 24** |
 | free-ad-tier admitted | 3 | **0** |
 
-Against a live 50-article feed sample: **8 / 50 admitted**, 0 free-ad-tier.
+Against a live 50-article feed sample: **9 / 50 admitted**, 0 free-ad-tier.
 Admits included Rohmer's *Le rayon vert* (acclaim), Ferrara's *Body Snatchers*
 and Dumont's *Hors Satan* (pedigree); rejects included Piranha 3DD, Wrong Turn,
 Balls of Fury, Big Stan, Mortal Kombat II and Bullet to the Head.
-
-## One open judgment call
-
-*L'Orphéline avec en plus un bras en moins* (2012, dir. Jacques Richard) is
-rejected — Richard has no canon film. It was on my first-pass keeper list purely
-because the title reads as French arthouse, which is not a founded judgment. The
-replay harness **reports** it and does not assert on it, because silently adding
-Richard to `MANUAL_DIRECTORS` would be tuning the allowlist to make a test pass.
-
-To admit it: add `"Jacques Richard"` to `MANUAL_DIRECTORS` in `src/policy.ts`.
 
 ## Usage
 

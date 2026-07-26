@@ -3,7 +3,8 @@
   "keep": [
     "Body.Snatchers.1993.1080p.BluRay.FLAC2.0.x264-ZoroSenpai.mkv",
     "Hors.Satan.2011.1080p.ProRes.DD+4.0.x264-0BSiDiAN.mkv",
-    "Mank.2020.1080p.NF.WEB-DL.DDP5.1.H.264-Kitsune.mkv"
+    "Mank.2020.1080p.NF.WEB-DL.DDP5.1.H.264-Kitsune.mkv",
+    "L.Orpheline.avec.en.plus.un.bras.en.moins.2012.1080p.AMZN.WEB-DL.DDP2.0.H.264-ww45.mkv"
   ],
   "drop": [
     "UnMarry.2025.1080p.NF.WEB-DL.DDP5.1.H.264-MARKY.mkv",
@@ -15,7 +16,6 @@
     "Aria-Remix.2026.1080p.Fawesome.WEB-DL.AAC2.0.H.264-BobDobbs.mkv",
     "Newborn.2026.1080p.AMZN.WEB-DL.DD+5.1.H.264-playWEB.mkv",
     "Tragic.Villain.2026.1080p.AMZN.WEB-DL.DDP2.0.H.264-CHORTLE.mkv",
-    "L.Orpheline.avec.en.plus.un.bras.en.moins.2012.1080p.AMZN.WEB-DL.DDP2.0.H.264-ww45.mkv",
     "The.Truthers.2026.720p.NF.WEB-DL.DDP5.1.Atmos.H.264-KHN.mkv",
     "The.Truthers.2026.1080p.NF.WEB-DL.DDP5.1.Atmos.H.264-KHN.mkv",
     "Avatar.Aang.The.Last.Airbender.2026.1080p.AMZN.WEB-DL.DDP5.1.H.264-CHORTLE.mkv",
@@ -35,8 +35,8 @@
       "size_gb": 12.12,
       "uploaded_gb": 2.704,
       "verdict": "ADMIT",
-      "reason": "pedigree_director",
-      "detail": "dir. Abel Ferrara",
+      "reason": "pedigree_creator",
+      "detail": "creator Abel Ferrara",
       "action": "keep",
       "note": ""
     },
@@ -46,8 +46,8 @@
       "size_gb": 18.03,
       "uploaded_gb": 1.633,
       "verdict": "ADMIT",
-      "reason": "pedigree_director",
-      "detail": "dir. Bruno Dumont",
+      "reason": "pedigree_creator",
+      "detail": "creator Bruno Dumont",
       "action": "keep",
       "note": ""
     },
@@ -68,8 +68,8 @@
       "size_gb": 2.09,
       "uploaded_gb": 0.895,
       "verdict": "ADMIT",
-      "reason": "pedigree_director",
-      "detail": "dir. David Fincher",
+      "reason": "pedigree_creator",
+      "detail": "creator David Fincher",
       "action": "drop",
       "note": "duplicate encode — keeping the 7.09GB copy"
     },
@@ -79,8 +79,8 @@
       "size_gb": 7.09,
       "uploaded_gb": 0.149,
       "verdict": "ADMIT",
-      "reason": "pedigree_director",
-      "detail": "dir. David Fincher",
+      "reason": "pedigree_creator",
+      "detail": "creator David Fincher",
       "action": "keep",
       "note": ""
     },
@@ -166,10 +166,10 @@
       "imdbid": 1867570,
       "size_gb": 7.43,
       "uploaded_gb": 0.077,
-      "verdict": "REJECT",
-      "reason": "no_signal",
-      "detail": "dir. Jacques Richard — not in canon or allowlist",
-      "action": "drop",
+      "verdict": "ADMIT",
+      "reason": "pedigree_creator",
+      "detail": "creator wikidata:Q550806 (no English label; matched by id)",
+      "action": "keep",
       "note": ""
     },
     {
@@ -179,7 +179,7 @@
       "uploaded_gb": 0.632,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Roger Gual — not in canon or allowlist",
+      "detail": "dir. Carlos Montero, Darío Madrona, Roger Gual — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },
@@ -190,7 +190,7 @@
       "uploaded_gb": 1.408,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Roger Gual — not in canon or allowlist",
+      "detail": "dir. Carlos Montero, Darío Madrona, Roger Gual — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },
@@ -201,7 +201,7 @@
       "uploaded_gb": 0.829,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Lauren Montgomery — not in canon or allowlist",
+      "detail": "dir. Christopher Lee Yost, Tim Hedrick, Lauren Montgomery — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },
@@ -212,7 +212,7 @@
       "uploaded_gb": 1.781,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Lauren Montgomery — not in canon or allowlist",
+      "detail": "dir. Christopher Lee Yost, Tim Hedrick, Lauren Montgomery — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },
@@ -223,7 +223,7 @@
       "uploaded_gb": 1.332,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Lauren Montgomery — not in canon or allowlist",
+      "detail": "dir. Christopher Lee Yost, Tim Hedrick, Lauren Montgomery — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },
@@ -245,7 +245,7 @@
       "uploaded_gb": 7.929,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Lauren Montgomery — not in canon or allowlist",
+      "detail": "dir. Christopher Lee Yost, Tim Hedrick, Lauren Montgomery — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },
@@ -256,7 +256,7 @@
       "uploaded_gb": 3.82,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Scott Aukerman — not in canon or allowlist",
+      "detail": "dir. Zach Galifianakis, Scott Aukerman — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },
@@ -267,7 +267,7 @@
       "uploaded_gb": 0.263,
       "verdict": "REJECT",
       "reason": "no_signal",
-      "detail": "dir. Scott Aukerman — not in canon or allowlist",
+      "detail": "dir. Zach Galifianakis, Scott Aukerman — not in canon or allowlist",
       "action": "drop",
       "note": ""
     },

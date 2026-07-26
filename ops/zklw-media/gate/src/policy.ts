@@ -120,7 +120,7 @@ export interface Verdict {
   reason:
     | "free_ad_tier"
     | "acclaim"
-    | "pedigree_director"
+    | "pedigree_creator"
     | "pedigree_studio"
     | "no_signal"
     | "no_imdb_id";
