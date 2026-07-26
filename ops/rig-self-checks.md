@@ -17,15 +17,16 @@ This page exists so that never depends on someone remembering.
 | `marketplace-divergence` — do the clones agree | launchd | systemd timer | daily 09:15 |
 | `intercore-tests` — `go test ./...` for the suite gating `ic` | launchd | **skip** | daily 09:15 |
 | `ic-provenance` — does the deployed binary match the source | launchd | systemd timer | daily 09:15 |
+| `advertisement-budget` — what enabled plugins cost in context | launchd | systemd timer | daily 09:15 |
 | settings.json history | SessionStart + daily | **continuous, 10s poll** | see below |
 
 Expected steady state, so a drift is auditable against something:
 
 ```
 Clavain   guard-tests pass   settings-reference pass   marketplace-divergence pass
-          intercore-tests PASS    ic-provenance pass
+          intercore-tests PASS    ic-provenance pass    advertisement-budget warn
 zklw      guard-tests pass   settings-reference pass   marketplace-divergence pass
-          intercore-tests SKIP    ic-provenance pass
+          intercore-tests SKIP    ic-provenance pass    advertisement-budget warn
 ```
 
 **If Clavain ever reports `intercore-tests = skip`, the build marker went missing.**
@@ -74,6 +75,69 @@ shape this whole effort exists to prevent. The marker inverts it: a **designated
 machine with no Go fails loudly; an undesignated machine skips quietly. Tracking
 the marker in git means losing it shows up as a visible change rather than a
 permanent silent skip.
+
+## The advertisement budget, and why the ceiling is shaped this way
+
+Every other check here watches **machinery**. None watched the number the
+context-engineering program exists to hold — and it drifted **28,246 → 29,496 in
+two days** without a word. The cause was `cujgel`: enabled while uninstalled
+(genuinely free), then installed (1,250 chars). **Enablement and cost are
+separated in time**, so watching `settings.json` was never going to catch it.
+Only measuring does.
+
+The instrument is checked in:
+
+```
+Sylveste/ops/scripts/advertisement-budget.py       # --json for tooling
+dotfiles/common/.local/bin/rig-budget-eval.py      # ceiling + delta
+```
+
+It previously existed **only in a session scratchpad**, which is how three
+baselines (34,141 / 46,416 / 36,837) were published and later retired as wrong.
+An ad-hoc measurement gets re-derived slightly differently each time and two runs
+cannot be diffed.
+
+### Thresholds
+
+| | | |
+|---|---|---|
+| `> 30,000` | **fail** | the number the program was run against — the contract |
+| `>= 28,500` | **warn** | under ~5% headroom |
+| jump `>= 250` in one run | **warn** | ~one added command description; self-clears |
+| otherwise | pass | delta still reported in the summary |
+
+**Why not a ratchet.** Failing on any increase over the last recorded value was
+the alternative. It fires on every legitimate addition, so each deliberate plugin
+enable would need an "accept the new baseline" gesture — and a check that must be
+routinely dismissed is a check that gets dismissed when it matters. This rig
+already had one alarm nobody could act on for four months. Unactionable alarms are
+worse than none.
+
+So: ceiling for the contract, warn band for early notice, per-plugin delta on
+**every** run for attribution — including at pass, because "what moved" is useful
+even when nothing is wrong. The one useful half of the ratchet is kept as the
+single-run jump.
+
+### The rig currently sits in the warn band, deliberately
+
+29,496 with 504 chars of headroom. **The band was not widened to make that
+green.** Calibrating a threshold to whatever you happen to measure is how a check
+becomes decorative. The warn is true: the next plugin enabled at typical size
+breaches the ceiling.
+
+Known reclamation if headroom is wanted: Clavain's `plan-reviewer`, 887 chars
+(`mk-hpkv`). `cujgel` was assessed and **kept** — at ~156 chars per entry it has
+no `<example>` bloat and no demotable wrappers, so the only lever is removing
+functionality. See `plugin-enablement-policy.md`.
+
+### Baseline state
+
+```
+~/.claude/health/state/budget-previous.json     # per-plugin totals, for the delta
+```
+
+A subdirectory on purpose: the reporter globs `~/.claude/health/*.json`
+non-recursively, so state files here cannot be mistaken for check results.
 
 ## `skip` is a third status, and it cannot hide a dead check
 
@@ -158,6 +222,10 @@ It reports three conditions, and the third is the point:
 
 - **FAIL** — a check ran and found a problem.
 - **NEVER** — no status file at all; the scheduled job has not run here.
+- **WARN** — a real finding that is not yet a breach (the budget inside its
+  headroom band). It prints, so it cannot be missed by accident, but it does not
+  claim something is broken. Keeping WARN and FAIL apart is what lets FAIL stay
+  believable.
 - **STALE** — a status file older than twice its interval. *A check reporting
   "fail" is working as designed; a check whose status has stopped being updated
   has itself died.* That is exactly what happened to the guard, so a stale `pass`
@@ -175,6 +243,9 @@ Deleting the whole health directory produces three findings, not silence.
 | An intercore test starts failing | 24h (Clavain only) | next session start |
 | Deployed `ic` falls behind intercore HEAD | 24h | next session start |
 | `ic` deployed from a dirty or unstamped build | 24h | next session start |
+| Advertisement budget crosses 30,000 | 24h | next session start |
+| Budget enters the 28,500 warn band | 24h | next session start |
+| A plugin's advertised cost changes at all | 24h | named in the delta |
 | settings.json changes, **zklw** | ~10s | in the git history immediately |
 | settings.json changes, **Clavain** | next session start, or 24h | recorded, not alerted |
 | **A check stops running** | 48h (2× interval) | next session start |
@@ -248,6 +319,10 @@ git -C ~/.claude/settings-history log --oneline
   automated and installed-drift is now classified; anything else doctor reports
   is only seen when a human runs it.
 - **Re-copying systemd units after a dotfiles change** — see below.
+- **Reclaiming budget headroom.** The check reports the number and names what
+  moved; deciding what to demote, slim, or disable stays a human call.
+- **Catching a cost increase faster than daily.** A plugin installed mid-session
+  bills immediately but is not measured until the next scheduled run.
 
 The daily run now takes **roughly two minutes on Clavain** (it was seconds).
 `go test ./...` is ~13s interactively but ~100s under launchd's scheduling

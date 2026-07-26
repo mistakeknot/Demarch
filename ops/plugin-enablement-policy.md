@@ -108,11 +108,44 @@ interwatch and flux-drive**, not user-facing surfaces. Do not re-purge on counte
 
 ### Zero advertisement cost — on because free
 
-`cujgel` (enabled but not installed — 0 chars), `explanatory-output-style`, `gopls-lsp`,
-`pyright-lsp`, `rust-analyzer-lsp`, `swift-lsp`, `typescript-lsp`, `security-guidance`,
-`warp`, `interpub`.
+`explanatory-output-style`, `gopls-lsp`, `pyright-lsp`, `rust-analyzer-lsp`, `swift-lsp`,
+`typescript-lsp`, `security-guidance`, `warp`, `interpub`.
 
 LSP plugins register language servers without advertising descriptions. Leave them.
+
+> **Correction, 2026-07-26.** This section previously listed `cujgel` as
+> "enabled but not installed — 0 chars". That was true when measured on 07-24 and
+> **false two days later**: its cache appeared and it now bills **1,250 chars**.
+> The whole rig-wide total moved 28,246 → 29,496 on that alone.
+>
+> The general lesson is worth more than the correction: **enablement and cost are
+> separated in time.** A plugin switched on in `settings.json` costs nothing until
+> Claude Code installs it, so a zero in this document is a statement about the
+> moment it was written, never a property of the plugin. Anything recorded as free
+> because it was uninstalled must be re-measured, not trusted. This is exactly why
+> the budget is now a scheduled check rather than a number in a document.
+
+### `cujgel` — stays on, at 1,250 chars
+
+Decided 2026-07-26. Eight entries, ~156 chars each:
+
+```
+197 cujgel-engine · 165 provoke · 162 discover · 157 teardown
+150 capture · 149 derive · 137 consume · 133 validate
+```
+
+**Kept enabled.** Two reasons, and the second is the one that settles it:
+
+1. It is in active use — a sibling session is running the jawnsight campaign
+   against it (`mk-rsup`, P1).
+2. **There is nothing to trim.** No `<example>` blocks in descriptions, no
+   duplicate command wrappers, no demotable entries — the two levers used
+   everywhere else in this document do not apply. At ~156 chars per entry these
+   descriptions are already lean, so the only available action is *removing
+   functionality*, not reclaiming waste.
+
+Disabling a plugin someone is actively using, to buy 4% headroom, is the wrong
+trade. The cost is real and now measured every day rather than assumed.
 
 ### Off by default
 
@@ -168,22 +201,38 @@ After the task: set the key back to `false`. Do not delete it.
 | interflux 0.2.84 (fd-* examples relocated) | −7,466 |
 | interbrowse 0.5.1 (8 wrappers demoted, 2 agents slimmed) | −2,113 |
 | interhelm 0.2.4 (runtime-reviewer slimmed) | −607 |
-| **Total** | **28,246** |
+| Subtotal at end of the 07-26 pass | 28,246 |
+| `cujgel` installed (was enabled-but-uninstalled, so free) | +1,250 |
+| **Current, measured 2026-07-26** | **29,496** |
 
 Zero files deleted. Every demoted command remains user-invocable and listed in its plugin's
 index. Remaining known win: Clavain's `plan-reviewer`, 887 chars (`mk-hpkv`) — needs a
 worktree on `main`, since the shared checkout sits on a feature branch.
 
+**This table is a log, not a live number.** It was wrong within 48 hours of being
+written, because a plugin got installed. The number that is true today comes from
+running the instrument:
+
+```bash
+python3 ~/projects/Sylveste/ops/scripts/advertisement-budget.py
+```
+
+and it is checked daily by the `advertisement-budget` rig-health check
+(`ops/rig-self-checks.md`). Prefer either over any figure written down here.
+
 **Measuring after a publish:** publishes run on zklw, so the Mac's cache keeps serving the
-previous version until Claude Code restarts. Until then `budget2.py` reports the pre-publish
+previous version until Claude Code restarts. Until then the script reports the pre-publish
 number and is not wrong — the old descriptions really are what this session loaded. Measure
 the published state by pointing the script at the plugin repos instead.
 
 ## Verifying
 
 ```bash
-# Advertisement budget against the cache, live vs demoted, per plugin
-python3 <scratchpad>/budget2.py
+# Advertisement budget against the cache, live vs demoted, per plugin.
+# Formerly a scratchpad script called budget2.py, which is how three baselines
+# (34,141 / 46,416 / 36,837) got published and later retired as wrong.
+python3 ~/projects/Sylveste/ops/scripts/advertisement-budget.py
+python3 ~/projects/Sylveste/ops/scripts/advertisement-budget.py --json   # for tooling
 
 # Who changed enabledPlugins, and when — audit.log is UTC, mtimes are local
 grep '"tool":"Edit"' ~/.claude/audit.log | grep settings.json
