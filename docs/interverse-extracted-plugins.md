@@ -69,6 +69,70 @@ were archived before the swap:
   someone running `uv` locally; regenerable.
 - `interseed/POINTER.md` — the extraction tombstone this document replaced.
 
+## Full audit of `interverse/`, 2026-07-26
+
+Goal `9412a2a2` checked every directory, not just the five that happened to be
+monorepo-tracked. The orphan pattern turned out to be **confined to the two
+already found** — the 40% rate among the tracked five was a selection effect, not
+a base rate. Tracked-in-the-monorepo correlates with *extracted long ago*, which
+is exactly the population where the local copy had time to become a fossil.
+
+| Check | Result |
+|---|---|
+| Directories under `interverse/` | 64 |
+| Have `.git` | 63 |
+| No `.git` **and** an upstream exists (the orphan pattern) | **0** |
+| No `.git` and no upstream | 1 — `.audit-2026-06-23` |
+| `origin` = `mistakeknot/<same name>` | 62 |
+| `origin` under a different name | 1 — `_shared` → `mistakeknot/interverse-shared` |
+| `origin` under a non-`mistakeknot` owner | 0 |
+| No `origin` remote at all | 0 |
+
+Left in place, with reasons:
+
+- **`.audit-2026-06-23`** — not a plugin. Five JSON/Markdown outputs from a
+  2026-06-23 audit run. No upstream exists and none should; it is data, not code.
+- **`_shared`** — a real repo whose directory name simply differs from its
+  repository name. Only a name-matching audit would flag it. Recorded here so the
+  next audit does not re-investigate it.
+
+### Also measured: staleness among the 63 real repos
+
+The orphan check is cheap to extend, so it was:
+
+- **43** sit exactly at their upstream default-branch HEAD.
+- **20** differ from upstream. Every one was verified as **behind, not ahead** —
+  each local HEAD resolves via `gh api repos/mistakeknot/<name>/commits/<sha>`,
+  so it is already published and no unpushed work exists anywhere:
+  `cujgel`, `intercheck`, `intercut`, `interject`, `interkasten`, `interknow`,
+  `interlab`, `interlearn`, `interline`, `intermem`, `intermux`, `interphase`,
+  `interpulse`, `intership`, `interstat`, `intersynth`, `intertrack`,
+  `interwatch`, `tldr-swinton`, `tool-time`.
+- **8** have dirty working trees: `cujgel`, `interchart`, `interfer`,
+  `intersearch`, `interseed`, `intervox`, `interwatch`, `tldr-swinton`.
+
+Distinguishing behind-from-ahead is the point of that middle check. Twenty
+diverged repos is a chore; twenty repos holding unpushed commits would be a
+data-loss risk, and the two look identical until you ask which side has the
+commit.
+
+### Trap found during the audit: a merge can resurrect an untracked file
+
+`interseed/POINTER.md` reappeared on disk six minutes after the clean clone
+replaced it, byte-identical. Cause: a second machine committed to
+`interverse/interhelm` at 19:44 UTC from a checkout that had not yet seen the
+untracking, and the merge materialised that branch's tracked tree. The deletion
+won for the *index*, but the file was already written to the *working tree* and
+stayed there as untracked.
+
+The diagnostic is that `kimi.plugin.json` did **not** come back. Both files had
+been removed by the same swap; only `POINTER.md` had ever been monorepo-tracked.
+A merge can only resurrect what was tracked on some side of it.
+
+So untracking a path does not stop a stale branch from re-materialising its
+contents on disk. If a file must stay gone, the ignore rule is what enforces
+that, not the untracking.
+
 ### Open: `kimi.plugin.json` is missing from both upstreams
 
 61 of 64 `interverse/` directories carry a `kimi.plugin.json`, and the ones that
