@@ -116,9 +116,12 @@ LSP plugins register language servers without advertising descriptions. Leave th
 
 ### Off by default
 
+Disabled 2026-07-26. Backup: `~/.claude/settings.json.bak-plugindev-off-20260726-003128`.
+
 | Plugin | chars | Rationale |
 |---|---|---|
-| `plugin-dev` | 6,877 | 0 skill invocations, 0 MCP, 4 agent dispatches in 30 days. The single worst cost-to-use ratio in the rig. Enable while authoring a plugin, disable after. |
+| `plugin-dev` | 6,877 | 0 skill invocations, 0 MCP, 4 agent dispatches in 30 days. The single worst cost-to-use ratio in the rig. Its three agents carry 2,839 chars of `<example>` blocks that we cannot durably fix — a plugin update overwrites any edit — so disabling is the only lever that holds. Enable while authoring a plugin, disable after. |
+| `interfluence` | 1,107 | Voice-profile and corpus stylometry. No recorded use in 30d. Caveat: its surface is commands, which no instrument measures — this was a capability call, not a counter call. |
 
 Plus the 41 already disabled in the 2026-07-16 doctor cleanup and its 07-20 follow-up:
 
@@ -134,14 +137,10 @@ Plus the 41 already disabled in the 2026-07-16 doctor cleanup and its 07-20 foll
 
 ### Currently on, but situational
 
-These three are enabled today and are the next candidates after `plugin-dev`. None is
-disabled by this document — each needs a decision.
-
 | Plugin | chars | Note |
 |---|---|---|
-| `interbrowse` | 3,885 | **Hold on.** Session `2f8c3e0e` enabled it deliberately on 07-24 for jawnsight research. Disabling would undo a teammate's live change. |
-| `interhelm` | 1,834 | No recorded use. Surface is agent + commands, so counters are weak evidence — decide on capability. |
-| `interfluence` | 1,107 | No recorded use. Voice-profile work is episodic. |
+| `interbrowse` | 1,772 | **Hold on.** Session `2f8c3e0e` enabled it deliberately on 07-24 for jawnsight research. Disabling would undo a teammate's live change. |
+| `interhelm` | 1,225 | Kept on 2026-07-25. No recorded use, but its surface is agent + commands and commands are unmeasured — weak evidence, so decided on capability. Description slimmed instead (`e9a14c31`). |
 
 ## Situational-enable cheat sheet
 
@@ -159,6 +158,26 @@ Turn on for the task, turn off after. Extends the 2026-07-16 list.
 | Deploying to Vercel | `vercel` | — |
 
 After the task: set the key back to `false`. Do not delete it.
+
+## Result, 2026-07-26
+
+| | chars |
+|---|---|
+| Measured at start of the 07-25 pass | 46,416 |
+| `plugin-dev` + `interfluence` disabled | −7,984 |
+| interflux 0.2.84 (fd-* examples relocated) | −7,466 |
+| interbrowse 0.5.1 (8 wrappers demoted, 2 agents slimmed) | −2,113 |
+| interhelm 0.2.4 (runtime-reviewer slimmed) | −607 |
+| **Total** | **28,246** |
+
+Zero files deleted. Every demoted command remains user-invocable and listed in its plugin's
+index. Remaining known win: Clavain's `plan-reviewer`, 887 chars (`mk-hpkv`) — needs a
+worktree on `main`, since the shared checkout sits on a feature branch.
+
+**Measuring after a publish:** publishes run on zklw, so the Mac's cache keeps serving the
+previous version until Claude Code restarts. Until then `budget2.py` reports the pre-publish
+number and is not wrong — the old descriptions really are what this session loaded. Measure
+the published state by pointing the script at the plugin repos instead.
 
 ## Verifying
 
