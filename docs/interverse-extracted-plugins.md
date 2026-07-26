@@ -35,11 +35,10 @@ elsewhere. `git rm --cached` removes from the index only: files stay on disk,
 stay reachable in this repo's history, and remain live in the five repositories
 above.
 
-As of this commit the untracking has **not** been applied; `git ls-files
-interverse` still reports 198. It is held on a `Bash(git rm --cached:*)`
-permission rule, since the destructive-git guard cannot distinguish the
-index-only `--cached` form from a working-tree deletion. The measurement above
-does not expire — it is what the untracking is safe *because of*.
+Applied in `61e3e335`: `git ls-files interverse` went **198 → 0**, with the
+on-disk file count unchanged and all three nested repos' status untouched
+(`interfer` kept its 4 pre-existing dirty entries, which the monorepo never
+tracked; `intersight` and `intership` stayed clean).
 
 ## Surviving trap: two of these have no local git presence
 
