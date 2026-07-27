@@ -63,6 +63,11 @@ RADARR_SIZES = {
     # Remux is by definition untouched video; preferring "small" is meaningless,
     # so preferred sits near the cap and the floor is left where it is.
     "Remux-1080p":   (None, 200.0),
+    # Excluded by Best-Available, so nothing can be grabbed from these tiers.
+    # Set anyway as defence in depth: a future profile edit that re-allows one
+    # must not silently reopen a tier with no size preference at all.
+    "HDTV-2160p":    (None, 100.0),
+    "Remux-2160p":   (None, 400.0),
 }
 
 SONARR_SIZES = {
@@ -74,6 +79,11 @@ SONARR_SIZES = {
     "WEBRip-1080p":       (None, 50.0),
     "HDTV-1080p":         (None, 50.0),
     "Bluray-1080p Remux": (None, 200.0),
+    # Excluded by Best-Available; set for the same defence-in-depth reason.
+    # preferredSize must not exceed maxSize -- Sonarr accepts the PUT but
+    # silently drops the value, so 400 against this tier's 250 cap left it null.
+    "HDTV-2160p":         (None, 100.0),
+    "Bluray-2160p Remux": (None, 250.0),
 }
 
 

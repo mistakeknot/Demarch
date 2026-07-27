@@ -93,6 +93,10 @@ uses it now — `Best-Available` cascades just as far.
 - **Radarr caches import-list payloads.** After deleting a movie, neither
   `ImportListSync` nor re-saving the list will re-add it; add it back explicitly
   by tmdbId.
+- **`preferredSize` must not exceed `maxSize`.** Sonarr accepts the PUT and
+  returns success, then silently drops the value, leaving it null. Setting 400
+  MB/min against `Bluray-2160p Remux`'s 250 cap looked like it applied and had
+  not. Always re-read the definition after writing it.
 - **Sonarr queue rows are per-episode.** A season pack shows one row per episode
   it satisfies. 23 rows / 12 downloads is normal, not duplication.
 
