@@ -135,6 +135,39 @@ documentary serials — under Movies, so that mapping would present films to
 Sonarr as series. Archival coverage is not lost: Radarr searches KG, and that
 is where KG's material correctly lands.
 
+## Unknown quality, and why it lives only on Archival-Best
+
+Karagarga names frequently carry no quality tag at all — `Man ham mitounam AKA
+So Can I 1975 Iran [So.Can.I]` — so Radarr parses them as quality `Unknown`,
+which every profile excluded. The majority of KG results were rejected with
+"Unknown is not wanted in profile", precisely for the material where KG is the
+only source that exists.
+
+`Unknown` is Radarr's catch-all for anything unparseable, so allowing it on
+Best-Available would let untagged junk satisfy a mainstream title that is merely
+waiting for a proper WEB-DL. It is therefore scoped: **`Archival-Best` is now
+exactly `Best-Available` plus `Unknown`**, and only the archival directors'
+file-less titles sit on it.
+
+Three properties make this safe:
+
+- **`Unknown` ranks lowest** in Radarr's quality ordering, so a parseable
+  release still wins whenever one exists. Unknown is a fallback, never a
+  preference.
+- **Radarr caps `Unknown` at 100 MB/min**, and `AI Upscale` still scores -10000.
+- **Only file-less movies moved.** A title that already has a file was left on
+  Best-Available, so nothing already satisfied could be re-evaluated downward.
+
+Membership is declarative: the two archival import lists apply an `archival`
+tag. Note that **Radarr applies an import list's tags only when it ADDS a
+movie** — a list sync will not retroactively tag titles imported earlier, so
+`archival_unknown.py` resolves both filmographies through Seerr's person
+endpoint (the one TMDb credential already running here) and tags the matches.
+
+Measured before and after: *So Can I* went from all 3 KG releases rejected to
+all 3 acceptable, *Orderly or Disorderly?* from 0 acceptable to 2, *The
+Traveler* from 2 to 4 — while Best-Available titles still reject Unknown.
+
 ## Reading `stalledUP` correctly
 
 A census of the 461 migrated torrents showed 455 "stalled", which looks alarming
@@ -150,11 +183,12 @@ and cross-seeding the same file to a second tracker.
 
 ## Known gaps
 
-- **Karagarga releases frequently parse as quality `Unknown` and get rejected.**
-  KG names often carry no quality tag at all — `Avaliha AKA First Graders 1984
-  Iran [Avaliha]` — so Radarr parses `Unknown`, which every profile excludes.
-  This defeats the archival cascade precisely where KG is the only source that
-  exists. Tracked as `sylveste-ai77`.
+- **The `Unknown` fix covers two directors, but the problem is wider.** The
+  behavioural control turned up non-Curtis/Kiarostami arthouse titles hitting
+  the same rejection on Best-Available — *Je Tu Il Elle* (1974), *Roar* (1981),
+  *Out of the Way!* (1931). They are correctly excluded today, but they are
+  archival by nature. Widening membership needs a rule, not a longer hardcoded
+  list. Tracked as `sylveste-k2pn`.
 - Curtis's *Shifty* (2025) has no clean TVDB entry; TVDB carries an umbrella
   "Adam Curtis Films" series that would overlap the Radarr entries.
 - `preferredSize` is unset on every HD tier, and the `minSize` floors reject
