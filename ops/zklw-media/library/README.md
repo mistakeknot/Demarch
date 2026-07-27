@@ -244,30 +244,55 @@ The flag enums differ between services and must never be shared:
 | Radarr | 1 | 2 | 256 | 512 |
 | Sonarr | 1 | 2 | 32 | 64 |
 
-## Cross-seed: viable, but not the pairing we assumed
+## Cross-seed: deployed, and my own assessment was wrong
 
-Cross-seeding needs the same **file**, not the same film. Sampling 22 torrents
-from each tracker and matching sizes across trackers via Prowlarr:
+Cross-seeding needs the same **file**, not the same film. I first estimated the
+opportunity by sampling 22 torrents per tracker and size-matching across
+trackers via Prowlarr, which gave HDBits 8/22 (36%) and Karagarga 2/22 (9%),
+with most HDBits matches landing on TorrentLeech. I wrote that up as "the
+pairing is HDBits ↔ TorrentLeech, not Karagarga."
 
-| stock | has a size-matched twin elsewhere |
-|---|---|
-| HDBits (332 held) | **8/22 — 36%** |
-| Karagarga (125 held) | **2/22 — 9%** |
+**Running the actual tool disproved that.** A bounded 12-search pass found
+**9 cross seeds**, of which **Karagarga supplied 6 and TorrentLeech 2** — the
+reverse of the prediction, at a far higher hit rate (9 from 12 searched, against
+a predicted ~36%).
 
-**The overlap is HDBits ↔ TorrentLeech, not HDBits ↔ Karagarga.** Six of the
-eight HDBits matches were on TorrentLeech and only two on KG. That is the
-opposite of where effort was expected to go, and it makes sense in hindsight:
-HDBits and TorrentLeech are both general HD trackers carrying overlapping P2P
-and scene releases, whereas KG's catalogue is deliberately rare material that by
-definition exists in few places.
+The estimate was wrong for two reasons worth remembering. It sampled the
+*seeding stock* — torrents already loaded — whereas cross-seed searches the
+*library*, 709 items, a different and much larger population. And it matched on
+cleaned-up names plus approximate size, whereas cross-seed matches on actual
+file structure. A name-and-size proxy is fine for deciding whether to bother
+looking; it is not fine for predicting what a real matcher will find. The
+lesson: when a tool exists that answers the question directly, a sampling proxy
+is a reason to run the tool, not a substitute for its verdict.
 
-Verdict: **worth tooling, targeting HDBits ↔ TorrentLeech.** Extrapolated, ~36%
-of 332 HDBits torrents is roughly 120 candidates — upload credit on a second
-tracker for zero extra disk and zero extra download. Size matching within 0.5%
-is a proxy, not proof; a real cross-seed tool must confirm by piece hashes
-before announcing anything.
+Deployed via `crossseed_setup.py`. First run injected 8 torrents totalling
+**47.96 GB of new seeding stock for zero additional disk**, hardlinked into
+`/data/cross-seeds` and tagged `cross-seed` so qbit-manage governs them like any
+other torrent.
 
-**Blocked on a safety precondition first — see below.**
+Safety properties, in the order they matter:
+
+- **No two-IP violation.** Cross-seeding creates a NEW infohash on a DIFFERENT
+  tracker, seeded only from grey. The rule is about one infohash on two
+  machines — a real and separate problem here, see below, but an orthogonal one.
+- **`matchMode: safe`** requires file sizes to line up exactly. Approximate
+  matching was good enough to assess; it is not good enough to announce.
+- **`skipRecheck: false`** so qBittorrent hashes the data before announcing.
+  Announcing data you cannot serve is how a tracker learns to distrust you.
+- **`delay: 30`** paces searches. The point of ratio work is protecting standing
+  on these trackers.
+- Searches are **bounded by `--search-limit`**. An unbounded pass over 709
+  torrents × 3 indexers is ~2000 queries; do not run one casually.
+
+`config.js` holds the Prowlarr key and qBittorrent credentials, so it is
+generated on grey and written 0600. It is not in this repo.
+
+Two traps hit during deployment: the config directory must be owned by uid 1001
+or cross-seed fails with `attempt to write a readonly database` (its SQLite
+store, not the config) — the same uid trap recyclarr has. And an earlier
+half-finished install had left `cross-seed.db` owned by root since 25 Jul,
+failing silently.
 
 ## Two machines are holding the same torrents
 
