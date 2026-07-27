@@ -300,6 +300,102 @@ its place. The count holds level because bumps land at least as fast as manual
 fixes. This needs one estate-wide pass plus a release-path hook, not repo-by-repo
 attention. Tracked as `Sylveste-646`.
 
+## Tooling that re-dirtied tracked paths, fixed 2026-07-27
+
+Goal `d1f7c2ab` fixed the two mechanisms that made "clean the estate" a
+losing game. Both turned out to be the **same bug shape**: a path derived from
+a root that was not the one the caller had in mind, so the action landed
+somewhere plausible and wrong.
+
+### interchart's 6-node diagram (`Sylveste-afg`)
+
+Cause, reproduced exactly: `generate.sh` was invoked with interchart's own
+directory as `SYLVESTE_ROOT`. One wrong argument produced both symptoms, which
+is why the artefact looked internally consistent —
+
+- the scan sees only interchart: **6 nodes / 4 edges**, verified byte-identical
+  to the broken artefact, against **249 / 325** for a full-monorepo scan;
+- `OUTPUT` defaults to `$SYLVESTE_ROOT/docs/diagrams/ecosystem.html`, so the
+  write was redirected into interchart's own tracked `docs/`.
+
+It was the third occurrence. `d9e56df` fixed the artefact on 2026-07-23,
+`bb3725e` re-poisoned `data/scan.json` on 2026-07-24, and it recurred on
+2026-07-27 at 17:09:47Z. There is no cron — regeneration is on-demand, ratified
+in `daa76fc` — so the trigger is a caller resolving the root wrongly, which
+`skills/interchart/SKILL.md` invited: it asked the caller to determine the root
+while using `${CLAUDE_PLUGIN_ROOT}` (the plugin *cache*, not the monorepo) in
+the same snippet, and had the agent report the node count with no notion that
+6 is absurd.
+
+Three guards, each covering a different half:
+
+| Guard | Exit | Catches |
+|---|---|---|
+| Root must contain `interverse/` and `os/` | 2 | the historical invocation, at the source |
+| Scan must not collapse vs the artefact it replaces | 3 | any other route to a narrow scan |
+| HTML written only if canonicalised content differs | 0 | timestamp churn on *correct* runs |
+
+The collapse ratio of **0.5 is derived, not guessed**. Across this artefact's
+12 commits the counts run 121, 121, 121, 121, 124, 188, 188, 188, 145, 244.
+The largest legitimate *decrease* is 188 → 145 (−22.9%, a real 2026-04-05
+consolidation) against a −97.6% failure. A tighter 0.9 would have fired on
+Apr 5, and a guard that trips on legitimate change is one people learn to
+bypass. There is also an absolute floor of 20 nodes for when no baseline
+exists — or when the baseline is itself poisoned, which was live: `data/scan.json`
+held **6 nodes in HEAD** while `ecosystem.html` held 244, so a cache-relative
+check would have compared 6 to 6 and passed.
+
+Six regression tests cover the cause rather than the artefact, because fixing
+the artefact twice is exactly what let this recur.
+
+### The hook installer (`Sylveste-0wt`)
+
+`~/projects/dotfiles/cloud/install-hooks.sh`. Its `hooks_dir_for()` honours
+`core.hooksPath`, and several repos route that at a **tracked** directory
+holding portable committed hooks — bd and interwatch managed blocks, and
+interflux's routing-drift gate. Symlinking over them left a tracked typechange
+whose pending content was an absolute path under `$HOME`.
+
+**One earlier reading here was wrong and worth recording.** The displaced hooks
+were *not* silently disabled: `pre-commit.sh` deliberately chains to the most
+recent `pre-commit.bak-*` and honours its exit code, with a comment saying
+superseding another tool's hook is not an acceptable cost. Behaviour was
+preserved all along.
+
+But that is precisely why the repos could never be clean: **the mechanism that
+preserved behaviour was the mechanism that dirtied the tree.** The symlink and
+the untracked `.bak` were both load-bearing — deleting the `.bak` to tidy up
+would have silently disabled the predecessor hook, which is the trap the
+obvious cleanup walks into.
+
+Fixed by inverting the direction. The **tracked** hook now calls the dispatcher
+itself, `$HOME`-relative and presence-checked so it stays committable and
+no-ops elsewhere — the convention this monorepo's own `pre-commit` already used
+for its JSONL/Dolt guard. No symlink, no `.bak`, both checks still run.
+
+Two installer bugs, the second only visible after the first was fixed:
+
+1. Never install over a git-tracked hook. Far wider than the three repos that
+   prompted it — a real sweep reports **45 skips across `~/projects`**,
+   including `autosigil`, `auxology`, `concordance`, `cujgel`, `gsvdotcom`,
+   `jawnomicon`, `Lowbeer` and `ops`.
+2. A worktree inherits `core.hooksPath` from the shared config, and when that
+   value is absolute it points at the **main checkout**. Iterating a Sylveste
+   worktree therefore installed into the main checkout — and guard 1 missed it,
+   because it asked the *worktree's* index about a path living in the main
+   checkout, found nothing, and let the write through. Same bug shape as
+   interchart, one layer out.
+
+Verified: a full sweep reports `linked=0 already-correct=205 backed-up=0`, and
+the affected repos show no typechange and no stray `.bak`.
+
+`intervoice` is left as-is: it ignores `.beads/hooks/` and tracks nothing
+there, so the installer's symlink and `.bak` are invisible and its chain still
+works. Its ignore rule is **not** the model to copy, though — every tracked
+hook in this estate contains zero hardcoded machine paths, so tracking portable
+hooks under `core.hooksPath` is the deliberate design, and `intervoice` is the
+outlier.
+
 ## See also
 
 - `docs/reflections/2026-07-25-monorepo-tree-cleanup-reflect.md` — where the 198
