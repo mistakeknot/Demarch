@@ -116,11 +116,24 @@ component allowed to delete torrents (every `share_limits` group is
 `cleanup: false`). Enabling trackers on an app that removes downloads is the one
 ordering that produces real hit-and-run exposure.
 
-Karagarga syncs to **Radarr only**, and correctly so: it exposes no TV
-categories (Movies / Audio / Books) and its `tvSearchParams` is empty. Prowlarr
-declines to offer it to Sonarr because KG has no TV catalogue — do not "fix"
-this by inventing a category mapping, which would only make Sonarr issue
-tvsearch queries KG cannot answer against a tracker where query limits matter.
+Karagarga syncs to **Radarr only, and cannot be made to sync to Sonarr.** This
+was tested rather than assumed. Karagarga has exactly three sections — Movies
+(2000), Audio (3000), Books (7000). There is no TV category on the tracker, so
+`tvSearchParams` is empty and there is nothing to map. Three wiring attempts
+were made against Sonarr, adding KG directly as a Torznab indexer through
+Prowlarr's per-indexer endpoint; Sonarr's own validation rejected all three:
+
+| attempt | Sonarr's response |
+|---|---|
+| no category filter | `Either 'Categories' or 'Anime Categories' must be provided` |
+| TV category 5000 | `No RSS feed query available` |
+| Movies category 2000, RSS on | `No RSS feed query available` |
+
+The only remaining route would be forking KG's Cardigann definition to declare
+its Movies category as TV. Do not. Karagarga files everything — including
+documentary serials — under Movies, so that mapping would present films to
+Sonarr as series. Archival coverage is not lost: Radarr searches KG, and that
+is where KG's material correctly lands.
 
 ## Reading `stalledUP` correctly
 
