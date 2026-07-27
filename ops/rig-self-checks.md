@@ -15,7 +15,7 @@ This page exists so that never depends on someone remembering.
 | `guard-tests` — the 13-test guard suite | launchd | systemd timer | daily 09:15 |
 | `settings-reference` — does a reference actually resolve | launchd | systemd timer | daily 09:15 |
 | `marketplace-divergence` — do the clones agree | launchd | systemd timer | daily 09:15 |
-| `intercore-tests` — `go test ./...` for the suite gating `ic` | launchd | **skip** | daily 09:15 |
+| `intercore-tests` — `go test ./...` for the suite gating `ic` | launchd | systemd timer | daily 09:15 |
 | `ic-provenance` — does the deployed binary match the source | launchd | systemd timer | daily 09:15 |
 | `advertisement-budget` — what enabled plugins cost in context | launchd | systemd timer | daily 09:15 |
 | `instrument-freshness` — are the usage instruments still recording | launchd | systemd timer | daily 09:15 |
@@ -27,7 +27,7 @@ Expected steady state, so a drift is auditable against something:
 Clavain   guard-tests pass   settings-reference pass   marketplace-divergence pass
           intercore-tests PASS    ic-provenance pass    advertisement-budget WARN
 zklw      guard-tests pass   settings-reference pass   marketplace-divergence pass
-          intercore-tests SKIP    ic-provenance pass    advertisement-budget WARN
+          intercore-tests PASS    ic-provenance pass    advertisement-budget WARN
 ```
 
 zklw's budget check found a real problem on its first run — 52,537 against a
@@ -38,7 +38,7 @@ chars of headroom, under **one rig-wide ceiling** — the reasoning for not givi
 the dev server its own number is recorded beside the constant in
 `rig-budget-eval.py`.
 
-**If Clavain ever reports `intercore-tests = skip`, the build marker went missing.**
+**If either machine reports `intercore-tests = skip`, that machine's build marker went missing.**
 
 Runner: `~/.local/bin/rig-health-check.sh` → writes one JSON status file per check
 to `~/.claude/health/`. Exits non-zero if any check failed, so the scheduler's own
@@ -56,26 +56,35 @@ A separate LaunchAgent from `com.arouth.claude-plugin-cleanup` on purpose: clean
 is weekly, these want daily, and a failing check must not be able to stop cache
 pruning or vice versa.
 
-## The Go test suite is single-machine, and that is the decision
+## The Go test suite runs on both machines — reversed 2026-07-27
 
-`intercore-tests` runs **only on Clavain**. This is a deliberate choice, recorded
-here because the honest alternative was giving zklw a Go toolchain.
+`intercore-tests` runs on **Clavain and zklw**. It used to run only on Clavain,
+and the reasoning recorded here for that was wrong on the facts.
 
-zklw has no Go and cannot get one without root that mk does not have. But the
-stronger reason is that **Clavain compiles both artifacts** — the `darwin/arm64`
-binary it runs, and the `linux/amd64` binary cross-compiled and copied to zklw.
-zklw never compiles anything. Testing where the binary is actually produced is
-therefore full coverage of what ships, not a partial substitute for it.
+The claim was "zklw has no Go and cannot get one without root that mk does not
+have." Neither half held. A root-owned **go1.23.8 had been sitting at
+`/usr/local/go` since March 2025**, absent from `PATH` in both login and
+non-interactive shells and therefore invisible to `command -v go`. And a
+user-local install needs no root at all: `~/.local/go` holds **go1.26.4**, chosen
+to match Clavain's toolchain exactly so an artifact built on either machine is
+comparable to the other.
 
-What that does *not* cover: nothing tests the linux binary **on** linux. The
-cross-compiled artifact is only ever exercised by `ic-provenance` confirming its
-stamp, and by whatever a session happens to run. If a bug were GOOS-specific,
-this arrangement would miss it.
+The supporting argument was also weaker than it read. "Clavain compiles both
+artifacts, so testing where the binary is produced is full coverage" is true
+about *compilation* and says nothing about *execution* — the section admitted as
+much two paragraphs later and then let the conclusion stand anyway. **Nothing
+ran the linux binary on linux.** That is now covered: zklw's first scheduled run
+reported `40 package(s) ok`.
 
-Which machine is the builder is marked by a **tracked dotfiles artifact**:
+This was found while fixing `mk-cg3z`, where the same missing toolchain made
+zklw structurally unable to publish. One environment gap, two symptoms, and the
+documentation asserted it was unfixable in both places.
+
+Which machines are builders is marked by **tracked dotfiles artifacts**:
 
 ```
-dotfiles/macos/.config/intercore/build-machine  →  ~/.config/intercore/build-machine
+dotfiles/macos/.config/intercore/build-machine   →  ~/.config/intercore/build-machine
+dotfiles/server/.config/intercore/build-machine  →  ~/.config/intercore/build-machine
 ```
 
 Keying off `command -v go` instead would mean a machine that loses its toolchain
@@ -84,6 +93,19 @@ shape this whole effort exists to prevent. The marker inverts it: a **designated
 machine with no Go fails loudly; an undesignated machine skips quietly. Tracking
 the marker in git means losing it shows up as a visible change rather than a
 permanent silent skip.
+
+### The timer saw a narrower PATH than you do
+
+zklw's `rig-health.service` inherited systemd's user `PATH`, which does **not**
+include `~/.local/bin`. Every tool installed there — `ic`, `go`, the `rig-*`
+helpers — was invisible to the scheduled run while working perfectly when you
+ran the same script by hand. The script had been absorbing this one binary at a
+time, probing `${HOME}/.local/bin/ic` before falling back to `command -v ic`.
+That works and hides the cause; the next tool added pays it again.
+
+The service now sets `PATH` explicitly. Prefer that over another absolute-path
+probe: a check that behaves differently under the scheduler than in your shell
+is untrustworthy in both places.
 
 ## The advertisement budget, and why the ceiling is shaped this way
 
