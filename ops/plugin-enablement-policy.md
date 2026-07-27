@@ -6,7 +6,7 @@
 
 | | enabled | budget | status |
 |---|---|---|---|
-| Clavain (laptop) | 44 of 85 | **29,496** | warn — 504 from the ceiling |
+| Clavain (laptop) | 44 of 85 | **28,452** | pass — 1,548 under the ceiling |
 | zklw (dev server) | 62 of 77 | **29,360** | dormant — loaded by no session (see below) |
 
 Ceiling is **30,000 rig-wide**, not per machine. See "One ceiling" below.
@@ -455,6 +455,69 @@ Re-enable any one of them in a line:
 ```bash
 ssh zklw 'claude plugin enable pr-review-toolkit@claude-plugins-official'
 ```
+
+## 2026-07-27: Clavain cleared the warn band — 29,496 → 28,452
+
+One lever did it. `plan-reviewer` (clavain 0.6.290, `mk-hpkv`) advertised **1,191
+chars, of which 1,032 were two `<example>` blocks**. Relocated into a
+`## When This Agent Is Dispatched` body section, where they cost nothing until the
+agent is dispatched: **147 chars, −1,044 reclaimed**.
+
+The trigger sentence is retained verbatim, so dispatch is unchanged — this agent
+is selected by description match, and only the examples moved. Verified in the
+installed 0.6.290 cache.
+
+Confirmed on a **scheduled** run, not by hand:
+
+```
+advertisement-budget  pass  28,452 chars, 1,548 under the 30,000 ceiling (-1044 since last run)
+                            -1044  clavain   7,133 -> 6,089
+```
+
+### The other two levers, and why neither moved
+
+**`interflux` — nothing to reclaim.** The premise was that 29 live entries with
+zero demoted was conspicuous. It is not: its deployed cache (0.2.85) contains
+**zero** `<example>` blocks — the 0.2.84 relocation already landed — and its 29
+entries average **172 chars**, already lean. They are also **agents**, and
+`disable-model-invocation` applies to commands, so demotion was never available.
+
+> The `<example>` blocks visible in a running session's agent list came from the
+> *older cache that session loaded*, not from the current plugin — a live
+> demonstration of why the published state must be measured deliberately rather
+> than read off the session you are sitting in.
+
+**`cloudflare` — keep, capability call.** Its 4,397 chars are 13 documentation
+*skills* (Workers best practices, Durable Objects, Turnstile, email service,
+wrangler…), not the MCP surface. The MCP tools cost nothing to advertise. Three
+facts settle it:
+
+1. It is third-party, so demotion is not durable — an update overwrites any edit.
+2. Enablement is per-plugin, so the skills cannot be dropped while keeping the
+   MCP.
+3. The MCP is the only path to 45 zones; wrangler tokens do not work against the
+   raw API.
+
+So the real trade is 4,397 chars against Cloudflare access entirely. Keep. If the
+Workers documentation is genuinely never used, the only lever is asking upstream
+to demote those skills.
+
+### Publishing this exposed a structural problem
+
+`ic publish` from zklw failed: **`build-release: Go not found`**. zklw is the
+designated publish signer and has no Go toolchain, so clavain's
+`verify-release-binaries.sh` cannot run — and `release.go` treats *any* verifier
+failure as `ErrStaleReleaseArtifacts`. The pipeline reports "release artifacts are
+stale" when the truth is "this machine cannot determine staleness": a check that
+cannot run, reporting a definite verdict. **The designated signer structurally
+cannot publish any plugin shipping Go artifacts** (`mk-cg3z`).
+
+Published from the Mac instead. A second, self-inflicted blocker surfaced there:
+clavain's manifest pinned intercore `72f9691` while the checkout had moved to
+`cd0197f` — advanced earlier the same day by the ic build-stamp work, which had
+quietly made clavain unpublishable. The rebuild was verified safe before shipping:
+`clavain-cli` imports **only** `intercore/pkg/authz`, and the delta touches only
+`cmd/ic/` and `internal/publish/`, which an external module cannot import at all.
 
 ## `claude plugin details` is not a usable cross-check per plugin
 
