@@ -19,6 +19,7 @@ This page exists so that never depends on someone remembering.
 | `ic-provenance` — does the deployed binary match the source | launchd | systemd timer | daily 09:15 |
 | `advertisement-budget` — what enabled plugins cost in context | launchd | systemd timer | daily 09:15 |
 | `instrument-freshness` — are the usage instruments still recording | launchd | systemd timer | daily 09:15 |
+| `peer-agreement` — do this machine and its peers agree on what must match | launchd | systemd timer | daily 09:15 |
 | settings.json history | SessionStart + daily | **continuous, 10s poll** | see below |
 
 Expected steady state, so a drift is auditable against something:
@@ -26,9 +27,15 @@ Expected steady state, so a drift is auditable against something:
 ```
 Clavain   guard-tests pass   settings-reference pass   marketplace-divergence pass
           intercore-tests PASS    ic-provenance pass    advertisement-budget WARN
+          peer-agreement PASS
 zklw      guard-tests pass   settings-reference pass   marketplace-divergence pass
           intercore-tests PASS    ic-provenance pass    advertisement-budget WARN
+          peer-agreement PASS
 ```
+
+Both machines run `peer-agreement`, and that is the point: each compares the
+other independently, so a divergence is seen twice rather than depending on one
+machine's scheduler being alive.
 
 zklw's budget check found a real problem on its first run — 52,537 against a
 30,000 ceiling, because the enablement policy had only ever been applied to the
@@ -303,6 +310,7 @@ names the repos; whether a timer should push on mk's behalf is mk's call.
 ```
 zklw   systemd timer -> checks run -> ~/.claude/health/*.json
 Mac    daily job     -> rig-health-fetch-peers.sh -> ~/.claude/health/peers/zklw/
+                        ...and PUSHES ~/.claude/health/facts.json to zklw
 Mac    session start -> reported as "zklw:<check>"
 ```
 
@@ -315,13 +323,104 @@ a lost peer looks exactly like a healthy one once its files age out. Peer
 staleness is judged like local staleness, which also covers the fetch itself
 dying.
 
-Deliberately one-directional. Making it symmetric would have zklw fetching the
-Mac's status and reporting it to nobody, for the reason above.
+**One direction of ssh, two observers.** The Mac has no inbound sshd, so zklw
+cannot open the connection. It does not need to: the same visit that collects
+zklw's statuses also deposits the Mac's `facts.json` at
+`~/.claude/health/peers/Clavain/.facts.json`, which is where zklw's own agreement
+check reads it. Both machines run the comparison independently and zklw's verdict
+comes home in the next fetch.
+
+An earlier note here said symmetry was pointless because zklw would report to
+nobody. That stopped being true the moment peer reporting existed — a verdict
+zklw reaches does arrive. The real constraint is just the missing sshd.
 
 > Also worth recording: the settings-history could not date this outage, contrary
 > to expectation. Its 347 commits stop at **2026-04-24** and resume 2026-07-26 —
 > the watchdog was itself dead for three months before being repaired. A history
 > with a hole in it is not a witness for the period inside the hole.
+
+## Collecting from a peer is not comparing against it — `peer-agreement`
+
+Nine statuses arrived from zklw every day and **not one was compared against the
+Mac's**. Every check answered "is this machine healthy", none answered "do these
+two machines agree", and three divergences had already happened by 2026-07-27,
+each found by accident:
+
+- Both machines build `ic` from their own clone, and `ic-provenance` compares
+  each binary against its **own** clone. Two machines can sit at different
+  commits with both reporting pass.
+- Publishing clavain 0.6.292 from zklw hit a rebase conflict because zklw's
+  marketplace clone was stale for interflux; taking the local side would have
+  rolled interflux **backwards**. `ic publish doctor` detects clone divergence
+  only *within* one machine.
+- Both machines run go1.26.4 and the release verifier pins the manifest's
+  `go_version`, so an upgrade on one makes digests unreproducible on the other,
+  silently, until a publish fails (`mk-wuwp`).
+
+### What is compared
+
+| Fact | Why it must match |
+|---|---|
+| `go_toolchain` | The `go` that will build the next release. `bin/release-manifest.json` pins `go_version` and the verifier asserts each binary's embedded version equals it exactly. |
+| `intercore_commit` | The source both machines build `ic` from. `ic-provenance` only asks "current with **my** clone", so a machine that is behind passes while shipping an older binary than its peer. |
+| `ic_commit` | The deployed binary's own stamp. Identical clones plus one machine that forgot to rebuild is a real state, and only this catches it. |
+| `marketplace_plugin_versions` | The name→version map, **not the git SHA**. SHAs disagree constantly and harmlessly while a clone waits to pull; versions disagreeing is what causes damage. |
+
+### What is deliberately NOT compared
+
+This half matters as much. A wall of expected errors teaches you to skip the
+output, which is exactly how the four-month guard outage (`mk-1wj0`) survived.
+
+| Fact | Why comparing it would be wrong |
+|---|---|
+| advertisement budget | Differs **by design** — different enablement sets. 28,452 vs 29,360 is the policy working. |
+| enabled plugin set | Differs **by design**, same reason. The enablement policy is per-machine. |
+| plugin source repo HEADs | Clavain is the *verifier* role; its checkouts trail the marketplace and that is the documented steady state. Comparing them rebuilds the 21-error wall `publish-machine-roles.md` removed. |
+| installed plugin versions | The Mac runs plugins; zklw starts no sessions, so its installed set is meaningless. |
+| intercore DB schema | Per-machine database, migrated on first use. Different versions between migrations are correct. |
+| the Go that built `ic` | `ic` is not digest-verified by anything, so its build toolchain carries no downstream contract. Only the toolchain that builds *release artifacts* matters. |
+
+The reasoning lives in `rig-facts.py` beside each collector, so the code and this
+table cannot drift apart.
+
+### Exit codes, again
+
+`1` diverged · `2` no peer configured · `3` cannot compare (stale or missing
+facts). "I have no peer" and "we disagree" are opposite statements and must not
+share a code — the same discipline as the release verifier's reserved exit 3.
+Stale peer facts produce a **warn**, never a fail: comparing three-day-old values
+would yield confident findings about a machine's past.
+
+Divergence is a **failure**, not a warning, because every fact here has a
+demonstrated failure mode that does not self-heal. A warning would be right for
+something the next scheduled run repairs by itself; nothing here does.
+
+## The reporter was the one thing nothing watched
+
+The audit that came with `peer-agreement` asked whether peer reporting had the
+guard's shape. Most of it does not: a peer that stops running ages out to STALE,
+an unreachable peer writes a marker, a dead fetch shows up as aging files, and a
+dead scheduler shows up because the reporter still runs at session start.
+
+One gap was real. **The SessionStart reporter is the only channel from this
+system to a human, and nothing watched the channel.** Unregister the hook and
+every check still passes, every status file still updates, and the findings
+simply stop arriving.
+
+The reporter now appends to `~/.claude/health/reporter-heartbeat.jsonl`, and
+`instrument-freshness` treats it as an instrument like `audit.log` — read from
+the timestamp *inside* the last record, and only meaningful where sessions
+actually start (zklw correctly reports it "not present").
+
+**This does not close the gap, and pretending otherwise would be the same
+mistake.** A hook cannot announce its own absence through itself; the detector
+runs on the scheduler, but its finding is delivered by… the reporter. What the
+heartbeat buys is that the gap becomes **measurable and dated**: the first
+session after a reporter outage says how long it lasted, instead of the outage
+being invisible in both directions. Closing it properly needs an out-of-band
+channel — a push notification, a peer that alarms on the Mac's silence — and
+that is not built. The honest statement is that this is a *bootstrap floor*, not
+a covered case.
 
 ### The check: relative, not a plain age threshold
 
