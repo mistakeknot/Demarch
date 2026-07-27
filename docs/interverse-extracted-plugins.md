@@ -138,13 +138,30 @@ that, not the untracking.
 Goal `d4b1f7c2` acted on the 43 / 20 / 8 split above. Result: **63 at upstream
 HEAD, 0 behind, 3 dirty.**
 
-Those counts are a measurement, not a steady state. Within the same session a
-weekly cron produced a fifth `interfer` benchmark log; a sibling session
-committed and pushed in `interflux`, which briefly read as diverged before
-resolving to at-HEAD and clean; and a hook installer dirtied three repos
-plus the monorepo. Final live reading: **63 at HEAD, 0 behind, 2 dirty**
-(`intersearch`, `intervox`). Treat any estate-wide count as true at the
-instant it was taken.
+The `at-HEAD` and `behind` numbers held. The dirty count did not, and the
+reason matters more than the number.
+
+Within this one session: a weekly cron produced a fifth `interfer` benchmark
+log; a sibling session committed and pushed in `interflux`, which briefly read
+as *diverged* while it was in fact **ahead by one unpushed commit** — a
+direction a name-and-SHA comparison cannot distinguish; a hook installer
+dirtied three repos plus the monorepo, cleared, and dirtied them again; and
+**`interchart`'s broken generator re-ran and reproduced the 6-node artefact
+within minutes of it being discarded.**
+
+That last one is the finding, not the churn. The 6-node output is
+**deterministic, not a one-off** — so `interchart` cannot be held clean, and
+the committed 244-node diagram is permanently one careless `git add` away from
+being replaced by a stub. Raised to P1 as `Sylveste-afg`.
+
+Final live reading: **63 at HEAD, 0 behind, 4 dirty** — `intersearch`
+(`uv.lock`, left for its owner), `intervox` and `interflux` (hook installer),
+and `interchart` (the reproducing generator). Two of those four are machinery
+re-dirtying the tree on a schedule, which no amount of cleaning fixes.
+
+Treat any estate-wide count as true only at the instant it was taken. A repo
+whose *tooling* writes into tracked paths has no clean steady state to
+converge to; that is a defect in the tooling, not a backlog of chores.
 
 `git pull --ff-only` in all 20 behind repos: **19 fast-forwarded**, each verified
 against `gh api repos/mistakeknot/<name>/commits/main`. The refusal to use a
