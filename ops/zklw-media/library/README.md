@@ -16,6 +16,9 @@ as an argument. Every script is dry-run by default; `--apply` is opt-in.
 | `fix_bad_grabs.py` | Removes wrong-series and AI-upscale grabs, and installs guards against both. |
 | `consolidate_library.py` | Collapses the 4K/non-4K split into one `Best-Available` library and sets the size caps. |
 | `purge_4k_dupes.py` | Deletes files orphaned by the consolidation, with live safety preconditions. |
+| `audit_settings.py` | Read-only dump of every lever governing quality/size/ratio, including the ones invisible from the quality profiles. |
+| `tracker_health.py` | Read-only census of the seeding stock by tracker, with announce status. |
+| `apply_audit_fixes.py` | Applies the 2026-07-27 audit fixes in their required dependency order. |
 
 ## grey's config is repo-owned
 
@@ -48,6 +51,15 @@ massive 4K Blu-ray rips":
 - **boosts DV / HDR10+ / HDR at +1500.** On an OLED these are far more visible
   than the last 20 Mbps of bitrate.
 - **rejects AI upscales at -10000**, and caps five tiers at 250 MB/min (~33 Mbps).
+  Both guards now exist on **Sonarr as well as Radarr**; the consolidation
+  originally applied them to Radarr only, leaving TV uncapped and unguarded
+  against the same fake-4K releases.
+- **stops upgrading at `cutoffFormatScore` 1550.** It was 10000, against a
+  ceiling of 1500+1500+1500+50 that no real release reaches — so every title sat
+  permanently below cutoff and both arrs hunted upgrades forever. 1550 means
+  "correct quality, plus any HDR flavour". Archival SD still cannot reach it and
+  will keep searching, which is inherent to scoring HDR on material that has
+  none; the quality cutoff still bounds what actually gets grabbed.
 
 It carries **no SDR penalty** on purpose. TRaSH scores SDR at -2000; on a 1984
 broadcast SDR is not a defect but the only thing that ever existed, and against
@@ -82,10 +94,57 @@ uses it now — `Best-Available` cascades just as far.
 - **Sonarr queue rows are per-episode.** A season pack shows one row per episode
   it satisfies. 23 rows / 12 downloads is normal, not duplication.
 
+## Indexer topology, and the rule that keeps it safe
+
+Prowlarr does not push every indexer to every app — it filters by **tag**. The
+private trackers carry tag `1` (`trackers`), Usenet carries tag `2`, and each
+app entry lists the tags it accepts.
+
+This is how the trackers went missing. Tag `1` was only ever granted to
+`Radarr4K` / `Sonarr4K`, so when the 4K consolidation retired those instances,
+HDBits and Karagarga silently went with them. The live arrs ran Usenet-only for
+weeks; Karagarga logged 89 queries and **zero grabs, ever**. Nothing in either
+service reports this — Radarr does not know it used to have indexers, and
+Prowlarr does not know its apps can no longer see them. The signature to watch
+for is queries climbing while grabs stay at zero.
+
+**Before granting an app tag `1`, confirm that app will not delete torrents.**
+Radarr's qBittorrent client shipped with `removeCompletedDownloads=True`, which
+removes a torrent from the client after import — cutting seeding short against
+HDBits' 14-day and Karagarga's 30-day minimums. qbit-manage is the only
+component allowed to delete torrents (every `share_limits` group is
+`cleanup: false`). Enabling trackers on an app that removes downloads is the one
+ordering that produces real hit-and-run exposure.
+
+Karagarga syncs to **Radarr only**, and correctly so: it exposes no TV
+categories (Movies / Audio / Books) and its `tvSearchParams` is empty. Prowlarr
+declines to offer it to Sonarr because KG has no TV catalogue — do not "fix"
+this by inventing a category mapping, which would only make Sonarr issue
+tvsearch queries KG cannot answer against a tracker where query limits matter.
+
+## Reading `stalledUP` correctly
+
+A census of the 461 migrated torrents showed 455 "stalled", which looks alarming
+and is not. `stalledUP` means *seeding, no peers currently downloading* — the
+normal resting state for a seedbox. The real health signal is the tracker
+announce: 328/332 HDBits and 118/125 Karagarga announces are `working`. Only 9
+leechers existed across the whole HDBits catalogue, which is simply what an
+older arthouse library looks like.
+
+The corollary matters for ratio planning: passive seeding of an old catalogue
+will not move ratio. The levers that do are fresh grabs, freeleech preference,
+and cross-seeding the same file to a second tracker.
+
 ## Known gaps
 
-- `recyclarr.yml` lives only on grey and is not mirrored in this repo. The
-  `AI Upscale` custom format was created via the API, so a future recyclarr run
-  with `delete_old_custom_formats: true` would remove it until it is mirrored.
+- **Karagarga releases frequently parse as quality `Unknown` and get rejected.**
+  KG names often carry no quality tag at all — `Avaliha AKA First Graders 1984
+  Iran [Avaliha]` — so Radarr parses `Unknown`, which every profile excludes.
+  This defeats the archival cascade precisely where KG is the only source that
+  exists. Tracked as `sylveste-ai77`.
 - Curtis's *Shifty* (2025) has no clean TVDB entry; TVDB carries an umbrella
   "Adam Curtis Films" series that would overlap the Radarr entries.
+- `preferredSize` is unset on every HD tier, and the `minSize` floors reject
+  efficient encodes (`Bluray-2160p min=102 MB/min` refuses a good 8-10GB x265 4K
+  as *too small*). The caps stop bloat; the floors block efficiency.
+  Tracked as `sylveste-3g1t`.
