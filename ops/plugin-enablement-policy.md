@@ -297,6 +297,19 @@ So **every zklw decision below is a capability call**, not a counter call. Said
 plainly because the alternative — implying evidence that does not exist — is how
 the 34,141 / 46,416 / 36,837 baselines happened.
 
+> **Mechanism found 2026-07-27** (`mk-q6bl`): zklw's CLI Claude Code has been
+> **logged out since 2026-07-14**. `.credentials.json` was last written that day
+> at 16:24, hours after the final recorded event at 03:01, and `claude -p` now
+> returns `Not logged in · Please run /login`. Hook wiring is fine — the aborted
+> run shows Claude Code invoking tool-time's hook — there have just been no
+> authenticated CLI sessions to call it in.
+>
+> **These 13 calls therefore still stand unrevisited.** Re-running them against
+> real usage needs an interactive `/login` on zklw, then roughly a week of
+> recorded sessions. Until both happen, treat the table below as reasoned but
+> unevidenced. `instrument-freshness` now fails daily on zklw until it records
+> again, so this cannot quietly become permanent.
+
 ### The line that was drawn: third-party first
 
 Not a port of Clavain's answers. The principle is about **which lever exists**:

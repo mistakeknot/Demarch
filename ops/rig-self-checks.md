@@ -18,6 +18,7 @@ This page exists so that never depends on someone remembering.
 | `intercore-tests` — `go test ./...` for the suite gating `ic` | launchd | **skip** | daily 09:15 |
 | `ic-provenance` — does the deployed binary match the source | launchd | systemd timer | daily 09:15 |
 | `advertisement-budget` — what enabled plugins cost in context | launchd | systemd timer | daily 09:15 |
+| `instrument-freshness` — are the usage instruments still recording | launchd | systemd timer | daily 09:15 |
 | settings.json history | SessionStart + daily | **continuous, 10s poll** | see below |
 
 Expected steady state, so a drift is auditable against something:
@@ -147,6 +148,77 @@ functionality. See `plugin-enablement-policy.md`.
 A subdirectory on purpose: the reporter globs `~/.claude/health/*.json`
 non-recursively, so state files here cannot be mistaken for check results.
 
+## Instrument freshness — an instrument reporting zero looks like an idle rig
+
+zklw recorded **no usage data for 13 days** and nothing said so. `audit.log` held
+25 lines from 2026-07-14; tool-time's `events.jsonl` stopped the same day;
+`stats.json` regenerated daily reporting `total_events: 0`. Everything looked
+installed and healthy.
+
+The cost was not abstract. Thirteen plugin-enablement decisions on that machine
+had to be made as **capability calls with no evidence**, because the evidence had
+silently stopped existing (`plugin-enablement-policy.md`).
+
+### Mechanism: the CLI has been logged out since 2026-07-14
+
+```
+2026-07-14 03:01   last tool-time event recorded
+2026-07-14 16:24   ~/.claude/.credentials.json last written
+        ...        no authenticated CLI session since
+```
+
+`claude -p` on zklw returns **`Not logged in · Please run /login`**. The hook
+wiring is fine — that same aborted run shows Claude Code invoking tool-time's
+`SessionEnd` hook (`Hook cancelled`), which proves plugin hooks are resolved and
+called. There have simply been no authenticated CLI sessions to call them in.
+
+Same shape as the autosync GitHub-token expiry: an expired credential silently
+freezes a subsystem that goes on looking installed.
+
+**What is NOT established:** whether zklw's *remote* sessions (the
+`~/.claude/remote/srv/*/server` processes, which authenticate through the web app
+rather than the CLI credential store) run hooks at all. They produce no tool-time
+events, but the reason is unproven. `~/.claude/remote/` holds its own
+content-addressed `plugins/` tree — 1,833 entries, 30 distinct plugin names, last
+populated 2026-06-20, containing neither tool-time nor any `hooks/` directory —
+which is suggestive but not conclusive.
+
+An earlier draft of this claimed the SessionStart hook "has never fired on zklw"
+because the settings-history holds zero `session-start` commits. **That inference
+was unsound and is retracted**: `settings-history-snapshot.sh` only commits when
+settings.json actually *changed*, so a session that starts and changes nothing
+leaves no trace either way. The evidence cannot distinguish the two.
+
+> Also worth recording: the settings-history could not date this outage, contrary
+> to expectation. Its 347 commits stop at **2026-04-24** and resume 2026-07-26 —
+> the watchdog was itself dead for three months before being repaired. A history
+> with a hole in it is not a witness for the period inside the hole.
+
+### The check: relative, not a plain age threshold
+
+"Fail if the instrument is older than N days" is wrong twice over. An idle
+machine trips it for behaving correctly, and a busy machine that stopped
+recording passes for N days — exactly the window that hid this.
+
+So the check compares each instrument against **independent proof that sessions
+ran at all**: Claude Code rewrites `~/.claude.json` as it works. A fresh marker
+plus a silent instrument means sessions ran and recorded nothing. A stale marker
+means the machine was idle, and the check stays quiet.
+
+Freshness is read from the timestamp **inside the last record**, never from
+mtime. During this diagnosis a manual hook probe appended one line and the file's
+mtime jumped from 13 days stale to fresh while the instrument was still dead. Any
+diagnostic poke, backup tool, or editor would launder the signal the same way.
+
+| Threshold | Value | Why |
+|---|---|---|
+| Activity window | 24h | Older marker ⇒ idle ⇒ silence is correct |
+| Instrument silence | 48h | A session records within seconds of its first tool call, so any working day produces records. Two days absorbs a light weekend, a session that opened and did nothing, and clock skew — while catching a real outage on **day two instead of day thirteen**. |
+
+Verified by forcing all seven branches: recording, the 13-day outage, idle
+machine stays quiet, **mtime laundering still fails**, undateable record, missing
+activity marker, and one-of-two instruments dead.
+
 ## `skip` is a third status, and it cannot hide a dead check
 
 A `skip` says the runner ran and decided this check does not apply here. A
@@ -254,6 +326,7 @@ Deleting the whole health directory produces three findings, not silence.
 | Advertisement budget crosses 30,000 | 24h | next session start |
 | Budget enters the 28,500 warn band | 24h | next session start |
 | A plugin's advertised cost changes at all | 24h | named in the delta |
+| A usage instrument stops recording while sessions run | 48h + 24h | next session start |
 | settings.json changes, **zklw** | ~10s | in the git history immediately |
 | settings.json changes, **Clavain** | next session start, or 24h | recorded, not alerted |
 | **A check stops running** | 48h (2× interval) | next session start |
