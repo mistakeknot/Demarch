@@ -69,10 +69,18 @@ history, or this repository.
   only source that ever existed, and against `min_format_score: 0` that penalty
   would reject every such release.
 
-## What the sync removed, intentionally
+## What the sync did NOT remove
 
-The first repo-owned sync deleted `Remux Tier 01/02/03` and `SDR` from both
-instances. Those were scored only on `UHD-Remux`, which the consolidation left
-vestigial. Verified afterwards against the API: `Best-Available` keeps DV/HDR at
-1500, `AI Upscale` at -10000, all five size caps at 250 MB/min, and no 2160p
-remux tier allowed.
+The first repo-owned sync listed `Remux Tier 01/02/03` and `SDR` for deletion, so
+an earlier version of this file recorded them as gone. A live re-read on
+2026-07-27 shows all of them **still present on both instances** — nothing was
+lost.
+
+They survive for exactly the reason `AI Upscale` does, above: recyclarr never
+created them, so it does not track them and will not remove them. They stay
+scored only on `UHD-Remux`, which the consolidation left vestigial, so they
+affect nothing. Treat "recyclarr will delete X" as a claim to verify against the
+API rather than to read off a preview.
+
+Verified at the same time: `Best-Available` keeps DV/HDR at 1500, `AI Upscale` at
+-10000, all five size caps at 250 MB/min, and no 2160p remux tier allowed.
