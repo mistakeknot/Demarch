@@ -37,13 +37,32 @@ jobs:
       - name: Run inventory tests
         run: python3 -m pytest tests/test_interverse_inventory.py -q
 
+      # This gate has been silently false on every cloud run. The monorepo
+      # .gitignore's os/, core/ and interverse/, so actions/checkout never
+      # materialises them and none of the steps below have executed — the job
+      # went green having checked nothing but the inventory unit tests.
+      #
+      # The gate itself is right: these steps genuinely cannot run without the
+      # plugins. What was wrong is that skipping looked identical to passing.
+      # Now it announces itself.
       - name: Detect full local skeleton
         id: skeleton
         run: |
           if [ -f os/Clavain/agent-rig.json ] && [ -d interverse ]; then
             echo "full=true" >> "$GITHUB_OUTPUT"
+            echo "skeleton present: running drift and inventory checks"
           else
             echo "full=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Inventory checks skipped::os/ and interverse/ are gitignored, so this checkout has no plugins. Rig-drift and inventory generation did NOT run. Estate checks must run on a materialised local checkout."
+            {
+              echo "### Interverse inventory — checks skipped"
+              echo
+              echo "\`os/Clavain/agent-rig.json\` and/or \`interverse/\` are absent."
+              echo "They are gitignored, so a cloud checkout never has them and"
+              echo "**rig-drift and inventory generation did not run.**"
+              echo
+              echo "This job passing does not mean the estate is clean."
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Check high-severity manifest and rig drift

@@ -191,6 +191,91 @@ def count_agents(plugin_dir, manifest):
     return 0
 
 
+def resolve_asset_dir(plugin_dir, manifest, key, report):
+    """Return the Kimi directory reference for "skills" or "commands", or None.
+
+    Kimi wants a single directory; Claude's manifest may either say nothing (and
+    rely on the conventional <plugin>/<key>/ location) or declare explicit
+    paths, which need not live there.
+
+    This used to probe <plugin>/<key>/ only. Two plugins keep their assets under
+    .claude-plugin/ instead — tldr-swinton (4 skills, 6 commands) and interpub
+    (1 command) — so the generated manifests silently omitted them and Kimi saw
+    no skills or commands at all for those plugins. Nothing reported it: a
+    missing optional key looks exactly like a plugin that has none.
+
+    Declared paths win, because the manifest is the authority on where a
+    plugin's assets are. The directory probe stays as the fallback for the
+    common case of a plugin that declares nothing.
+    """
+    declared = manifest.get(key)
+    if declared:
+        paths = declared if isinstance(declared, list) else [declared]
+        parents = set()
+        for raw in paths:
+            # removeprefix, not lstrip: lstrip("./") strips a CHARACTER SET, so
+            # "./.claude-plugin/skills" would lose the leading dot of the
+            # directory name and resolve to a path that does not exist.
+            rel = str(raw)
+            while rel.startswith("./"):
+                rel = rel[2:]
+            if not rel:
+                continue
+            # A declared entry is normally one asset — an individual skill
+            # directory, or a single command .md — so the reference Kimi wants
+            # is its container. But a manifest may also declare the collection
+            # directory itself. Discriminator: a skill directory holds SKILL.md,
+            # the collection directory that holds skill directories does not.
+            candidate = plugin_dir / rel
+            if candidate.is_dir() and not (candidate / "SKILL.md").is_file():
+                parent = candidate           # already the collection directory
+            else:
+                parent = candidate.parent    # an individual skill or command
+            try:
+                parents.add(parent.relative_to(plugin_dir).as_posix())
+            except ValueError:
+                report["notes"].append(
+                    f"{key}: declared path {raw!r} escapes the plugin root; ignored"
+                )
+        if len(parents) == 1:
+            only = parents.pop()
+            # "." means the declared entry sits directly in the plugin root —
+            # e.g. intermap declares ./skills and keeps a single skills/SKILL.md
+            # rather than skills/<name>/SKILL.md. Emitting "././" would point
+            # Kimi at the plugin root. Defer to the probe below, which applies
+            # the convention test and correctly emits nothing for that layout.
+            #
+            # Likewise when the declaration resolves to the conventional
+            # directory: the probe already handles it, and this function exists
+            # only to stop assets in NON-default locations being dropped. Any
+            # broader change would silently alter the 39 manifests that are
+            # already correct.
+            if only not in (".", key):
+                if (plugin_dir / only).is_dir():
+                    return f"./{only}/"
+                report["notes"].append(
+                    f"{key}: declared directory {only!r} does not exist on disk"
+                )
+                return None
+        elif len(parents) > 1:
+            # Kimi takes one directory. Emitting an arbitrary pick would be
+            # worse than emitting nothing, because it would look authoritative.
+            report["notes"].append(
+                f"{key}: declared paths span {len(parents)} directories "
+                f"({', '.join(sorted(parents))}); Kimi accepts one, so omitted"
+            )
+            return None
+
+    fallback = plugin_dir / key
+    if key == "skills":
+        if fallback.is_dir() and any(p.is_dir() for p in fallback.iterdir()):
+            return "./skills/"
+        return None
+    if fallback.is_dir():
+        return "./commands/"
+    return None
+
+
 def translate_plugin(plugin_dir):
     """Build the Kimi manifest for one plugin root.
 
@@ -221,10 +306,12 @@ def translate_plugin(plugin_dir):
     kimi["interface"] = interface
 
     skills_dir = plugin_dir / "skills"
-    if skills_dir.is_dir() and any(p.is_dir() for p in skills_dir.iterdir()):
-        kimi["skills"] = "./skills/"
-    if (plugin_dir / "commands").is_dir():
-        kimi["commands"] = "./commands/"
+    skills_ref = resolve_asset_dir(plugin_dir, manifest, "skills", report)
+    if skills_ref:
+        kimi["skills"] = skills_ref
+    commands_ref = resolve_asset_dir(plugin_dir, manifest, "commands", report)
+    if commands_ref:
+        kimi["commands"] = commands_ref
 
     report["dropped_agents"] = count_agents(plugin_dir, manifest)
 
@@ -273,6 +360,10 @@ def main(argv=None):
                         help="emit machine-readable report")
     parser.add_argument("--plugin", action="append", default=[],
                         help="restrict to named plugin(s); repeatable")
+    parser.add_argument("--require-plugins", type=int, default=0, metavar="N",
+                        help="fail if fewer than N plugins were inspected; use "
+                             "in CI so a checkout with no plugins cannot pass "
+                             "vacuously")
     args = parser.parse_args(argv)
 
     root = Path(args.root).resolve()
@@ -353,6 +444,34 @@ def main(argv=None):
               f"{totals['errors']} plugin(s) with errors")
         if args.check:
             print(f"check: {stale} manifest(s) missing or stale")
+
+    # A vacuous run is the failure mode this whole check exists to prevent.
+    #
+    # The Sylveste monorepo .gitignore's os/, core/ and interverse/, so a fresh
+    # `actions/checkout` contains none of the 62 plugins. `--check` there finds
+    # nothing to compare, reports zero stale manifests, and exits 0 — a green
+    # check that inspected nothing. That is not hypothetical: the existing
+    # interverse-inventory workflow gates its real steps behind `[ -d interverse ]`
+    # and has therefore been silently skipping them on every cloud run.
+    #
+    # Callers that expect plugins must say so, and get a hard failure rather than
+    # false reassurance when they are absent.
+    if args.require_plugins and totals["plugins"] < args.require_plugins:
+        print(
+            f"FAIL: inspected {totals['plugins']} plugin(s), "
+            f"required at least {args.require_plugins}.\n"
+            f"  root: {root}\n"
+            f"  This checkout has no plugins to check. In the Sylveste monorepo "
+            f"that is expected —\n"
+            f"  os/, core/ and interverse/ are gitignored and every plugin lives "
+            f"in its own repo, so a\n"
+            f"  cloud checkout cannot see them. Run this where the plugins are "
+            f"materialised, or run\n"
+            f"  the per-repo version-parity check instead "
+            f"(scripts/check-kimi-version-parity.py).",
+            file=sys.stderr,
+        )
+        return 2
 
     failed = totals["errors"] or (stale if args.check else 0)
     return 1 if failed else 0

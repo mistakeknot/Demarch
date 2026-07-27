@@ -1,0 +1,104 @@
+name: Kimi manifest drift
+
+on:
+  push:
+    paths:
+      - ".github/workflows/kimi-manifest-drift.yml"
+      - "scripts/gen-kimi-manifests.py"
+      - "scripts/check-kimi-version-parity.py"
+      - "tests/test_gen_kimi_manifests.py"
+  pull_request:
+    paths:
+      - ".github/workflows/kimi-manifest-drift.yml"
+      - "scripts/gen-kimi-manifests.py"
+      - "scripts/check-kimi-version-parity.py"
+      - "tests/test_gen_kimi_manifests.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# What this workflow can and cannot check
+# ---------------------------------------
+# It guards the CHECKERS, not the estate. The monorepo .gitignore's os/, core/
+# and interverse/, so a fresh actions/checkout contains none of the 62 plugins.
+# Running `gen-kimi-manifests.py --check` here would inspect zero plugins,
+# report zero stale manifests and exit 0 — a green check that looked at nothing.
+#
+# That is not a hypothetical. interverse-inventory.yml gates its real steps
+# behind `[ -d interverse ]`, which is never true on a cloud runner, so it has
+# been silently skipping them on every run.
+#
+# So: unit-test the resolution logic, and prove the vacuity guard fails loudly
+# when a caller expects plugins and finds none. Estate-level enforcement lives
+# where the plugins are — the per-repo parity check, and the pre-commit hook.
+jobs:
+  checkers:
+    name: Generator and parity checkers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest
+        run: python3 -m pip install --quiet pytest
+
+      - name: Asset-directory resolution tests
+        run: python3 -m pytest tests/test_gen_kimi_manifests.py -q
+
+      # The guard has to fail when nothing was inspected. If this step ever
+      # passes, --check has become capable of reporting success on an empty
+      # checkout, which is precisely the defect being prevented.
+      - name: Vacuity guard fails on a plugin-less root
+        run: |
+          set +e
+          python3 scripts/gen-kimi-manifests.py --check --root "$(mktemp -d)" --require-plugins 60
+          rc=$?
+          set -e
+          echo "exit=$rc"
+          test "$rc" -eq 2 || { echo "expected exit 2 from the vacuity guard, got $rc" >&2; exit 1; }
+
+      - name: Parity checker fails on a plugin-less root
+        run: |
+          set +e
+          python3 scripts/check-kimi-version-parity.py --root "$(mktemp -d)" --require-plugins 1
+          rc=$?
+          set -e
+          echo "exit=$rc"
+          test "$rc" -eq 2 || { echo "expected exit 2 from the parity vacuity guard, got $rc" >&2; exit 1; }
+
+      - name: Parity checker rejects a bump without regeneration
+        run: |
+          set -e
+          demo="$(mktemp -d)"
+          mkdir -p "$demo/.claude-plugin"
+          printf '{"name":"demo","version":"1.2.3"}\n' > "$demo/.claude-plugin/plugin.json"
+          printf '{"name":"demo","version":"1.2.3"}\n' > "$demo/kimi.plugin.json"
+          python3 scripts/check-kimi-version-parity.py --root "$demo" --require-plugins 1
+
+          # Bump the source and leave the generated manifest behind — the exact
+          # failure that let 21 of 62 manifests drift.
+          printf '{"name":"demo","version":"1.2.4"}\n' > "$demo/.claude-plugin/plugin.json"
+          set +e
+          python3 scripts/check-kimi-version-parity.py --root "$demo" --require-plugins 1
+          rc=$?
+          set -e
+          echo "exit=$rc"
+          test "$rc" -eq 1 || { echo "expected exit 1 for a bump without regeneration, got $rc" >&2; exit 1; }
+
+      - name: Report where real enforcement lives
+        run: |
+          {
+            echo "### Kimi manifest drift"
+            echo
+            echo "Checkers verified. **This job does not check the estate** —"
+            echo "the monorepo gitignores \`os/\`, \`core/\` and \`interverse/\`, so a"
+            echo "cloud checkout has none of the 62 plugins."
+            echo
+            echo "Estate enforcement:"
+            echo "- \`scripts/check-kimi-version-parity.py\` in each plugin repo (self-contained)"
+            echo "- the pre-commit hook, which runs where the monorepo is materialised"
+            echo "- \`gen-kimi-manifests.py --check --require-plugins 60\` on a full local checkout"
+          } >> "$GITHUB_STEP_SUMMARY"
