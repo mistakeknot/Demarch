@@ -175,19 +175,59 @@ called. There have simply been no authenticated CLI sessions to call them in.
 Same shape as the autosync GitHub-token expiry: an expired credential silently
 freezes a subsystem that goes on looking installed.
 
-**What is NOT established:** whether zklw's *remote* sessions (the
-`~/.claude/remote/srv/*/server` processes, which authenticate through the web app
-rather than the CLI credential store) run hooks at all. They produce no tool-time
-events, but the reason is unproven. `~/.claude/remote/` holds its own
-content-addressed `plugins/` tree — 1,833 entries, 30 distinct plugin names, last
-populated 2026-06-20, containing neither tool-time nor any `hooks/` directory —
-which is suggestive but not conclusive.
+### Settled 2026-07-27: no Claude Code session runs on zklw at all
 
-An earlier draft of this claimed the SessionStart hook "has never fired on zklw"
-because the settings-history holds zero `session-start` commits. **That inference
-was unsound and is retracted**: `settings-history-snapshot.sh` only commits when
-settings.json actually *changed*, so a session that starts and changes nothing
-leaves no trace either way. The evidence cannot distinguish the two.
+The open question was whether zklw's *remote* sessions run hooks. They do not —
+and the reason is more fundamental than a hook-loading difference.
+
+| Evidence | Finding |
+|---|---|
+| `ps` for `share/claude/versions` or `bin/claude` | **No Claude Code runtime process exists on zklw** |
+| `strings` on `remote/srv/*/server` | **Zero** matches for `hook_event_name`, `SessionStart`, `PostToolUse` |
+| Size of that binary | 6.3 MB, against the CLI's 251 MB |
+| Its parent process | `tailscaled be-child ssh` — spawned per connection |
+| tuivision MCP processes | Orphans (`ppid 1`) left by dead sessions; newest was spawned by this diagnosis's own aborted `claude -p` |
+
+`~/.claude/remote/srv/*/server` is a **bridge**, not a session runtime. It gives a
+Claude Code session running *on the client* access to zklw's filesystem and
+shell. Hooks are executed by the session runtime, which is not on zklw.
+
+**Consequence, stated plainly: every hook in zklw's `settings.json` is dead for
+the work actually done there.** That includes `guard-enabled-plugins.sh`,
+`git-autosync-pull.sh`, `canongraph-recall.py`, and `report-rig-health.py`
+itself. zklw's checks were writing status files that nothing read — the same
+failure this program exists to eliminate, one level up: not a check that never
+runs, but a check that runs and reports into a void.
+
+Fixed by reporting zklw's findings on the Mac — see "Peer reporting" below.
+
+An earlier draft claimed the SessionStart hook "has never fired on zklw" because
+the settings-history holds zero `session-start` commits. **That inference was
+unsound and is retracted** — `settings-history-snapshot.sh` only commits when
+settings.json actually *changed*, so a no-change session leaves no trace either
+way. The conclusion happens to be right; the reasoning was not, and the
+difference matters. `hook-heartbeat.sh` now exists precisely so this question has
+an unconditional answer next time.
+
+## Peer reporting — zklw's findings surface on the Mac
+
+```
+zklw   systemd timer -> checks run -> ~/.claude/health/*.json
+Mac    daily job     -> rig-health-fetch-peers.sh -> ~/.claude/health/peers/zklw/
+Mac    session start -> reported as "zklw:<check>"
+```
+
+Peers are listed in `~/.config/intercore/health-peers`. The fetch runs in the
+**scheduled job, never in the SessionStart hook**, so session startup never waits
+on ssh.
+
+An unreachable peer writes an explicit marker rather than going quiet: otherwise
+a lost peer looks exactly like a healthy one once its files age out. Peer
+staleness is judged like local staleness, which also covers the fetch itself
+dying.
+
+Deliberately one-directional. Making it symmetric would have zklw fetching the
+Mac's status and reporting it to nobody, for the reason above.
 
 > Also worth recording: the settings-history could not date this outage, contrary
 > to expectation. Its 347 commits stop at **2026-04-24** and resume 2026-07-26 —
@@ -400,6 +440,10 @@ git -C ~/.claude/settings-history log --oneline
   automated and installed-drift is now classified; anything else doctor reports
   is only seen when a human runs it.
 - **Re-copying systemd units after a dotfiles change** — see below.
+- **Every other hook on zklw.** Peer reporting rescues the rig-health reporter
+  only. `guard-enabled-plugins.sh`, `git-autosync-pull.sh`, `git-sync-check.sh`
+  and `canongraph-recall.py` are still registered there and still never fire.
+  Each needs its own answer: relocate, schedule, or delete.
 - **Reclaiming budget headroom.** The check reports the number and names what
   moved; deciding what to demote, slim, or disable stays a human call.
 - **Catching a cost increase faster than daily.** A plugin installed mid-session
