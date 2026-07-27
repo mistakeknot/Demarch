@@ -209,6 +209,73 @@ way. The conclusion happens to be right; the reasoning was not, and the
 difference matters. `hook-heartbeat.sh` now exists precisely so this question has
 an unconditional answer next time.
 
+## Every Claude Code hook on zklw is inert — the full count
+
+Chasing four named hooks turned up the real number. Nothing on zklw runs Claude
+Code hooks, so **73 hook entries are registered there and none of them fire**:
+
+| Source | Entries | Notes |
+|---|---|---|
+| `settings.json` (after pruning) | 7 | see the per-hook table below |
+| Plugin-provided `hooks.json` | **66** across 24 enabled plugins | never audited before |
+
+The plugin half was the surprise. Among them: `interlock` (4 hooks — multi-session
+file reservation, which four-plus concurrent sessions are supposed to make
+mandatory), `security-guidance` (9), `clavain` (17), `interspect` (3, whose whole
+value is that its hooks "run continuously"), `tool-time` (5), `interwatch`,
+`intertrack`.
+
+**This has a budget consequence.** zklw pays advertisement for plugins whose value
+is largely or wholly hook-delivered, and gets none of it. `interspect` at 668
+chars is the clearest case. The enablement calls in
+`plugin-enablement-policy.md` were made without knowing this and should be
+revisited against it.
+
+**Git hooks are unaffected** and still work. `install-server.sh` fans a
+`pre-commit` scanner out to every `.git-autosync` repo; those fire on `git
+commit`, which really does happen on zklw. Only *Claude Code* hooks are dead. The
+distinction matters — the secret scanner still protects that machine.
+
+### Per-hook disposition, zklw
+
+| Hook | Event | Disposition |
+|---|---|---|
+| `guard-enabled-plugins.sh` | SessionStart | **Relocated** to the timer as `enablement-drift`. Registration kept: inert here, correct if CLI sessions resume. |
+| `git-sync-check.sh` | SessionStart | **Registration removed.** Replaced by scheduled `autosync-health`. |
+| `git-uncommitted-nudge.sh` | Stop | **Registration removed.** Same replacement. |
+| `canongraph-recall.py` | SessionStart | **Registration removed.** Injects recalled context into a session prompt; there is no session here to inject into. |
+| `canongraph-run-bridge.py` | Stop | **Registration removed.** Fires at session end; no session to end. |
+| `git-autosync.sh` | PostToolUse | **Kept.** Autosync has no replacement; removing this discards the only wiring that exists. |
+| `git-autosync-pull.sh` | SessionStart | **Kept**, same reason. |
+| `log-tool-invocation.sh` | PostToolUse | **Kept.** Writes `audit.log`; per-tool-call work no timer can do. Its deadness *is* the audit.log outage. |
+| `warn-agent-model-unset.sh` | PreToolUse | **Kept.** Harmless, correct if CLI resumes. |
+| `report-rig-health.py` | SessionStart | **Kept.** Rescued by peer reporting. |
+| `hook-heartbeat.sh` | SessionStart | **Kept.** The instrument that answers "did a hook fire here". |
+
+No files were deleted anywhere. Four *registrations* were removed from zklw's
+`settings.json` only; every script remains on disk and in dotfiles, and all of
+them are still live on the Mac.
+
+## Autosync on zklw is not running
+
+`git-autosync` is **entirely hook-driven** — a PostToolUse hook commits and
+pushes on edit, a SessionStart hook pulls. There is **no systemd machinery behind
+it**, so on zklw it does nothing.
+
+Measured 2026-07-27: 93 repos carry a `.git-autosync` marker; **14 hold
+uncommitted work and 3 are unpushed.** Only 8 have ever recorded activity, most
+stopping in June. This is why uncommitted work sat in `Sylveste` until a human
+noticed earlier that week.
+
+`autosync-health` now reports it. It needs **no staleness threshold**, which is
+the point: uncommitted work on a dev machine is normal, but uncommitted work in a
+repo that explicitly opted into auto-committing is a broken promise by
+definition. The marker is the promise.
+
+**Detection only — deliberately.** Committing and pushing unattended on a shared
+server is a consequential change, not a default to restore quietly. The check
+names the repos; whether a timer should push on mk's behalf is mk's call.
+
 ## Peer reporting — zklw's findings surface on the Mac
 
 ```
@@ -367,6 +434,8 @@ Deleting the whole health directory produces three findings, not silence.
 | Budget enters the 28,500 warn band | 24h | next session start |
 | A plugin's advertised cost changes at all | 24h | named in the delta |
 | A usage instrument stops recording while sessions run | 48h + 24h | next session start |
+| Live settings drift from the approved reference | 24h | next session start (zklw: via the Mac) |
+| An autosync repo stops being auto-committed | 24h | next session start (zklw: via the Mac) |
 | settings.json changes, **zklw** | ~10s | in the git history immediately |
 | settings.json changes, **Clavain** | next session start, or 24h | recorded, not alerted |
 | **A check stops running** | 48h (2× interval) | next session start |
@@ -440,10 +509,10 @@ git -C ~/.claude/settings-history log --oneline
   automated and installed-drift is now classified; anything else doctor reports
   is only seen when a human runs it.
 - **Re-copying systemd units after a dotfiles change** — see below.
-- **Every other hook on zklw.** Peer reporting rescues the rig-health reporter
-  only. `guard-enabled-plugins.sh`, `git-autosync-pull.sh`, `git-sync-check.sh`
-  and `canongraph-recall.py` are still registered there and still never fire.
-  Each needs its own answer: relocate, schedule, or delete.
+- **Autosync on zklw.** It is hook-driven with no systemd replacement, so it does
+  not run. `autosync-health` now *detects* the damage; nothing repairs it.
+  Committing and pushing unattended on a shared server is a decision, not a
+  default — see below.
 - **Reclaiming budget headroom.** The check reports the number and names what
   moved; deciding what to demote, slim, or disable stays a human call.
 - **Catching a cost increase faster than daily.** A plugin installed mid-session
