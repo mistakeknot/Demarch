@@ -21,7 +21,7 @@ import argparse, json, re, urllib.error, urllib.request
 SETTINGS = "/home/mk/grey-media/config/jellyseerr/settings.json"
 HOST = "100.123.250.67"
 BASE = "http://%s:5055" % HOST
-TARGET = "UHD-Remux"
+TARGET = "Best-Available"
 
 
 def arr_profiles(kind, port):
