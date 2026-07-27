@@ -38,7 +38,8 @@ CAP = 250.0
 # Sonarr's tier names. Sonarr judges maxSize PER EPISODE, so 250 MB/min is
 # ~15GB for an hour-long episode -- a backstop against mislabelled releases
 # rather than a tight budget.
-SONARR_CAPPED = {"Bluray-2160p", "WEBDL-2160p", "WEBRip-2160p",
+SONARR_CAPPED = {"Bluray-2160p", "WEBDL-2160p", "WEBRip-2160p", "HDTV-2160p",
+                 "Bluray-2160p Remux",
                  "Bluray-1080p", "Bluray-1080p Remux"}
 AI_UPSCALE_RE = r"\bAI[ ._-]?Upscale\b"
 
