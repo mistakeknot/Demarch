@@ -12,21 +12,49 @@ as an argument. Every script is dry-run by default; `--apply` is opt-in.
 | `auteur_import.py` | Creates the `Archival-Best` quality profile and one TMDb Person import list per director. `--prune-unreleased` drops films that do not exist yet. |
 | `curtis_series.py` | Adds Adam Curtis's multi-part BBC serials to Sonarr and retunes his features off profiles they can never satisfy. |
 | `auteur_search.py` | Issues searches for the imported titles only, in paced batches. |
-| `seerr_quality.py` | Points Seerr's default (non-4K) Radarr/Sonarr at a 4K-remux-first profile. |
+| `seerr_quality.py` | Points Seerr's default Radarr/Sonarr at the unified profile. |
 | `fix_bad_grabs.py` | Removes wrong-series and AI-upscale grabs, and installs guards against both. |
+| `consolidate_library.py` | Collapses the 4K/non-4K split into one `Best-Available` library and sets the size caps. |
+| `purge_4k_dupes.py` | Deletes files orphaned by the consolidation, with live safety preconditions. |
 
-## Why two quality profiles
+## grey's config is repo-owned
 
-`UHD-Remux` (recyclarr-managed) bottoms out at WEB 1080p. That is correct for
-directors whose work exists on Blu-ray, and wrong for archival material: none of
-Kiarostami's early shorts or Curtis's 1980s BBC films have an HD source and they
-never will, so that profile would reject every release that exists.
+**`recyclarr.yml` now lives in this repo** at `../config/recyclarr/`, deployed
+with `sync-to-grey.sh`. It previously existed only on grey, with API keys in
+plaintext, describing a topology that no longer exists — so running it would
+have silently reverted the quality policy below. See `../config/README.md`,
+which also records the traps (run the container as uid 1001; instance names must
+be unique across services; `delete_old_custom_formats: false` does not actually
+prevent deletions).
 
-`Archival-Best` allows SDTV/DVD/576p through Remux-2160p with upgrades still
-enabled — take whatever exists now, climb if something better appears. It
-carries **no custom formats** on purpose: UHD-Remux applies a -2000 SDR penalty,
-and on a 1984 broadcast SDR is not a defect, it is the only thing that ever
-existed.
+Anything changed through the API must be followed by `sync-to-grey.sh
+regenerate` so the repo does not drift from the box.
+
+## One profile: Best-Available
+
+The library ran a 4K/non-4K split until the two collapsed into one. The 4K
+Radarr used a profile that fell back to 1080p, which let 1080p releases *satisfy*
+4K requests — so the 4K shelf was both nearly empty and not actually 4K.
+
+`Best-Available` is the single profile now, expressing "best available, but not
+massive 4K Blu-ray rips":
+
+- **excludes Remux-2160p** — 50-80GB untouched disc streams. A *Mad Max* remux is
+  50.1GB against 17.2GB for the 2160p encode.
+- **tops out at Bluray-2160p / WEB 2160p** — real 4K at ~15-30GB.
+- **cascades to SDTV**, so Kiarostami's DVD-era shorts and Curtis's 1980s BBC
+  films still resolve. Nothing else would ever grab them: that material has no HD
+  source and never will.
+- **boosts DV / HDR10+ / HDR at +1500.** On an OLED these are far more visible
+  than the last 20 Mbps of bitrate.
+- **rejects AI upscales at -10000**, and caps five tiers at 250 MB/min (~33 Mbps).
+
+It carries **no SDR penalty** on purpose. TRaSH scores SDR at -2000; on a 1984
+broadcast SDR is not a defect but the only thing that ever existed, and against
+`minFormatScore: 0` that penalty would reject every archival release.
+
+`Archival-Best` still exists and is declared in the recyclarr config, but nothing
+uses it now — `Best-Available` cascades just as far.
 
 ## Things that bit, so they do not bite again
 

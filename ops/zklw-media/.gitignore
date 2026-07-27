@@ -3,6 +3,24 @@
 agent.env
 config/
 
+# NARROW EXCEPTION to `config/` above. The recyclarr config is declarative and
+# secret-free: API keys are `!env_var` placeholders resolved at run time from an
+# untracked recyclarr.env (0600) on grey. Version-controlling it is the whole
+# point — otherwise a recyclarr run silently reverts the quality policy.
+#
+# The whitelist is per-file ON PURPOSE. `config/` on the box also holds
+# config.xml files carrying live API keys and qbit-manage's password, so a
+# directory-wide negation would be a credential leak waiting to happen. Anything
+# not named below stays ignored. Do NOT broaden this to `!config/**`.
+!config/
+config/*
+!config/README.md
+!config/recyclarr/
+config/recyclarr/*
+!config/recyclarr/recyclarr.yml
+!config/recyclarr/generate.py
+!config/recyclarr/sync-to-grey.sh
+
 # Python build artifacts from the intake bot.
 __pycache__/
 *.pyc

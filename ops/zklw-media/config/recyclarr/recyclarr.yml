@@ -1,0 +1,189 @@
+# Recyclarr -- grey media server. REPO-OWNED: edit in the Sylveste repo at
+# ops/zklw-media/config/recyclarr/recyclarr.yml and deploy with sync-to-grey.sh.
+#
+# Policy: best available quality, but NOT massive 4K Blu-ray rips. Remux-2160p
+# is excluded from Best-Available (50-80GB untouched disc streams); 2160p
+# ENCODES at ~15-30GB sit at the top instead. Radarr's native ordering already
+# ranks 2160p encodes above 1080p remux, so only exclusions were needed.
+#
+# GENERATED FROM LIVE STATE so `recyclarr sync --preview` reports no changes.
+# Regenerate with ops/zklw-media/config/recyclarr/generate.py after changing a
+# profile through the API.
+#
+# Deliberately ABSENT, each for a reason:
+#   quality_definition   -- would overwrite the 250 MB/min maxSize caps that
+#                           keep oversized releases out. Sizes are API-managed.
+#   SDR penalty          -- both profiles cascade to archival SD material where
+#                           SDR is the only source that ever existed; against
+#                           min_format_score 0 a -2000 penalty rejects them all.
+#   uhd instances        -- the 4K split was retired. They also broke the config:
+#                           recyclarr requires instance names unique ACROSS
+#                           services, and 'main'/'uhd' were defined under both.
+#
+# API keys come from recyclarr.env (untracked, 0600 on grey) so no secret is
+# ever committed or passed on a command line.
+
+
+radarr:
+  radarr_main:
+    base_url: http://radarr:7878
+    api_key: !env_var RADARR_API_KEY
+    # false: 'AI Upscale' (-10000) was created via the API and cannot be
+    # expressed as a trash_id, so recyclarr must not delete it.
+    delete_old_custom_formats: false
+    quality_profiles:
+      - name: Archival-Best
+        reset_unmatched_scores:
+          enabled: false
+        upgrade:
+          allowed: true
+          until_quality: Remux-2160p
+          until_score: 10000
+        min_format_score: 0
+        quality_sort: top
+        qualities:
+          - name: Remux-2160p
+          - name: Bluray-2160p
+          - name: WEB 2160p
+            qualities: [ WEBDL-2160p, WEBRip-2160p ]
+          - name: HDTV-2160p
+          - name: Remux-1080p
+          - name: Bluray-1080p
+          - name: WEB 1080p
+            qualities: [ WEBDL-1080p, WEBRip-1080p ]
+          - name: HDTV-1080p
+          - name: Bluray-720p
+          - name: WEB 720p
+            qualities: [ WEBDL-720p, WEBRip-720p ]
+          - name: HDTV-720p
+          - name: Bluray-576p
+          - name: Bluray-480p
+          - name: WEB 480p
+            qualities: [ WEBDL-480p, WEBRip-480p ]
+          - name: DVD
+          - name: SDTV
+      - name: Best-Available
+        reset_unmatched_scores:
+          enabled: false
+        upgrade:
+          allowed: true
+          until_quality: Bluray-2160p
+          until_score: 10000
+        min_format_score: 0
+        quality_sort: top
+        qualities:
+          - name: Bluray-2160p
+          - name: WEB 2160p
+            qualities: [ WEBDL-2160p, WEBRip-2160p ]
+          - name: Remux-1080p
+          - name: Bluray-1080p
+          - name: WEB 1080p
+            qualities: [ WEBDL-1080p, WEBRip-1080p ]
+          - name: HDTV-1080p
+          - name: Bluray-720p
+          - name: WEB 720p
+            qualities: [ WEBDL-720p, WEBRip-720p ]
+          - name: HDTV-720p
+          - name: Bluray-576p
+          - name: Bluray-480p
+          - name: WEB 480p
+            qualities: [ WEBDL-480p, WEBRip-480p ]
+          - name: DVD
+          - name: SDTV
+    custom_formats:
+      # Dolby Vision / HDR10+ / HDR. On an OLED these are far more
+      # visible than the last 20 Mbps of bitrate, which is why they
+      # matter more here than any remux tier.
+      - trash_ids:
+          - b337d6812e06c200ec9a2d3cfa9d20a7  # DV Boost
+          - caa37d0df9c348912df1fb1d88f9273a  # HDR10+ Boost
+          - 493b6d1dbec3c3364c59d7607f7e3405  # HDR
+        assign_scores_to:
+          - name: Best-Available
+            score: 1500
+      - trash_ids:
+          - 9170d55c319f4fe40da8711ba9d8050d  # x265
+        assign_scores_to:
+          - name: Best-Available
+            score: 50
+
+sonarr:
+  sonarr_main:
+    base_url: http://sonarr:8989
+    api_key: !env_var SONARR_API_KEY
+    delete_old_custom_formats: false
+    quality_profiles:
+      - name: Archival-Best
+        reset_unmatched_scores:
+          enabled: false
+        upgrade:
+          allowed: true
+          until_quality: Bluray-2160p Remux
+          until_score: 10000
+        min_format_score: 0
+        quality_sort: top
+        qualities:
+          - name: Bluray-2160p Remux
+          - name: Bluray-2160p
+          - name: WEB 2160p
+            qualities: [ WEBRip-2160p, WEBDL-2160p ]
+          - name: HDTV-2160p
+          - name: Bluray-1080p Remux
+          - name: Bluray-1080p
+          - name: WEB 1080p
+            qualities: [ WEBRip-1080p, WEBDL-1080p ]
+          - name: Bluray-720p
+          - name: WEB 720p
+            qualities: [ WEBRip-720p, WEBDL-720p ]
+          - name: HDTV-1080p
+          - name: HDTV-720p
+          - name: Bluray-576p
+          - name: Bluray-480p
+          - name: DVD
+          - name: WEB 480p
+            qualities: [ WEBRip-480p, WEBDL-480p ]
+          - name: SDTV
+      - name: Best-Available
+        reset_unmatched_scores:
+          enabled: false
+        upgrade:
+          allowed: true
+          until_quality: Bluray-2160p
+          until_score: 10000
+        min_format_score: 0
+        quality_sort: top
+        qualities:
+          - name: Bluray-2160p
+          - name: WEB 2160p
+            qualities: [ WEBRip-2160p, WEBDL-2160p ]
+          - name: Bluray-1080p Remux
+          - name: Bluray-1080p
+          - name: WEB 1080p
+            qualities: [ WEBRip-1080p, WEBDL-1080p ]
+          - name: Bluray-720p
+          - name: WEB 720p
+            qualities: [ WEBRip-720p, WEBDL-720p ]
+          - name: HDTV-1080p
+          - name: HDTV-720p
+          - name: Bluray-576p
+          - name: Bluray-480p
+          - name: DVD
+          - name: WEB 480p
+            qualities: [ WEBRip-480p, WEBDL-480p ]
+          - name: SDTV
+    custom_formats:
+      # Dolby Vision / HDR10+ / HDR. On an OLED these are far more
+      # visible than the last 20 Mbps of bitrate, which is why they
+      # matter more here than any remux tier.
+      - trash_ids:
+          - 7c3a61a9c6cb04f52f1544be6d44a026  # DV Boost
+          - 0c4b99df9206d2cfac3c05ab897dd62a  # HDR10+ Boost
+          - 505d871304820ba7106b693be6fe4a9e  # HDR
+        assign_scores_to:
+          - name: Best-Available
+            score: 1500
+      - trash_ids:
+          - c9eafd50846d299b862ca9bb6ea91950  # x265
+        assign_scores_to:
+          - name: Best-Available
+            score: 50
