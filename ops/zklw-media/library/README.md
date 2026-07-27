@@ -188,7 +188,7 @@ and cross-seeding the same file to a second tracker.
   the same rejection on Best-Available — *Je Tu Il Elle* (1974), *Roar* (1981),
   *Out of the Way!* (1931). They are correctly excluded today, but they are
   archival by nature. Widening membership needs a rule, not a longer hardcoded
-  list. Tracked as `sylveste-k2pn`.
+  list. Tracked as `sylveste-op85`.
 - Curtis's *Shifty* (2025) has no clean TVDB entry; TVDB carries an umbrella
   "Adam Curtis Films" series that would overlap the Radarr entries.
 - `preferredSize` is unset on every HD tier, and the `minSize` floors reject
