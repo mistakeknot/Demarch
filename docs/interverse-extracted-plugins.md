@@ -133,6 +133,109 @@ So untracking a path does not stop a stale branch from re-materialising its
 contents on disk. If a file must stay gone, the ignore rule is what enforces
 that, not the untracking.
 
+## Staleness cleared, 2026-07-27
+
+Goal `d4b1f7c2` acted on the 43 / 20 / 8 split above. Result: **63 at upstream
+HEAD, 0 behind, 3 dirty.**
+
+`git pull --ff-only` in all 20 behind repos: **19 fast-forwarded**, each verified
+against `gh api repos/mistakeknot/<name>/commits/main`. The refusal to use a
+plain `pull` is what made this safe — `--ff-only` aborts rather than merging, so
+a repo secretly holding unpushed commits would have stopped instead of growing a
+merge, and one that would have had local edits clobbered stopped too.
+
+That is exactly what happened to the twentieth. `tldr-swinton` aborted with
+"Your local changes to kimi.plugin.json would be overwritten by merge". Upstream
+had 0.8.4 with extra `skills`/`commands` keys; the local uncommitted copy was a
+stale 0.8.1 regeneration. Discarding the local file (archived first) let the pull
+land, after which canonical and generated manifest agreed.
+
+### The 8 dirty trees, resolved
+
+Only 7 were still dirty — `interseed` came clean when the merge-resurrected
+`POINTER.md` was archived. 29 entries, four different correct dispositions:
+
+| Repo | Entry | Disposition |
+|---|---|---|
+| `cujgel`, `interchart` | `kimi.plugin.json` | Regenerated → **unchanged**; the worktree copies were already correct. Committed. |
+| `interwatch` | `kimi.plugin.json` | Stale at 0.6.0 against canonical 0.6.1. Regenerated and committed. |
+| `tldr-swinton` | `kimi.plugin.json` | Stale; discarded so the pull could land. |
+| `interchart` | `docs/diagrams/ecosystem.html` | **Discarded** — a broken run (below). |
+| `interfer` | 4 benchmark entries | Committed as result data; `.gitignore` covers `benchmarks/logs/` but not this directory. |
+| `intervox` | 19 × `.beads/embeddeddolt/…` | Untracked + ignored (below). |
+| `intersearch` | `uv.lock` | **Left in place** — see below. |
+
+### Trap: "generated" does not imply "safe to commit"
+
+`interchart/docs/diagrams/ecosystem.html` looked like an ordinary regenerated
+artefact — same generator, newer timestamp. It described **6 nodes**. The
+committed version described **244 nodes and 320 edges**. The Jul 25 run had
+scanned almost nothing, and committing it would have replaced a good diagram
+with a stub while looking like routine housekeeping.
+
+A generated file is only safe to commit if the run that produced it succeeded.
+Nothing in `git status` distinguishes a fresh regeneration from a failed one —
+both are ` M`. The check that caught this was reading the artefact's own
+self-reported scale, not its diff.
+
+The likely cause is the nested-repo materialisation hazard documented in
+`scripts/check-worktree-nested-repos.sh` (Jul 22): a root worktree materialises
+almost none of the ~115 nested repos, so a scan run there sees an almost empty
+estate and reports success. Tracked as `Sylveste-afg`.
+
+### Root cause: `bd` ignores `dolt/`, the runtime creates `embeddeddolt/`
+
+`intervox` was the only repo in the estate tracking its embedded Dolt database —
+82 files, **66% of its 125 tracked files**, of live binary database state.
+
+This was not carelessness in one repo. `bd` ships a `.beads/.gitignore` whose
+first rule is `dolt/`, but the directory its runtime creates is
+`embeddeddolt/`, which that rule never matches. Protection therefore depends on
+a repo carrying an extra repo-level line. `intervoice` has one; `intervox`, its
+successor, does not. Estate exposure is narrow — two repos have an
+`embeddeddolt/` directory on disk and only one tracked it.
+
+Fixed by `git rm --cached -r .beads/embeddeddolt` plus the missing
+`.gitignore` line. On-disk file count stayed at 101 and the database still
+reads; only the index changed. `git check-ignore` confirms the rule matches —
+which it could not report while the files were still tracked.
+
+### Left dirty, with reasons
+
+- **`intersearch/uv.lock`** — +23 packages (`mcp`, `pydantic`, `cryptography`,
+  `einops`…) with `pyproject.toml` **unchanged**. A resolution somebody
+  produced locally, regenerable from `pyproject.toml`, and not obviously
+  anyone's intended commit. Left for its owner.
+- **`intervox`** and **`interflux`** — two entries each, created at
+  `09:45:26` on 2026-07-27 by a machine-wide hook installer, not by this work.
+- **The monorepo itself** — the same sweep typechanged `.beads/hooks/pre-commit`
+  and left a `.bak` beside it. Two entries, same origin.
+
+### Trap: a tracked hooks directory turns hook installs into commits
+
+A hook installer symlinked `pre-commit` to
+`/Users/sma/projects/dotfiles/cloud/pre-commit.sh` in roughly 130 repos under
+`~/projects`. In almost all of them it landed in `.git/hooks/`, which git never
+tracks — so it was invisible and harmless by construction.
+
+It surfaced in exactly the repos whose `core.hooksPath` points into a **tracked**
+directory:
+
+| Repo | tracked hooks dir | `core.hooksPath` | went dirty |
+|---|---|---|---|
+| `interflux` | `.githooks` (1 file) | `.githooks` | **yes** |
+| `intervox` | `.beads/hooks` (5 files) | `…/.beads/hooks` | **yes** |
+| `cujgel` | `.beads/hooks` (5 files) | unset | no |
+| `intermix` | `.beads/hooks` (5 files) | unset | no |
+
+Tracking hook files is fine. Pointing `core.hooksPath` at the tracked copy is
+what converts every hook installation into a pending commit — and here the
+pending content is a symlink to an absolute path outside the repo, which would
+break in every other clone. `intervoice` avoids this by ignoring
+`.beads/hooks/`; `intervox` does not, so its five hook files remain exposed.
+
+Neither was committed. Both are left for a decision — bead `Sylveste-0wt`.
+
 ### Open: `kimi.plugin.json` is missing from both upstreams
 
 61 of 64 `interverse/` directories carry a `kimi.plugin.json`, and the ones that
@@ -143,6 +246,34 @@ publishing gap in those two repos rather than a local artefact.
 It was not fixed by copying the local files up: interhelm's was generated from
 the stale v0.2.2 manifest and would have contradicted upstream's v0.2.3. The
 right fix is to regenerate both in their own repos.
+
+**Confirmed by the tool, 2026-07-27.** There is a generator —
+`scripts/gen-kimi-manifests.py`, with a `--check` mode that writes nothing. It
+reports across 62 plugins:
+
+```
+tally: {'ok': 39, 'differs': 21, 'missing': 2}
+missing: interhelm interseed
+```
+
+The two missing are exactly the two named above, so "regenerate in their own
+repos" was the right call and is now a measurement rather than an inference.
+
+The 21 that differ are the same defect one step earlier. Five repos sampled
+before and after their fast-forward each had `plugin.json` and
+`kimi.plugin.json` **in sync at the old commit and out of sync at upstream
+HEAD** — every one of those upstream commits bumped the version without
+re-running the generator. The pull imported an inconsistency that already
+existed upstream; it did not create it. Regeneration is not wired into the
+release path.
+
+Fixing one repo at a time does not converge: `--check` read 21 differs before
+this session's work and 21 after. `interwatch` was fixed and removed from the
+list, and `tldr-swinton` — whose fast-forward brought in a hand-edited upstream
+manifest carrying `skills`/`commands` keys the generator does not emit — took
+its place. The count holds level because bumps land at least as fast as manual
+fixes. This needs one estate-wide pass plus a release-path hook, not repo-by-repo
+attention. Tracked as `Sylveste-646`.
 
 ## See also
 
