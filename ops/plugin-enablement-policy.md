@@ -7,7 +7,7 @@
 | | enabled | budget | status |
 |---|---|---|---|
 | Clavain (laptop) | 44 of 85 | **29,496** | warn — 504 from the ceiling |
-| zklw (dev server) | 62 of 77 | **29,360** | warn — 640 from the ceiling |
+| zklw (dev server) | 62 of 77 | **29,360** | dormant — loaded by no session (see below) |
 
 Ceiling is **30,000 rig-wide**, not per machine. See "One ceiling" below.
 
@@ -310,6 +310,72 @@ the 34,141 / 46,416 / 36,837 baselines happened.
 > unevidenced. `instrument-freshness` now fails daily on zklw until it records
 > again, so this cannot quietly become permanent.
 
+### 2026-07-27 correction: zklw's budget is paid by nobody
+
+The 07-26 pass, and the goal that followed it, both assumed zklw pays its
+advertisement budget. **It does not.** No Claude Code session runs on that
+machine, and the remote bridge does not load plugin config at all:
+
+```
+strings ~/.claude/remote/srv/*/server | grep -c ...
+  settings.json 0    enabledPlugins 0    plugins/cache 0
+  installed_plugins 0    SKILL.md 0      marketplace 0
+```
+
+It references only `/proc` and `/sys`. It is pure transport; the session runtime,
+and therefore the system prompt, lives on the client.
+
+So zklw's 29,360 chars are loaded into nothing. **Disabling a plugin there saves
+zero tokens today.** The 07-26 disables were not wasted — they are correct
+preparation — but they should never have been described as reclaiming budget, and
+the "22,537 chars over the ceiling" framing was measuring a cost nobody paid.
+
+What zklw's `enabledPlugins` actually is: a **dormant configuration**, correct or
+incorrect only with respect to a future in which CLI sessions resume.
+
+### The hook classification, and why one bucket is empty
+
+Every enabled plugin on zklw was classified against the hook audit. `claude
+plugin details` labels hooks *"harness-only — no model context cost"*, which is
+the key fact: **hooks carry no advertisement cost at all.** A plugin's cost is its
+skills, commands, and agents.
+
+| Class | Count | Meaning |
+|---|---|---|
+| Hook-independent | 38 | Value is skills/commands/agents; dead hooks change nothing |
+| Hook-dependent, correct on resume | 19 | Value needs hooks; hooks return when sessions do |
+| Hook-dependent, zero cost | 5 | Hooks are the entire delivery; free either way |
+| **Hook-dependent and permanently wasteful** | **0** | — |
+
+The five free ones — `security-guidance`, `intersynth`, `intership`,
+`interline`, `explanatory-output-style` — advertise nothing at all. Disabling
+them saves literally zero. Keep.
+
+The nineteen include the cases the goal expected to condemn: `interspect` (514
+tok, 18 skills that analyse evidence its hooks collect), `interlock` (82, file
+reservation across sessions), `interstat`, `interwatch`, `tool-time`,
+`interpulse`, `intercheck`, `interlearn`, `interphase`, `intermux`, `intertrack`,
+`intermem`, `interknow`.
+
+**The fourth bucket is empty, and that is the finding.** Nothing on zklw is
+*permanently* hook-wasteful, because hook deadness there is not a property of any
+plugin — it is a symptom of no sessions, and it ends the moment sessions return.
+`interspect`'s skills are useless on zklw today for the same reason `clavain`'s
+are: nothing runs.
+
+**So no further disables were applied.** Disabling `interspect` would save 0
+tokens now and remove a working plugin the moment login is restored. That is a
+worse position than leaving it.
+
+The real question is binary and it is mk's: **will zklw run Claude Code sessions
+again?**
+
+- **Yes** → the current config is correct preparation; fix the login and the
+  07-26 calls apply as written.
+- **No** → all 62 enabled plugins are dormant, not just the hook-bearing 24, and
+  the honest action is to stop maintaining an enablement policy for that machine
+  entirely rather than tuning one nobody loads.
+
 ### The line that was drawn: third-party first
 
 Not a port of Clavain's answers. The principle is about **which lever exists**:
@@ -389,6 +455,39 @@ Re-enable any one of them in a line:
 ```bash
 ssh zklw 'claude plugin enable pr-review-toolkit@claude-plugins-official'
 ```
+
+## `claude plugin details` is not a usable cross-check per plugin
+
+It was tried as an independent instrument, on the strength of agreeing with ours
+to within 10 tokens on `pr-review-toolkit` (2,680 vs 2,690). That agreement was a
+coincidence of composition.
+
+Across all 42 plugins enabled on Clavain the **totals** agree to 4% — 7,364
+tokens (ours) against 7,044 (theirs). **Per plugin the ratio runs from 0.00 to
+4.26**, which is precisely where a cross-check would be needed:
+
+| Plugin | ours | claude | ratio |
+|---|---|---|---|
+| `interspect` | 167 | 712 | **4.26** |
+| `cloudflare` | 1,099 | 1,769 | 1.61 |
+| `interflux` | 1,348 | 356 | **0.26** |
+| `cujgel` | 312 | 84 | 0.27 |
+| `intersynth` | 161 | 0 | 0.00 |
+
+Two mechanisms, both verified:
+
+1. **It does not account for `disable-model-invocation`.** `interspect` has 11
+   demoted commands; theirs counts all 18 skills, ours counts the 7 that still
+   advertise. Demotion is the rig's main reclamation lever, so the one instrument
+   that cannot see it cannot audit the work.
+2. **It under-counts agents in subdirectories.** It reports `Agents (0)` for
+   `interflux`, which ships **25 agent files, 18 of them nested** under
+   `agents/research/` and similar. That is the same non-recursive-glob bug
+   `advertisement-budget.py` had in its first version and fixed.
+
+Aggregate agreement plus per-plugin divergence in both directions is the
+signature of errors cancelling, not of two instruments measuring the same thing.
+**Use it for a sanity check on a total; never to decide about one plugin.**
 
 ## Verifying
 
