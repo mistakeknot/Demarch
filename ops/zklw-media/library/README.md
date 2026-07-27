@@ -19,6 +19,8 @@ as an argument. Every script is dry-run by default; `--apply` is opt-in.
 | `audit_settings.py` | Read-only dump of every lever governing quality/size/ratio, including the ones invisible from the quality profiles. |
 | `tracker_health.py` | Read-only census of the seeding stock by tracker, with announce status. |
 | `apply_audit_fixes.py` | Applies the 2026-07-27 audit fixes in their required dependency order. |
+| `archival_unknown.py` | Scopes the `Unknown` quality allowance to `Archival-Best` and routes the archival filmographies onto it. |
+| `size_efficiency.py` | Sets `preferredSize` and lowers the `minSize` floors so efficient encodes are expressible. |
 
 ## grey's config is repo-owned
 
@@ -93,6 +95,43 @@ uses it now — `Best-Available` cascades just as far.
   by tmdbId.
 - **Sonarr queue rows are per-episode.** A season pack shows one row per episode
   it satisfies. 23 rows / 12 downloads is normal, not duplication.
+
+## Size efficiency: the caps were only half the policy
+
+The 250 MB/min caps stop bloat. Nothing expressed the other half — *preferring*
+the efficient release — and the `minSize` floors were actively rejecting it.
+
+Measured before the fix, by interactive search:
+
+| title | release rejected as too small | floor demanded |
+|---|---|---|
+| Dune | 9.5 GB / 12.7 GB 2160p x265 DV HDR | 15.4 GB |
+| Blade Runner 2049 | 9.9 GB / 11.3 GB 2160p DV HDR | 16.3 GB |
+| Arrival | 8.0 GB 2160p x265 HDR (Tigole) | 11.6 GB |
+| Midsommar | 11.2 GB 2160p x265 HDR | 14.6 GB |
+
+A 155-minute *Dune* at 9.5 GB is 63 MB/min; the floor demanded 102. Those are
+exactly the releases a size-conscious library wants, and every one was refused.
+
+**The floors cannot go to zero.** The same searches turned up a 1.71 GB "2160p
+UHD BluRay" of *Hereditary* — 13.8 MB/min, not a 4K source in any meaningful
+sense. So the floors sit at roughly half the credible-encode bitrate: low enough
+to admit a good HEVC encode, high enough that sub-2 GB "2160p" still fails.
+After the change, 38 sub-15GB 2160p releases became acceptable across seven test
+titles while 108 were still rejected as too small.
+
+**`preferredSize` is the positive half**, and it had been null on every HD tier.
+Both arrs rank releases *within* a quality tier by proximity to it, so it is what
+actually chooses between a 15 GB and a 30 GB encode of the same film. Left null,
+nothing preferred the smaller and the biggest release under the cap tended to
+win. The values sit at a good-encode bitrate rather than at the cap — 130 MB/min
+(~17 Mbps) for 2160p, 60 for Bluray-1080p — with remux tiers deliberately set
+near the cap, since preferring a "small" untouched-video release is meaningless.
+
+Changing quality definitions does **not** retroactively re-grab: RSS surfaces
+only newly-posted releases, and the back catalogue is re-evaluated only by an
+explicit search. Verified after applying — across 370 movies holding a file,
+zero changed file and zero changed profile, with both queues empty.
 
 ## Indexer topology, and the rule that keeps it safe
 
