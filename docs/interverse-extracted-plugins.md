@@ -138,6 +138,14 @@ that, not the untracking.
 Goal `d4b1f7c2` acted on the 43 / 20 / 8 split above. Result: **63 at upstream
 HEAD, 0 behind, 3 dirty.**
 
+Those counts are a measurement, not a steady state. Within the same session a
+weekly cron produced a fifth `interfer` benchmark log; a sibling session
+committed and pushed in `interflux`, which briefly read as diverged before
+resolving to at-HEAD and clean; and a hook installer dirtied three repos
+plus the monorepo. Final live reading: **63 at HEAD, 0 behind, 2 dirty**
+(`intersearch`, `intervox`). Treat any estate-wide count as true at the
+instant it was taken.
+
 `git pull --ff-only` in all 20 behind repos: **19 fast-forwarded**, each verified
 against `gh api repos/mistakeknot/<name>/commits/main`. The refusal to use a
 plain `pull` is what made this safe — `--ff-only` aborts rather than merging, so
