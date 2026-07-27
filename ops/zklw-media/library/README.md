@@ -21,6 +21,8 @@ as an argument. Every script is dry-run by default; `--apply` is opt-in.
 | `apply_audit_fixes.py` | Applies the 2026-07-27 audit fixes in their required dependency order. |
 | `archival_unknown.py` | Scopes the `Unknown` quality allowance to `Archival-Best` and routes the archival filmographies onto it. |
 | `size_efficiency.py` | Sets `preferredSize` and lowers the `minSize` floors so efficient encodes are expressible. |
+| `freeleech_format.py` | Creates the Freeleech / Halfleech custom formats and scores them on both profiles. |
+| `crossseed_assess.py` | Read-only: measures cross-seed overlap between trackers and reports a verdict. |
 
 ## grey's config is repo-owned
 
@@ -210,6 +212,83 @@ endpoint (the one TMDb credential already running here) and tags the matches.
 Measured before and after: *So Can I* went from all 3 KG releases rejected to
 all 3 acceptable, *Orderly or Disorderly?* from 0 acceptable to 2, *The
 Traveler* from 2 to 4 — while Best-Available titles still reject Unknown.
+
+## Freeleech scoring
+
+On HDBits a freeleech grab costs no download credit and a halfleech grab costs
+half, so preferring them is the best per-grab ratio lever short of cross-seeding.
+Prowlarr passes tracker flags through as `indexerFlags` and both arrs score them
+via `IndexerFlagSpecification`.
+
+Measured over ~1600 releases: HDBits returned 59 freeleech and **79 halfleech**;
+TorrentLeech 295 freeleech of 619; **Karagarga zero — KG reports no flags at
+all**, so this lever does not apply there. Its Prowlarr `freeleech` field is a
+search *filter*, not a flag reporter.
+
+Halfleech is scored too, at half the weight, precisely because HDBits carries
+more of it than freeleech. Scoring only full freeleech would capture under half
+the benefit.
+
+`Freeleech +100`, `Halfleech +50`. Both sit above the x265 nudge so the cheaper
+of two equal releases wins, and both sit far below the 1500 on DV/HDR10+/HDR so
+**ratio can never outrank picture quality** — this is a tie-breaker, not a
+preference for worse video. Verified across nine like-for-like pairs: at
+identical tier and identical video formats the freeleech release scored exactly
++100 higher, including one case (*Hereditary* INTERNAL 2160p) where the two rows
+are the same release, 150 against 50.
+
+The flag enums differ between services and must never be shared:
+
+| | Freeleech | Halfleech | Freeleech75 | Freeleech25 |
+|---|---|---|---|---|
+| Radarr | 1 | 2 | 256 | 512 |
+| Sonarr | 1 | 2 | 32 | 64 |
+
+## Cross-seed: viable, but not the pairing we assumed
+
+Cross-seeding needs the same **file**, not the same film. Sampling 22 torrents
+from each tracker and matching sizes across trackers via Prowlarr:
+
+| stock | has a size-matched twin elsewhere |
+|---|---|
+| HDBits (332 held) | **8/22 — 36%** |
+| Karagarga (125 held) | **2/22 — 9%** |
+
+**The overlap is HDBits ↔ TorrentLeech, not HDBits ↔ Karagarga.** Six of the
+eight HDBits matches were on TorrentLeech and only two on KG. That is the
+opposite of where effort was expected to go, and it makes sense in hindsight:
+HDBits and TorrentLeech are both general HD trackers carrying overlapping P2P
+and scene releases, whereas KG's catalogue is deliberately rare material that by
+definition exists in few places.
+
+Verdict: **worth tooling, targeting HDBits ↔ TorrentLeech.** Extrapolated, ~36%
+of 332 HDBits torrents is roughly 120 candidates — upload credit on a second
+tracker for zero extra disk and zero extra download. Size matching within 0.5%
+is a proxy, not proof; a real cross-seed tool must confirm by piece hashes
+before announcing anything.
+
+**Blocked on a safety precondition first — see below.**
+
+## Two machines are holding the same torrents
+
+`crossseed_assess.py` led somewhere unrelated to cross-seed. jarmusch is still
+up, still running `qbittorrent-nox` with its BitTorrent port bound, and holds
+**513 `.fastresume` files**. Grey holds 463 torrents. Comparing infohashes:
+
+    432 infohashes are loaded on BOTH machines.
+
+The standing rule is that the same torrent must never be seeded from two IPs at
+once — it is the fastest way to be banned from a private tracker. The
+jarmusch → grey migration moved the data but appears to have left the originals
+loaded on jarmusch.
+
+What is proven: 432 shared infohashes, and a torrent client running on jarmusch
+with port 51413 bound. What is **not** proven: whether those torrents are
+actively announcing or sitting paused — jarmusch's WebUI is auth-gated and could
+not be enumerated. Either way the exposure is one client restart away, so this
+should be resolved before any cross-seed work adds more announcements.
+
+Tracked as `sylveste-inxe`.
 
 ## Reading `stalledUP` correctly
 
