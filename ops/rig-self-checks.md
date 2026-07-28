@@ -12,13 +12,16 @@ This page exists so that never depends on someone remembering.
 
 | Check | Clavain | zklw | Cadence |
 |---|---|---|---|
-| `guard-tests` — the 13-test guard suite | launchd | systemd timer | daily 09:15 |
+| `guard-tests` — **every** suite in `hooks/tests/` (31 tests, 3 suites) | launchd | systemd timer | daily 09:15 |
 | `settings-reference` — does a reference actually resolve | launchd | systemd timer | daily 09:15 |
 | `marketplace-divergence` — do the clones agree | launchd | systemd timer | daily 09:15 |
 | `intercore-tests` — `go test ./...` for the suite gating `ic` | launchd | systemd timer | daily 09:15 |
 | `ic-provenance` — does the deployed binary match the source | launchd | systemd timer | daily 09:15 |
 | `advertisement-budget` — what enabled plugins cost in context | launchd | systemd timer | daily 09:15 |
 | `instrument-freshness` — are the usage instruments still recording | launchd | systemd timer | daily 09:15 |
+| `enablement-drift` — do live settings still match the approved reference | launchd | systemd timer | daily 09:15 |
+| `autosync-health` — are opted-in repos actually being synced | launchd | systemd timer | daily 09:15 |
+| `hook-liveness` — are the registered hooks actually firing | launchd | systemd timer | daily 09:15 |
 | `peer-agreement` — do this machine and its peers agree on what must match | launchd | systemd timer | daily 09:15 |
 | `autosync-repair` — commit and push what the marker promised | — | **systemd timer** | daily 08:45 |
 | settings.json history | SessionStart + daily | **continuous, 10s poll** | see below |
@@ -178,6 +181,59 @@ functionality. See `plugin-enablement-policy.md`.
 A subdirectory on purpose: the reporter globs `~/.claude/health/*.json`
 non-recursively, so state files here cannot be mistaken for check results.
 
+## `hook-liveness` — registration is not evidence
+
+Added 2026-07-28. Every other check here watches something a hook *does*. None
+watched whether the hooks run at all, and on zklw they had not since 2026-07-14.
+
+The check reads `settings.json` for what is registered, then looks for records
+the hooks themselves wrote, per event, and separates four answers that must never
+merge:
+
+| Answer | Meaning | Status |
+|---|---|---|
+| `alive` | the event fired inside 24h; its hooks were invoked | pass |
+| `untriggered` | the event's trigger never occurred — no session started, or no tool ran | pass |
+| `dead` | the trigger *did* occur and the event left no record | **fail** |
+| `unobservable` | no registered hook on that event writes a dated record, so nothing can be concluded | **warn, never pass** |
+
+Evidence is per-event because Claude Code invokes *every* hook registered for an
+event: one heartbeat line for `SessionStart` proves all four SessionStart hooks
+were invoked. It proves **invocation, not success** — a hook that runs and fails
+silently still looks alive from here, and proving each hook's effect is that
+hook's own job.
+
+The evidence map lives in `rig_session_evidence.py`. Adding a hook to it is the
+cheap way to make its event observable; registering `hook-heartbeat.sh` on more
+events is the expensive way, because on `PostToolUse` that is an interpreter
+spawned on every single tool call to learn what `audit.log` already records.
+
+### The loud case names the cause, not the symptom
+
+On zklw the check reports:
+
+```
+11 session(s) started in the last 1.0d and all 11 failed authentication --
+every tool-triggered hook (PostToolUse, PreToolUse) is dead until
+`claude /login` is run on this machine
+```
+
+not "PostToolUse is dead". An operator told the latter goes and reads PostToolUse
+hooks, all seven of which are fine. Naming the cause is the difference between a
+check that finds a bug and a check that starts a search.
+
+### Blind spots on Clavain, stated rather than hidden
+
+`PreToolUse`, `Stop` and `PreCompact` are `unobservable` on the Mac — no hook
+registered on them writes a dated record. Left that way deliberately: observing
+`PreToolUse` costs a write on every tool call, forever, to watch three guards.
+`PreCompact` is excluded from the dead/triggered logic entirely, because "overdue"
+is not definable for an event that fires unpredictably, and treating a rare event
+as overdue manufactures failures. They stay named in every run's summary.
+
+Full per-hook disposition on both machines:
+`dotfiles/common/.claude/hooks/README.md`.
+
 ## Instrument freshness — an instrument reporting zero looks like an idle rig
 
 zklw recorded **no usage data for 13 days** and nothing said so. `audit.log` held
@@ -205,14 +261,36 @@ called. There have simply been no authenticated CLI sessions to call them in.
 Same shape as the autosync GitHub-token expiry: an expired credential silently
 freezes a subsystem that goes on looking installed.
 
-### Settled 2026-07-27: no Claude Code session runs on zklw at all
+### RETRACTED 2026-07-28: "no Claude Code session runs on zklw at all"
 
-The open question was whether zklw's *remote* sessions run hooks. They do not —
-and the reason is more fundamental than a hook-loading difference.
+**This section was wrong, and it was load-bearing.** It is kept rather than
+deleted because three later decisions were built on it and none of them make
+sense without seeing the mistake.
 
-| Evidence | Finding |
+zklw runs roughly **11 Claude Code sessions a day**. There are 281 session
+transcripts under `~/.claude/projects/`. Every one since 2026-07-14 07:13 dies at
+`authentication_failed` — 179 of the 281 — because the CLI is logged out
+(`mk-q6bl`). SessionStart hooks fire on every one of them, correctly, and have
+throughout. What is dead is `PreToolUse` and `PostToolUse`, and only because the
+session ends before its first tool call.
+
+**How the wrong conclusion was reached, since the method is the lesson:** the
+evidence below is a `ps` snapshot. zklw's sessions are launched by systemd
+timers, live about two seconds, and fail. Sampling `ps` between them finds
+nothing and looks exactly like a machine that runs no sessions at all. A
+point-in-time probe was used to prove a claim about all time — which is the same
+error as reading an instrument's silence as proof of idleness, one level up.
+`hook-heartbeat.sh` and `rig-hook-liveness.py` now answer this from records
+rather than from a snapshot.
+
+Corrected disposition of everything below: see
+`dotfiles/common/.claude/hooks/README.md`, which is beside the scripts.
+
+The original evidence and reasoning, as recorded on 2026-07-27:
+
+| Evidence | Finding (as claimed then) |
 |---|---|
-| `ps` for `share/claude/versions` or `bin/claude` | **No Claude Code runtime process exists on zklw** |
+| `ps` for `share/claude/versions` or `bin/claude` | ~~No Claude Code runtime process exists on zklw~~ — a snapshot between short-lived scheduled runs |
 | `strings` on `remote/srv/*/server` | **Zero** matches for `hook_event_name`, `SessionStart`, `PostToolUse` |
 | Size of that binary | 6.3 MB, against the CLI's 251 MB |
 | Its parent process | `tailscaled be-child ssh` — spawned per connection |
@@ -222,12 +300,16 @@ and the reason is more fundamental than a hook-loading difference.
 Claude Code session running *on the client* access to zklw's filesystem and
 shell. Hooks are executed by the session runtime, which is not on zklw.
 
-**Consequence, stated plainly: every hook in zklw's `settings.json` is dead for
-the work actually done there.** That includes `guard-enabled-plugins.sh`,
-`git-autosync-pull.sh`, `canongraph-recall.py`, and `report-rig-health.py`
-itself. zklw's checks were writing status files that nothing read — the same
-failure this program exists to eliminate, one level up: not a check that never
-runs, but a check that runs and reports into a void.
+~~**Consequence, stated plainly: every hook in zklw's `settings.json` is dead for
+the work actually done there.**~~ **False.** `guard-enabled-plugins.sh`,
+`git-autosync-pull.sh`, `canongraph-recall.py` and `report-rig-health.py` are all
+SessionStart hooks and all of them fire, many times a day.
+
+What survives of this paragraph is the *second* half, and it is still true and
+still the reason peer reporting exists: zklw's sessions are **headless**, so
+everything those hooks print goes into a transcript with no human attached. A
+hook that fires into a void and a hook that never fires are different faults with
+the same symptom, and conflating them cost fourteen days.
 
 Fixed by reporting zklw's findings on the Mac — see "Peer reporting" below.
 
@@ -239,10 +321,13 @@ way. The conclusion happens to be right; the reasoning was not, and the
 difference matters. `hook-heartbeat.sh` now exists precisely so this question has
 an unconditional answer next time.
 
-## Every Claude Code hook on zklw is inert — the full count
+## ~~Every Claude Code hook on zklw is inert~~ — the full count, re-read
 
-Chasing four named hooks turned up the real number. Nothing on zklw runs Claude
-Code hooks, so **73 hook entries are registered there and none of them fire**:
+**Corrected 2026-07-28.** The count is right; the verdict on it is not. 73 hook
+entries are registered on zklw. They are not all inert — the SessionStart ones
+fire on every scheduled session, which is about eleven times a day. Only the
+tool-triggered ones are dead, and only because the session dies at
+authentication first.
 
 | Source | Entries | Notes |
 |---|---|---|
@@ -255,11 +340,14 @@ mandatory), `security-guidance` (9), `clavain` (17), `interspect` (3, whose whol
 value is that its hooks "run continuously"), `tool-time` (5), `interwatch`,
 `intertrack`.
 
-**This has a budget consequence.** zklw pays advertisement for plugins whose value
-is largely or wholly hook-delivered, and gets none of it. `interspect` at 668
-chars is the clearest case. The enablement calls in
-`plugin-enablement-policy.md` were made without knowing this and should be
-revisited against it.
+~~**This has a budget consequence.** zklw pays advertisement for plugins whose
+value is largely or wholly hook-delivered, and gets none of it.~~ **Overstated.**
+Plugin SessionStart hooks fire like any other. What zklw loses is the
+tool-triggered half — which for `interspect` and `tool-time`, whose value really
+is per-tool-call, is most of it. The enablement calls in
+`plugin-enablement-policy.md` should still be revisited, but against "the
+PostToolUse half is dead until authentication is restored", not against "none of
+it runs".
 
 **Git hooks are unaffected** and still work. `install-server.sh` fans a
 `pre-commit` scanner out to every `.git-autosync` repo; those fire on `git
@@ -268,17 +356,43 @@ distinction matters — the secret scanner still protects that machine.
 
 ### Per-hook disposition, zklw
 
-| Hook | Event | Disposition |
-|---|---|---|
-| `guard-enabled-plugins.sh` | SessionStart | **Relocated** to the timer as `enablement-drift`. Registration kept: inert here, correct if CLI sessions resume. |
-| `git-sync-check.sh` | SessionStart | **Registration removed.** Replaced by scheduled `autosync-health`. |
-| `git-uncommitted-nudge.sh` | Stop | **Registration removed.** Same replacement. |
-| `canongraph-recall.py` | SessionStart | **Registration removed.** Injects recalled context into a session prompt; there is no session here to inject into. |
-| `canongraph-run-bridge.py` | Stop | **Registration removed.** Fires at session end; no session to end. |
-| `git-autosync.sh` | PostToolUse | **Kept.** Autosync has no replacement; removing this discards the only wiring that exists. |
-| `git-autosync-pull.sh` | SessionStart | **Kept**, same reason. |
-| `log-tool-invocation.sh` | PostToolUse | **Kept.** Writes `audit.log`; per-tool-call work no timer can do. Its deadness *is* the audit.log outage. |
-| `warn-agent-model-unset.sh` | PreToolUse | **Kept.** Harmless, correct if CLI resumes. |
+Revised 2026-07-28. "Fires?" is measured, not inferred — `rig-hook-liveness.py`
+reads records the hooks themselves wrote.
+
+| Hook | Event | Fires? | Disposition |
+|---|---|---|---|
+| `guard-enabled-plugins.sh` | SessionStart | yes | **Keep.** Protective function still belongs on the timer as `enablement-drift`, because the hook's output is headless — but it is not inert. |
+| `git-autosync-pull.sh` | SessionStart | yes | **Keep.** Has been working the whole time. |
+| `report-rig-health.py` | SessionStart | yes | **Keep.** Fires; findings travel to the Mac by peer reporting because nobody reads a headless transcript. |
+| `hook-heartbeat.sh` | SessionStart | yes | **Keep.** The evidence channel that settled all of this. |
+| `git-autosync.sh` | PostToolUse | **no** | **Keep.** Dead for want of authentication, not of a trigger. |
+| `log-tool-invocation.sh` | PostToolUse | **no** | **Keep.** Its deadness *is* the audit.log outage. Matcher here is `Skill\|Agent`, narrower than the Mac's. |
+| `warn-agent-model-unset.sh` | PreToolUse | **no** | **Keep.** Previously kept as "harmless". Stronger than that: zklw's scheduled jobs spawn agents, so once auth returns it advises more spawns than the Mac does. |
+
+### Two registrations were removed on the false premise
+
+`git-sync-check.sh` (SessionStart) and `git-uncommitted-nudge.sh` (Stop) were
+removed and replaced by the scheduled `autosync-health` check. **That still
+stands** — an advisory nudge printed into a headless transcript helps nobody, and
+the reasoning holds independently of whether sessions run.
+
+`canongraph-recall.py` (SessionStart) and `canongraph-run-bridge.py` (Stop) were
+removed with the reason "there is no session here to inject into" and "no session
+to end". **Both reasons were false.** There are eleven sessions a day and they do
+end. These two are doing real agent work when authenticated — the
+`agmodb-production-runner` plan-backlog burn-down among them — so recall and the
+run bridge would have applied to exactly the sessions that most needed them.
+
+Not restored in this pass, deliberately:
+
+- It changes nothing until authentication is restored on zklw.
+- Editing `settings.json` requires re-adopting the settings reference or
+  `enablement-drift` reports drift the next morning; that is a separate
+  deliberate act, not a side effect of a documentation fix.
+- Whether headless burn-in jobs *should* write into CanonGraph is mk's call, not
+  a correction to be smuggled in under a retraction.
+
+Carried as a decision in the handoff, alongside `claude /login`.
 | `report-rig-health.py` | SessionStart | **Kept.** Rescued by peer reporting. |
 | `hook-heartbeat.sh` | SessionStart | **Kept.** The instrument that answers "did a hook fire here". |
 
@@ -512,9 +626,43 @@ machine trips it for behaving correctly, and a busy machine that stopped
 recording passes for N days — exactly the window that hid this.
 
 So the check compares each instrument against **independent proof that sessions
-ran at all**: Claude Code rewrites `~/.claude.json` as it works. A fresh marker
-plus a silent instrument means sessions ran and recorded nothing. A stale marker
-means the machine was idle, and the check stays quiet.
+ran at all**. ~~Claude Code rewrites `~/.claude.json` as it works.~~
+
+**Corrected 2026-07-28 — that proof was not proof.** Claude Code rewrites
+`~/.claude.json` and `settings.json` at session **start**, before the first tool
+call and before authentication. Every zklw session since 2026-07-14 started,
+refreshed both markers, and died at `authentication_failed`. So the check saw a
+fresh marker beside a silent instrument and announced
+
+```
+sessions active 28m ago but audit-log recorded nothing in over 2.0d
+```
+
+— a definite verdict against a healthy instrument, every day for fourteen days.
+The same defect family this program has been correcting all week, in a third
+costume: not *stale vs cannot-check* this time but its neighbour, **did not
+happen vs could not have happened**.
+
+The authority is now the **session transcripts**, which record what a session
+did rather than that it existed. A session that reached a tool call is proof that
+recording was possible; one that died before it proves only that Claude Code
+started. Three outcomes are counted separately — productive, blocked at
+authentication, started-and-did-nothing — and only the first licenses a verdict.
+
+Two consequences:
+
+- **Exit 3 is now distinct from exit 1.** Exit 1 means an instrument that should
+  have recorded did not; exit 3 means no session got far enough for the question
+  to have an answer. Exit 3 reports as `warn`, and
+  `test-rig-instrument-freshness.sh` fails if the two ever return the same code.
+- **Instruments are judged only against their own trigger.** `audit.log` is
+  written by a hook registered `Skill|Agent` on zklw and
+  `Skill|Agent|Bash|Read|Edit|Write|NotebookEdit` on the Mac, so the same file
+  means different things on the two machines. A week of Bash work legitimately
+  leaves zklw's copy empty. The matcher is read from `settings.json`, never
+  hardcoded, so re-scoping a hook re-scopes the check that judges it.
+
+A stale marker still means the machine was idle, and the check still stays quiet.
 
 Freshness is read from the timestamp **inside the last record**, never from
 mtime. During this diagnosis a manual hook probe appended one line and the file's
@@ -529,6 +677,14 @@ diagnostic poke, backup tool, or editor would launder the signal the same way.
 Verified by forcing all seven branches: recording, the 13-day outage, idle
 machine stays quiet, **mtime laundering still fails**, undateable record, missing
 activity marker, and one-of-two instruments dead.
+
+Re-verified 2026-07-28 across nine cases, including the two the original set
+could not express: sessions dying at authentication (exit 3, not 1), and a fresh
+activity marker with no session transcript behind it — a watchdog or backup
+touching `settings.json` is enough, and under the old logic that counted as proof
+sessions ran. The collapse was then **forced** in an isolated copy by setting
+`EXIT_NO_VERDICT = 1`; the suite failed with `both returned 1 -- the states have
+collapsed`, which is the regression it exists to catch.
 
 ## `skip` is a third status, and it cannot hide a dead check
 
@@ -713,10 +869,20 @@ git -C ~/.claude/settings-history log --oneline
   automated and installed-drift is now classified; anything else doctor reports
   is only seen when a human runs it.
 - **Re-copying systemd units after a dotfiles change** — see below.
-- **Autosync on zklw.** It is hook-driven with no systemd replacement, so it does
-  not run. `autosync-health` now *detects* the damage; nothing repairs it.
-  Committing and pushing unattended on a shared server is a decision, not a
-  default — see below.
+- **Restoring authentication on zklw** — `claude /login`, interactive, and the
+  single unblock for the largest outage in this document. Until it is done, every
+  `PreToolUse` and `PostToolUse` hook on that machine stays dead, autosync cannot
+  commit, `audit.log` cannot record, and ~11 scheduled agent sessions a day
+  continue to start, fail, and report success at the timer level (`mk-q6bl`).
+- **Deciding whether `canongraph-recall.py` and `canongraph-run-bridge.py` go
+  back on zklw.** Both were unregistered on the false premise that no session
+  exists there to recall into or to end. Restoring them also means re-adopting
+  the settings reference so `enablement-drift` does not report drift the next
+  morning (`mk-7c70`).
+- **Autosync on zklw.** The `autosync-repair` timer now commits the allowlisted
+  cases and refuses the rest; `autosync-health` detects what remains. The
+  hook-driven half returns on its own once authentication is restored — the timer
+  stays regardless, because sessions have now demonstrably stopped once.
 - **Reclaiming budget headroom.** The check reports the number and names what
   moved; deciding what to demote, slim, or disable stays a human call.
 - **Catching a cost increase faster than daily.** A plugin installed mid-session
