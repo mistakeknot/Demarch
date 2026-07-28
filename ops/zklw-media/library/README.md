@@ -409,3 +409,85 @@ and cross-seeding the same file to a second tracker.
   efficient encodes (`Bluray-2160p min=102 MB/min` refuses a good 8-10GB x265 4K
   as *too small*). The caps stop bloat; the floors block efficiency.
   Tracked as `sylveste-3g1t`.
+
+## Duplicates in Jellyfin: three causes, only one of them obvious
+
+Users reported "a ton of duplicates". There were three independent causes, and
+counting by *name* would have found the symptom but misattributed all three.
+Counting by **inode** separated them:
+
+| cause | tiles |
+|---|---|
+| Jellyfin scanned both `/data/movies` and `/data/Movies` | 277 |
+| 209 loose video files sitting unfoldered in the Radarr root | 209 |
+| 38 release-named *torrent folders* also in the Radarr root | 38 |
+
+**The seeding tree was a library path.** `/data/Movies` (capital M) is the KG
+seeding tree; `/data/movies` is the Radarr root. `kg_adopt` hardlinks between
+them — one inode, two names, zero extra disk, exactly as designed. But Jellyfin
+scanned both and has no cross-path dedup, so every adopted film rendered twice.
+
+Removing the path took **two** changes, not one. Editing `options.xml` is not
+enough: Jellyfin also stores each media path as a `.mblink` file in the library
+folder, and the scan keeps following it. `Movies.mblink` had to go too.
+
+**The loose files could not simply be moved.** All 209 were actively seeded by
+qBittorrent *from that exact path* — moving them would have broken 209 torrents
+across three private trackers at once. The order that works:
+
+1. `loose_adopt.py add` / `import` — hardlink each file into a proper movie
+   folder via `importMode=copy` against `copyUsingHardlinks`. Zero bytes copied;
+   the path qBittorrent knows is untouched.
+2. `loose_adopt.py relocate` — only then, `setLocation` the torrent to
+   `/data/torrents/movies`. `/data` is one filesystem, so this is a `rename(2)`:
+   the inode survives, the library's hardlink stays valid, the root gets clean.
+
+Doing those in the other order strands the library. The relocate guard is by
+inode, and deliberately stricter than "is this the registered movieFile": a
+loose file nobody has matched is currently the *only* way its film appears in
+Jellyfin, so it is held rather than quietly moved out of view.
+
+Result: **978 → 639 Jellyfin entries, surplus duplicate tiles 179 → 5.**
+The 62 torrents still in the root are held for manual matching (`sylveste-n5gl`);
+the remaining 5 tiles are `/data/movies-4k` pairs (`sylveste-ixxu`).
+
+### Not all duplicates were free
+
+The hardlink duplicates cost nothing. The torrent-folder ones are **real second
+copies** — `Fruitvale Station` exists as inode 600998462 (the torrent) and inode
+59213107 (the KG restore), byte-identical at 7,038,422,589 bytes each. The KG
+restore re-downloaded material the box already had. Quantifying that is
+`sylveste-a2pn`.
+
+### A caution this run earned
+
+`kg_orphan_adopt.py` originally picked the largest video in a KG folder as the
+feature. That is wrong often enough to matter: the folder `No Data Plan (2019)`
+also contains `At.Land.1944.720p.x264.mkv`, which is bigger and is a *different
+film with its own folder*. Radarr's parser does not rescue you — given the
+folder as context it reports **both** files as "No Data Plan". The fix is to let
+the filename decide and only break ties by size.
+
+It mis-filed one title before that fix (`Fantasma.2006` imported as *Barren
+Illusion*); repaired by de-registering the file and re-importing the correct
+`BARREN_ILLUSIONS.avi`. Worth remembering that "biggest file in the folder" is a
+proxy, and proxies are what keep going wrong here.
+
+## The Vampire Lestat: a metadata split, not a broken request
+
+A request for *The Vampire Lestat* silently failed for one user — no error, and
+no row in Seerr's request table. The cause is upstream: TMDb carries it as a
+standalone series (id 323411) with **`tvdbId: null`**, while TVDB never split it
+and tracks it as **Interview With The Vampire season 3** (7 episodes).
+
+Seerr speaks TMDb to users and TVDB to Sonarr. With no TVDB id, that translation
+has no output and the request dies at submit — which is why nothing was logged.
+
+The scene is split the same way: HDBits ships `Interview.with.the.Vampire.S03`,
+TorrentLeech ships both that *and* `The Vampire Lestat S01E0x`. Only the S03
+naming can ever match Sonarr, so the `The Vampire Lestat S01` releases are
+invisible to it no matter what is configured.
+
+Fix: monitor the existing series and search season 3. Nothing to add, nothing to
+map. Until TMDb gains the TVDB link, users must request *Interview with the
+Vampire* — the Lestat entry cannot be made to work from this side.
