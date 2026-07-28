@@ -294,26 +294,43 @@ store, not the config) — the same uid trap recyclarr has. And an earlier
 half-finished install had left `cross-seed.db` owned by root since 25 Jul,
 failing silently.
 
-## Two machines are holding the same torrents
+## Two machines hold the same torrents — but only 6 are announcing
 
 `crossseed_assess.py` led somewhere unrelated to cross-seed. jarmusch is still
-up, still running `qbittorrent-nox` with its BitTorrent port bound, and holds
-**513 `.fastresume` files**. Grey holds 463 torrents. Comparing infohashes:
+up, still running `qbittorrent-nox`, and holds 513 torrents. Comparing
+infohashes against grey's 463:
 
     432 infohashes are loaded on BOTH machines.
 
-The standing rule is that the same torrent must never be seeded from two IPs at
-once — it is the fastest way to be banned from a private tracker. The
-jarmusch → grey migration moved the data but appears to have left the originals
-loaded on jarmusch.
+That number reads like a catastrophe and is not. Enumerating the actual states
+(via `jarmusch_dupes.py`, once a credential was available) gives:
 
-What is proven: 432 shared infohashes, and a torrent client running on jarmusch
-with port 51413 bound. What is **not** proven: whether those torrents are
-actively announcing or sitting paused — jarmusch's WebUI is auth-gated and could
-not be enumerated. Either way the exposure is one client restart away, so this
-should be resolved before any cross-seed work adds more announcements.
+| | count |
+|---|---|
+| duplicates in `stoppedUP` — paused, not announcing | **426** |
+| duplicates actually announcing — the real exposure | **6** |
+| unique to jarmusch, left alone | 81 (14 seeding) |
 
-Tracked as `sylveste-inxe`.
+So the migration *was* done properly: the originals were stopped, and six leaked
+through. The standing rule — never seed one infohash from two IPs — is being
+violated by six torrents, not by four hundred.
+
+Worth keeping as a method note: the infohash intersection was cheap and proved
+*presence*, but presence is not exposure. The states needed a credentialed
+query, and the gap between "432 shared" and "6 announcing" is the whole
+difference between an emergency and a chore. Don't report the cheap number as
+though it were the expensive one.
+
+`jarmusch_dupes.py` pauses only the announcing duplicates, leaves the 81 unique
+torrents alone, and pauses rather than deletes so resuming undoes it. Grey is
+the right survivor: it already seeds all 432, it is connectable where jarmusch
+is firewalled with near-zero upload, and qbit-manage governs its share limits.
+
+Two gotchas: the 1Password item `qbit-jarmusch` has an **empty username field**,
+and jarmusch's `qBittorrent.conf` has no `WebUI\Username`, so qBittorrent is on
+its default `admin` — the script falls back to that. And jarmusch sets no
+`MaxAuthenticationFailCount`, so qBittorrent's default of 5 failures / 1 hour
+ban applies; do not brute-force it.
 
 ## Reading `stalledUP` correctly
 
