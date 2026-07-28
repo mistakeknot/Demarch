@@ -71,14 +71,38 @@ is always a clean fast-forward with nothing to adjudicate. See
 `dotfiles/projects/docs/dual-machine-sync.md` for why this overrides that doc's
 original "live on the lane" model.
 
-**Live as of 2026-07-28** — pilot of 3, the only repos in the estate with
-genuine drift gates:
+**Live as of 2026-07-28** — 6 repos on lanes; 3 of them carry required checks,
+which are the only repos in the estate with genuine drift gates:
 
-| Repo | Required context | Lane |
+| Repo | Required context | Why on a lane |
 |---|---|---|
-| `Sylveste` | `Generator and parity checkers` | `autosync/<machine>` |
-| `interchart` | `generate.sh refuses bad input` | `autosync/<machine>` |
-| `interflux` | `audit` | `autosync/<machine>` |
+| `Sylveste` | `Generator and parity checkers` | drift gate |
+| `interchart` | `generate.sh refuses bad input` | drift gate |
+| `interflux` | `audit` | drift gate |
+| `apps/Khouri` | — | had work stranded by non-fast-forward pushes |
+| `core/intermute` | — | same |
+| `interverse/tldr-swinton` | — | same |
+
+The last three were opted in because their autosync pushes had been failing
+silently. A lane does not repair divergence — all three were ahead *and* behind,
+so their work still could not reach `main` — but it does convert **silently
+stranded** into **visibly parked**, which is what `git-autosync-lane-status.sh`
+then reports.
+
+**A lane that never reaches main is the failure mode this creates.** Lane pushes
+always succeed, so nothing complains while work piles up. That already happened
+once: `jawnfit` accumulated 24 commits over 26 days with its trunk frozen at the
+fork point, and no tool said anything.
+`git-autosync-lane-status.sh` exists for that: it reports every `autosync/*` ref
+on the remote — not just the local machine's, since a lane frozen on the other
+machine is exactly the one you cannot see — and flags anything waiting longer
+than `--days` (default 7). Its first live run found `apps/Khouri` **frozen 109
+days**. Exit 1 when any lane needs attention.
+
+`git-autosync-promote.sh` runs on a `git-autosync-promote.timer` on zklw and
+promotes *any* machine's fast-forwardable lane, not only its own — if only one
+machine runs the timer, restricting it to that machine's lane would let every
+other lane rot.
 
 `strict: false` deliberately — strict additionally requires the branch be up to
 date with its base before every push, which the lane model already guarantees
