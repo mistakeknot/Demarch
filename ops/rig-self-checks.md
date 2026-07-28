@@ -181,6 +181,98 @@ functionality. See `plugin-enablement-policy.md`.
 A subdirectory on purpose: the reporter globs `~/.claude/health/*.json`
 non-recursively, so state files here cannot be mistaken for check results.
 
+## `job-outcomes` — the schedulers were never watched
+
+Added 2026-07-28. Every check above watches the rig. Nothing watched the things
+that *run* the rig, and they had been failing in the open.
+
+What the first run found, all of it previously silent:
+
+| Machine | Finding |
+|---|---|
+| **Clavain** | **Both off-site B2 backups dead since 2026-07-25** — a stale restic lock from a dead PID, failing every 4 hours. The local Synology copy kept succeeding, so the backup story looked fine. Unlocked; B2 now completes (`mk-elhy`). |
+| zklw | `canongraph-backup` exit 1, `jawnverse-pg-backup` timeout, `remontoire` exit 1, `caddy-routes` 203/EXEC **since 2026-07-13** (`mk-ud80`) |
+| zklw | 3 nightly Claude Code automations failing for 14 days |
+
+### The evidence was never missing
+
+This is the part worth keeping. Nothing here was hidden:
+
+- `claude -p` **exits 1** on an authentication failure — measured, not assumed
+- `~/.config/restic/backup-b2.sh` **exits 11** — and restic's own error names the
+  fix, `the unlock command can be used to remove stale locks`
+- systemd recorded `Result=exit-code` for every failed unit
+- launchd recorded `LastExitStatus` for every failed agent
+
+Every one of those commands was honest. **What did not exist was a channel.**
+That crontab has no `MAILTO`, so a non-zero exit has nowhere to go;
+`systemctl --user list-units --failed` and `launchctl list` hold the answers and
+nothing reads them; the logs are opened when you are already suspicious, which is
+the one time you do not need them.
+
+So the fix is not "make the jobs honest". They were. It is to read what they
+already say.
+
+### Receipts and the check are not redundant — the argument
+
+The tempting simplification is that per-job receipts make an external reader
+unnecessary. They do not:
+
+> **A receipt cannot report its own absence.**
+
+Disable a timer, delete a crontab line, or leave the machine asleep and no
+receipt is written — which is indistinguishable from "not due yet" unless
+something independently knows what was *supposed* to run. So the two cover
+different failures:
+
+| | answers |
+|---|---|
+| `rig-job-receipt.sh` | *did this run succeed?* — where the outcome would evaporate |
+| `rig-job-outcomes.py` | *did everything scheduled produce an outcome at all?* |
+
+What **is** redundant is wrapping systemd and launchd jobs in receipts. Both
+already store the result durably until the next run. **Where the outcome
+survives, read it; where it evaporates, capture it.** Receipts are therefore
+used for cron and nothing else — on this estate, three lines.
+
+### Every job declares what non-zero means
+
+A naive alert on `--failed` would fire forever on two units that are working
+perfectly: `rig-health` exits non-zero whenever any check fails (that is its
+contract, so the scheduler agrees with the status files) and
+`git-autosync-repair` exits non-zero when a repo needs a human. Alerting on
+those teaches the reader to ignore the one list that matters.
+
+So the meaning is declared beside the job. systemd units and crontabs take `#`
+comments and plists take XML comments, so in every case it lives in the unit
+itself rather than a side table that drifts away from it:
+
+```
+# rig-outcome: verified
+#   restic backup to B2; a non-zero exit means no backup was taken
+```
+
+| Class | Meaning | Behaviour |
+|---|---|---|
+| `verified` | the work did not happen | **fail** |
+| `finding` | the job ran fine and has something to say | named, never alerted |
+| `ignore` | the outcome genuinely does not matter | silent, but stated |
+
+An **unclassified** scheduled job is a failure of this check, not a skip.
+"Nobody has decided what this job's failure means" is exactly the state that
+produced the fourteen days, and it has to cost something to leave it there. It
+proved itself immediately: three `estate-*` units created the same afternoon
+were flagged within minutes of being written.
+
+### Two Clavain agents want unloading, not classifying
+
+`com.sma.mount-slse-projects` pings `100.97.18.105` — the retired slse address,
+decommissioned 2026-04-29 — and exits 68 forever. `com.sma.zklw-reboot-once` is a
+one-shot kdump reboot scheduled for 2026-05-02, still loaded on a daily 03:00
+interval. Both are classified `ignore` **only to stop the noise**; the reasoning
+recorded in each plist says plainly that the correct fix is to unload them, which
+is a human decision rather than a classification.
+
 ## `hook-liveness` — registration is not evidence
 
 Added 2026-07-28. Every other check here watches something a hook *does*. None
