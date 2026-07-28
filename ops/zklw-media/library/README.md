@@ -23,6 +23,9 @@ as an argument. Every script is dry-run by default; `--apply` is opt-in.
 | `size_efficiency.py` | Sets `preferredSize` and lowers the `minSize` floors so efficient encodes are expressible. |
 | `freeleech_format.py` | Creates the Freeleech / Halfleech custom formats and scores them on both profiles. |
 | `crossseed_assess.py` | Read-only: measures cross-seed overlap between trackers and reports a verdict. |
+| `crossseed_setup.py` | Deploys cross-seed on grey and runs bounded search passes. |
+| `jarmusch_dupes.py` | Pauses torrents jarmusch is seeding that grey also seeds. |
+| `kg_review_force.py` | Clears KG adoption rows stranded on advisory rejections. |
 
 ## grey's config is repo-owned
 
@@ -331,6 +334,53 @@ and jarmusch's `qBittorrent.conf` has no `WebUI\Username`, so qBittorrent is on
 its default `admin` — the script falls back to that. And jarmusch sets no
 `MaxAuthenticationFailCount`, so qBittorrent's default of 5 failures / 1 hour
 ban applies; do not brute-force it.
+
+## The KG adoption review queue
+
+The queue read as 240 folders needing review. Bucketed against what was actually
+on disk, it was almost entirely phantom:
+
+| | count |
+|---|---|
+| empty — `kg_restore.sh` had not reached them yet | 213 |
+| had video, restore still in progress | 12 |
+| **genuinely reviewable** | **15** |
+
+`kg_adopt` records `no-video-items` when it runs against a folder mid-transfer,
+and the nightly prunes those once the dir completes — so most of the "queue" is
+a snapshot of work not yet done, not work that failed. **Count the queue against
+disk before treating its size as a backlog.**
+
+Working the real 15 produced imports of 230 → 244, every one hardlinked
+(`nlink=2`), so the library grew by fourteen films and zero bytes.
+
+Three failure modes, each needing a different fix:
+
+- **Stale `no-video-items` (10).** Recorded once while the folder was empty and
+  never retried. Pruning the row and re-running `kg_adopt.py import` cleared
+  them — the nightly's own logic, just run on demand.
+- **Advisory rejections (4).** `kg_adopt` bails on ANY rejection, which strands
+  files over `Unknown Movie` (Radarr cannot parse a title from a KG filename —
+  irrelevant when we supply the movieId) and `No audio tracks detected`
+  (*Khabarda* (1931) is a Georgian **silent** film; the rule met content it was
+  never written for). `kg_review_force.py` overrides exactly those two and
+  nothing else.
+- **Case-collision same-path (1).** Radarr compares paths case-insensitively, so
+  `/data/Movies/Top Knot Detective (2017)` and `/data/movies/Top Knot Detective
+  (2017)` looked identical and it refused with `Source and destination can't be
+  the same`. `kg_fix_samepath.py` already exists for this and hardlinks the file
+  in directly.
+
+Recovering a movieId for a stranded row needs care: `kg_adopt` omits it when
+recording a `rejected` row, so `kg_review_force.py` merges the progress log with
+the report's `review_from_import`, then falls back to matching the folder name
+against Radarr's library. That fallback allows **±2 years** — KG folder years,
+release filenames and TMDb routinely disagree (*Je, tu, il, elle* is variously
+1974, 1975 and 1976). The exact normalised title match is what makes it safe,
+not the year window, and an ambiguous match is refused rather than guessed.
+
+One genuine manual case remains: *Roar* (1981) exists only as `cd1`/`cd2`, and
+Radarr cannot represent one movie as two files.
 
 ## Reading `stalledUP` correctly
 
