@@ -42,6 +42,14 @@ if len(data) < 3:
     print("expected: username, password, then one infohash per line on stdin")
     sys.exit(2)
 user, pw = data[0].strip(), data[1].strip()
+# The 1Password item carries only a password -- its username field is empty --
+# and jarmusch's qBittorrent.conf has no WebUI\Username line, which means
+# qBittorrent is using its built-in default. Fall back to that rather than
+# sending an empty username and burning a login attempt: qBittorrent bans the
+# calling IP for a while after a handful of failures.
+if not user:
+    user = "admin"
+    print("no username supplied; using qBittorrent's default 'admin'")
 hashes = {h.strip().lower() for h in data[2:] if h.strip()}
 apply_ = "--apply" in sys.argv
 
