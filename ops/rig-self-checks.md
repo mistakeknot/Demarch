@@ -20,6 +20,7 @@ This page exists so that never depends on someone remembering.
 | `advertisement-budget` — what enabled plugins cost in context | launchd | systemd timer | daily 09:15 |
 | `instrument-freshness` — are the usage instruments still recording | launchd | systemd timer | daily 09:15 |
 | `peer-agreement` — do this machine and its peers agree on what must match | launchd | systemd timer | daily 09:15 |
+| `autosync-repair` — commit and push what the marker promised | — | **systemd timer** | daily 08:45 |
 | settings.json history | SessionStart + daily | **continuous, 10s poll** | see below |
 
 Expected steady state, so a drift is auditable against something:
@@ -285,16 +286,98 @@ No files were deleted anywhere. Four *registrations* were removed from zklw's
 `settings.json` only; every script remains on disk and in dotfiles, and all of
 them are still live on the Mac.
 
-## Autosync on zklw is not running
+## Autosync on zklw — detected, then repaired
 
 `git-autosync` is **entirely hook-driven** — a PostToolUse hook commits and
 pushes on edit, a SessionStart hook pulls. There is **no systemd machinery behind
-it**, so on zklw it does nothing.
+it**, so on zklw it did nothing.
 
-Measured 2026-07-27: 93 repos carry a `.git-autosync` marker; **14 hold
-uncommitted work and 3 are unpushed.** Only 8 have ever recorded activity, most
-stopping in June. This is why uncommitted work sat in `Sylveste` until a human
-noticed earlier that week.
+Measured 2026-07-27: 93 repos carry a `.git-autosync` marker; **14 held
+uncommitted work and 3 were unpushed.** Eleven have ever recorded activity, the
+most recent stopping 2026-07-22. This is why uncommitted work sat in `Sylveste`
+until a human noticed earlier that week.
+
+`git-autosync-repair.sh` now runs on a **systemd timer** at 08:45, half an hour
+before the health check, so `autosync-health` reports the state *after* repair.
+A timer and not a hook: that is the entire lesson of the outage. First run took
+it to **5 dirty, 4 unpushed** — the rest correctly refused.
+
+### Why an allowlist, not "commit everything except…"
+
+Decided with mk after triaging what was actually sitting there, because the
+working tree answered the question. It contained:
+
+- **`.beads/.beads-credential-key`** — 32 bytes, mode `0600`, **not gitignored**
+- **`.beads/hooks/pre-commit`** — a *type change*: the tracked regular file had
+  been replaced by a symlink to `~/projects/dotfiles/cloud/pre-commit.sh`, a
+  path that exists only on that machine
+
+A `git add -A` would have pushed a secret to GitHub and broken a hook in every
+other checkout. **Neither would have appeared on a denylist written before
+seeing them.** A denylist is only as good as the last surprise.
+
+So the repairer commits `uv.lock`, `.beads/issues.jsonl`, `.git-autosync`, and
+`docs/diagrams/*.html` — and reports everything else. Hand-authored work is
+never touched: `core/agent-rig` has held a deliberate 8-line migration since
+2026-07-10, and a tool that swept that into "chore: autosync" would be eating
+the work it exists to protect.
+
+### It refuses rather than guesses
+
+Rebase, merge, cherry-pick or bisect in progress · detached HEAD · unresolved
+conflicts · a non-empty index · unreachable remote · no upstream · no remote at
+all · any type change even on an allowed path · **a branch that has genuinely
+diverged**, because rebase-vs-merge is an editorial choice about history that a
+script does not get to make.
+
+Two of those were found by *forcing* them, not by reading code:
+
+- `ls-remote --exit-code origin HEAD` exits 2 when nothing **matches**, which
+  includes a perfectly reachable remote whose HEAD is an unborn branch. The
+  repairer called that "unreachable".
+- A repo with **no upstream** was counted as *clean*, because `ahead` cannot be
+  computed without a tracking branch. Work that had never left the machine,
+  reported as nothing to do — the exact failure the tool exists for, hiding
+  inside the tool.
+
+### Sync before committing
+
+The first real run committed onto branches that were already **behind**, because
+the *pull* half of autosync had not fired here either and local refs were up to
+**59 commits** stale. Behind + a new local commit = diverged, and no
+fast-forward fixes that afterwards: every commit succeeded and nine pushes were
+rejected non-fast-forward.
+
+It now fetches first and fast-forwards with `--ff-only`, which cannot conflict
+and cannot invent a commit. Only repos with something to send are fetched —
+fetching all 93 daily would take on merge risk for no benefit on a machine that
+reads nothing.
+
+### The marker population: audited, and kept whole
+
+The suspicion was that 122 markers on a machine that never honoured them meant
+the set had sprawled. It had not:
+
+| | |
+|---|---|
+| markers | **93**, not the ~122 the docs claimed — and 93 at *every* search depth |
+| with a remote **and** an upstream | **93 of 93** — the promise is keepable |
+| no remote / no upstream / archived / dead >180d | **0 / 0 / 0 / 0** |
+
+The population was never the problem. Shrinking it would have removed the
+promise instead of keeping it, and made the rig quieter without making it
+truer. The reasoning lives in `git-autosync-repair.sh`, beside the code that
+reads the marker.
+
+One correction the audit forced: autosync **has** run here. Eleven repos hold a
+`.git/autosync.log`, the most recent from 2026-07-22. "Ran rarely, then
+stopped" is accurate; "never fired" is not.
+
+### The repairer is watched the same way a check is
+
+It writes its own `autosync-repair` status file on its **own** timer, so if it
+stops running the file ages out and the reporter says STALE — the identical
+mechanism that catches a dead check. No fixer for the fixer.
 
 `autosync-health` now reports it. It needs **no staleness threshold**, which is
 the point: uncommitted work on a dev machine is normal, but uncommitted work in a
