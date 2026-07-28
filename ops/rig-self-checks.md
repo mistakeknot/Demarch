@@ -930,3 +930,69 @@ mid-setup. Copies can drift from the dotfiles checkout, which is what
 - `mk-fkfr` — the un-automated surfaces this page closed
 - dotfiles `902cef3`, `fbb8e6b`, `47ba9eb`, `55b2fb1`, `c518309`, `01b6b79`, `845ad06`
 - intercore `cd0197f` — build stamp + drift classification
+
+## The estate checks are on timers — cadence per check, not a uniform daily
+
+Three checks written between 2026-07-26 and 07-28 ran only when a human
+remembered to run them. That is the same shape as the guard outage this whole
+document exists because of, so they are now scheduled. Units are tracked in
+`dotfiles/server/.config/systemd/user/`; each `.timer` carries its cadence
+argument inline.
+
+| Check | Cadence | Why that cadence |
+|---|---|---|
+| `estate-lane-status` | daily | Lanes move per-edit, but the actionable condition is "frozen > 7 days", so the fact changes on a scale of days. Daily gives seven observations before the flag matters. |
+| `estate-kimi-parity` | daily | Parity breaks on publish, a few times a week. Drift reached 21 of 62 manifests the last time nothing watched. |
+| `estate-workflow-health` | weekly | Watches GitHub's 60-day auto-disable fuse. Weekly gives ~8 observations before it burns; daily would mean ~64 API calls against a fact that cannot change in a day. |
+| `git-autosync-promote` | hourly | A green lane should not wait a day to reach main. Declared interval 2h so one skipped run does not read as stale. |
+
+`rig-report.sh <name> <interval> <cmd...>` runs a check and records the verdict,
+mapping the exit-code dialect all of these already speak:
+
+| Exit | Meaning | Recorded as |
+|---|---|---|
+| 0 | ran, found nothing | `pass` |
+| 1 | ran, found something | `fail` |
+| **2** | **could not run** | `fail`, summarised `could not run — …` |
+
+Exit 2 is the reason the wrapper exists. A check that cannot run must never look
+like one that ran and was happy — that conflation is how a secret scanner GitHub
+had switched off still showed 100 green runs.
+
+### Expectations are host-scoped, and asserted from the peer side
+
+`report-rig-health.py` treats a missing status file as a finding, because
+deleting a scheduler must not delete its alarm. These four timers exist only on
+zklw, so asserting them globally would print a permanent false alarm on the Mac —
+hence `EXPECTED_BY_HOST`.
+
+The assertion also runs on the **peer** path, which is where the visibility
+actually is. zklw's own SessionStart reporter is not a channel to rely on: every
+session there has died at `authentication_failed` before its first tool call since
+2026-07-14. So the Mac asserts what zklw owes and reports `NEVER` for anything it
+has not seen — a timer that was never installed cannot report its own absence.
+
+### What the first unattended runs found
+
+Each of the three found something real on its first firing, which is the argument
+for having scheduled them:
+
+- `estate-lane-status` — `apps/Khouri` frozen **109 days**.
+- `estate-workflow-health` — 0 disabled, confirming the 17 re-enables held.
+- `estate-kimi-parity` — **58 of 65 "out of parity", every one a false alarm.**
+
+That last one mattered most. Parity is a property of what is in git, and zklw's
+plugin repos had not pulled the `kimi.plugin.json` commits, so the file was absent
+from that disk while present in the repo — the Mac reported 62 ok on the same
+estate. 58 false alarms is worse than no check; it is the cry-wolf failure from
+the other direction. A repo behind its remote is now `STALE` rather than `DRIFT`,
+and when staleness dominates the check exits 2 rather than guessing. It now
+reports `CANNOT ASSESS: 30 of 65 plugin(s) are behind their remotes`.
+
+**Known limitation.** These timers read the checker scripts out of zklw's
+monorepo working tree, so a blocked pull disables them. That is not theoretical:
+`.beads/hooks/pre-commit` has been a typechange there since 2026-07-27, holding
+the checkout 27 commits behind, and the two scripts had to be materialised with a
+targeted `git checkout origin/main -- <paths>` to run at all. The surface reported
+it correctly (`could not run — No such file or directory`), which is the system
+working; the typechange still needs a human.
