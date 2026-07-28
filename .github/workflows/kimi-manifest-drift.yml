@@ -1,18 +1,16 @@
 name: Kimi manifest drift
 
+# No `paths:` filter, deliberately.
+#
+# This job is a REQUIRED status check on main. A path-filtered workflow does not
+# run on a commit that misses the filter, and GitHub does not treat "did not run"
+# as "passed" — the required context stays pending forever and the branch is
+# frozen. The filter and the requirement are mutually exclusive; the requirement
+# is worth more, and the job is a two-file pytest run, so it costs nothing to
+# always run it.
 on:
   push:
-    paths:
-      - ".github/workflows/kimi-manifest-drift.yml"
-      - "scripts/gen-kimi-manifests.py"
-      - "scripts/check-kimi-version-parity.py"
-      - "tests/test_gen_kimi_manifests.py"
   pull_request:
-    paths:
-      - ".github/workflows/kimi-manifest-drift.yml"
-      - "scripts/gen-kimi-manifests.py"
-      - "scripts/check-kimi-version-parity.py"
-      - "tests/test_gen_kimi_manifests.py"
   workflow_dispatch:
 
 permissions:
