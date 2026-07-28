@@ -63,6 +63,34 @@ def plugin_roots(root, estate):
         yield root
 
 
+def behind_remote(plugin: Path) -> int:
+    """How many commits this checkout is behind its remote-tracking branch.
+
+    Parity is a property of what is in git, not of what happens to be on one
+    machine's disk. A checkout that has not pulled will show kimi.plugin.json as
+    absent even though it was committed — which is exactly what happened when
+    this check first ran on zklw: 58 of 65 "out of parity", every one of them a
+    stale working copy rather than real drift.
+
+    A check that reports 58 false alarms gets ignored, so a stale repo must say
+    "I cannot assess this" instead of "this is broken". No fetch: a read-only
+    check must not mutate the repo it inspects, so this uses whatever
+    remote-tracking ref is already there. Returns 0 when it cannot tell.
+    """
+    import subprocess
+
+    r = subprocess.run(
+        ["git", "-C", str(plugin), "rev-list", "--count", "HEAD..@{upstream}"],
+        capture_output=True, text=True,
+    )
+    if r.returncode != 0:
+        return 0
+    try:
+        return int(r.stdout.strip())
+    except ValueError:
+        return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--root", default=".", help="a single plugin repo (default cwd)")
@@ -76,6 +104,7 @@ def main(argv=None):
 
     inspected = 0
     drift = []
+    unassessable = []
     for plugin in plugin_roots(root, estate):
         inspected += 1
         canonical = plugin / CANONICAL
@@ -83,8 +112,12 @@ def main(argv=None):
         want = read_version(canonical)
 
         if not generated.is_file():
-            drift.append((plugin.name, want, None,
-                          "kimi.plugin.json is missing"))
+            behind = behind_remote(plugin)
+            if behind:
+                unassessable.append((plugin.name, behind))
+            else:
+                drift.append((plugin.name, want, None,
+                              "kimi.plugin.json is missing"))
             continue
         got = read_version(generated)
         if got != want:
@@ -94,6 +127,18 @@ def main(argv=None):
     for name, want, got, why in drift:
         print(f"DRIFT  {name}: {why} "
               f"(plugin.json={want} kimi.plugin.json={got})", file=sys.stderr)
+
+    for name, behind in unassessable:
+        print(f"STALE  {name}: {behind} commit(s) behind its remote — parity "
+              f"cannot be judged from this checkout", file=sys.stderr)
+
+    # A checkout too stale to judge is not a pass. Report it as could-not-run
+    # rather than letting an unpulled machine either cry wolf or look healthy.
+    if unassessable and len(unassessable) > len(drift):
+        print(f"\nCANNOT ASSESS: {len(unassessable)} of {inspected} plugin(s) are "
+              f"behind their remotes. Pull them, then re-run — this checkout is "
+              f"not a valid basis for a parity verdict.", file=sys.stderr)
+        return 2
 
     if args.require_plugins and inspected < args.require_plugins:
         print(f"FAIL: inspected {inspected} plugin(s), required at least "
