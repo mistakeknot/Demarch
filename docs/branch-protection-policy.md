@@ -151,6 +151,33 @@ reaching `main`. It does stop `main` being rewound or deleted, by anyone,
 including the account that owns the repos — which was previously impossible to
 prevent because the owner was exempt from every rule.
 
+## Workflow health, audited 2026-07-28
+
+57 workflows across 37 repos were inventoried against `gh api` run history, not
+just their YAML. The structural red flags were confined to the monorepo — it is
+the only repo that gitignores its own code — but the largest finding was not
+structural at all:
+
+**GitHub had disabled `secret-scan.yml` on 17 of 36 plugin repos.** A workflow
+with a `schedule:` trigger is auto-disabled after 60 days of repository
+inactivity, and a disabled workflow does not run on push either. Each showed 100
+successful runs and then silence, from 2026-06-09 onward. All 17 re-enabled.
+
+`scripts/check-workflow-health.py` now reports any workflow that is disabled or
+has never produced a run, and exits non-zero. It carries a `--require-repos N`
+vacuity guard so a partial checkout cannot report "all clear". Without it this
+recurs in 60 days, silently.
+
+Also settled:
+
+| Workflow | Verdict |
+|---|---|
+| `interverse-inventory.yml` | **deleted** — gated on `[ -d interverse ]`, gitignored, so it never checked anything on a runner |
+| `kimi-manifest-drift.yml` | kept — its dir-guard is a deliberate pytest skip; it is a required check doing real work |
+| `calibration-eval.yml` | kept — never run, so dispatched manually: **success**. Dormant, not broken |
+| `skill-listing-budget.yml` | kept — same, **success** |
+| `introspection-probe.yml` | phantom: the file was deleted, GitHub keeps the record |
+
 ## Outlier: `interlore` is on `master`
 
 `interlore` has a single branch named `master`, locally and upstream, against the
