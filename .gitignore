@@ -106,6 +106,8 @@ docs/research/*/
 .clavain/cxdb/
 .clavain/intercept/
 .clavain/**/*.db
+.clavain/**/*.db-shm
+.clavain/**/*.db-wal
 .codex
 
 # Keep local Interstat/session data ignored while publishing OYRF's public CSV.
