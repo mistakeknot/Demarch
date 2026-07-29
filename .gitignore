@@ -46,7 +46,6 @@ docs/docs
 .clavain/gate-tier-calibration.json
 .clavain/intercore.db
 .clavain/intercore.db.backup-*
-.clavain/interspect/
 
 # Authz signing keys — private ONLY; pubkey is intentionally committed for verifiers.
 .clavain/keys/*.key
@@ -106,6 +105,7 @@ docs/research/*/
 .claude/session-state.json
 .clavain/cxdb/
 .clavain/intercept/
+.clavain/**/*.db
 .codex
 
 # Keep local Interstat/session data ignored while publishing OYRF's public CSV.
