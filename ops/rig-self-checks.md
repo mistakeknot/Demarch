@@ -1245,10 +1245,63 @@ the other direction. A repo behind its remote is now `STALE` rather than `DRIFT`
 and when staleness dominates the check exits 2 rather than guessing. It now
 reports `CANNOT ASSESS: 30 of 65 plugin(s) are behind their remotes`.
 
-**Known limitation.** These timers read the checker scripts out of zklw's
-monorepo working tree, so a blocked pull disables them. That is not theoretical:
-`.beads/hooks/pre-commit` has been a typechange there since 2026-07-27, holding
-the checkout 27 commits behind, and the two scripts had to be materialised with a
-targeted `git checkout origin/main -- <paths>` to run at all. The surface reported
-it correctly (`could not run — No such file or directory`), which is the system
-working; the typechange still needs a human.
+**Known limitation, resolved 2026-07-29.** These timers used to read their
+checker scripts out of zklw's monorepo working tree, so a blocked pull disabled
+them. That was not theoretical: `.beads/hooks/pre-commit` was a typechange there
+from 2026-07-27, holding the checkout 30 commits behind, and both scripts had to
+be materialised with a targeted `git checkout origin/main -- <paths>` to run at
+all. The surface reported it correctly (`could not run — No such file or
+directory`), which is the system working, but a check that correctly reports
+being unable to run is still not checking anything.
+
+The fix is `estate-check.sh`, which resolves the checker from a bare mirror of
+`origin/main`, fetched every run. `--estate` still points at the real checkout,
+because inspecting what is on disk is the check's job; only the script's own
+provenance moved.
+
+**The generalisation is worth more than the fix.** The defect was distributing a
+monitor through the channel it is meant to watch. A monitor that goes dark for
+the same reason its subject goes dark is not a monitor. The blockage was also
+self-sustaining: the dirty entry blocked the pull that would deliver the commit
+that removed the reason for the dirty entry. The fix — `9485e7e0`, which inverted
+the shared hook from *symlinked over the tracked file* to *called by it* — had
+been sitting on `main` since 2026-07-27, unable to reach the one machine that
+needed it, because of the thing it fixed.
+
+Demonstrated against a tree deliberately built at `8ac44c62`, the commit zklw was
+stuck on, where neither checker exists:
+
+| Form | Result |
+|---|---|
+| `python3 <stale-tree>/scripts/check-workflow-health.py` | exit 2 — could not run |
+| `estate-check.sh Sylveste scripts/check-workflow-health.py` | exit 1 — ran, `66 repo(s) inspected: 0 disabled, 1 never ran` |
+
+**Tracked is not deployed.** Cleaning this up exposed a second layer. The timer
+units and their helper scripts were tracked in dotfiles, which is what the
+previous goal claimed — but on zklw `~/.config/systemd/user/estate-*` and most of
+`~/.local/bin/rig-*` were **hand-made copies**, not symlinks into the checkout.
+A copy does not go stale so much as never update at all, which is strictly worse
+than a stale pull, and it is invisible: the repo looks authoritative and the
+machine ignores it. Every entry whose content was byte-identical to its dotfiles
+twin is now a symlink, so a dotfiles pull is the single deployment path. Two
+exceptions, both left alone and flagged: `claude-scoped` is a copy that has
+drifted from its twin, and `estate-drift.{service,timer}` are enabled on zklw
+with no dotfiles twin at all.
+
+**Parity now returns a real verdict, and it disagrees with the Mac.** With the 25
+behind-remote plugin checkouts pulled current, `estate-kimi-parity` exits 1 with
+`9 of 65 plugin(s) out of parity` — a finding, not `CANNOT ASSESS`, and not the
+58 false alarms staleness was producing. The Mac reports `parity ok: 62`.
+
+Both are accurate. Seven of the nine drifting plugins — `interboxd`,
+`interbrowse`, `intercept`, `interdeploy`, `interscout`, `interstate`, `lattice` —
+**do not exist on the Mac**, and two more (`interseed`, `intersite`) are not
+enumerated by its discovery. The machines were scanning different sets, so the
+numbers were never in conflict.
+
+This inverts the previous goal's reading, which treated the Mac as the
+trustworthy side. With staleness removed, **zklw is the better basis for this
+check because it holds more of the estate**. Agreeing with the other machine is
+not the same as being correct: two checks over different input sets can both be
+right and still disagree, and the one reporting fewer problems is the one to
+distrust first.
