@@ -491,3 +491,67 @@ invisible to it no matter what is configured.
 Fix: monitor the existing series and search season 3. Nothing to add, nothing to
 map. Until TMDb gains the TVDB link, users must request *Interview with the
 Vampire* — the Lestat entry cannot be made to work from this side.
+
+## Transcoding: why this box buffers, and what was done
+
+Users reported buffering even on 1080p. Bandwidth was ruled out first, by
+measurement rather than assumption: **545–578 Mb/s up, 874 Mb/s down** on a
+1 Gbps NIC, no per-user or server bitrate limits, Tailscale direct rather than
+DERP-relayed, qBittorrent uploading 0.00 MB/s, load average 0.12. A 1080p stream
+needs 8–20 Mb/s, so the uplink supports 30–60 of them.
+
+Two hardware facts set the ceiling, and neither is fixable in software:
+
+* **No GPU.** The Ryzen 7 3700X has no integrated graphics and the only display
+  adapter is an ASPEED BMC. `HardwareAccelerationType: none` is not a
+  misconfiguration — it is the only available value. Every transcode is
+  software.
+* **No SSD.** Four spinning 14.6 TB disks; `/` (md2) and `/data` (md3) are RAID5
+  across *the same four spindles*. Media reads, transcode scratch, the KG rsync
+  and seeding all contend, with RAID5's read-modify-write penalty on top.
+
+### What actually triggers a transcode
+
+Measured across 641 films via Jellyfin's own `MediaStreams`, not inferred:
+
+| | count | |
+|---|---|---|
+| image subs only — subtitles on forces a **video burn-in** | 89 | 14% |
+| image **and** text — burn-in avoidable, a text track already exists | 115 | 18% |
+| text subs only — free overlay | 293 | 46% |
+| no subtitles | 144 | 22% |
+| no Samsung-compatible audio track at all | 122 | 19% |
+| video codec Samsung cannot decode | 7 | 1% |
+
+Video codec is *not* the problem. Subtitles are. Image subtitles (PGS/VOBSUB)
+are pictures, so the only way to show them is to re-encode the video with them
+painted on — which is why "buffering on 1080p" is really "buffering whenever
+subtitles are on", and why resolution was a red herring.
+
+### Applied
+
+* `tmpfs` at `/transcodes`, 12 GB, and `TranscodingTempPath` pointed at it.
+  Moving scratch to `/` would have achieved nothing — md2 and md3 are the same
+  spindles. RAM is the only genuinely faster target.
+* `EncoderPreset: veryfast` — a CPU-only encoder has to stay ahead of playback.
+* `EnableThrottling: true` and `EnableSegmentDeletion: true` — stop ffmpeg
+  racing ahead, and stop segments accumulating in a fixed-size tmpfs.
+* **Bazarr**, wired to both arrs (SignalR connected), English profile as the
+  default for movies and series. External `.srt` files are text, so the client
+  renders them for free — this is the only lever that reaches the 89
+  image-only films without re-encoding anything.
+
+A trap worth recording: `encoding.xml` stores unset options as self-closing
+`<EncoderPreset xsi:nil="true" />`. A naive `<tag>…</tag>` regex misses that
+form, appends a *second* element, and Jellyfin then reads the first (nil) one
+and silently discards the change. Handle both forms.
+
+### Not solved by any of the above
+
+`EncoderPreset` and tmpfs make transcodes survivable; they do not make them
+stop. The only fix that eliminates them is a client that can play the files:
+an Apple TV 4K or Nvidia Shield direct-plays HEVC, DTS and TrueHD, and renders
+PGS natively without burn-in. That is one ~€150 device against a server
+migration — and Hetzner cannot sell the alternative, because its capacity line
+(SX, all AMD, no iGPU) and its QuickSync line (EX, Intel Core) do not overlap.
+Tracked as `sylveste-3f8x`.

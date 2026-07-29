@@ -33,6 +33,13 @@ services:
     ports:
       - "${TS_BIND}:${JELLYFIN_PORT}:8096"
     restart: unless-stopped
+    # Transcode scratch in RAM. /data is RAID5 across four spinning disks that
+    # also serve playback reads and the KG rsync, so writing segments there
+    # contends with the very stream being transcoded. There is no SSD in this
+    # box (md2 and md3 share the same four spindles), so tmpfs is the only
+    # place that is genuinely faster.
+    tmpfs:
+      - /transcodes:size=12g,mode=1777
     # No GPU on zklw (ASPEED BMC only) — the 5950X handles CPU transcode.
 
   # Overseerr + Jellyseerr merged into "Seerr" (seerr-team/seerr) in early 2026.
@@ -92,6 +99,27 @@ services:
     depends_on:
       - prowlarr
       - qbittorrent
+
+  # Fetches EXTERNAL .srt files. 89 films carry ONLY image subtitles
+  # (PGS/VOBSUB), which Jellyfin can display only by BURNING THEM INTO the
+  # video -- a full re-encode, on a box with no GPU. A text subtitle sitting
+  # next to the file is rendered by the client for free instead.
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/bazarr:/config
+      - ${MEDIA_ROOT}:/data      # same root as the arrs, so paths line up
+    ports:
+      - "${TS_BIND}:${BAZARR_PORT:-6767}:6767"
+    restart: unless-stopped
+    depends_on:
+      - radarr
+      - sonarr
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
