@@ -711,6 +711,71 @@ channel — a push notification, a peer that alarms on the Mac's silence — and
 that is not built. The honest statement is that this is a *bootstrap floor*, not
 a covered case.
 
+### Corrected 2026-07-29 — the peer alarm IS built. Delivery is what is not.
+
+The paragraph above says a peer that alarms on the Mac's silence "is not built".
+That was wrong, and the goal that asked for a decision here assumed the same
+thing. All three failure modes were **forced** rather than reasoned about, using
+`RIG_HEALTH_DIR` and `RIG_FACTS_STALE_AFTER` against sandbox copies, so no live
+state was touched:
+
+| forced condition | what actually happens |
+|---|---|
+| Mac's status files aged 8 days (laptop shut) | reporter: `12 stale`, each line naming *"the check itself stopped running"* |
+| agent unloaded, files frozen 2 days | reporter: `12 stale`, same |
+| status files absent entirely | reporter: `12 never ran` + `PEER zklw configured but no status files fetched yet` |
+| Clavain's facts on zklw aged past threshold | `rig-peer-agreement.py` returns **3** → `write_status warn` → surfaces in the report |
+
+So the reporting path does **not** fail in the way that looks healthy. It fails
+loudly, in two places independently, and each half fires under forcing.
+
+The correct distinction is **detection versus delivery**. Detection is redundant
+already: the Mac notices its own scheduler died, and zklw notices the Mac stopped
+depositing facts, and neither needs the other to reach that conclusion. What is
+genuinely single-pointed is *delivery* — every one of those findings reaches mk
+only when a human opens a session. On the Mac that happens constantly. On zklw
+the SessionStart reporter runs inside roughly eleven headless timer sessions a
+day that **no human ever reads**, so zklw's warning about a silent Mac is
+computed, written, and left sitting there.
+
+### The decision: accepted single point of failure, because it is not single
+
+Rejecting the two alternatives, with reasons rather than by default:
+
+**Redundancy — already present, nothing to build.** The audit's own premise was
+that zklw "could evaluate the Mac's freshness as easily as the Mac evaluates its
+own". It already does, via `peer-agreement`, and the exit-3 path proves it. What
+was actually missing was not a second observer but two durability defects in the
+scheduler's own definition, both fixed 2026-07-29 and both invisible until
+looked at: the plist was invalid XML that `plutil` accepts and `plistlib`
+rejects, and its `rig-outcome` classification existed **only in the generated
+copy**, so the next `install-macos.sh` run would have regenerated the live plist
+without it and `rig-job-outcomes.py` would have called the scheduler
+UNCLASSIFIED. A self-inflicted version of the same silence.
+
+**Dead-man's switch — rejected.** It is the most-machinery answer, and it buys
+delivery at the cost of crying wolf: a switch that fires when nothing is heard
+fires every time a laptop is closed over a weekend. The failure it guards
+against is already detected twice; adding a third detector that pages is
+solving the wrong half. If out-of-band delivery is ever wanted, the honest
+version is a push notification triggered by an existing finding, not a new
+observer.
+
+**Topology is not backwards.** zklw being canonical and always-on argues for it
+being the *witness*, which it already is. It does not argue for moving the
+aggregation there, because aggregation exists to be read and zklw has no human
+reader. The Mac is the display precisely because that is where mk looks. The
+current shape — always-on machine computes an independent verdict, laptop
+aggregates and displays — is right, and the residual risk is bounded and
+nameable:
+
+> If the Mac is closed for a week **and** nobody opens a session on zklw, zklw's
+> warning is written and unread. Nothing is lost; the first Mac session surfaces
+> every stale check with its age. The cost of the outage is delay, not silence.
+
+That is accepted, and it is written down here so that accepting it stays a
+decision rather than an oversight.
+
 ### The check: relative, not a plain age threshold
 
 "Fail if the instrument is older than N days" is wrong twice over. An idle
