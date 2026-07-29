@@ -546,6 +546,51 @@ A trap worth recording: `encoding.xml` stores unset options as self-closing
 form, appends a *second* element, and Jellyfin then reads the first (nil) one
 and silently discards the change. Handle both forms.
 
+## Removing a library path does not remove its items
+
+Worth its own heading, because it is the opposite of the intuition and it cost
+this estate a week of believing the duplicates were fixed when they were not.
+
+After `/data/Movies` was taken out of the Movies library on 2026-07-28 — from
+`options.xml` *and* the `.mblink`, both of which are required — a full scan was
+run and reported success:
+
+    Scan Media Library   Completed after 0 minute(s) and 11 seconds
+
+and 333 films were still double-listed. Rescanning again changed nothing,
+because rescanning **cannot** change it. Jellyfin's validation walks the paths
+a library currently declares and removes DB children it fails to find beneath
+them. Take a path away and its items are not "missing" — they are *unreachable
+by the validator*. They stay in `BaseItems`, keep joining into every query the
+UI runs, and render forever. The 11-second runtime is the tell: the scan was
+not skipping work, it was doing all the work it believed it had.
+
+There is no supported "forget these" API. `DELETE /Items/{id}` deletes the
+media from disk, which here would unlink hardlinks that 124 seeding torrents
+depend on. So the rows must go directly — `purge_jellyfin_orphans.py`.
+
+Two things make that safe, and one makes it dangerous.
+
+Safe: every foreign key into `BaseItems` is `ON DELETE CASCADE`, including
+`BaseItems.ParentId → BaseItems.Id`, so one `DELETE` also clears `UserData`,
+`MediaStreamInfos`, `Chapters`, `AncestorIds`, images and people maps — as long
+as you remember `PRAGMA foreign_keys = ON`, which SQLite leaves **off** by
+default. And nothing of value was attached: 0 of the 1032 orphan rows carried a
+play position, a played flag or a favourite.
+
+Dangerous — and this is the part to actually remember:
+
+    where Path like '/data/Movies%'   ->  1712 rows   WRONG, matches both dirs
+    where Path glob '/data/Movies*'   ->  1032 rows   correct
+
+SQLite's `LIKE` is case-insensitive for ASCII. On a box whose entire problem is
+two directories differing only in case, the obvious cleanup statement silently
+unions them and deletes the real library alongside the orphans. `GLOB` is
+case-sensitive and is the only correct operator here. The same trap had already
+produced a wrong reading earlier in the session — a check for at-risk watch
+state reported "3 rows on each side" when it was the same 3 lower-case rows
+counted twice.
+
 ### Not solved by any of the above
 
 `EncoderPreset` and tmpfs make transcodes survivable; they do not make them
