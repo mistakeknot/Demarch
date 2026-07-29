@@ -1013,6 +1013,105 @@ does not.
 git -C ~/.claude/settings-history log --oneline
 ```
 
+## Backups: proven restorable, and the one that was not running at all
+
+Everything above asks whether a job RAN. This asks whether its output is worth
+anything. The answer, on 2026-07-29, was mostly yes and once catastrophically no.
+
+### The one that was not running
+
+Clavain's Synology backup last completed **2026-03-30**. For four months it ran
+every five minutes, logged `Synology not mounted, skipping`, and exited **0** —
+21,990 times. launchd recorded success; `rig-job-outcomes.py` read the exit code,
+found the unit classified `verified`, and passed it. The local half of a 3-2-1
+strategy was absent for a third of a year with every instrument agreeing it was
+fine (**mk-7vej**). The mounted attempts had also been failing with `wrong
+password or no key found`, so there are two faults, not one.
+
+No care with exit codes could have caught this. **The job did not fail.** It
+correctly declined to run and correctly said so. The false claim was never made
+by anyone: that a backup existed. That is why `rig-backup-freshness.py` reads the
+repository rather than the process — `restic snapshots` is a receipt the backup
+itself wrote and dated, and it outlives the run that made it.
+
+An earlier note in this program said the Synology copy kept succeeding while B2
+was locked. That was wrong, and it was inferred from exit 0.
+
+### Restores actually performed, 2026-07-29
+
+Not "the backup completed". Restored, then opened.
+
+| repository | restored | verified how |
+|---|---|---|
+| `rclone:b2:sma-mac-backup` (85 snapshots, from 2026-03-26) | `install-macos.sh` from snapshot `21b7153a` | sha256 identical to live; `bash -n` parses |
+| `b2:jawnverse-pgbackups` tag `jawnverse-pg` | 18 dumps, 26.8 MiB, snapshot `847d1687` | `pg_restore --list` → 63 TOC entries, `dbname: jawnbase`, format CUSTOM |
+| `b2:jawnverse-pgbackups` tag `canongraph` | `log.sqlite`, `topology.yaml`, `profile.json` | `PRAGMA integrity_check` → ok; 765 event_log rows, 316 entities, 335 relationships, 40 documents; YAML and JSON parse |
+| `b2:ethics-gradient-backup/mac` (rclone mirror) | one session `.jsonl` | bytes identical; valid JSONL |
+| `/Volumes/Jarmusch/Backups/mac-restic` | **none possible** | volume unmounted; repository unreachable since March |
+
+**The restore constraint nobody had written down:** the Postgres dumps are
+`--format=custom` written by **PG17** tooling inside the `jawnverse-postgres`
+container. zklw's host `pg_restore` is 16.14 and rejects them outright with
+`unsupported version (1.16) in file header`. They are not corrupt — they load
+correctly *with PG17*. But restoring onto a fresh machine with a distro Postgres
+will fail, and that dependency existed only in the container image until now.
+
+### Retention: believed versus measured
+
+| repository | policy says | actually holds |
+|---|---|---|
+| Clavain → B2 | hourly 24, daily 7, weekly 4, monthly 6 | 85 snapshots, 2026-03-26 → today ✓ |
+| Clavain → Synology | same, every 5 min | **nothing since 2026-03-30** |
+| zklw → B2 (both tags) | daily 7, weekly 4 | 9 snapshots/tag, oldest 2026-07-12 — **17 days, not the ~28 the policy implies**, because the repo itself only began on 07-12 |
+| Clavain → B2 rclone mirror | *believed*: none, `rclone sync` keeps no history | **30 days**, from a B2 lifecycle rule (`daysFromHidingToDeleting: 30`); 250 of 438 listed entries are old versions |
+
+Two surprises in opposite directions. zklw's recoverable window is **17 days**,
+so a corruption introduced three weeks ago is already unrecoverable. And the
+rclone mirror — which looks like a pure mirror with no history — has a month of
+version history that **no script references or asserts**. Delete that lifecycle
+rule and the safety net vanishes silently.
+
+The `jawnverse-pg` history is also missing **2026-07-28**: the 48-hour orphaned
+restic lock is visible as a hole in the backup record.
+
+### Decision: restore verification is a dated drill, not a nightly job
+
+Argued, because the goal that prompted this warned against defaulting to more
+machinery — and a nightly restore test nobody reads would be this program's
+defect in its purest form.
+
+Split the question by what actually changes:
+
+- **Does a recent backup exist?** Changes constantly, and is cheap to ask.
+  `rig-backup-freshness.py` asks it **daily**, per repository and per tag.
+- **Is a backup restorable?** Changes rarely, and is expensive to ask — egress,
+  disk, and a container round trip. Nightly would spend real money to re-answer
+  a question whose answer only moves when the tooling does.
+
+So restore verification is **dated, and re-run on triggers** rather than on a
+clock. The triggers are the things that can invalidate it:
+
+1. a Postgres major version change on either the container or the host
+2. a restic major version change (Clavain is on 0.19.0, zklw on 0.16.4 — they
+   already differ, which is itself worth watching)
+3. a new repository, or a change of storage backend or credentials
+4. any restore that fails, which resets the clock for that repository
+
+"Dated" only differs from "forgotten" if the date is written down, so it is: the
+table above carries what was proven, where, and when. Re-drill when a trigger
+fires, or annually, whichever comes first.
+
+### Stale locks: `--retry-lock` for contention, detection for orphans
+
+Full reasoning is written into `canongraph-backup.service` and
+`jawnverse-pg-backup.service`, beside the units. In short: `--retry-lock 15m` was
+adopted (both units write one repository ~28 minutes apart, so contention is
+real), auto-unlock was **rejected** because its safety rests on a single-writer
+assumption that nothing enforces and being wrong damages the repository, and
+orphans are handled by detection now that `backup-freshness` escalates them
+within three days. That last part is only defensible *because* the problem is now
+visible; detection-only would have been the wrong answer a week ago.
+
 ## What is still manual
 
 - **Acting on findings.** The reporter tells you; nothing self-heals. That is
