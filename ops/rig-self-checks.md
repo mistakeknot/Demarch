@@ -1249,6 +1249,15 @@ visible; detection-only would have been the wrong answer a week ago.
 
 ## What is still manual
 
+- **Escrowing the restic repository password off Clavain.** The highest-severity
+  item in this document. Three copies exist, all in `~/.config/restic` on the
+  machine being backed up, and no 1Password item holds it (verified by hash
+  2026-07-29 — the *SMB* credential is there, the repository password is not). If
+  that SSD fails, 203 GB across both repositories survives as ciphertext nobody
+  can open. Adding the directory to the backups does **not** fix this; storing the
+  key inside the repositories it decrypts is circular. Fixing it means writing
+  into a credential store, which is mk's to do:
+  `op document create ~/.config/restic/PASSWORD.txt --title "restic repository password (Clavain)" --vault Private`
 - **Acting on findings.** The reporter tells you; nothing self-heals. That is
   deliberate — `--approve` and `--fix` stay human-triggered, and `ic` is never
   rebuilt automatically.
