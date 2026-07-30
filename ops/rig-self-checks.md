@@ -1137,6 +1137,46 @@ messages (`wrong password or no key found`, `unsupported version (1.16)`) with
 their real causes, and the key-escrow warning at the top where it cannot be
 missed.
 
+### Two defects the fix itself introduced
+
+Both were found by watching the repaired job run rather than declaring it fixed,
+and both would have been invisible to the test suite.
+
+**Adding paths to an invocation orphans restic's parent snapshot.** restic selects
+a parent by matching host + *path set*, and with a parent it skips every file whose
+inode/size/mtime are unchanged — which is how the 2026-07-08 run reported 308,536
+files unmodified without reading them. Appending `~/.config/restic` and `~/scripts`
+to the existing invocation meant no snapshot matched, so restic silently fell back
+to reading and chunking all 203 GB: **52 minutes to cover a third of `~/projects`,
+0% CPU, blocked in uninterruptible I/O, holding the repository lock throughout.** A
+five-minute timer cannot own a run that takes hours and restarts from nothing on
+every laptop sleep. The same edit was in the B2 script, where the next 4-hourly run
+would have done that re-read across the internet.
+
+Fixed by splitting each destination into two invocations — the large tree keeps its
+three original paths and its parent chain, the config tree gets its own. **The tags
+matter as much as the split:** two snapshots in one repository means an untagged
+freshness entry would let a two-second config snapshot answer "fresh" for a 203 GB
+backup that had stopped. That is exactly the masking the tag field was added to
+prevent for zklw, and the fix for the original bug would have reintroduced it.
+
+**The freshness check aged every snapshot by the machine's UTC offset.** restic
+stamps snapshots in local time *with* an offset (`2026-07-30T11:00:06.416999-07:00`);
+the check took `[:19]` and declared the result UTC. Zero error on a UTC server,
+seven hours on Clavain — invisibly correct wherever it was most likely to be
+tested. At cadence 24h the 72h limit absorbed it, but at `mac-b2`'s cadence 4h the
+limit is 12h, so **a backup taken six hours ago computed as thirteen: a false STALE
+alarm on the one backup of this machine that has never stopped.** Teaching a reader
+that the report cries wolf is worse than not having the check.
+
+The suite could not have caught it — the fake `restic` emitted naive UTC, so every
+test agreed with the bug. The fake now emits offset-bearing stamps, and two
+regression tests pin the offset explicitly so they fail on any machine rather than
+only in a zone that exposes it. Both directions are tested because they fail
+differently: west of UTC manufactures staleness and is merely loud, east of UTC
+hides staleness and is silent. Verified by reintroducing the old parser — both fail,
+and only those two.
+
 ### Retention: believed versus measured
 
 | repository | policy says | actually holds |
