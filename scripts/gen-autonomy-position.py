@@ -58,7 +58,8 @@ CANON = REPO_ROOT / "docs" / "canon" / "autonomy.md"
 BEGIN = "<!-- BEGIN GENERATED: autonomy-position -->"
 END = "<!-- END GENERATED: autonomy-position -->"
 
-# Kept in sync with internal/autonomy.DefaultLevel. Duplicated deliberately:
+# Kept in sync with pkg/autonomy.DefaultLevel — and asserted by
+# tests/test_gen_autonomy_position.py when core/ is present. Duplicated deliberately:
 # this script must still render something honest when `ic` is unavailable, and
 # a wrong guess here is visible in the output rather than silent.
 KERNEL_DEFAULT_LEVEL = 2
