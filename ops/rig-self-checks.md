@@ -1020,13 +1020,10 @@ anything. The answer, on 2026-07-29, was mostly yes and once catastrophically no
 
 ### The one that was not running
 
-Clavain's Synology backup last completed **2026-03-30**. For four months it ran
-every five minutes, logged `Synology not mounted, skipping`, and exited **0** —
-21,990 times. launchd recorded success; `rig-job-outcomes.py` read the exit code,
-found the unit classified `verified`, and passed it. The local half of a 3-2-1
-strategy was absent for a third of a year with every instrument agreeing it was
-fine (**mk-7vej**). The mounted attempts had also been failing with `wrong
-password or no key found`, so there are two faults, not one.
+Clavain's Synology backup logged `Synology not mounted, skipping` and exited **0**
+— 22,063 times between 2026-03-26 and 2026-07-29. launchd recorded success;
+`rig-job-outcomes.py` read the exit code, found the unit classified `verified`,
+and passed it (**mk-7vej**).
 
 No care with exit codes could have caught this. **The job did not fail.** It
 correctly declined to run and correctly said so. The false claim was never made
@@ -1036,6 +1033,82 @@ itself wrote and dated, and it outlives the run that made it.
 
 An earlier note in this program said the Synology copy kept succeeding while B2
 was locked. That was wrong, and it was inferred from exit 0.
+
+> **Corrected 2026-07-29 (same day, later).** The paragraph above used to say the
+> backup "last completed 2026-03-30", that it had been absent "for a third of a
+> year", and that one of two faults was a `wrong password or no key found`
+> credential problem. **All three were wrong**, and the way they were wrong is
+> worse than the facts they got wrong.
+>
+> The repository holds **361 snapshots ending 2026-07-08** — three weeks stale,
+> not four months. `restic check` passes on all 361. The 2026-03-30 date is the
+> last *success line in the log*, and it stops there because the script ran under
+> `set -e`: on 2026-04-15 and 2026-07-08 `restic backup` wrote its snapshot, the
+> following `restic forget` hit a stale lock, and the script died before printing
+> its completion line. **A successful backup was recorded as a failure, and then
+> the absence of the success line was read as an absence of backups.**
+>
+> And `wrong password or no key found` was never a credential problem. The log
+> shows what actually happened, two lines earlier:
+>
+> ```
+> List(key) returned error, retrying after 670ms: fdopendir …/keys: operation timed out
+> List(key) returned error, retrying after 2.08s:  fdopendir …/keys: operation timed out
+> List(key) operation successful after 2 retries
+> Fatal: wrong password or no key found
+> ```
+>
+> The SMB mount stalled listing `keys/`, restic retried, the retry "succeeded"
+> with an empty listing, and restic then truthfully reported finding no key. The
+> repository opens on the first try with the configured password. **restic reports
+> a stalled network filesystem as a credential error**, and that message sent this
+> program to file a key-reconciliation task against a repository whose key was
+> never in question.
+>
+> The through-line is uncomfortable and exact: this section exists to argue that
+> only the repository can answer "does a backup exist", and it was written from
+> the log.
+
+### The four faults, established by forcing each one
+
+There was never one fault, or two. Diagnosing it properly on 2026-07-29 found
+four, each with a measured cost:
+
+| # | fault | cost | why it was invisible |
+|---|---|---|---|
+| 1 | **Nothing mounted the share.** The mount only ever existed because a human had connected in Finder. `/Volumes` is root-owned, so a user LaunchAgent *cannot* create `/Volumes/Jarmusch`; `/etc/auto_smb` exists but `/etc/auto_master` never references it, so autofs was never involved. | 22,063 skipped runs | exit 0 every time |
+| 2 | **`[ -d /Volumes/Jarmusch ]` tests a directory, not a mount.** A leftover empty mountpoint passed the guard. | 2,987 failures on 2026-04-17 alone | the guard reported "mounted" |
+| 3 | **Two stale restic locks.** The lock named PID 8942 on this same host; after a reboot that PID was reused by a live process, so restic could not judge the lock stale and refused to proceed. | 262 failed runs, 2026-04-03 → 2026-07-08 | `restic forget` failing, under `set -e`, looked like the whole job failing |
+| 4 | **`set -e` converted a good backup into a reported failure.** See the correction above. | the entire false diagnosis | the log stopped saying "complete" |
+
+Faults 1, 2 and 4 were each found by **forcing a run under launchd** rather than
+reasoning about the script, and forcing it turned up two more problems that no
+amount of reading would have:
+
+- **`/usr/local/bin/python3` is a dangling symlink** to a Python 3.11 framework
+  removed in 2023. It precedes `/usr/bin` on the job's `PATH`, so anything under
+  this agent calling `python3` silently produced nothing. The first rewrite of
+  the mount helper used `python3` to URL-encode the password and failed on
+  exactly this. It now percent-encodes in bash, with `LC_ALL=C` so the loop
+  iterates bytes.
+- **`mount_smbfs` lives in `/sbin`**, which the plist's
+  `PATH=/usr/local/bin:/usr/bin:/bin` omits entirely — so the mount would have
+  failed next even with a working `python3`.
+- Incidentally, `/usr/local/bin/restic` is **0.18.1 built for darwin/amd64** and
+  has been running under Rosetta; `/opt/homebrew/bin` has 0.19.0 arm64. Both
+  support `--retry-lock`, so this cost speed rather than correctness.
+
+The mount now belongs to the backup script: it mounts `//mistakenot@jarmusch/Jarmusch`
+at `~/mnt/jarmusch` (under `$HOME`, where an unprivileged agent may create a
+mountpoint), reading the password from the login keychain at runtime so no new
+secret goes to disk. **Verified working from launchd**, not from a shell — the
+agent mounted the share itself with no GUI session involved.
+
+An on-demand mount was chosen over wiring up autofs. autofs needs root, would
+keep the password in a root-readable plaintext map, and fails by presenting a
+silently empty directory — which is the exact quiet failure this whole section
+exists to end. The script's mount can fail loudly, and does: it exits **1** when
+`jarmusch:445` answers but the mount does not.
 
 ### Restores actually performed, 2026-07-29
 
@@ -1047,32 +1120,94 @@ Not "the backup completed". Restored, then opened.
 | `b2:jawnverse-pgbackups` tag `jawnverse-pg` | 18 dumps, 26.8 MiB, snapshot `847d1687` | `pg_restore --list` → 63 TOC entries, `dbname: jawnbase`, format CUSTOM |
 | `b2:jawnverse-pgbackups` tag `canongraph` | `log.sqlite`, `topology.yaml`, `profile.json` | `PRAGMA integrity_check` → ok; 765 event_log rows, 316 entities, 335 relationships, 40 documents; YAML and JSON parse |
 | `b2:ethics-gradient-backup/mac` (rclone mirror) | one session `.jsonl` | bytes identical; valid JSONL |
-| `/Volumes/Jarmusch/Backups/mac-restic` | **none possible** | volume unmounted; repository unreachable since March |
+| `~/mnt/jarmusch/Backups/mac-restic` (361 snapshots, 2026-03-26 → 2026-07-08) | 22.9 MiB Olympus RAW `P5270011.ORF` + a shell script, snapshot `f6a8b7bc` | sha256 identical to live and `cmp` clean on both; `sips` decodes the RAW at 5184×3888 and renders a JPEG; `restic check` clean on all 361 snapshots |
 
 **The restore constraint nobody had written down:** the Postgres dumps are
 `--format=custom` written by **PG17** tooling inside the `jawnverse-postgres`
 container. zklw's host `pg_restore` is 16.14 and rejects them outright with
 `unsupported version (1.16) in file header`. They are not corrupt — they load
 correctly *with PG17*. But restoring onto a fresh machine with a distro Postgres
-will fail, and that dependency existed only in the container image until now.
+will fail, and that dependency existed only in the container image and a unit
+comment.
+
+It is now written down where someone restoring onto a bare machine would actually
+look: **[`ops/backup-restore-runbook.md`](backup-restore-runbook.md)**, which
+carries the verified procedure for every destination here, both misleading error
+messages (`wrong password or no key found`, `unsupported version (1.16)`) with
+their real causes, and the key-escrow warning at the top where it cannot be
+missed.
 
 ### Retention: believed versus measured
 
 | repository | policy says | actually holds |
 |---|---|---|
 | Clavain → B2 | hourly 24, daily 7, weekly 4, monthly 6 | 85 snapshots, 2026-03-26 → today ✓ |
-| Clavain → Synology | same, every 5 min | **nothing since 2026-03-30** |
-| zklw → B2 (both tags) | daily 7, weekly 4 | 9 snapshots/tag, oldest 2026-07-12 — **17 days, not the ~28 the policy implies**, because the repo itself only began on 07-12 |
+| Clavain → Synology | same, every 5 min | **361 snapshots, 2026-03-26 → 2026-07-08**; `restic check` clean on all 361 |
+| zklw → B2 (both tags) | daily 7, weekly 4, **no monthly tier at all** | 9 snapshots/tag — `jawnverse-pg` **17.3d**, `canongraph` **15.1d** |
 | Clavain → B2 rclone mirror | *believed*: none, `rclone sync` keeps no history | **30 days**, from a B2 lifecycle rule (`daysFromHidingToDeleting: 30`); 250 of 438 listed entries are old versions |
 
-Two surprises in opposite directions. zklw's recoverable window is **17 days**,
-so a corruption introduced three weeks ago is already unrecoverable. And the
-rclone mirror — which looks like a pure mirror with no history — has a month of
-version history that **no script references or asserts**. Delete that lifecycle
-rule and the safety net vanishes silently.
+Two surprises in opposite directions, and one correction to how the first was
+originally described.
+
+**zklw's window was recorded as "17 days, not the ~28 the policy implies".** The
+policy framing was wrong: `--keep-daily 7 --keep-weekly 4` has a ceiling of about
+five weeks, and 7 dailies + 2 weeklies = the 9 snapshots actually present, so the
+policy was doing exactly what it said. The real defect was the one the arithmetic
+hid — **there was no monthly tier on either unit**, so maximum recoverable depth
+was capped at roughly five weeks no matter how long the repo lived. A corruption
+noticed six weeks later was unrecoverable by design, and nothing said so.
+
+Fixed 2026-07-29: `--keep-monthly 12` added to both `jawnverse-pg-backup.sh` and
+`canongraph-backup.sh`. The cost is negligible and was measured rather than
+assumed — the entire repository is **34.4 MiB** stored (41.3 MiB uncompressed,
+1.20× ratio), so twelve monthlies of deduplicating ~10 MiB dumps cost single-digit
+megabytes. **Clavain deliberately stays at `--keep-monthly 6`**: its repositories
+hold 203 GB including the RAW photo library, where each retained monthly is
+genuinely expensive. Retention depth is priced per repository rather than set once
+and copied.
+
+**The rclone mirror** — which looks like a pure mirror with no history — has a
+month of version history that no script referenced or asserted. Delete that
+lifecycle rule and the safety net vanishes silently, with nothing local changing.
+That is now a `lifecycle` line in `backup-repos.conf` and
+`rig-backup-freshness.py` reads the rule from the bucket on every run: a window
+that shrinks below the 30 days the config depends on is a **finding**, and a rule
+it cannot read is a **no-verdict**, never a pass. Depending on it deliberately was
+chosen over migrating the mirror to restic — it carries agent transcripts, which
+are valuable but reconstructible, and a 30-day undelete window fits data whose
+real risk is an accidental local deletion noticed within the month. Asserting an
+assumption costs one API call; migrating it costs a rewrite.
 
 The `jawnverse-pg` history is also missing **2026-07-28**: the 48-hour orphaned
 restic lock is visible as a hole in the backup record.
+
+### The gap that no freshness check can see: the key has one copy
+
+Auditing the backup set turned up something worse than a missing second location,
+because a second location would not have helped.
+
+`restic` covers `~/projects`, `~/Downloads` and `~/Pictures/Photo Archive`. The
+rclone mirror covers `~/.claude/projects` and `~/.codex`. **Nothing covered
+`~/.config/restic`** — which is where the three backup scripts, both env files,
+and `PASSWORD.txt` live. It is in no backup set and no git repository.
+
+A search of that directory, `~/scripts` and the dotfiles repo found **exactly
+three copies of the restic repository password**, all three inside
+`~/.config/restic`, on the machine being backed up. 1Password holds the *SMB*
+credential (as `Synology NAS`, confirmed by hash against the keychain item) but
+**no item contains the repository password**.
+
+So: if Clavain's SSD fails, both restic repositories — 203 GB including the photo
+library — become permanently undecryptable ciphertext. Both copies survive. The
+off-site copy survives. Neither can ever be opened again. **This is a 3-2-1
+strategy defeated at the key rather than at the copy.**
+
+`~/.config/restic` and `~/scripts` were added to both repositories, and the
+scripts are now tracked in dotfiles, which fixes the availability of the
+*scripts*. It does **not** fix the key, and cannot: storing the password inside
+the repositories it decrypts is circular. Escrowing it off the machine needs an
+out-of-band store, so it is item 1 on the manual list below rather than something
+this session could close.
 
 ### Decision: restore verification is a dated drill, not a nightly job
 
@@ -1284,9 +1419,8 @@ A copy does not go stale so much as never update at all, which is strictly worse
 than a stale pull, and it is invisible: the repo looks authoritative and the
 machine ignores it. Every entry whose content was byte-identical to its dotfiles
 twin is now a symlink, so a dotfiles pull is the single deployment path. Two
-exceptions, both left alone and flagged: `claude-scoped` is a copy that has
-drifted from its twin, and `estate-drift.{service,timer}` are enabled on zklw
-with no dotfiles twin at all.
+exceptions were flagged here and both were closed the same day — see **The
+deployment contract** below, which generalises the finding into a check.
 
 **Parity now returns a real verdict, and it disagrees with the Mac.** With the 25
 behind-remote plugin checkouts pulled current, `estate-kimi-parity` exits 1 with
@@ -1305,3 +1439,100 @@ check because it holds more of the estate**. Agreeing with the other machine is
 not the same as being correct: two checks over different input sets can both be
 right and still disagree, and the one reporting fewer problems is the one to
 distrust first.
+
+## The deployment contract, 2026-07-29
+
+"Tracked in dotfiles" and "deployed on this machine" are different properties.
+Three goals in a row verified the first and assumed the second, and each time the
+assumption was false somewhere. The generalisation is now a check:
+`dotfiles/common/.local/bin/rig-dotfiles-deployed.py`, wired in as Check 12 of
+`rig-health-check.sh`, so it runs on both machines with no timer of its own.
+
+**Root cause, not symptom.** `install-server.sh` declared **21** paths and *none*
+of `common/.local/bin` or the `estate-*` units. Nothing ever linked them, so a
+hand-made copy was the only way they could exist — the previous goal's fix was
+correct and the next reprovision would have silently discarded it. Declarations
+now stand at 57 on the server and 61 on the Mac.
+
+`link()` prints `skip: (not in dotfiles)` and **returns 0**, so a declaration
+naming a path that is not in the repo is a silent no-deploy. That is how
+`~/.codex/AGENTS.md` — 17KB that both `CLAUDE.md` files call canonical — sat
+untracked from the `common/macos/server` reorg (`3a1769e`) until today, outside
+restic's `~/projects`-and-`~/Downloads` scope, one `rm` from gone.
+
+### Four legitimate modes, because demanding symlinks everywhere is wrong
+
+| Mode | Where | Why not a symlink |
+|---|---|---|
+| `symlink` | the default | — |
+| `generated` | `Library/LaunchAgents/*.plist` | launchd expands neither `~` nor env vars in `ProgramArguments`; the installer sed-substitutes `$HOME`, so the deployed file *must* differ from the template |
+| `copy-sync` | `~/.claude/settings.json` | the app rewrites it with write-temp-then-rename, and rename *replaces* a symlink (observed 2026-07-26) |
+| `resolved-from-checkout` | `rig-health-check.sh`'s ten helpers | it tries `~/projects/dotfiles/...` before `~/.local/bin/...`, so those helpers need no `$HOME` copy at all |
+
+That last one is why "must exist under `$HOME`" is a property of the **consumer**,
+not the file. A systemd unit invokes an absolute path and has no fallback; a
+shell script can try two. The check derives the required set by scanning tracked
+units for `%h/.local/bin/<name>` references rather than assuming.
+
+### Most of the work was in *not* reporting things
+
+The first run produced 74 findings; 47 were noise — the other machine's package,
+the generated plists, hook unit tests, and above all the checkout-resolved
+helpers. Suppressing those was worth more than finding the 27, for the reason
+this document keeps rediscovering: the 58-false-alarm parity run and
+`Sylveste-84by`'s three phantom rebases were both ignored, not fixed.
+
+| | before | after |
+|---|---|---|
+| Clavain | 15 findings | **0** — `pass` |
+| zklw | 42 findings | **4** — `warn` |
+
+### Cadence, argued
+
+It rides the existing daily `rig-health` pass rather than taking its own timer,
+because a separate timer would give the check its own independent way to go dark
+— exactly how the `estate-*` units failed. Daily rather than weekly because the
+drift-introducing event is a *new path* appearing, and new paths landed on **17 of
+the last 90 days (19%, 106 files)** in bursts of consecutive days; a weekly
+interval would present a picture up to seven days stale during precisely the
+bursts when drift is created.
+
+### The exit mapping is inverted on purpose
+
+| Exit | Recorded as | Why |
+|---|---|---|
+| 0 | `pass` | — |
+| 1 | `warn` | deployment drift is latent and actionable, not an outage; it has usually been true for weeks |
+| 2 | `fail` | **an inability to assess is worse than a finding here**, because being unable to see deployment state is the condition under which this defect class survived three goals |
+
+Silence is the failure mode, so silence gets the loudest status. Verified all
+three ways: `pass` on Clavain, `warn` with 4 findings on zklw, and `fail —
+deployment check not found` against an isolated `HOME`.
+
+### Ownership is not inferable from location
+
+A reverse-direction scan looks for live files that no repo tracks — the
+`estate-drift` class, which was enabled, running weekly, filing beads, with its
+script in `~/bin`, a directory that is not even a git checkout. That is now
+tracked, and its `ExecStart` moved to `%h/.local/bin` so it sits somewhere the
+installer manages.
+
+The scan is **informational, never a finding**, because the first version walked
+`~/.local/bin` and `~/bin` too and reported **151** paths on zklw. Every
+`pip --user` console script has a shebang, and ~50 systemd units belong to the
+project repos that deploy them. A project's binary installed into `~/.local/bin`
+is indistinguishable from a home-level ops script, so the list is surfaced for a
+human to read and never allowed to turn the check red over `ollama.service`.
+
+### What remains, deliberately
+
+Four paths on zklw stay unresolved and are the reason it reports `warn`:
+`~/.codex/skills`, `~/.codex/superpowers`, `~/projects/docs`, and
+`~/.codex/AGENTS.md`. The first three are **app-managed runtime state**, and the
+two machines show opposite halves of one mistake — zklw's are divergent copies
+(50 live files vs 8 tracked for `skills`), while the Mac's symlink works and lets
+Codex write *through* it into the checkout, leaving the repo permanently dirty
+with generated `imagegen`, `plugin-creator` and `review-agent` trees. That belongs
+in the `copy-sync` category or excluded outright, not symlinked (`Sylveste-xv9s`).
+`AGENTS.md` differs between the machines and needs a content merge before either
+copy is replaced (`Sylveste-hddm`).
