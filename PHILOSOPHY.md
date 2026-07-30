@@ -96,21 +96,13 @@ The fleet enrichment pipeline is the existence proof: `estimate-costs.sh` reads 
 
 *Principle 2 applied everywhere: trust is progressive, evidence-based, and never assumed.*
 
-**Autonomy.** A dial, not a binary. The goal is human-above-the-loop — humans govern outcomes via receipts, not step-by-step supervision.
+**Autonomy.** A dial, not a binary. The goal is human-above-the-loop — humans govern outcomes via receipts, not step-by-step supervision. Authority is delegated progressively along the L0–L5 trust ladder, and each level requires demonstrated safety at the previous one. No shortcuts.
 
-Progressive trust ladder:
-- Level 0: Human approves every action.
-- Level 1: Human approves at phase gates.
-- Level 2: Human reviews evidence post-hoc.
-- Level 3: Human sets policy, agent executes.
-- Level 4: Agent proposes policy changes.
-- Level 5: Agent proposes mechanism changes.
+The kernel boundary (L1 cannot be modified by agents) is a trust threshold, not an architectural invariant — it softens as trust is earned, but through gated processes, not direct modification.
 
-Currently operating at Level 1-2. Each level requires demonstrated safety at the previous level. No shortcuts. The kernel boundary (L1 cannot be modified by agents) is a trust threshold, not an architectural invariant — it softens as trust is earned, but through gated processes, not direct modification.
+> **Definitions live in [`docs/canon/autonomy.md`](docs/canon/autonomy.md)** — the L0–L5 delegation ladder and the current position on it, the M0–M4 capability mesh, phase chains, and discovery confidence tiers. That page also records why these four scales are orthogonal, and which terms only look like levels. Cite it rather than restating any of them here.
 
-Note: this is the *human delegation* ladder — how much authority the human delegates. The vision doc's capability mesh (10 subsystems, M0-M4 maturity) tracks *system capability* per subsystem. The two are orthogonal and advance independently.
-
-**Graduated authority as mechanism.** Trust levels are tracked per-subsystem using an ordinal maturity scale (M0: Planned → M1: Built → M2: Operational → M3: Calibrated → M4: Adaptive). Promotion requires pre-specified evidence thresholds. Demotion is triggered by sustained regression indicators exceeding threshold for a defined observation window. Evidence epochs reset trust when environmental conditions shift (major model changes, architecture migrations, subsystem replacements). The principle (evidence earns authority) is permanent. The mechanism (specific thresholds, epoch triggers, demotion criteria) is revisable by human authority regardless of accumulated evidence — the right to redefine trust criteria remains with humans.
+**Graduated authority as mechanism.** Capability is tracked per subsystem on an ordinal maturity scale (M0–M4). Promotion requires pre-specified evidence thresholds. Demotion is triggered by sustained regression indicators exceeding threshold for a defined observation window. Evidence epochs reset trust when environmental conditions shift (major model changes, architecture migrations, subsystem replacements). The principle (evidence earns authority) is permanent. The mechanism (specific thresholds, epoch triggers, demotion criteria) is revisable by human authority regardless of accumulated evidence — the right to redefine trust criteria remains with humans.
 
 **Safety.** Structural, not moral. Sylveste enforces structural constraints (bounded blast radius, auditable decisions, revocable authority) through architecture, not ethical reasoning. More autonomy means more responsibility to get safety right. The blast radius is scoped to the actual risk domain: wrong code committed, bad PRs merged, wasted tokens.
 

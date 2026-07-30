@@ -110,7 +110,7 @@ A v1 signature proves: **the Sylveste instance holding key `key_id` at signing t
 
 A v1 signature does NOT prove:
 
-1. **The agent was honest about its action.** An agent could fabricate `content_hash` to point at content it didn't produce. Detecting agent dishonesty is a separate problem (the L0–L5 trust ladder and the closed-loop calibration system).
+1. **The agent was honest about its action.** An agent could fabricate `content_hash` to point at content it didn't produce. Detecting agent dishonesty is a separate problem (the [L0–L5 human delegation ladder](autonomy.md#1-human-delegation-ladder-l0l5) and the closed-loop calibration system).
 2. **The action actually happened in the external world.** A signed receipt for "sent a message to user X" proves the receipt was issued; it does not prove the message arrived. End-to-end delivery proofs are out of scope.
 3. **Cross-instance authority.** A receipt signed by `sylveste://agent/hassease#2026-q2` proves nothing about a different agent identity, even if that other agent runs in the same project. Each agent's authority is keyed to its own signing key.
 4. **Tamper-proof-at-write.** The signing key is held by the same process that emits the receipt. An adversary with code execution in the Sylveste process can sign arbitrary receipts. v2 moves signing to an out-of-band signer daemon to add separation of duties.

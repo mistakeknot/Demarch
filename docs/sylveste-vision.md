@@ -138,21 +138,13 @@ Note: Persistence (Intercore) is the shared substrate beneath all phases, not a
 
 ## The Capability Mesh
 
-How mature is each subsystem? The mesh replaces the v4.0 linear autonomy ladder (L0-L4) with a multi-dimensional view where different subsystems mature at different rates. Each subsystem is independently measurable, though not all are independently maturable — some depend on upstream subsystems reaching sufficient maturity first.
+How mature is each subsystem? The mesh replaces the retired v4.0 linear capability ladder with a multi-dimensional view where different subsystems mature at different rates. Each subsystem is independently measurable, though not all are independently maturable — some depend on upstream subsystems reaching sufficient maturity first.
 
 ### Maturity Scale
 
-Five levels, with observable criteria:
+The M0–M4 scale (Planned → Built → Operational → Calibrated → Adaptive), the `min()` rule for system-level trust, and how the mesh differs from the retired ladder are defined once in **[`docs/canon/autonomy.md` § Capability mesh maturity](canon/autonomy.md#2-capability-mesh-maturity-m0m4)**.
 
-| Level | Name | Criteria |
-|-------|------|----------|
-| **M0** | Planned | Design exists (brainstorm, PRD), no implementation |
-| **M1** | Built | Code shipped and tests pass, not operationally tested |
-| **M2** | Operational | Running under real conditions, evidence signals yielding data for 30+ days. Example: Routing M1→M2 requires gate pass rate >70% sustained over 30 consecutive days, evaluated by Interspect, with at least 1 Tier-1 or Tier-2 signal meeting threshold. |
-| **M3** | Calibrated | Evidence thresholds defined and tested, promotion/demotion criteria met |
-| **M4** | Adaptive | Self-improving based on evidence, minimal human intervention needed |
-
-System-level trust = min(maturity across M1+ mesh cells). Subsystems at M0 (not yet built) are excluded — they represent planned capabilities, not operational components. Critical-tier subsystems have stricter evidence requirements at each maturity level than Medium-tier ones. System trust is a step function: it advances when the weakest *operational* subsystem catches up. Evidence compounds per-subsystem, but system-level trust is gated on the weakest link.
+Worked promotion example: Routing M1→M2 requires gate pass rate >70% sustained over 30 consecutive days, evaluated by Interspect, with at least one Tier-1 or Tier-2 signal meeting threshold.
 
 ### Current Mesh State
 
@@ -308,10 +300,7 @@ Implementation and testing. Codex handles parallel implementation. Opus and Sonn
 
 ### Ship
 
-Final review, deployment, and knowledge capture. The interflux fleet deploys explicit cognitive diversity lenses during final review. Code pushes are gated on human confirmation, where the scope of "confirmation" evolves with the human delegation ladder (see PHILOSOPHY.md § Earned Authority):
-- **L0-L2 (current):** Per-change human confirmation before each push.
-- **L3:** Human sets shipping policy (which repos, which confidence thresholds). Agent pushes when policy conditions are met.
-- **L4-L5:** Human approves the policy itself; agent pushes autonomously within policy bounds.
+Final review, deployment, and knowledge capture. The interflux fleet deploys explicit cognitive diversity lenses during final review. Code pushes are gated on human confirmation, where the scope of "confirmation" evolves with the human delegation ladder — see [`docs/canon/autonomy.md` § What the current level implies](canon/autonomy.md#what-the-current-level-implies) for the per-level push behavior and the current position on that ladder.
 
 ### Reflect
 

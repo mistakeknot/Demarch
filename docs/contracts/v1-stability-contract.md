@@ -86,7 +86,7 @@ v1.0 declares what it is designed for. Expanding the ODD is a separate axis from
 - Single-repository software development
 - Languages: Go, Python, TypeScript, Rust (others functional but not fully qualified)
 - Project types: CLI tools, libraries, web services, infrastructure
-- Human review at phase gates (trust ladder L1-L3)
+- Human review at phase gates — v1.0 supports [human delegation ladder](../canon/autonomy.md#1-human-delegation-ladder-l0l5) levels L1 through L3 (a supported range, not the current position, which that page records)
 - Codebase size: 100 LOC to 1M LOC
 - Team size: solo developer to small teams
 

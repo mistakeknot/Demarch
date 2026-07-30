@@ -87,7 +87,7 @@ A2A defines the *wire*. It does not define:
 
 - The Sylveste **phase-gate model** (brainstorm → strategy → plan → execute → review → ship). That stays in Clavain.
 - The **evidence pipeline** (Interspect/Interstat closed-loop calibration). That stays in Sylveste with A2A artifacts as the export surface.
-- The **trust ladder** (L0–L5). That is Sylveste policy carried in Task metadata, not an A2A primitive.
+- The **[human delegation ladder](autonomy.md#1-human-delegation-ladder-l0l5)** (L0–L5). That is Sylveste policy carried in Task metadata, not an A2A primitive.
 - The **bead tracker**. Beads remain canonical for durable work-tracking; A2A Tasks are runtime execution handles.
 
 A2A is the wire; Sylveste is the policy + receipts + sprint model on top.
