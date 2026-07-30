@@ -667,31 +667,64 @@ The path carries at least 58 Mbps. One connection could only use 17. That gap
 dutifully measured ~9-19 Mbps, concluded a 25.8 Mbps file would not fit, and
 asked for a transcode. It was right to.
 
-**Why one flow was slow.** grey ran `cubic`. On a 250 ms path, cubic's window
-growth is quadratic in time-since-loss and it simply cannot fill a long pipe;
-BBR paces against measured bandwidth and delay instead. It was available as a
-module and unused:
+**A wrong turn, recorded because it was nearly committed as truth.** grey ran
+`cubic`, which is genuinely poor on long paths, so switching to BBR looked like
+the answer:
 
     cubic, single stream    17.2 Mbps
-    bbr,   single stream    48-57 Mbps          3x, one sysctl, no hardware
+    bbr,   single stream    48-57 Mbps          "3x!"
 
-48-57 Mbps clears the 25.8 Mbps source comfortably, so the Shield's own
-measurement now permits direct play and the transcode never starts. Persisted
-in `/etc/sysctl.d/99-bbr-highbdp.conf` (mirrored at `ops/zklw-media/sysctl/`),
-with `tcp_bbr` in `/etc/modules-load.d/`. Window maxima went to 16 MB in the
-same file: the bandwidth-delay product at 250 ms × 100 Mbps is ~3.1 MB, so the
-stock 4 MB autotune ceiling was only just adequate and `net.core.wmem_max` of
-208 KB throttled anything setting `SO_SNDBUF` explicitly.
+That conclusion was wrong. Those were two samples taken minutes apart on a path
+whose throughput swings by nearly three orders of magnitude, and an interleaved
+A/B run afterwards showed **cubic and BBR performing identically** — 0.1-0.3
+Mbps each, alternating, in the same session. The "improvement" was the path
+changing under a before/after test that had no control. A before/after
+measurement on a varying channel measures the variance, not the change.
 
-The general lesson is worth more than the fix. Every layer reported itself
-healthy: the client picked a sensible bitrate, the server transcoded faster
-than realtime, the disk kept up, the link tested fast in aggregate, and
-Tailscale was direct. The defect lived in the *interaction* — a congestion
-control algorithm meeting a latency it was never good at — and only a
-single-stream measurement could see it. Aggregate bandwidth tests actively hid
-it, which is why the earlier 578 Mb/s speed-test result pointed the whole
-investigation the wrong way.
+**What is actually wrong.** Two back-to-back downloads from this house,
+Tailscale entirely out of the picture:
 
-`EncoderPreset`, the tmpfs transcode directory and Bazarr all remain worth
-having for the cases that still transcode. They just were not the cure.
-Tracked as `sylveste-3f8x`.
+    cachefly, US CDN                 94 Mbps       then 30 Mbps
+    nbg1-speed.hetzner.com, Germany   0.085 Mbps   then 0.079 Mbps
+
+The home connection is fine. The route to Hetzner is not, and it is not grey's
+route specifically — that second endpoint is Hetzner's own public speed test,
+nothing to do with this server. `traceroute`:
+
+     7  ...tustca4200w-bcr00.netops.charter.com    33 ms
+     8  ae5.ear3.tus1.sp.lumen.tech                63 ms
+     9  ae2.3601.edge5.ber1.neo.colt.net          326 ms     <- transatlantic
+    11  core23.fsn1.hetzner.com                   314 ms
+
+Charter → Lumen → **Colt** → Hetzner. The buffering is congested transatlantic
+transit between the ISP and Hetzner, and nothing on the server, the client, or
+the codec chain can touch it.
+
+Timing supports peak-hour congestion on that transit rather than a hard fault:
+
+    ~10:00 LA    17.2 Mbps  then 48-57 Mbps
+    ~19:00 LA    0.08 - 0.3 Mbps
+
+which is exactly when someone sits down to watch something.
+
+BBR was left enabled. It is defensible on its own terms for a 250 ms path and
+does no harm, but it is **not** the fix and was not shown to help here; the
+sysctl file says so. Re-A/B it interleaved, not before/after, once transit is
+healthy.
+
+**So the standing advice inverts.** Transcoding was never the disease. The box
+tone-maps at 2.74x realtime, the disk reads at 613 MB/s, the client behaved
+correctly, and a Shield Pro was already in use. Options that could actually
+help are all about the path: fronting Jellyfin with a CDN/tunnel so traffic
+rides a private backbone from a US edge instead of Charter→Lumen→Colt (mind
+Cloudflare's restrictions on proxying large video), or hosting closer to the
+viewer. Buying a client device would have changed nothing, and this document
+recommended it for weeks.
+
+The lesson that generalises: every layer reported itself healthy, so the
+temptation was to keep tuning layers. The defect was in a leg none of the local
+instruments could see, and the thing that finally exposed it was testing an
+endpoint that had nothing to do with the system under investigation.
+
+`EncoderPreset`, the tmpfs transcode directory and Bazarr remain worth having
+for the cases that still transcode. Tracked as `sylveste-3f8x`.
