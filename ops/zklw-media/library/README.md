@@ -626,12 +626,72 @@ produced a wrong reading earlier in the session — a check for at-risk watch
 state reported "3 rows on each side" when it was the same 3 lower-case rows
 counted twice.
 
-### Not solved by any of the above
+### The buffering was TCP congestion control, not transcoding
 
-`EncoderPreset` and tmpfs make transcodes survivable; they do not make them
-stop. The only fix that eliminates them is a client that can play the files:
-an Apple TV 4K or Nvidia Shield direct-plays HEVC, DTS and TrueHD, and renders
-PGS natively without burn-in. That is one ~€150 device against a server
-migration — and Hetzner cannot sell the alternative, because its capacity line
-(SX, all AMD, no iGPU) and its QuickSync line (EX, Intel Core) do not overlap.
+Everything above this line diagnosed the wrong thing, and the record should say
+so plainly. The conclusion had been that transcoding was unavoidable on a
+GPU-less box and the only real fix was a client that direct-plays — an Apple TV
+or an Nvidia Shield. mk already owns a Shield Pro. It was buffering anyway.
+
+Measuring instead of reasoning took four steps.
+
+**Which client, and what was it asking for.** Every transcode in the logs was
+the Shield itself (`Jellyfin Android TV 0.19.9`), and every one looked like:
+
+    -codec:v:0 libx264 ... -maxrate 9360000
+    -vf setparams=...,scale=...1920...,tonemapx=tonemap=bt2390:...:t=bt709
+
+Software H.264, downscale to 1080p, HDR→SDR tone mapping. Of ten transcode
+jobs, ten tone-mapped and only two burned in subtitles — so subtitles were not
+the dominant trigger either. The `maxrate` values varied (8.4, 9.2, 9.36, 9.7,
+19.4 Mbps), which is the signature of a client on **Auto** measuring the
+connection, not a fixed quality preset. `RemoteClientBitrateLimit` was 0 for
+every user, so nothing server-side was imposing it.
+
+**Was the box too slow?** No, and this is where the old theory died. Replaying
+the exact filter chain on grey:
+
+    frame=720 fps=66 speed=2.74x        (23.976 fps needed)
+
+It tone-maps 4K HDR at nearly three times realtime. The CPU was never the
+problem.
+
+**What was the network actually doing?** 60 MB pulled through Jellyfin over
+Tailscale — a direct connection, not a DERP relay, but **250 ms RTT**:
+
+    single stream    17.2 Mbps
+    4 parallel       58.4 Mbps aggregate
+
+The path carries at least 58 Mbps. One connection could only use 17. That gap
+*is* the bug: a single TCP flow, not the link, was the ceiling — and the Shield
+dutifully measured ~9-19 Mbps, concluded a 25.8 Mbps file would not fit, and
+asked for a transcode. It was right to.
+
+**Why one flow was slow.** grey ran `cubic`. On a 250 ms path, cubic's window
+growth is quadratic in time-since-loss and it simply cannot fill a long pipe;
+BBR paces against measured bandwidth and delay instead. It was available as a
+module and unused:
+
+    cubic, single stream    17.2 Mbps
+    bbr,   single stream    48-57 Mbps          3x, one sysctl, no hardware
+
+48-57 Mbps clears the 25.8 Mbps source comfortably, so the Shield's own
+measurement now permits direct play and the transcode never starts. Persisted
+in `/etc/sysctl.d/99-bbr-highbdp.conf` (mirrored at `ops/zklw-media/sysctl/`),
+with `tcp_bbr` in `/etc/modules-load.d/`. Window maxima went to 16 MB in the
+same file: the bandwidth-delay product at 250 ms × 100 Mbps is ~3.1 MB, so the
+stock 4 MB autotune ceiling was only just adequate and `net.core.wmem_max` of
+208 KB throttled anything setting `SO_SNDBUF` explicitly.
+
+The general lesson is worth more than the fix. Every layer reported itself
+healthy: the client picked a sensible bitrate, the server transcoded faster
+than realtime, the disk kept up, the link tested fast in aggregate, and
+Tailscale was direct. The defect lived in the *interaction* — a congestion
+control algorithm meeting a latency it was never good at — and only a
+single-stream measurement could see it. Aggregate bandwidth tests actively hid
+it, which is why the earlier 578 Mb/s speed-test result pointed the whole
+investigation the wrong way.
+
+`EncoderPreset`, the tmpfs transcode directory and Bazarr all remain worth
+having for the cases that still transcode. They just were not the cure.
 Tracked as `sylveste-3f8x`.
