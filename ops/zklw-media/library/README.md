@@ -546,6 +546,41 @@ A trap worth recording: `encoding.xml` stores unset options as self-closing
 form, appends a *second* element, and Jellyfin then reads the first (nil) one
 and silently discards the change. Handle both forms.
 
+## A seeding torrent lies about its health
+
+`retire_capital_movies.py` ran on 2026-07-29 and looked like a clean success:
+`/data/Movies` gone, `kg_restore.sh` retargeted, Radarr reporting 540 files with
+**0 missing on disk**, qBittorrent reporting **0** in error or missingFiles.
+
+89 torrents were quietly broken anyway.
+
+`move` asks qBittorrent to relocate the torrents, waits, then renames whatever
+is left. For 35 the relocation worked; for 89 it did not, and the rename moved
+their data regardless — leaving them pointing at a directory that no longer
+existed. They did not complain, because **a seeding torrent does not touch disk
+until a peer asks for a piece.** All 89 sat in `stalledUP` reporting perfect
+health, each one request away from `missingFiles`.
+
+So `finish` passed a check that could not fail:
+
+```python
+bad = [t for t in ts if t.get("state") in ("missingFiles", "error")]   # lagging
+stale = [t for t in ts if (t.get("save_path") or "").startswith(OLD)]  # leading
+```
+
+State is a lagging indicator of storage breakage; `save_path` is the leading
+one. `finish` now asserts both, and `repair_torrent_paths.py` fixes the
+condition when it exists — verifying every file is present at the new location
+at the right size *before* repointing anything, which catches the realistic
+failure without hashing 425 GB on a RAID5 that is already busy.
+
+One wrinkle on the way out. Repointing made qBittorrent recheck the 86 running
+torrents automatically, all clean. The 3 that were **paused** got no such
+recheck — setLocation invalidated their progress and nothing re-verified it, so
+they read `0.0%` with every file present and correctly sized. A forced recheck
+returned all three to 100%. Paused torrents do not self-heal; recheck them
+explicitly after any relocation.
+
 ## Removing a library path does not remove its items
 
 Worth its own heading, because it is the opposite of the intuition and it cost

@@ -257,11 +257,27 @@ def cmd_finish(apply_):
         ok = False
 
     op, h = qbt()
-    bad = [t for t in torrents(op, h) if t.get("state") in ("missingFiles", "error")]
+    ts = torrents(op, h)
+    bad = [t for t in ts if t.get("state") in ("missingFiles", "error")]
     print("torrents in error/missingFiles: %d" % len(bad))
     for t in bad[:10]:
         print("   %-56s %s" % (t["name"][:56], t["state"]))
     if bad:
+        ok = False
+
+    # State is a LAGGING indicator and on its own it lets real breakage through.
+    # A seeding torrent does not touch disk until a peer asks for a piece, so a
+    # torrent whose save_path no longer exists sits in stalledUP reporting
+    # perfect health. That is exactly what happened on the 2026-07-29 run: 89
+    # torrents survived `move` still pointing at OLD, every one of them "fine",
+    # every one of them one peer request away from missingFiles. save_path is
+    # the leading indicator, so check it directly.
+    stale = [t for t in ts if (t.get("save_path") or "").startswith(OLD)]
+    print("torrents still pointing at %s: %d" % (OLD, len(stale)))
+    for t in stale[:10]:
+        print("   %-56s %s" % (t["name"][:56], (t.get("save_path") or "")[:40]))
+    if stale:
+        print("   -> run repair_torrent_paths.py before finishing.")
         ok = False
 
     if not ok:
