@@ -57,6 +57,10 @@ $ ic config set autonomy.delegation_level 1   # declare
 $ ic autonomy status                          # read back
 ```
 
+**How the block stays honest.** `scripts/gen-autonomy-position.py` regenerates it, reading each scale from the layer that owns it — the kernel for the delegation level, `clavain-cli` for the Track A streak — and joining them here rather than teaching either layer about the other. A pre-commit hook (`scripts/install-pre-commit-hook.sh`) fails a commit that touches the autonomy machinery while leaving the block stale, and advises without blocking otherwise, because the streak ticks on its own and a stale counter does not make an unrelated commit wrong.
+
+An unreachable kernel is exit 2, "could not verify" — never "current" and never "stale". Reporting current would compare an unavailable block against an unavailable block and pass; reporting stale would claim a comparison that never happened. CI asserts that exit code on a kernel-less checkout, because the monorepo `.gitignore`s `core/`, so a cloud runner has no kernel to read.
+
 Each level requires demonstrated safety at the previous one. No shortcuts. The kernel boundary (agents cannot modify Intercore) is a trust threshold, not an architectural invariant — it softens as trust is earned, but through gated processes, not direct modification.
 
 The human's role is fixed at every level: set objectives, make tradeoffs, approve deployments. What changes is how often they must exercise it. The goal is human-*above*-the-loop — governing outcomes via receipts, not step-by-step supervision.
@@ -65,14 +69,31 @@ The human's role is fixed at every level: set objectives, make tradeoffs, approv
 
 | Surface | Mechanized? | L0–L1 | L2 | L3 | L4–L5 |
 |---|---|---|---|---|---|
-| **Phase advancement** | **Yes** — `internal/autonomy` | `auto_advance=false`; `ic run advance` emits a pause event and the run stays put until a human advances it | `auto_advance=true`; the run advances and the human reviews evidence afterward | *Not yet distinct from L2* | *Not yet distinct from L2* |
-| Code push to remote | No — convention and hooks | Per-change human confirmation before each push | Same as L0–L1 | Human sets shipping policy; agent pushes when conditions are met | Human approves the policy itself; agent pushes within bounds |
+| **Phase advancement** | **Yes** — `pkg/autonomy` | `auto_advance=false`; `ic run advance` emits a pause event and the run stays put until a human advances it | `auto_advance=true`; the run advances and the human reviews evidence afterward | *Not yet distinct from L2* | *Not yet distinct from L2* |
+| **Push to a remote** | **Yes** — `pkg/authz` ceiling | Gate wrapper refuses; the refusal names the level | Same as L0–L1 | Agent pushes when the declared policy's `requires` are satisfied | Same as L3; the policy-authoring loop is what differs, and is not yet mechanized |
 
-**Read the "Mechanized?" column literally.** Phase advancement is derived from the declared level in code: the level sets the `auto_advance` default at run creation, and `ic run advance` honors it. Nothing else on this table is wired yet. The push invariant is still enforced by convention and hooks, not by reading the delegation level — so raising the level today changes phase-gate behavior and *nothing about pushing*.
+**Read the "Mechanized?" column literally.** Both rows are derived from the declared level in code, by different mechanisms:
 
-L3+ has a defined meaning on the ladder but no distinct mechanism yet; a run at L3 currently behaves exactly like L2. That gap is deliberate and visible rather than papered over.
+- **Phase advancement** — the level sets the `auto_advance` default at run creation (`pkg/autonomy.DerivesAutoAdvance`), and `ic run advance` honors it. The split is at L2.
+- **Push to a remote** — the level is a *ceiling* on how permissive the authorization policy may be (`pkg/autonomy.MinLevelForAuto`, applied in `pkg/authz.Check`). Pushes need L3, because L3 is the first rung where the human's contribution is a policy rather than a per-action decision. The split is at L3.
 
-A per-run override remains available as an escape hatch — `ic run set <id> --auto-advance=<bool>` — and prints a notice when it diverges from what the declared level implies.
+The two splits sit at different rungs on purpose: advancing a phase is recoverable and internal, pushing to a remote is neither.
+
+**The ceiling only tightens.** A policy rule that says `block` still blocks at L5; a rule whose `requires` fail still confirms. The level can withhold authorization the policy would have granted, never grant authorization the policy withheld. `force_auto` is bound by it too — a ceiling that policy could lift by editing YAML would not be a ceiling. The escape hatch that does still work is the one-shot signed token (`clavain-cli policy token issue`), which is a per-action human authorization and short-circuits before the check runs.
+
+**Which operations carry a floor** is a kernel fact, not a policy one — `git-push-main` and `bd-push-dolt` today. `ic-publish-patch` deliberately has none: publishing already refuses agent-mutated plugins upstream. Ops with no floor are governed by policy exactly as before.
+
+L4–L5 have defined meanings on the ladder but no distinct mechanism; a push at L4 behaves exactly like L3. That gap is deliberate and visible rather than papered over.
+
+**Failure is closed by arithmetic, not by special cases.** An unreadable kernel, a missing state row and an expired one all resolve to `DefaultLevel` (L2) — which sits *below* the push floor, so they confirm. `TestDefaultLevelFailsClosedForPushes` asserts that relationship so raising the default cannot quietly re-open pushes.
+
+A per-run override remains available as an escape hatch — `ic run set <id> --auto-advance=<bool>`. When it diverges from what the declared level implies, the kernel prints a notice *and* writes a durable record to the run's metadata under the reserved key `autonomy_override`, in the same transaction as the override itself. So "which runs behaved at a level nobody declared" is a query, not something you had to be watching stderr to catch:
+
+```sql
+SELECT id FROM runs WHERE json_extract(metadata, '$.autonomy_override') IS NOT NULL
+```
+
+The record carries both sides — the value forced and the value the level implied — plus whether the level was declared at all. The push ceiling has no equivalent escape hatch by design; the one-shot signed token is its per-action override, and it is already recorded in the signed authorization ledger.
 
 Promotion requires pre-specified evidence thresholds. Demotion is triggered by sustained regression indicators exceeding threshold for a defined observation window. Evidence epochs reset trust when environmental conditions shift (major model changes, architecture migrations, subsystem replacements). The principle — evidence earns authority — is permanent. The mechanism is revisable by human authority regardless of accumulated evidence.
 

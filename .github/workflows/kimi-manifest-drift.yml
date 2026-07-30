@@ -46,6 +46,50 @@ jobs:
       - name: Asset-directory resolution tests
         run: python3 -m pytest tests/test_gen_kimi_manifests.py -q
 
+      # Same shape of guard, different generator. gen-autonomy-position.py reads
+      # a live kernel out of core/intercore, which this checkout does not have,
+      # so CI tests the rendering and asserts the checker refuses to report on a
+      # source-less tree. Real enforcement is the pre-commit hook.
+      - name: Autonomy position rendering tests
+        run: python3 -m pytest tests/test_gen_autonomy_position.py -q
+
+      - name: Autonomy position checker refuses a kernel-less checkout
+        run: |
+          set +e
+          python3 scripts/gen-autonomy-position.py --check
+          rc=$?
+          set -e
+          echo "exit=$rc"
+          test "$rc" -eq 2 || {
+            echo "expected exit 2 (cannot verify) with no kernel present, got $rc" >&2
+            echo "rc=0 would mean --check passed having compared nothing;" >&2
+            echo "rc=1 would mean it called the block stale without reading a level." >&2
+            exit 1
+          }
+
+      # The installer shares .git/hooks/pre-commit with a beads-managed block.
+      # Clobbering that block would disable beads' own hook silently, so prove
+      # the install is idempotent and leaves a foreign block alone.
+      - name: Pre-commit installer is idempotent and non-destructive
+        run: |
+          set -e
+          bash -n scripts/pre-commit-hook.sh
+          bash -n scripts/install-pre-commit-hook.sh
+
+          printf '#!/usr/bin/env sh\n# --- BEGIN FOREIGN BLOCK ---\necho foreign\n# --- END FOREIGN BLOCK ---\n' \
+            > .git/hooks/pre-commit
+          chmod +x .git/hooks/pre-commit
+
+          bash scripts/install-pre-commit-hook.sh
+          bash scripts/install-pre-commit-hook.sh
+          bash scripts/install-pre-commit-hook.sh --check
+
+          grep -qF "# --- BEGIN FOREIGN BLOCK ---" .git/hooks/pre-commit || {
+            echo "installer destroyed a pre-existing block" >&2; exit 1; }
+          n="$(grep -cF '# --- BEGIN SYLVESTE AUTONOMY POSITION ---' .git/hooks/pre-commit)"
+          test "$n" -eq 1 || { echo "expected 1 autonomy block, found $n" >&2; exit 1; }
+          sh -n .git/hooks/pre-commit
+
       # The guard has to fail when nothing was inspected. If this step ever
       # passes, --check has become capable of reporting success on an empty
       # checkout, which is precisely the defect being prevented.
