@@ -10,14 +10,38 @@
 
 ```
 git status → git add <files> → git commit
-bd backup sync       # flush Dolt → JSONL (auto every 5m; force before push)
-bd orphans           # close beads named in commits (skip parents w/ open children)
-bd backup sync       # capture orphan closes
-bash .beads/push.sh  # push Dolt
+bd orphans                              # close beads named in commits (skip parents w/ open children)
+bd export --output .beads/issues.jsonl  # Dolt → JSONL: the git-shared copy
+git add .beads/issues.jsonl && git commit -m "beads: sync export"
+bash .beads/push.sh                     # push Dolt (signer hosts only; see below)
 git push
 ```
 
-`bd backup sync` is non-negotiable before push — without a fresh JSONL, closes are lost on the next Dolt crash.
+**`bd export` is the step that makes bead state leave this machine.** It is not
+`bd backup sync`, which this file claimed for months. `bd backup sync` pushes the
+Dolt database to the configured backup destination — here a local directory,
+`.beads/backup` — and never writes `issues.jsonl` at all. It reported success
+every time while the export sat 63 issues and two days stale, because it was
+succeeding at a different job.
+
+**After a pull, `bd import`.** Nothing loads the JSONL into the local Dolt
+automatically, so issues filed on another machine are invisible to `bd` here
+until imported. Two were, for over a week. Note the ordering hazard: `bd import`
+upserts, so importing a stale export can reopen issues that are closed locally.
+Check with `python3 scripts/check_beads_jsonl_dolt_sync.py --strict-extra`
+first — it reports both directions.
+
+**On a verifier-only host `push.sh` will refuse**, because the Dolt push runs
+through the `bd-push-dolt` gate and this machine holds no signing key
+(`clavain-cli policy doctor` → `"role":"verifier"`). That is by design; zklw is
+the signer. It also means the git-tracked JSONL is the *only* egress for bead
+state here, which is why a stale export is data sitting on one disk rather than
+a cosmetic lag.
+
+The pre-commit hook blocks a commit that stages a JSONL disagreeing with Dolt in
+either direction, and pre-push warns when the export is behind. Neither fires if
+you never touch the export — which is precisely how it went stale — so the
+`bd export` line above is the load-bearing one.
 
 ## Rules
 

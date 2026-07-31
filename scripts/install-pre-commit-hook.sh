@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the autonomy-position pre-commit check into .git/hooks/pre-commit.
+# Install the autonomy-position pre-commit check into the hook git actually runs.
 #
 # Idempotent, and non-destructive to the beads-managed section that already
 # occupies that file: this appends its own marker-delimited block and rewrites
@@ -12,7 +12,20 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-HOOK="$ROOT/.git/hooks/pre-commit"
+
+# Resolve the hook directory from git, not by assuming .git/hooks.
+#
+# This repo sets core.hooksPath to .beads/hooks, so .git/hooks/pre-commit is
+# never executed. Installing there produced a hook that passed every test run
+# directly and fired exactly zero times in real commits — the check existed,
+# was verified, and was inert. Ask git where hooks live instead of guessing.
+HOOKS_DIR="$(git -C "$ROOT" config --get core.hooksPath || true)"
+if [[ -z "$HOOKS_DIR" ]]; then
+    HOOKS_DIR="$ROOT/.git/hooks"
+elif [[ "$HOOKS_DIR" != /* ]]; then
+    HOOKS_DIR="$ROOT/$HOOKS_DIR"
+fi
+HOOK="$HOOKS_DIR/pre-commit"
 BEGIN="# --- BEGIN SYLVESTE AUTONOMY POSITION ---"
 END="# --- END SYLVESTE AUTONOMY POSITION ---"
 

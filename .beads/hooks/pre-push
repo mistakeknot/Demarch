@@ -22,3 +22,27 @@ if command -v bd >/dev/null 2>&1; then
   if [ $_bd_exit -ne 0 ]; then exit $_bd_exit; fi
 fi
 # --- END BEADS INTEGRATION v1.0.2 ---
+
+# --- BEGIN SYLVESTE BEADS EGRESS WARNING ---
+# The pre-commit drift guard only fires when .beads/issues.jsonl is staged, so
+# an export nobody ever runs is an export nobody ever checks. That is the exact
+# shape of the failure this guards: the file was not wrong, it was untouched.
+#
+# Push is the moment bead state would leave this machine. On a verifier-only
+# host the Dolt push is refused by the gate, which makes the git-tracked JSONL
+# the only egress — so a push carrying a stale export silently leaves work
+# behind on one disk.
+#
+# Advisory, not blocking: most pushes have nothing to do with beads, and a hard
+# failure there would train people to bypass hooks. It names a number and the
+# exact command instead.
+if [ -f "scripts/check_beads_jsonl_dolt_sync.py" ] && command -v python3 >/dev/null 2>&1; then
+  if ! _beads_drift=$(python3 scripts/check_beads_jsonl_dolt_sync.py --strict-extra 2>&1); then
+    echo >&2 "beads: .beads/issues.jsonl is behind the live Dolt database."
+    echo >&2 "$_beads_drift" | sed -n '1p' >&2
+    echo >&2 "      This push will not carry those issues. On a verifier-only host the"
+    echo >&2 "      JSONL is the only copy that leaves this machine."
+    echo >&2 "      Refresh it with:  bd export --output .beads/issues.jsonl"
+  fi
+fi
+# --- END SYLVESTE BEADS EGRESS WARNING ---

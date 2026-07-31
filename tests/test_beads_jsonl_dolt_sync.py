@@ -94,6 +94,10 @@ def test_pre_commit_hook_checks_staged_issues_jsonl_blob() -> None:
 
     assert "git show :'.beads/issues.jsonl'" in hook
     assert "--issues-jsonl \"$_beads_jsonl_staged\"" in hook
+    # Both directions, not one. Without --strict-extra the guard passes a JSONL
+    # that is behind Dolt, which is how the export sat 63 issues stale while the
+    # hook reported success on every commit.
+    assert "--strict-extra" in hook
 
 
 def test_cli_passes_when_tracked_jsonl_and_dolt_issue_ids_match(tmp_path: Path, capsys) -> None:

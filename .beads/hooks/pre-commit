@@ -24,16 +24,29 @@ fi
 # --- END BEADS INTEGRATION v1.0.2 ---
 
 # --- BEGIN SYLVESTE BEADS JSONL/DOLT DRIFT GUARD ---
-# Keep tracked .beads/issues.jsonl from getting ahead of the live Dolt authority.
-# This prevents priority-based automation from missing ready/open Beads that only
-# exist in the JSONL export.
+# Keep tracked .beads/issues.jsonl and the live Dolt authority in agreement,
+# in BOTH directions.
+#
+#   JSONL ahead of Dolt  -> priority automation misses Beads only in the export.
+#   Dolt ahead of JSONL  -> the committed snapshot silently omits real work, and
+#                           since JSONL is the only git-shared copy, that work
+#                           exists on exactly one machine's disk.
+#
+# The second direction is why --strict-extra is passed. Without it this guard ran
+# for weeks while .beads/issues.jsonl sat 63 issues behind Dolt: the check fired,
+# exited 0, and reported nothing, because it was only ever asked half the
+# question.
+#
+# Friction is bounded by the case gate below: this only runs when issues.jsonl is
+# actually staged, i.e. when the commit is claiming to be a current snapshot.
+# Mid-session commits that do not touch the export are unaffected.
 if [ -f "scripts/check_beads_jsonl_dolt_sync.py" ]; then
   _staged_files=$(git diff --cached --name-only 2>/dev/null || true)
   case "$_staged_files" in
     *".beads/issues.jsonl"*)
       _beads_jsonl_staged=$(mktemp "${TMPDIR:-/tmp}/sylveste-beads-jsonl.XXXXXX") || exit 1
       if git show :'.beads/issues.jsonl' >"$_beads_jsonl_staged" 2>/dev/null; then
-        python3 scripts/check_beads_jsonl_dolt_sync.py --issues-jsonl "$_beads_jsonl_staged"
+        python3 scripts/check_beads_jsonl_dolt_sync.py --issues-jsonl "$_beads_jsonl_staged" --strict-extra
         _beads_guard_exit=$?
       else
         echo >&2 "sylveste: unable to read staged .beads/issues.jsonl"
@@ -59,3 +72,10 @@ if [ -x "$HOME/projects/dotfiles/cloud/pre-commit.sh" ]; then
   "$HOME/projects/dotfiles/cloud/pre-commit.sh" "$@" || exit $?
 fi
 # --- END SHARED PRE-COMMIT DISPATCHER ---
+
+# --- BEGIN SYLVESTE AUTONOMY POSITION ---
+# Managed by scripts/install-pre-commit-hook.sh. Do not hand-edit.
+if [ -x "$(git rev-parse --show-toplevel)/scripts/pre-commit-hook.sh" ]; then
+  "$(git rev-parse --show-toplevel)/scripts/pre-commit-hook.sh" "$@" || exit $?
+fi
+# --- END SYLVESTE AUTONOMY POSITION ---
