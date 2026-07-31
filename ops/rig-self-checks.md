@@ -1575,6 +1575,10 @@ human to read and never allowed to turn the check red over `ollama.service`.
 
 ### What remains, deliberately
 
+> **Superseded in part on 2026-07-30** — see *Config or app state* below. `.codex/skills`
+> is now excluded outright and no longer written through on the Mac; the four zklw
+> findings below are still open only because zklw was unreachable that day.
+
 Four paths on zklw stay unresolved and are the reason it reports `warn`:
 `~/.codex/skills`, `~/.codex/superpowers`, `~/projects/docs`, and
 `~/.codex/AGENTS.md`. The first three are **app-managed runtime state**, and the
@@ -1585,3 +1589,142 @@ with generated `imagegen`, `plugin-creator` and `review-agent` trees. That belon
 in the `copy-sync` category or excluded outright, not symlinked (`Sylveste-xv9s`).
 `AGENTS.md` differs between the machines and needs a content merge before either
 copy is replaced (`Sylveste-hddm`).
+
+## Config or app state: the ownership rule, 2026-07-30
+
+The previous goal established that *tracked* and *deployed* are different
+properties. This one found the question underneath it, which the deployment
+check never asked: **should this path be tracked at all?**
+
+A symlink is a two-way street. Checking that config flows repo → machine says
+nothing about app state flowing machine → repo through the same link. `xv9s`
+recorded that as untidiness — "leaves the repo permanently dirty with generated
+content". It was worse than that. Codex had *deleted two tracked files* through
+the link and re-added them under new names, and nothing commits or reverts the
+dotfiles checkout on the Mac, so the deletions sat there waiting for the next
+person who runs a broad `git add -A` to commit an app's decisions as authored
+work.
+
+**The rule: if an app writes a path, dotfiles may not symlink it.** The test is
+not what the file contains or where it lives, but who writes it — and the
+evidence is usually a timestamp. After a Codex rebuild all 54 files under
+`~/.codex/skills/.system` carry one identical mtime. One rebuild ran *during*
+this session's measurement: a tracked `LICENSE.txt` vanished and returned inside
+three minutes, which briefly made a present file look like an orphan and sent
+one classification pass down the wrong path.
+
+"Excluded" then has to mean the app stops writing into the checkout, not that git
+stops mentioning it. A `.gitignore` entry would have left Codex rebuilding a
+tree inside a shared repo where a `git add -f` or a tooling change reintroduces
+it. `~/.codex/skills` is a real directory now and the declaration is gone.
+
+### Two mechanisms, and a tree that was partitioned rather than duplicated
+
+The repo carried **two deployment mechanisms at once**. `848b445` (2026-03-28)
+renamed `common/X → X` for yadm, whose repo at `~/.local/share/yadm/repo.git`
+had `core.worktree = $HOME`. `4b15241` a month later brought `common/` back —
+but only **21 of 405 paths**. The symlink mechanism then won in practice: 70
+commits touched `common/` against 7 touching root.
+
+The first framing — "389 stale duplicates, recoverable from history" — was
+wrong, and it was wrong in the direction that would have destroyed something.
+Path-level dedup said 384 files were unique; only comparing the *shapes* of the
+two trees showed why. superpowers' payload half (35 skills, hooks, commands,
+lib) lives in `common/` and deploys; its `LICENSE`, 42 tests and 7 docs stayed
+at root and do not. **Zero shared paths.** They are not two versions of one
+thing, they are one thing cut in half. Retiring the root half would have left
+vendored third-party code deployed with neither a license nor a test suite.
+
+The correction generalises into a rule for deleting from a config repo: **an
+orphan that is live in `$HOME` gets preserved, never deleted.** Ten of the files
+in the retirement list were live regular files with no `common/` twin, including
+every reference doc `~/.claude/CLAUDE.md` names by title. Tracked only in the
+tree being retired, they were deployed by nothing and — being outside restic's
+`~/projects` + `~/Downloads` scope — backed up by nothing either. Deleting them
+would have reproduced exactly the defect the previous goal had just fixed for
+`.codex/AGENTS.md`. They were preserved into `common/` and declared, because
+tracking without a declaration is what made the tree invisible in the first
+place.
+
+The stale yadm repo was moved to `~/.dotfiles-backup-yadm-20260730` rather than
+deleted. Nothing automated invoked it — no launchd job, no cron entry, no shell
+alias — so it was latent rather than urgent. But a worktree pointed at `$HOME`,
+four months behind, with an empty index, is not a thing to leave loaded.
+
+### The legacy tree was not inert: it was competing for authority
+
+`.claude/CLAUDE.md` at the repo root is loaded as **project instructions** for
+the dotfiles repo. Both it and the current `common/.claude/CLAUDE.md` arrived in
+one session's context — 81 lines each, **zero shared non-empty lines**. Two
+generations of the same document, both claiming to be the global rules. Likewise
+two tracked `settings.json` (12,791 B from May, 22,902 B from July), and a
+`host.md##h.sleeper-service` alternate for a machine decommissioned on
+2026-04-29.
+
+### Three more places the check was silent
+
+Each is the vacuity failure at a finer grain than the run-level guard was built
+for. That guard asked *"is the inventory empty?"* It could not ask *"did entries
+fall out of a non-empty one?"*
+
+1. **`home_target()` returned `None` and the loop moved on.** Anything outside
+   `common/macos/server/bin` was dropped — **426 of 636 tracked files, 67%** —
+   contributing nothing and raising nothing. The 389-file legacy tree sat inside
+   that hole for four months. `None` now means two different things and only one
+   may be silent: *the other machine's package* is a correct skip; *no rule can
+   ever map this into `$HOME`* is a path tracked in the permanent belief that it
+   is deployed, and is a finding unless `UNMANAGED` names a reason.
+2. **`HOME_FIRST_OK` matched only dotted names and `Library`.** So
+   `common/projects/*` — declared in both installers and live as symlinks the
+   whole time — had never been deployment-checked at all. Nine paths, invisible
+   because the mapping quietly refused them. This one surfaced *because* making
+   case 1 loud turned it into visible false positives.
+3. **The check stat'ed the link, never the directory behind it.**
+   `common/.codex/skills` passed every run while holding 46 untracked files and
+   two tracked deletions. `LINKED-DIR-WRITTEN` now reports untracked or deleted
+   content inside a declared directory link — the one question a resolving
+   symlink cannot answer.
+
+Clavain went from 15 findings at the start of the previous goal, to 0, to **20
+once the silent skips became loud**, to 0 again once each was either given a
+reason or fixed. The middle number is the honest one: it is what the machine had
+been carrying all along.
+
+### `1oci`: when comparing the machines is the wrong question
+
+`ARCHITECTURE.json` and `docs/diagrams/ecosystem.html` are tracked and generated
+by scanning the local checkout, and the two machines see genuinely different
+estates — 62 vs 65 plugins, 81 vs 131 commands, 249 vs 253 nodes. Each
+overwrites the other forever and **neither is wrong**. No drift check, freshness
+check, or machine-to-machine comparison can resolve that, because there is no
+missing input to find: the inputs differ legitimately.
+
+So `rig-generated-inputs.py` asks the only locally answerable question — *did
+this run see every input the artefact was built from?* A manifest records the
+expected input set; a run seeing fewer is `INCOMPLETE` and must not overwrite,
+and a run seeing more means the manifest is stale and should be refreshed
+deliberately. "The machines differ" becomes "this run was detectably
+incomplete".
+
+The manifest was seeded from Clavain's 61 plugins, which has a consequence worth
+stating plainly: once zklw refreshes it from the larger estate, **Clavain will
+correctly report `INCOMPLETE`** and should stop regenerating those two files.
+That is the mechanism working, not a regression.
+
+### What remains
+
+- **zklw was unreachable all day.** Tailscale SSH demanded interactive
+  re-authentication, so the zklw column of the inventory, `hddm`'s `AGENTS.md`
+  content merge, the zklw firing, and the manifest refresh from the canonical
+  estate are all outstanding. Nothing was guessed in its absence.
+- **`.codex/superpowers` (58 files) was deliberately kept.** It holds the
+  license and tests for code deployed from `common/`. Whether dotfiles should
+  vendor it at all versus pin an upstream ref is a separate question.
+- **`.claude/CLAUDE.md` is the last file of the retired tree.** A sibling session
+  held uncommitted edits in it and interlock's daemon was down, so it could not
+  be reserved against and was carved out rather than clobbered.
+- **`.clavain/` state stays tracked**, including a 260 KB SQLite database whose
+  `-shm`/`-wal` sidecars are untracked and unignored. That was a deliberate call:
+  the A:L3 streak is meant to accumulate across both hosts, and git is currently
+  how it travels. It is also the most likely first casualty of lane-based
+  two-machine sync.
