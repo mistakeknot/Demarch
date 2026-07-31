@@ -137,3 +137,88 @@ def test_kernel_default_matches_the_go_constant():
             assert int(line.split("=")[1].strip()) == gen.KERNEL_DEFAULT_LEVEL
             return
     pytest.fail("DefaultLevel not found in pkg/autonomy/autonomy.go")
+
+
+# ─── operation-floor table ────────────────────────────────────────────
+
+WITH_OPS = {
+    **UNDECLARED,
+    "ops": [
+        {"op": "bd-push-dolt", "floor": 3, "reason": "shared Dolt remote"},
+        {"op": "bead-close", "floor": 0, "reason": "local and reversible"},
+        {"op": "git-push-main", "floor": 3, "reason": "others act on it"},
+    ],
+}
+
+
+def test_floors_block_is_always_delimited():
+    for d in (WITH_OPS, {**UNDECLARED, "ops": []}, UNAVAILABLE):
+        block = gen.render_floors(d)
+        assert block.startswith(gen.FLOORS_BEGIN), d
+        assert block.endswith(gen.FLOORS_END), d
+        assert block.count(gen.FLOORS_BEGIN) == 1
+        assert block.count(gen.FLOORS_END) == 1
+
+
+def test_floors_table_renders_every_ruling_with_its_reason():
+    block = gen.render_floors(WITH_OPS)
+    for op in WITH_OPS["ops"]:
+        assert f"`{op['op']}`" in block
+        assert op["reason"] in block
+
+
+def test_floored_and_exempt_ops_are_visually_distinct():
+    """`none` vs a level is the distinction the table exists to carry.
+
+    An exempt op rendered the same as a floored one would make the recorded
+    exemption unreadable, which is the whole reason exempt ops are listed.
+    """
+    block = gen.render_floors(WITH_OPS)
+    assert "| `git-push-main` | **L3** |" in block
+    assert "| `bead-close` | none |" in block
+
+
+def test_floors_block_says_absence_is_not_exemption():
+    # The generated prose has to carry this, because the table alone cannot:
+    # a reader seeing four rows has no way to know a fifth op was never ruled on.
+    block = gen.render_floors(WITH_OPS)
+    assert "never been ruled on" in block
+
+
+def test_floors_block_survives_a_kernel_with_no_floors_at_all():
+    # Not the same as an unreachable kernel: this is a real answer that happens
+    # to be empty, and it must render a valid (headers-only) table.
+    block = gen.render_floors({**UNDECLARED, "ops": []})
+    assert "| Operation | Floor | Why |" in block
+    assert "`git-push-main`" not in block
+
+
+def test_floors_splice_replaces_only_its_own_block():
+    """The two generated regions must not disturb each other.
+
+    A streak tick rewrites the position block on its own cadence; if either
+    splice matched the other's markers the unrelated region would churn.
+    """
+    page = (
+        f"before\n{gen.BEGIN}\nold position\n{gen.END}\n"
+        f"middle\n{gen.FLOORS_BEGIN}\nold floors\n{gen.FLOORS_END}\nafter\n"
+    )
+    out = gen.splice(page, gen.render_floors(WITH_OPS), gen.FLOORS_BEGIN, gen.FLOORS_END)
+    assert "old floors" not in out
+    assert "old position" in out
+    assert "before" in out and "middle" in out and "after" in out
+
+
+def test_floors_splice_is_idempotent():
+    page = f"a\n{gen.FLOORS_BEGIN}\nx\n{gen.FLOORS_END}\nb\n"
+    once = gen.splice(page, gen.render_floors(WITH_OPS), gen.FLOORS_BEGIN, gen.FLOORS_END)
+    twice = gen.splice(once, gen.render_floors(WITH_OPS), gen.FLOORS_BEGIN, gen.FLOORS_END)
+    assert once == twice
+
+
+def test_canon_page_carries_both_marker_pairs():
+    """Catches a canon edit that drops a region, which would otherwise only
+    surface as a SystemExit from the pre-commit hook at commit time."""
+    text = gen.CANON.read_text(encoding="utf-8")
+    for marker in (gen.BEGIN, gen.END, gen.FLOORS_BEGIN, gen.FLOORS_END):
+        assert text.count(marker) == 1, marker

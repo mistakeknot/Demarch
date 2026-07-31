@@ -67,6 +67,45 @@ jobs:
             exit 1
           }
 
+      # An `ic` new enough to answer `autonomy status` but too old to report the
+      # operation-floor table is a second vacuity trap: the floor table renders
+      # empty and a rewrite deletes a true list. Unlike a missing kernel, this
+      # one is cheap to simulate here, so CI covers it rather than leaving it to
+      # whichever machine happens to have a stale binary installed.
+      - name: Autonomy position checker refuses an ic that cannot report floors
+        run: |
+          set -e
+          printf '#!/usr/bin/env bash\necho %s\n' \
+            "'{\"level\":2,\"name\":\"n\",\"derives_auto_advance\":true,\"declared\":false,\"source\":\"s\"}'" \
+            > /tmp/ic-no-ops
+          chmod +x /tmp/ic-no-ops
+
+          set +e
+          IC_BIN=/tmp/ic-no-ops python3 scripts/gen-autonomy-position.py --check
+          rc=$?
+          set -e
+          test "$rc" -eq 2 || {
+            echo "expected exit 2 when \`ops\` is absent, got $rc" >&2
+            echo "an ic without the floor table must not be treated as authoritative;" >&2
+            echo "rendering its answer would erase the canon floor table." >&2
+            exit 1
+          }
+
+          # An empty list is a real answer and must NOT be confused with absence.
+          printf '#!/usr/bin/env bash\necho %s\n' \
+            "'{\"level\":2,\"name\":\"n\",\"derives_auto_advance\":true,\"declared\":false,\"source\":\"s\",\"ops\":[]}'" \
+            > /tmp/ic-empty-ops
+          chmod +x /tmp/ic-empty-ops
+          set +e
+          IC_BIN=/tmp/ic-empty-ops python3 scripts/gen-autonomy-position.py --check
+          rc=$?
+          set -e
+          test "$rc" -ne 2 || {
+            echo "exit 2 for an explicitly empty ops list conflates 'no floors'" >&2
+            echo "with 'cannot report floors'; a kernel with no floors is readable." >&2
+            exit 1
+          }
+
       # The installer shares .git/hooks/pre-commit with a beads-managed block.
       # Clobbering that block would disable beads' own hook silently, so prove
       # the install is idempotent and leaves a foreign block alone.
