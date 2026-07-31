@@ -1685,6 +1685,18 @@ fall out of a non-empty one?"*
    content inside a declared directory link — the one question a resolving
    symlink cannot answer.
 
+Blind spot 2 then taught a second lesson about how it was fixed. Adding
+`projects` to the allowed list fixed that case and left the bug: within the hour
+a sibling committed `macos/scripts/backup-to-b2.sh` — declared at
+`install-macos.sh:161`, live as a symlink at `~/scripts/`, invoked by a
+LaunchAgent — and the check called it undeployable, because `scripts` was not on
+the list either. A list of blessed directory names is the wrong shape. The
+installers already state which `$HOME` directories they target in every
+declaration they parse, so the set is now read from them. The useful part is the
+timing: that rule would have cost a false finding every time a new `$HOME`
+directory was adopted, and cry-wolf is the failure mode this whole surface exists
+to prevent.
+
 Clavain went from 15 findings at the start of the previous goal, to 0, to **20
 once the silent skips became loud**, to 0 again once each was either given a
 reason or fixed. The middle number is the honest one: it is what the machine had
