@@ -50,6 +50,8 @@ The level is held in kernel state under `autonomy.delegation_level` and read bac
 
 Track levels are earned, never set — this is evidence that may justify a delegation decision, not a delegation level itself (see §5, §7).
 
+**Ceiling evidence (last 30 days):** no decisions carrying delegation evidence yet, so the ceiling has not been observed either acting or standing aside. An empty window, not a zero rate.
+
 <!-- END GENERATED: autonomy-position -->
 
 ```console
@@ -99,6 +101,15 @@ An operation *absent* from this table has never been ruled on. `none` is a recor
 <!-- END GENERATED: autonomy-floors -->
 
 Inspect the table in force with `ic autonomy status`, which marks each floored operation `allowed` or `BLOCKED` against the level currently in effect — so a refusal is predictable before it happens rather than discovered by being refused.
+
+**What the ceiling actually withheld is recorded, not just printed.** Every gated decision writes a `delegation` subtree into its authorization row's signed `vetting` field — the level in force, whether it was declared, the floor that applied, and whether the ceiling is what withheld it. Refusals are recorded too: the abort path exits before the normal record step, so a withheld decision is written there explicitly, otherwise the audit store would hold only the decisions that succeeded.
+
+```console
+$ clavain-cli policy audit --count --since=720h   # capped vs. recorded, in SQL
+$ clavain-cli policy audit --capped --limit=20    # the withheld decisions themselves
+```
+
+`mode` and `capped` together separate the two ways an operation can fail to proceed: `blocked` + `capped=true` is the ceiling withholding something policy would have allowed, `blocked` + `capped=false` is the policy's own rule, and `confirmed` + `capped=true` is the ceiling forcing a human who then approved. The count reported in the position block above is read from this store rather than recomputed, and distinguishes an empty window from an observed zero — a level decision justified by "the ceiling never fires" needs the second, not the first.
 
 L4–L5 have defined meanings on the ladder but no distinct mechanism; a push at L4 behaves exactly like L3. That gap is deliberate and visible rather than papered over.
 

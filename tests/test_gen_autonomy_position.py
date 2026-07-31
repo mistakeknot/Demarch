@@ -222,3 +222,44 @@ def test_canon_page_carries_both_marker_pairs():
     text = gen.CANON.read_text(encoding="utf-8")
     for marker in (gen.BEGIN, gen.END, gen.FLOORS_BEGIN, gen.FLOORS_END):
         assert text.count(marker) == 1, marker
+
+
+# ─── ceiling evidence ─────────────────────────────────────────────────
+
+EMPTY_WINDOW = {"total": 218, "with_evidence": 0, "capped": 0, "capped_by_op": {}}
+OBSERVED = {
+    "total": 40,
+    "with_evidence": 30,
+    "capped": 4,
+    "capped_by_op": {"git-push-main": 3, "bd-push-dolt": 1},
+}
+
+
+def test_empty_window_is_not_reported_as_a_zero_rate():
+    """0-of-0 and 0-of-200 are the same numerator and opposite conclusions.
+
+    Reporting "0 withheld" for a window with no classified decisions would read
+    as evidence the ceiling never fires, which is exactly the claim the data
+    cannot support — and exactly the claim that would justify raising the level.
+    """
+    block = gen.render(UNDECLARED, None, EMPTY_WINDOW)
+    assert "not a zero rate" in block.lower()
+    assert "0 of 0" not in block
+
+
+def test_observed_window_reports_numerator_and_denominator():
+    block = gen.render(UNDECLARED, None, OBSERVED)
+    assert "4 of 30" in block
+    assert "git-push-main" in block and "bd-push-dolt" in block
+
+
+def test_ceiling_line_is_absent_when_the_audit_store_is_unreachable():
+    # None means "could not read", which must not render as zero activity.
+    block = gen.render(UNDECLARED, None, None)
+    assert "Ceiling evidence" not in block
+
+
+def test_ceiling_window_is_stated_not_implied():
+    # A count with no window is uninterpretable; the label must appear with it.
+    block = gen.render(UNDECLARED, None, OBSERVED)
+    assert gen.CEILING_WINDOW_LABEL in block
