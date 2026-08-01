@@ -99,3 +99,37 @@ Checked whether anything quietly depends on that push succeeding:
 
 Both correct. The asymmetry is visible at every call site that could be misled
 by it.
+
+## Two limitations found by exercising it
+
+**Deletions do not propagate. Close beads; do not delete them.**
+
+`beads_safe_import.py` applies records that are absent locally or newer — it
+never deletes, because absence in an incoming export is ambiguous. It means
+either "deleted there" or "not created there yet", and the transport carries no
+tombstone to tell them apart.
+
+Observed: a probe bead filed on zklw, deleted on Clavain, survived in zklw's
+Dolt and was re-exported by `bd` — a push from zklw would have resurrected it on
+Clavain. Deleting it on both machines was the only clean fix.
+
+Closing propagates correctly: it is a status change with a newer timestamp, so
+the importer applies it.
+
+**Expect merge conflicts on `.beads/issues.jsonl` when both machines export.**
+
+It is a 3,800-line generated file and both ends rewrite it, so git conflicts on
+it are routine rather than exceptional. Do not hand-resolve the hunks. Dolt is
+the authority; the file is a projection:
+
+```bash
+git show MERGE_HEAD:.beads/issues.jsonl > .beads/issues.jsonl   # take incoming
+git add .beads/issues.jsonl && git commit --no-edit             # finish merge
+python3 scripts/beads_safe_import.py                            # theirs -> local Dolt
+bd export --output .beads/issues.jsonl                          # union back out
+```
+
+Taking the incoming side first is deliberate: the import is additive, so nothing
+local is lost by adopting the other machine's file and then re-exporting the
+union. Resolving the other way round would drop whatever the incoming export
+uniquely held.
