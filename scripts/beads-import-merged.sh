@@ -11,14 +11,16 @@
 # rows and bd still decides, row by row, whether each one may be applied. The
 # guarantee stays bd's; only the size of the batch is ours.
 #
-# It helps a lot, but not always, and the exception is worth knowing: bd stamps
-# the IMPORTING actor onto dependency records, so the same bead serializes
-# differently on each machine ("Claude Code" on zklw, "mistakeknot" here).
-# ~3,300 beads carry dependencies, so every export that alternates machines
-# rewrites them all and this filter degrades to nearly a full import. Measured
-# 3 rows on a same-machine merge, 3,313 on a cross-machine one. Sorting the
-# lines does not help — the difference is content, not order. Tracked as the
-# actor-churn bead; fixing it there fixes it here.
+# It used to degrade to nearly a full import on exactly the merges it was
+# written for. The two databases disagreed about dependencies[].created_by on
+# 3,589 of 3,657 shared rows, so every export that alternated machines rewrote
+# ~3,300 beads and the filter had ~3,300 rows to hand over. Measured 3 rows on a
+# same-machine merge and 3,313 on a cross-machine one.
+#
+# Repaired in Sylveste-zpeh by reconciling the field in both databases — not, as
+# first believed, by stopping bd from stamping the importing actor, which it
+# does not do. A cross-machine merge now hands over 7 rows for one changed bead:
+# 6 of residual data anomalies (Sylveste-keb3) plus the bead that changed.
 #
 # When it cannot tell what changed, it imports everything. Slow beats wrong:
 # an import that silently skips a machine's work is the failure this whole

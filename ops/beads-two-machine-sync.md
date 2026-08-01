@@ -8,6 +8,10 @@
 > by confirming files were present. That distinction matters: this protocol had
 > already failed once because a hook was installed at a path git ignores, which
 > every file-presence check would have called healthy.
+>
+> Re-verified 2026-08-01 after the dependency-actor repair and the untracking of
+> `.beads/metadata.json`: a cross-machine export now moves **7 rows for one
+> changed bead**, down from 3,313, measured in both directions on the live pair.
 
 ## The protocol
 
@@ -29,9 +33,11 @@ bd still applies its guard per row. When the diff cannot be determined it
 imports the whole file: slow beats an import that silently skips another
 machine's work.
 
-**It helps a lot, and not always.** Measured 3 rows on a same-machine merge
-(49s → 1s) but **3,313 rows** on a cross-machine one — see the actor churn
-below. Sorting does not rescue it; the difference is content, not order.
+**It helps a lot.** Measured 3 rows on a same-machine merge (49s → 1s). It used
+to degrade to **3,313 rows** on a cross-machine one — exactly the case it was
+written for — until the dependency-actor divergence below was repaired. A
+cross-machine merge now hands over **7 rows for one changed bead**, and the pull
+completes in about 1.5s.
 
 **The import is bounded at 120s** (`BEADS_IMPORT_TIMEOUT`) and says so on
 timeout. Unbounded, `git pull` never returns: observed twice on zklw, with
@@ -41,23 +47,69 @@ had to be killed by hand, and the deletion pass that runs after the import never
 ran until it was. A timeout is not a silent skip: the rows are still in the
 file, and the message names the command that loads them.
 
-### The actor churn behind the 3,300-line diffs
+### The dependency actor the two machines could never agree on (resolved)
 
 `bd export` is deterministic — two consecutive exports on one machine are
-byte-identical. But bd stamps the **importing** actor onto dependency records
-rather than preserving the original, so the same bead serializes differently on
-each machine: `created_by: "Claude Code"` on zklw, `"mistakeknot"` on Clavain.
+byte-identical. The two machines nevertheless disagreed about
+`dependencies[].created_by` on **3,589 of 3,657** shared dependency rows:
+`"Claude Code"` on zklw, `"mistakeknot"` on Clavain, everything else about the
+row identical. Roughly 3,308 beads carry dependencies, so every export that
+alternated machines rewrote all of them. That is the source of the recurring
+`-3805/+3804` commits in this file's history.
 
-About 3,308 beads carry dependencies, so **every export that alternates machines
-rewrites all of them**. That is the source of the recurring `-3805/+3804`
-commits in this file's history, it is why the post-merge import is expensive on
-exactly the cross-machine pulls, and it is why the filter above degrades in the
-case it was written for. Confirmed semantic rather than cosmetic: 3,313 beads
-differ as parsed objects, none differ only in serialization.
+**It was not bd stamping the importing actor**, which is what this document said
+for a while and what the bead was written around. bd 1.1.2 preserves the file's
+dependency `created_by` in every path constructible against a real database:
+creating the issue and its dependency together, adding a dependency to an issue
+the database already holds, and re-importing a genuinely-newer row. What bd has
+no operation for is *updating* the actor on a dependency that already exists
+locally.
 
-Tracked as `Sylveste-zpeh`. The candidate fix — one shared `BEADS_ACTOR` on both
-machines — is cheap, but it collapses an audit field that currently records
-which machine created a dependency, so it is a decision rather than a chore.
+Preserve-on-create plus ignore-on-update is what made it permanent. Each
+database stamped its own git identity once, long ago, under an older bd, and no
+import since could reconcile it — so the field was a fixed point per machine and
+the file oscillated between them forever. A shared `BEADS_ACTOR` would not have
+fixed it; it would only have stopped new rows from joining the set.
+
+**Repaired directly, in both databases** (`scripts/beads_normalize_dep_actors.py`).
+The field was resolved rather than collapsed, because the originator is
+recoverable: issue-level `created_by` agrees across the machines on 3,807 of
+3,811 issues, and for 3,551 divergent dependencies exactly one machine's value
+equals the dependent issue's own creator — a dependency is created in the same
+breath as the issue that carries it. 14 more resolve because one side is a
+session id and the other is a machine's git identity, which is bd's fallback in
+the hook context that did the historical importing.
+
+| resolution | rows |
+|---|---:|
+| dependent issue's creator (agreed on both machines) | 3,551 |
+| exactly one side is a session id | 14 |
+| neither — lexicographic minimum, listed by id | 24 |
+
+The 24 are the only attribution actually lost. The tiebreak is arbitrary on
+purpose but not machine-dependent: "whichever side loses" would resolve one way
+on each machine and the row would resume oscillating.
+
+Measured by exporting from each machine and comparing:
+
+| | before | after |
+|---|---:|---:|
+| issues differing between the machines | 3,314 | 12 |
+| dependency rows disagreeing on actor | 3,589 | 0 |
+| cross-machine export, no work in it | 3,313 rows | **6 rows** |
+| cross-machine export, one bead changed | 3,314 rows | **7 rows** |
+
+Symmetric in both directions, measured on the live pair.
+
+The **6-row floor** is not churn from this design — four beads were created
+independently on both machines and differ in `created_at`, which no import can
+reconcile; one carries a dependency on a bead ID that does not exist; one has a
+one-sided `started_at`. Tracked as `Sylveste-keb3`.
+
+**If it ever recurs**, both machines export to temp paths and run the script with
+`--local`/`--peer` swapped; it is idempotent and reports 0 rows to change when
+there is nothing to do. Run it on both, or the machine you skipped will simply
+write its values back.
 
 Both machines set `core.hooksPath = <repo>/.beads/hooks`, so `.git/hooks/` is
 **never executed**. Anything installed there is inert. Confirmed on both.
@@ -199,12 +251,14 @@ the production database instead of the copy.
 To actually isolate a copy, remove the port from `metadata.json` too — or copy
 neither file and let bd start its own server.
 
-### The same file is also a cross-machine channel
+### The same file was also a cross-machine channel (closed)
 
-`.beads/metadata.json` is **git-tracked**, and it names machine-local resources:
-`dolt_database`, `dolt_mode`, and that deprecated `dolt_server_port`. So the
-port that caused the trap above is not merely present on this machine — it is
-committed, and zklw has a copy of Clavain's port number in its worktree.
+`.beads/metadata.json` names machine-local resources — `dolt_database`,
+`dolt_mode`, and that deprecated `dolt_server_port` — and it was **git-tracked**,
+so the port that caused the trap above was not merely present on this machine, it
+was committed. zklw carried Clavain's `57745` while actually serving on `42527`
+from its own untracked `.beads/dolt-server.port`: a wrong value sitting in a
+shared file, inert only because no bd version happened to honour it.
 
 `bd init` makes its **own git commit**. Building the two-machine sandbox for the
 deletion work, a second `bd init` committed its freshly-written `metadata.json`,
@@ -212,14 +266,31 @@ the other repo pulled it, and that machine silently repointed at the *other
 machine's database*. Both then read and wrote one database while every check
 that asked "are these isolated?" answered yes, because each was still reading
 its own `.beads/` path. Deletions appeared to propagate before any mechanism
-existed to propagate them.
+existed to propagate them. `git update-index --skip-worktree` did not survive it.
 
-`git update-index --skip-worktree` does not survive this; the pointer has to be
-untracked. Nothing has gone wrong on the live pair — both machines happen to
-agree on `dolt_database: Sylveste`, and each resolves it to its own local
-`.beads/dolt` — but the file is one `bd init`, `bd doctor --fix`, or mode change
-away from carrying one machine's connection to the other. Worth untracking; not
-done here because it is an export-side change and this goal scoped it out.
+**Untracked as of `Sylveste-sb6z`.** Each machine keeps its own copy on disk;
+`.beads/.gitignore` now carries `metadata.json` and git no longer tracks it.
+Verified: a cross-machine pull leaves the local pointer byte-identical, and each
+machine still answers from its own database.
+
+Two things to know:
+
+- **The pull that lands the untracking deletes the file**, because git removes a
+  path it has stopped tracking. Back the file up on each machine first and
+  restore it after. Both machines needed this; it is a one-time cost that is easy
+  to discover the hard way.
+- **A fresh clone no longer carries a pointer.** It needs `bd bootstrap` (or
+  `bd init`) before `bd import .beads/issues.jsonl`. Covered by
+  `tests/test_beads_metadata_isolation.sh` scenario 4.
+
+The test asserts on the **connected database**, never on a path — it probes with
+a bead that exists in exactly one of two repositories, which is the question a
+path cannot answer and the reason the original sandbox failure went unnoticed.
+Scenario 0 asserts that *this* repository does not track its own pointer: the
+first attempt shipped the ignore rule while leaving the file tracked, where it
+does nothing, and both the commit and CI were satisfied. `git rm --cached` staged
+the removal and `git commit -F msg -- <paths>` naming that file undid it, because
+the pathspec form commits the working tree and ignores the index.
 
 ## Drift register
 
