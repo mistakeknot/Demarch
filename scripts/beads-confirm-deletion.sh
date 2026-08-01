@@ -45,6 +45,40 @@ command -v bd >/dev/null 2>&1 || { echo "bd not on PATH" >&2; exit 1; }
 
 cd "$ROOT"
 
+# Refuse if the local database is behind the shared file.
+#
+# This script exports, and an export writes the local database over the file —
+# so any bead the file has and this database lacks is destroyed by it. That is
+# the whole reason beads-auto-export.sh refuses in this state, and the first
+# version of this script bypassed that guard by calling `bd export` directly.
+#
+# Caught by a probe: zklw's import had been killed mid-flight, so its database
+# was missing five beads that were on main. Confirming ONE deletion there
+# exported a file with six beads gone, including the bead tracking this very
+# work. It was on an unmerged branch, so nothing was lost — but that is luck,
+# not design.
+#
+# The beads being confirmed are expected to be missing locally. Anything else
+# missing is another machine's work, and this stops rather than guessing.
+if [ -f "$ROOT/scripts/check_beads_jsonl_dolt_sync.py" ]; then
+  unexpected="$(python3 "$ROOT/scripts/check_beads_jsonl_dolt_sync.py" --json 2>/dev/null \
+    | python3 -c '
+import json, sys
+try:
+    missing = set(json.load(sys.stdin).get("missing_in_dolt") or [])
+except Exception:
+    raise SystemExit(0)          # no verdict; the export path guards separately
+print(" ".join(sorted(missing - set(sys.argv[1:]))))
+' "${IDS[@]}")"
+  if [ -n "$unexpected" ]; then
+    echo "refusing: this database is missing beads that .beads/issues.jsonl has," >&2
+    echo "          and exporting now would delete them along with your deletion:" >&2
+    for missing_id in $unexpected; do echo "            $missing_id" >&2; done
+    echo "          Import them first:  bd import .beads/issues.jsonl" >&2
+    exit 1
+  fi
+fi
+
 for id in "${IDS[@]}"; do
   if bd show "$id" >/dev/null 2>&1; then
     if [ "$DELETE_LOCAL" -eq 1 ]; then
