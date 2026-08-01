@@ -209,16 +209,23 @@ def find_bump(repo: Path, tip: str, version: str) -> str:
 def audit(repo: Path, published: str, bare: bool = False) -> dict:
     tip = resolve_tip(repo)
 
-    # Only a working tree can show a bump that was published but never committed.
-    if not bare and manifest_version(repo) == published and manifest_version(repo, tip) != published:
-        return {
-            "status": "uncommitted-bump",
-            "detail": f"working tree {published}, {tip} {manifest_version(repo, tip)} — "
-                      f"published without committing the bump",
-        }
-
     bump = find_bump(repo, tip, published)
     if not bump:
+        # No commit anywhere in tip's history sets this version. If the working
+        # tree nonetheless shows it, the bump was published and never committed.
+        #
+        # This ordering matters. Asking the working tree FIRST reported a
+        # phantom uncommitted bump on any checkout parked on a feature branch:
+        # os/Clavain sits on executor-routing-adoption, 16 commits behind
+        # origin/main, so its plugin.json legitimately lags. The bump was
+        # committed — just not on the branch this machine happens to have out.
+        # Consulting history first tells those two apart.
+        if not bare and manifest_version(repo) == published:
+            return {
+                "status": "uncommitted-bump",
+                "detail": f"working tree {published}, no commit in {tip} sets it — "
+                          f"published without committing the bump",
+            }
         return {"status": "undetermined", "detail": f"no commit sets plugin.json to {published}"}
 
     present = tree_entries(repo, tip)
