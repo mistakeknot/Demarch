@@ -74,8 +74,17 @@ fi
 # rule itself — and enforces it inside the upsert rather than as a pre-filter,
 # so a local write landing mid-import is preserved too. Measured equivalent on
 # the reversion case and the equal-timestamp tie before the switch.
+#
+# Via beads-import-merged.sh, which hands bd only the rows this merge changed.
+# A full import of the file is ~49s and would land on every pull; the rows a
+# merge touches are usually a handful. bd still applies its guard per row —
+# only the batch size is ours to choose.
 _bd_root="$(git rev-parse --show-toplevel)"
-bd import "$_bd_root/.beads/issues.jsonl" >/dev/null 2>&1 || true
+if [ -x "$_bd_root/scripts/beads-import-merged.sh" ]; then
+  "$_bd_root/scripts/beads-import-merged.sh" >/dev/null 2>&1 || true
+else
+  bd import "$_bd_root/.beads/issues.jsonl" >/dev/null 2>&1 || true
+fi
 
 # Then, and only then, apply deletions. `bd import` never deletes, so a bead
 # dropped on the other machine survives here and gets written back out on the
