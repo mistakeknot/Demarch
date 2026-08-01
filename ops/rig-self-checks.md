@@ -1575,9 +1575,9 @@ human to read and never allowed to turn the check red over `ollama.service`.
 
 ### What remains, deliberately
 
-> **Superseded in part on 2026-07-30** — see *Config or app state* below. `.codex/skills`
-> is now excluded outright and no longer written through on the Mac; the four zklw
-> findings below are still open only because zklw was unreachable that day.
+> **Superseded on 2026-07-31** — see *Config or app state* and *The zklw half* below.
+> All four zklw findings named here are resolved: zklw went from 14 findings to 0
+> after `install-server.sh` ran to completion. `.codex/skills` is excluded outright.
 
 Four paths on zklw stay unresolved and are the reason it reports `warn`:
 `~/.codex/skills`, `~/.codex/superpowers`, `~/projects/docs`, and
@@ -1740,3 +1740,123 @@ That is the mechanism working, not a regression.
   the A:L3 streak is meant to accumulate across both hosts, and git is currently
   how it travels. It is also the most likely first casualty of lane-based
   two-machine sync.
+
+## The zklw half, 2026-07-31
+
+zklw's baseline before anything changed: **14 findings across 3 classes**, 67
+declarations, 54 deployed. After running `install-server.sh` to completion:
+**0 findings, 67 of 67 deployed as declared.**
+
+The eight `COPY` findings split cleanly once their content was actually
+compared, which is the step that decides whether converting a copy to a symlink
+is lossless:
+
+| path | verdict |
+|---|---|
+| 4 × `.claude/*.md` reference docs, `.codex/infrastructure.md` | **byte-identical** — lossless |
+| `projects/docs` | live entirely stale — repo newer on every file |
+| `.codex/superpowers` | **0 files in common** — see below |
+| `.codex/AGENTS.md` | genuine merge (`Sylveste-hddm`) |
+
+Five of eight needed no decision at all. Both machines had hand-copied the *same*
+content into `$HOME` and tracked it nowhere an installer could see — the defect
+was never that the copies disagreed, it was that nothing deployed them.
+
+`projects/docs` looked like it held unique content: one file, `ethics-gradient.md`,
+existed only on zklw. It turned out to be the superseded predecessor of `zklw.md` —
+same 455 lines, identical heading sets, 19 bytes apart from the machine-rename
+substitutions. `keybindings.md` differed only because zklw's copy still said
+`ethics-gradient` where the repo says `zklw`. Nothing was lost.
+
+### zklw had the wrong half of superpowers deployed
+
+`~/.codex/superpowers` on zklw contained `agents/`, `docs/`, `LICENSE`,
+`README.md`, `RELEASE-NOTES.md`, `tests/` — and **no `skills/`, `commands/`,
+`hooks/`, or `.claude-plugin/`**. Zero files in common with the repo's payload.
+It was the *scaffolding* half: the same partition found on the Mac a day
+earlier, except here it was the half that got deployed. superpowers had
+therefore been non-functional on zklw for as long as that copy existed. The
+installer run replaced it with the payload; 14 skills are present now.
+
+This is the sharpest argument yet for checking deployment rather than tracking.
+Nothing was missing, nothing was stale, no check was red — the directory existed,
+was populated, and had plausible contents. Only comparing it against what the
+installer *claims* to deploy showed that the machine had the wrong thing.
+
+### The installers had been aborting before their last step for five months
+
+Running `install-server.sh` to completion — required in order to deploy the
+files preserved the day before — exposed `$DOTFILES/common/bin/fix-claude-paths.sh`,
+a path that has never existed in this repo. Wrong in **both** installers since
+2026-02-28.
+
+The 2026-06-09 fix noted in `install-macos.sh` ("paths were wrong as
+`common/bin/`, which silently skipped these links") corrected the `link()` calls
+and missed this one, because the two failures do not look alike: `link()` prints
+`skip:` and returns 0, while a direct invocation under `set -e` **aborts**.
+
+So everything after that line never ran on either machine: the pre-commit
+dispatcher install and its fan-out to every `.git-autosync` repo — the estate's
+secret scanner, whose own comment records that every credential ever found in
+this repo's history arrived by auto-sync. Both machines have it anyway, because
+someone installed it by hand. A reprovisioned machine would have had none of it,
+and the installer would have reported success right up to the point it died.
+
+With the path corrected, `install-server.sh` exits 0 and its own verification
+runs: `rejected-credential=87 DID-NOT-REJECT=0 unverified=0`.
+
+### `1oci`: neither estate is a superset
+
+The manifest was refreshed from zklw (64 plugins to Clavain's 61) and zklw is
+now the estate of record for `ARCHITECTURE.json` and `docs/diagrams/ecosystem.html`.
+Clavain correctly reports `INCOMPLETE` with the six missing plugins named and
+should stop regenerating them.
+
+The measurement was sharper than the bead: zklw has 6 plugins Clavain lacks
+**and Clavain has 5 that zklw lacks**. Neither is a superset, so no comparison
+between the machines could ever have decided which artefact was right — only
+"did this run see everything the manifest records" has an answer.
+
+### `iqfu`: the second copy was the older design, not a variant
+
+`macos/.claude/hooks/git-autosync.sh` was not a Mac-specific variant of the
+shared hook. It was the design the shared hook replaced. Its `LANE GUARD`
+required `HEAD` to be an `autosync/*` branch — precisely the alternative
+`common/` documents as rejected on 2026-06-30, citing jawnfit: 24 commits, 26
+days, never merged, master frozen at the fork. macos/ was last touched
+2026-07-02; the rejection was written down on 2026-07-27, twenty-five days
+later.
+
+The bead's other claims did not survive checking either. It recorded that the
+Mac copy lacked the staged-secret guard; both copies had a complete one, added
+to both by `1b1dca8` on the same day. Only `autosync-disabled` and
+refuse-where-push-impossible were genuinely `common`-only.
+
+Since `common/` already parameterises by `AUTOSYNC_LANE`, unification was
+adoption rather than a merge. One caveat had to be handled: FLUXrig, the Mac's
+single `.git-autosync` repo, sits on `main` with an empty marker. The old guard
+refused it outright; the surviving hook treats an empty marker as "push the
+checked-out branch", so adopting it unchanged would have **started** auto-pushing
+`main`. It was given `LANE=1`, so `HEAD` stays on `main` and commits go to
+`refs/heads/autosync/clavain`. A deliberate deviation from "no behaviour change",
+taken because the alternative was a regression.
+
+### What this half found that the surface could not
+
+Three of the four discoveries here were invisible to every existing check, in
+the same way: **something existed, looked populated, and was wrong.** The
+superpowers directory had files. The installers ran and printed success. The
+`AGENTS.md` on each machine read as authoritative. A check that asks "is it
+there?" cannot see any of it; only "is it what the installer says it should be"
+can.
+
+The exception is `Sylveste-0dk3`, found the same day and filed separately:
+`guard-zklw-destructive-git.sh` is present on zklw and **registered nowhere**, so
+the destructive-command guard is not running on the machine that executes with
+`--dangerously-skip-permissions`. The Mac wires it and zklw does not. It is worth
+recording *why* `rig-hook-liveness` cannot catch that: it reports whether hooks
+**fire**, and a hook that was never registered produces no failure, no error, and
+no silence distinguishable from a quiet day. The guard does still intercept
+zklw-targeted commands issued from a Mac session — that was demonstrated
+accidentally when it blocked a `git stash list` in an `ssh zklw` command during
+this work — so the exposure is sessions running *on* zklw, not every path to it.
