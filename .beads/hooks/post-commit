@@ -54,3 +54,19 @@
   fi
 ) || true
 # <<< beads dolt auto-push block
+
+# --- BEGIN SYLVESTE BEADS AUTO-EXPORT ---
+# Keep .beads/issues.jsonl current without anyone remembering `bd export`.
+#
+# Synchronous on purpose. It creates a commit, and doing that from a detached
+# background job races the user's next git command for .git/index.lock. The cost
+# is a ~0.3s probe on every commit and a ~3s export only when beads actually
+# changed; the probe is the same checker the pre-commit guard uses, so the
+# trigger and the guard cannot disagree about what "in sync" means.
+#
+# Ordering, re-entrancy, and the no-change case are handled inside the script
+# and covered by tests/test_beads_auto_export.sh.
+if [ -x "$(git rev-parse --show-toplevel)/scripts/beads-auto-export.sh" ]; then
+  "$(git rev-parse --show-toplevel)/scripts/beads-auto-export.sh" || true
+fi
+# --- END SYLVESTE BEADS AUTO-EXPORT ---

@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# --- BEGIN BEADS INTEGRATION v1.0.2 ---
+# --- BEGIN BEADS INTEGRATION v1.0.0 ---
 # This section is managed by beads. Do not remove these markers.
 if command -v bd >/dev/null 2>&1; then
   export BD_GIT_HOOK=1
@@ -21,7 +21,7 @@ if command -v bd >/dev/null 2>&1; then
   fi
   if [ $_bd_exit -ne 0 ]; then exit $_bd_exit; fi
 fi
-# --- END BEADS INTEGRATION v1.0.2 ---
+# --- END BEADS INTEGRATION v1.0.0 ---
 
 # --- BEGIN SYLVESTE BEADS EGRESS WARNING ---
 # The pre-commit drift guard only fires when .beads/issues.jsonl is staged, so
@@ -36,13 +36,22 @@ fi
 # Advisory, not blocking: most pushes have nothing to do with beads, and a hard
 # failure there would train people to bypass hooks. It names a number and the
 # exact command instead.
+# What gets pushed is the committed blob, not the working tree. Checking the
+# file on disk would report "in sync" for a fresh-but-uncommitted export while
+# the push carried the stale committed version — silence in exactly the case
+# that matters.
 if [ -f "scripts/check_beads_jsonl_dolt_sync.py" ] && command -v python3 >/dev/null 2>&1; then
-  if ! _beads_drift=$(python3 scripts/check_beads_jsonl_dolt_sync.py --strict-extra 2>&1); then
-    echo >&2 "beads: .beads/issues.jsonl is behind the live Dolt database."
-    echo >&2 "$_beads_drift" | sed -n '1p' >&2
-    echo >&2 "      This push will not carry those issues. On a verifier-only host the"
-    echo >&2 "      JSONL is the only copy that leaves this machine."
-    echo >&2 "      Refresh it with:  bd export --output .beads/issues.jsonl"
+  _beads_head_jsonl=$(mktemp "${TMPDIR:-/tmp}/sylveste-beads-head.XXXXXX") || _beads_head_jsonl=""
+  if [ -n "$_beads_head_jsonl" ] && git show HEAD:.beads/issues.jsonl >"$_beads_head_jsonl" 2>/dev/null; then
+    if ! _beads_drift=$(python3 scripts/check_beads_jsonl_dolt_sync.py \
+           --issues-jsonl "$_beads_head_jsonl" --strict-extra 2>&1); then
+      echo >&2 "beads: the COMMITTED .beads/issues.jsonl is behind the live Dolt database."
+      printf '%s\n' "$_beads_drift" | sed -n '1p' >&2
+      echo >&2 "      This push will not carry those issues. On a verifier-only host the" >&2
+      echo >&2 "      JSONL is the only copy that leaves this machine." >&2
+      echo >&2 "      Commit anything outstanding; the post-commit hook exports automatically." >&2
+    fi
   fi
+  [ -n "$_beads_head_jsonl" ] && rm -f "$_beads_head_jsonl"
 fi
 # --- END SYLVESTE BEADS EGRESS WARNING ---

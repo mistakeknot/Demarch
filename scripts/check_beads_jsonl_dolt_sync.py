@@ -119,6 +119,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="also fail when Dolt has issue IDs absent from the tracked JSONL export",
     )
     parser.add_argument("--show", type=int, default=25, help="max mismatched IDs to print per class")
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="emit the diff as JSON so callers can branch on direction, not just exit code",
+    )
     return parser
 
 
@@ -151,6 +156,22 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     diff = diff_issue_ids(jsonl_ids=jsonl_ids, dolt_ids=dolt_ids)
+
+    # The two directions need different responses, and an exit code cannot carry
+    # that. Dolt-ahead is fixed by exporting; JSONL-ahead must NEVER trigger an
+    # export, because exporting would delete the issues the JSONL uniquely holds
+    # — which is exactly how sylveste-j7vl came within one command of being lost.
+    if args.json:
+        print(json.dumps({
+            "jsonl_count": diff.jsonl_count,
+            "dolt_count": diff.dolt_count,
+            "missing_in_dolt": diff.missing_in_dolt,
+            "extra_in_dolt": diff.extra_in_dolt,
+            "safe_to_export": not diff.missing_in_dolt,
+            "export_needed": bool(diff.extra_in_dolt),
+        }))
+        return 1 if (diff.missing_in_dolt or (args.strict_extra and diff.extra_in_dolt)) else 0
+
     print(
         "beads_jsonl_dolt_sync "
         f"jsonl_count={diff.jsonl_count} dolt_count={diff.dolt_count} "

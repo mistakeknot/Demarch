@@ -9,39 +9,49 @@
 > the `git`/PR workflow still applies.
 
 ```
-git status → git add <files> → git commit
-bd orphans                              # close beads named in commits (skip parents w/ open children)
-bd export --output .beads/issues.jsonl  # Dolt → JSONL: the git-shared copy
-git add .beads/issues.jsonl && git commit -m "beads: sync export"
-bash .beads/push.sh                     # push Dolt (signer hosts only; see below)
+git status → git add <files> → git commit    # the export follows automatically
+bd orphans                                   # close beads named in commits
 git push
 ```
 
-**`bd export` is the step that makes bead state leave this machine.** It is not
-`bd backup sync`, which this file claimed for months. `bd backup sync` pushes the
-Dolt database to the configured backup destination — here a local directory,
-`.beads/backup` — and never writes `issues.jsonl` at all. It reported success
-every time while the export sat 63 issues and two days stale, because it was
-succeeding at a different job.
+**The export is automatic now.** A post-commit hook runs
+`scripts/beads-auto-export.sh`, which refreshes `.beads/issues.jsonl` from Dolt
+and commits it *on its own*, as `beads: sync export (automated)`. Your commits
+are untouched — it never stages the export into a commit you authored, because
+doing that widens `git commit -- <paths>` beyond the paths you named.
 
-**After a pull, `bd import`.** Nothing loads the JSONL into the local Dolt
-automatically, so issues filed on another machine are invisible to `bd` here
-until imported. Two were, for over a week. Note the ordering hazard: `bd import`
-upserts, so importing a stale export can reopen issues that are closed locally.
-Check with `python3 scripts/check_beads_jsonl_dolt_sync.py --strict-extra`
-first — it reports both directions.
+It costs ~0.3s per commit (a probe) and ~3s only when beads actually changed.
+`BEADS_NO_AUTO_EXPORT=1` opts out for one command.
+
+**A pull imports automatically too**, via post-merge →
+`scripts/beads_safe_import.py`. That is deliberately not `bd import`: a plain
+import upserts every record, so an export written on another machine at an
+earlier moment reverts anything changed here since — a bead you closed reopens,
+silently. The safe importer applies only records that are absent locally or
+genuinely newer.
+
+**When automation stops and asks you.** If issues exist in the JSONL but not in
+Dolt, the auto-export refuses, because exporting would delete them. Two very
+different situations look identical from here, so it asks:
+
+  - another machine's work, pulled but not imported → `python3 scripts/beads_safe_import.py`
+  - something you deleted on purpose → `bd export --output .beads/issues.jsonl`
+
+**What `bd backup sync` is.** Not this. It pushes the Dolt database to its
+configured backup destination — here a local directory, `.beads/backup` — and
+never writes `issues.jsonl`. This file claimed otherwise for months, and
+reported success the whole time the export sat two days and 63 issues stale.
 
 **On a verifier-only host `push.sh` will refuse**, because the Dolt push runs
 through the `bd-push-dolt` gate and this machine holds no signing key
 (`clavain-cli policy doctor` → `"role":"verifier"`). That is by design; zklw is
 the signer. It also means the git-tracked JSONL is the *only* egress for bead
-state here, which is why a stale export is data sitting on one disk rather than
-a cosmetic lag.
+state here — which is why the export being automatic matters rather than being
+a tidiness nicety.
 
-The pre-commit hook blocks a commit that stages a JSONL disagreeing with Dolt in
-either direction, and pre-push warns when the export is behind. Neither fires if
-you never touch the export — which is precisely how it went stale — so the
-`bd export` line above is the load-bearing one.
+Backstops, if the automation is bypassed: pre-commit blocks a commit staging a
+JSONL that disagrees with Dolt in either direction, and pre-push warns when the
+*committed* export is behind. Both should now be silent in normal operation.
 
 ## Rules
 

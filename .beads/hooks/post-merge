@@ -30,7 +30,7 @@
   setsid bash "$runner" "post-merge" </dev/null >/dev/null 2>&1 &
 ) || true
 # <<< interwatch managed block
-# --- BEGIN BEADS INTEGRATION v1.0.2 ---
+# --- BEGIN BEADS INTEGRATION v1.0.0 ---
 # This section is managed by beads. Do not remove these markers.
 if command -v bd >/dev/null 2>&1; then
   export BD_GIT_HOOK=1
@@ -52,4 +52,18 @@ if command -v bd >/dev/null 2>&1; then
   fi
   if [ $_bd_exit -ne 0 ]; then exit $_bd_exit; fi
 fi
-# --- END BEADS INTEGRATION v1.0.2 ---
+# --- END BEADS INTEGRATION v1.0.0 ---
+
+# --- BEGIN SYLVESTE BEADS AUTO-IMPORT ---
+# A pull brings another machine's issues in the JSONL, but nothing loads them
+# into the local Dolt, so `bd` cannot see them. Two sat invisible here for over
+# a week that way.
+#
+# Deliberately NOT `bd import`: that upserts every record, so an export written
+# elsewhere at an earlier moment reverts anything changed here since — a bead
+# closed locally reopens, silently. beads_safe_import.py applies only records
+# that are absent locally or genuinely newer.
+if [ -f "$(git rev-parse --show-toplevel)/scripts/beads_safe_import.py" ]; then
+  python3 "$(git rev-parse --show-toplevel)/scripts/beads_safe_import.py" --quiet || true
+fi
+# --- END SYLVESTE BEADS AUTO-IMPORT ---
