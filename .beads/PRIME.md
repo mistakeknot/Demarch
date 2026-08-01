@@ -21,7 +21,18 @@ are untouched — it never stages the export into a commit you authored, because
 doing that widens `git commit -- <paths>` beyond the paths you named.
 
 It costs ~0.3s per commit (a probe) and ~3s only when beads actually changed.
-`BEADS_NO_AUTO_EXPORT=1` opts out for one command.
+`BEADS_NO_AUTO_EXPORT=1` opts out for one command. If the probe itself fails you
+will see it on stderr — that is not a quiet skip, and bead state is not being
+exported until it is fixed.
+
+**bd's own auto-export is off, deliberately**, via tracked `.beads/config.yaml`:
+`export.auto: false` and `export.git-add: false`. Do not turn these on. The
+first only writes the file without committing it (so it strands uncommitted, and
+only the committed copy is pushed); the second stages the export into whatever
+commit is forming, which widens `git commit -- <paths>`. They were never set
+before, so each machine silently inherited its bd version's default — 1.0.2
+defaults both to *true*, 1.0.0 and 1.1.x to *false* — which is the whole reason
+one machine exported on every write and the other never did.
 
 **A pull imports automatically too**, via post-merge →
 `scripts/beads_safe_import.py`. That is deliberately not `bd import`: a plain
