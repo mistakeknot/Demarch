@@ -11,6 +11,15 @@
 # rows and bd still decides, row by row, whether each one may be applied. The
 # guarantee stays bd's; only the size of the batch is ours.
 #
+# It helps a lot, but not always, and the exception is worth knowing: bd stamps
+# the IMPORTING actor onto dependency records, so the same bead serializes
+# differently on each machine ("Claude Code" on zklw, "mistakeknot" here).
+# ~3,300 beads carry dependencies, so every export that alternates machines
+# rewrites them all and this filter degrades to nearly a full import. Measured
+# 3 rows on a same-machine merge, 3,313 on a cross-machine one. Sorting the
+# lines does not help — the difference is content, not order. Tracked as the
+# actor-churn bead; fixing it there fixes it here.
+#
 # When it cannot tell what changed, it imports everything. Slow beats wrong:
 # an import that silently skips a machine's work is the failure this whole
 # path exists to prevent.
@@ -48,4 +57,34 @@ if [ ! -s "$TMP" ]; then
   exit 0
 fi
 
-bd import "$TMP"
+# Bounded, because an unbounded import can hang the pull outright.
+#
+# Observed on zklw: `bd import` blocked in futex_wait with an open socket to its
+# own Dolt server, 5 seconds of CPU in 5 minutes and not growing, while other bd
+# processes held the server. Twice. Without a bound, `git pull` never returns
+# and the deletion pass after it never runs — the pull has to be killed by hand,
+# which is what happened.
+#
+# Timing out is not silent. The rows are still in the file; what is lost is only
+# that they have not been loaded yet, and saying so is what lets someone fix it.
+_bd_import_timeout="${BEADS_IMPORT_TIMEOUT:-120}"
+if command -v timeout >/dev/null 2>&1; then
+  _bd_runner="timeout $_bd_import_timeout"
+elif command -v gtimeout >/dev/null 2>&1; then
+  _bd_runner="gtimeout $_bd_import_timeout"
+else
+  _bd_runner=""
+fi
+
+# shellcheck disable=SC2086
+$_bd_runner bd import "$TMP"
+rc=$?
+
+if [ $rc -eq 124 ]; then
+  rows="$(grep -c . "$TMP" 2>/dev/null || echo '?')"
+  echo "beads: import timed out after ${_bd_import_timeout}s — $rows row(s) were NOT loaded." >&2
+  echo "       Your git pull finished; the local database is behind the file." >&2
+  echo "       Retry with:  bd import .beads/issues.jsonl" >&2
+  echo "       If it hangs again, another bd process is likely holding the Dolt server." >&2
+fi
+exit 0
