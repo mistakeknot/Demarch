@@ -168,4 +168,21 @@ BEADS_NO_AUTO_EXPORT=1 git commit -q -m "work6" -- other.txt
 [ "$(git log -1 --format=%s)" = "work6" ] || fail "opt-out ignored"
 echo "PASS"
 
+# ─── 7. an uncommitted hand-export is still committed ─────────────────
+
+echo "=== 7: a hand-run export that was never committed gets committed ==="
+# The probe compares the working tree to Dolt, so after a manual export it
+# reports "in sync" — while HEAD still holds the stale copy, and only HEAD is
+# pushed. Committing on the probe alone leaves that change stranded forever.
+export DOLT_IDS="a b c d e f"
+bd export --output .beads/issues.jsonl >/dev/null   # by hand, not committed
+git diff --quiet HEAD -- .beads/issues.jsonl && fail "fixture wrong: expected an uncommitted export"
+echo work7 > other.txt
+git commit -q -m "work7" -- other.txt
+[ "$(git log -1 --format=%s)" = "beads: sync export (automated)" ] \
+  || fail "an uncommitted export was left stranded: $(git log -1 --format=%s)"
+git diff --quiet HEAD -- .beads/issues.jsonl \
+  || fail "the export is still uncommitted after the hook ran"
+echo "PASS"
+
 echo "PASS: beads-auto-export ordering"

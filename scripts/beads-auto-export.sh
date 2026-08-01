@@ -94,23 +94,26 @@ if [ "$safe_to_export" != "true" ]; then
   exit 0
 fi
 
-if [ "$export_needed" != "true" ]; then
-  exit 0
-fi
-
 # ─── Export and commit ────────────────────────────────────────────────
 
-if ! bd export --output "$ROOT/.beads/issues.jsonl" >>"$LOG" 2>&1; then
-  log "export failed; leaving the working tree alone"
-  echo "beads: auto-export failed; run 'bd export --output .beads/issues.jsonl' by hand" >&2
-  exit 0
+if [ "$export_needed" = "true" ]; then
+  if ! bd export --output "$ROOT/.beads/issues.jsonl" >>"$LOG" 2>&1; then
+    log "export failed; leaving the working tree alone"
+    echo "beads: auto-export failed; run 'bd export --output .beads/issues.jsonl' by hand" >&2
+    exit 0
+  fi
 fi
 
-# The probe said an export was needed, but the export may still produce no
-# textual change (an issue whose only delta is not represented in the export).
-# Committing anyway would create an empty commit on every bead touch.
-if git diff --quiet -- .beads/issues.jsonl 2>/dev/null; then
-  log "export produced no change; no commit"
+# Commit against HEAD, not against the index, and do it even when no export was
+# needed.
+#
+# The probe compares the working-tree file to Dolt. That says nothing about what
+# is committed — and only the committed copy is pushed. A hand-run `bd export`
+# that was never committed leaves the file matching Dolt perfectly while HEAD
+# still holds the stale version, so a probe-only check concludes "in sync" and
+# the change sits uncommitted indefinitely. Observed exactly that, once.
+if git diff --quiet HEAD -- .beads/issues.jsonl 2>/dev/null; then
+  log "export matches HEAD; no commit"
   exit 0
 fi
 
