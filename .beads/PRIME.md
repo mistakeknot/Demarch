@@ -69,6 +69,11 @@ reported success the whole time the export sat two days and 63 issues stale.
 **Two-machine specifics** — which hooks run where, why zklw's `bd` exports
 differently, and the verified round trip — are in `ops/beads-two-machine-sync.md`.
 
+**A fresh clone has no `.beads/metadata.json`.** It is untracked on purpose: it
+names which database *this* checkout talks to, and a tracked file is a channel
+between machines. Run `bd bootstrap` (or `bd init`) before
+`bd import .beads/issues.jsonl`.
+
 **On a verifier-only host `push.sh` will refuse**, because the Dolt push runs
 through the `bd-push-dolt` gate and this machine holds no signing key
 (`clavain-cli policy doctor` → `"role":"verifier"`). That is by design; zklw is
