@@ -56,6 +56,73 @@ def load_jsonl_issue_ids(path: Path) -> set[str]:
     return ids
 
 
+def normalize_ts(value: str) -> str:
+    """Reduce Dolt's and the JSONL's timestamp renderings to one comparable form.
+
+    Dolt prints `2026-07-31 15:57:07 +0000 UTC`; the JSONL carries
+    `2026-07-31T15:57:07Z`.
+
+    Strip the zone suffix BEFORE normalizing the date/time separator: "UTC"
+    contains a T, so doing it the other way rewrites " +0000 UTC" into
+    " +0000 U C" and the suffix stops matching — which makes every Dolt
+    timestamp compare as older and hides exactly the staleness this detects.
+    """
+    if not value:
+        return ""
+    v = value.strip()
+    for suffix in (" +0000 UTC", " UTC", "+00:00", "Z"):
+        if v.endswith(suffix):
+            v = v[: -len(suffix)]
+            break
+    return v.replace("T", " ").strip()
+
+
+def load_jsonl_max_updated(path: Path) -> str:
+    """Latest updated_at in the export.
+
+    Issue IDs alone cannot detect a close: closing a bead changes its status,
+    not the set of ids. Comparing high-water marks catches content changes that
+    leave membership identical, which is the common case — most bead activity
+    is closing something that already exists.
+    """
+    newest = ""
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            row = json.loads(line)
+            if row.get("_type") == "memory":
+                continue
+            ts = normalize_ts(row.get("updated_at") or "")
+            if ts > newest:
+                newest = ts
+    return newest
+
+
+def load_dolt_max_updated(repo: Path, bd_command: str = "bd") -> str:
+    resolved = shutil.which(bd_command) if "/" not in bd_command else bd_command
+    if resolved is None:
+        return ""
+    result = subprocess.run(
+        [resolved, "sql", "select max(updated_at) from issues"],
+        cwd=repo, text=True, capture_output=True, check=False,
+    )
+    if result.returncode != 0:
+        return ""
+    newest = ""
+    for raw in result.stdout.splitlines():
+        line = raw.strip()
+        if not line or set(line) <= {"-", "+"} or line.startswith("("):
+            continue
+        if "max(" in line.lower():
+            continue
+        ts = normalize_ts(line.split("|")[0])
+        if ts and ts[0].isdigit() and ts > newest:
+            newest = ts
+    return newest
+
+
 def parse_bd_sql_issue_ids(output: str) -> set[str]:
     ids: set[str] = set()
     for raw_line in output.splitlines():
@@ -162,13 +229,23 @@ def main(argv: list[str] | None = None) -> int:
     # export, because exporting would delete the issues the JSONL uniquely holds
     # — which is exactly how sylveste-j7vl came within one command of being lost.
     if args.json:
+        # Membership alone misses the commonest change of all: closing a bead
+        # alters its status, not the id set. Compare high-water marks too, or a
+        # session that only closes issues exports nothing and the committed
+        # JSONL keeps saying "open".
+        jsonl_ts = load_jsonl_max_updated(issues_jsonl)
+        dolt_ts = load_dolt_max_updated(repo, args.bd_command)
+        content_stale = bool(dolt_ts and dolt_ts > jsonl_ts)
         print(json.dumps({
             "jsonl_count": diff.jsonl_count,
             "dolt_count": diff.dolt_count,
             "missing_in_dolt": diff.missing_in_dolt,
             "extra_in_dolt": diff.extra_in_dolt,
+            "jsonl_max_updated": jsonl_ts,
+            "dolt_max_updated": dolt_ts,
+            "content_stale": content_stale,
             "safe_to_export": not diff.missing_in_dolt,
-            "export_needed": bool(diff.extra_in_dolt),
+            "export_needed": bool(diff.extra_in_dolt) or content_stale,
         }))
         return 1 if (diff.missing_in_dolt or (args.strict_extra and diff.extra_in_dolt)) else 0
 

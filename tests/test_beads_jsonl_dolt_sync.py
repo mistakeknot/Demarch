@@ -132,3 +132,77 @@ def test_cli_passes_when_tracked_jsonl_and_dolt_issue_ids_match(tmp_path: Path, 
     assert exit_code == 0
     assert "beads_jsonl_dolt_sync ok" in out
     assert "jsonl_count=2" in out
+
+
+# ─── content staleness (not just membership) ──────────────────────────
+
+
+def test_normalize_strips_zone_before_touching_the_separator() -> None:
+    """"UTC" contains a T.
+
+    Normalizing the date/time separator first turns " +0000 UTC" into
+    " +0000 U C", the suffix strip then misses, and every Dolt timestamp
+    compares as older than every JSONL one — silently disabling the staleness
+    detection this function exists to enable.
+    """
+    assert check.normalize_ts("2026-07-31T15:57:07Z") == check.normalize_ts(
+        "2026-07-31 15:57:07 +0000 UTC"
+    )
+    assert check.normalize_ts("") == ""
+
+
+def test_normalize_matches_the_safe_import_implementation() -> None:
+    """Two scripts compare these timestamps; they must agree exactly.
+
+    If they drift, the export trigger and the import filter disagree about
+    which side is newer, and the disagreement is invisible until data moves the
+    wrong way.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "beads_safe_import", ROOT / "scripts" / "beads_safe_import.py"
+    )
+    assert spec and spec.loader
+    sfi = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sfi)
+
+    for sample in (
+        "2026-07-31T15:57:07Z",
+        "2026-07-31 15:57:07 +0000 UTC",
+        "2026-08-01 02:14:40 UTC",
+        "",
+    ):
+        assert check.normalize_ts(sample) == sfi.normalize_ts(sample), sample
+
+
+def test_jsonl_max_updated_ignores_memory_rows(tmp_path: Path) -> None:
+    p = tmp_path / "issues.jsonl"
+    write_jsonl(
+        p,
+        [
+            {"id": "a", "updated_at": "2026-07-01T00:00:00Z"},
+            {"_type": "memory", "key": "k", "value": "v"},
+            {"id": "b", "updated_at": "2026-07-05T00:00:00Z"},
+        ],
+    )
+    assert check.load_jsonl_max_updated(p) == "2026-07-05 00:00:00"
+
+
+def test_a_close_is_detectable_even_though_the_id_set_is_unchanged(tmp_path: Path) -> None:
+    """The gap that motivated the high-water mark.
+
+    Closing a bead changes its status, not the id set — so a membership-only
+    check reports "in sync" while the committed export still says `open`.
+    Observed in production before this was added.
+    """
+    before = tmp_path / "before.jsonl"
+    write_jsonl(before, [{"id": "a", "status": "open", "updated_at": "2026-07-01T00:00:00Z"}])
+
+    ids_before = check.load_jsonl_issue_ids(before)
+    ids_after = {"a"}  # the close does not change membership
+    diff = check.diff_issue_ids(jsonl_ids=ids_before, dolt_ids=ids_after)
+    assert not diff.missing_in_dolt and not diff.extra_in_dolt, "membership is identical"
+
+    # Only the timestamp reveals it.
+    assert check.normalize_ts("2026-07-02 00:00:00 +0000 UTC") > check.load_jsonl_max_updated(before)
