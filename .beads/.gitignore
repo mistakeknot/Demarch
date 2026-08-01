@@ -82,8 +82,30 @@ db.sqlite
 bd.db
 # NOTE: Do NOT add negation patterns here.
 # They would override fork protection in .git/info/exclude.
-# Config files (metadata.json, config.yaml) are tracked by git by default
-# since no pattern above ignores them.
+# config.yaml is tracked by git: it configures the PROJECT, and both machines
+# should agree on it. metadata.json is not — see below.
+
+# Machine-local: names which database THIS checkout talks to.
+#
+# dolt_mode, dolt_database and dolt_server_port are properties of the machine,
+# not of the project, and a tracked file is a channel between machines. zklw
+# carried Clavain's port 57745 for months while actually serving on 42527 from
+# its own untracked .beads/dolt-server.port — a wrong value sitting in a shared
+# file, inert only because no bd version happened to honour it. bd itself says
+# "Remove dolt_server_port from .beads/metadata.json to silence this warning"
+# and flags the field as cross-project data leakage (GH#2372).
+#
+# The demonstrated failure is worse than a stale port: `bd init` makes its own
+# git commit, so a second init propagates its database identity to the other
+# machine on the next pull. In the two-machine sandbox for Sylveste-n6xc that
+# collapsed both repos onto one database while every isolation check still
+# passed, because each was checking its own .beads/ path rather than the
+# database behind it. `git update-index --skip-worktree` did not survive it.
+#
+# Cost of untracking: a fresh clone has no metadata.json and needs `bd bootstrap`
+# (or `bd init`) before `bd import .beads/issues.jsonl`. Covered by
+# tests/test_beads_metadata_isolation.sh scenario 4.
+metadata.json
 
 # Auto-export hook diagnostics (machine-local)
 auto-export.log
