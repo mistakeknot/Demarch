@@ -131,7 +131,18 @@ database — they report `bd where` / `bd bootstrap` hints rather than a schema
 error. **These were already broken before the upgrade**, verified by running the
 old binary against them. They are not migration casualties. Recovering one means
 `bd bootstrap` to re-clone from its remote, which *replaces* local data, so it is
-a per-project decision rather than a batch operation.
+a per-project decision rather than a batch operation. Tracked as `sylveste-esjb`.
+
+```
+Clavain (3): jawncloud  phosphene  underground-beets
+zklw   (13): agents  FLUXrig  garden-salon  intervox  intrdrm  oodacademy
+             prodspecs  productrecs  shadow-work  spellswords  tropescraper
+             wi2c  zahro
+```
+
+Note `shadow-work` appears here for zklw but migrated cleanly on Clavain — the
+two machines do not have the same set of working databases, so this list is
+per-machine rather than a property of the repo.
 
 ## The trap that cost the most
 
