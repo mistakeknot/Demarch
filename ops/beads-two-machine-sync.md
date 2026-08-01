@@ -17,7 +17,8 @@ Dolt database; the JSONL is how they reach each other.
 | Direction | Mechanism | Trigger |
 |---|---|---|
 | Dolt → JSONL | export, then a dedicated commit | `post-commit` |
-| JSONL → Dolt | `scripts/beads_safe_import.py` | `post-merge` |
+| JSONL → Dolt | `bd import` | `post-merge` |
+| deletions | `scripts/beads_apply_deletions.py`, after the import | `post-merge` |
 
 Both machines set `core.hooksPath = <repo>/.beads/hooks`, so `.git/hooks/` is
 **never executed**. Anything installed there is inert. Confirmed on both.
@@ -159,6 +160,28 @@ the production database instead of the copy.
 To actually isolate a copy, remove the port from `metadata.json` too — or copy
 neither file and let bd start its own server.
 
+### The same file is also a cross-machine channel
+
+`.beads/metadata.json` is **git-tracked**, and it names machine-local resources:
+`dolt_database`, `dolt_mode`, and that deprecated `dolt_server_port`. So the
+port that caused the trap above is not merely present on this machine — it is
+committed, and zklw has a copy of Clavain's port number in its worktree.
+
+`bd init` makes its **own git commit**. Building the two-machine sandbox for the
+deletion work, a second `bd init` committed its freshly-written `metadata.json`,
+the other repo pulled it, and that machine silently repointed at the *other
+machine's database*. Both then read and wrote one database while every check
+that asked "are these isolated?" answered yes, because each was still reading
+its own `.beads/` path. Deletions appeared to propagate before any mechanism
+existed to propagate them.
+
+`git update-index --skip-worktree` does not survive this; the pointer has to be
+untracked. Nothing has gone wrong on the live pair — both machines happen to
+agree on `dolt_database: Sylveste`, and each resolves it to its own local
+`.beads/dolt` — but the file is one `bd init`, `bd doctor --fix`, or mode change
+away from carrying one machine's connection to the other. Worth untracking; not
+done here because it is an export-side change and this goal scoped it out.
+
 ## Drift register
 
 ### Resolved
@@ -203,9 +226,11 @@ JSONL is the only thing actually carrying beads between them.
 
 **Dolt mode differs per project, not per machine.** Sylveste runs a managed
 per-project sql-server; other projects (cujgel, and most of the smaller ones)
-run embedded. `bd sql` is *not supported in embedded mode*, so
-`check_beads_jsonl_dolt_sync.py` and `beads_safe_import.py` only work in
-server mode. Fine here; a trap if these scripts are ever reused elsewhere.
+run embedded, which is also what a fresh `bd init` now produces. `bd sql` is
+*not supported in embedded mode*, so `check_beads_jsonl_dolt_sync.py` only works
+in server mode — a trap if it is ever reused elsewhere. This is why
+`beads_apply_deletions.py` reads local state with `bd show --json` instead: the
+same dependency is what made the retired importer inert on fresh clones.
 
 **`.beads/embeddeddolt` on Clavain is dead.** 42M, last written 2026-04-07, zero
 files touched since. The live server's cwd is `.beads/dolt`. Left in place
@@ -243,18 +268,44 @@ Note the branch keys on *"did it produce a verdict"*, not on the exit code: the
 checker is also the pre-commit guard, so it exits non-zero precisely when it
 finds drift, which is when an export is wanted.
 
-**Deletions do not propagate. Close beads; do not delete them.**
+**Deleting a bead takes one extra command, and only one.**
 
-`beads_safe_import.py` applies records that are absent locally or newer — it
-never deletes, because absence in an incoming export is ambiguous: either
-"deleted there" or "not created there yet".
+```bash
+bd delete <id> --force                          # or skip this and pass --delete-local
+scripts/beads-confirm-deletion.sh <id>          # records intent, exports, commits
+git push
+```
 
-Observed: a probe bead filed on zklw, deleted on Clavain, survived in zklw's
-Dolt and was re-exported — a push from zklw would have resurrected it. Deleting
-it on both machines was the only clean fix.
+`bd import` is upsert-only: it creates and updates, never deletes. Absence
+cannot be the signal either — an export missing a bead means "deleted there" or
+"not created there yet" or "filtered out" (`bd export` omits infra beads by
+default), and acting on absence would delete live work.
 
-bd 1.1.2 understands `tombstone` rows on import, so this is now *fixable* rather
-than inherent. It is not fixed: nothing in our path emits tombstones yet.
+So intent is recorded explicitly in `.beads/deletions.jsonl` — append-only,
+git-tracked, committed in the *same commit* as the export that acts on it. Split
+across two commits, the other machine can pull the export without the ledger and
+resurrect the bead in the window between. `beads_apply_deletions.py` runs after
+the import on `post-merge` and deletes exactly the ids named, refusing any whose
+local row is newer than the deletion record (someone worked it after the other
+machine dropped it) and saying so on stderr.
+
+Measured before and after, on two real Dolt databases with a bare remote between
+them, in both directions:
+
+| | A deletes → B | B deletes → A |
+|---|---|---|
+| before | survived on B, resurrected on A | survived on A, resurrected on B |
+| after | gone on B, stays gone | gone on A, stays gone |
+
+**bd does not support tombstones.** This document previously said bd 1.1.2
+"understands `tombstone` rows on import, so this is now *fixable*". That was
+wrong, and it was wrong in the direction that matters: v1.1.0 **removed**
+tombstones (release note: *"removed SQLite backend, JSONL sync, 3-way merge,
+tombstones, storage factory, daemon stubs (8-phase refactor)"*). The only
+surviving mention is `bd import` skipping rows whose status is `tombstone` —
+backward compatibility for old exports, not a deletion channel. The claim came
+from reading a removal as a feature; the ledger above exists because there was
+nothing to switch on.
 
 **Expect merge conflicts on `.beads/issues.jsonl` when both machines export.**
 
@@ -265,25 +316,55 @@ the authority; the file is a projection:
 ```bash
 git show MERGE_HEAD:.beads/issues.jsonl > .beads/issues.jsonl   # take incoming
 git add .beads/issues.jsonl && git commit --no-edit             # finish merge
-python3 scripts/beads_safe_import.py                            # theirs -> local Dolt
+bd import .beads/issues.jsonl                                   # theirs -> local Dolt
+python3 scripts/beads_apply_deletions.py                        # their deletions too
 bd export --output .beads/issues.jsonl                          # union back out
 ```
+
+Note that `git commit --no-edit` on a conflicted merge means git does **not**
+run `post-merge`, so the import and the deletion pass have to be run by hand
+here. That is the one path where the automation does not cover for you.
 
 Taking the incoming side first is deliberate: the import is additive, so nothing
 local is lost by adopting the other machine's file and then re-exporting the
 union. Resolving the other way round would drop whatever the incoming export
 uniquely held.
 
-## Known-redundant, not yet retired
+## Retired: `scripts/beads_safe_import.py`
 
-bd 1.1.2's own `bd import` now enforces the same rule `beads_safe_import.py`
-was written for — "updated_at is strictly newer; older rows are skipped; rows
-with the same updated_at keep every local column" — and enforces it *inside the
+Deleted, not left dormant. bd 1.1.2's own `bd import` enforces the rule the
+script was written for — "updated_at is strictly newer; older rows are skipped;
+rows with the same updated_at keep every local column" — *inside the
 transaction* rather than as a pre-filter, with `--allow-stale` as the deliberate
 override.
 
-That makes our importer a candidate for retirement, on better terms than it
-currently offers. It is left in place because swapping the import half is a
-change to the mechanism that protects against silent reversion, and deserves
-its own verification against real two-machine data rather than a footnote in an
-export-side goal.
+Equivalence was measured, not inferred, on a real bd database:
+
+| case | `beads_safe_import.py` | `bd import` |
+|---|---|---|
+| stale row vs locally closed bead | held closed | held closed (`stale_skipped_ids`) |
+| equal timestamps, differing status | held closed | held closed |
+| genuinely newer row | applied | applied, with a field-level diff |
+| bead absent locally | created | created |
+
+The last two rows are not decoration. A mechanism that imports *nothing* passes
+the first two, and a green result from a check that inspects nothing is the
+failure mode this document keeps running into.
+
+bd is better on three counts beyond the transaction boundary:
+
+- **It works in embedded mode.** Our script read local state via `bd sql`,
+  which does not exist in embedded mode — and embedded is what a fresh
+  `bd init` produces in 1.1.2. The script was inert on any new clone, and went
+  inert *here* on 2026-08-01 when a schema mismatch broke `bd sql`; that is the
+  window the three `REFUSED` entries in `.beads/auto-export.log` sit in.
+- **It reports what it changed** (`updated_issues` with a field-level summary),
+  so an import that alters local state is visible rather than inferred.
+- **On a tie it still merges labels, comments and dependencies.** Ours dropped
+  them, discarding the other machine's comments on any same-second write.
+
+What replaced its test is `tests/test_bd_import_guard.py`, which asserts the
+same properties against real bd. Those tests can now fail on a bd upgrade with
+nothing in this repo having changed — which is the honest consequence of
+depending on someone else's guarantee, and better than a copy that silently
+drifts from it.
