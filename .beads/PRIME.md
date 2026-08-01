@@ -42,6 +42,9 @@ configured backup destination — here a local directory, `.beads/backup` — an
 never writes `issues.jsonl`. This file claimed otherwise for months, and
 reported success the whole time the export sat two days and 63 issues stale.
 
+**Two-machine specifics** — which hooks run where, why zklw's `bd` exports
+differently, and the verified round trip — are in `ops/beads-two-machine-sync.md`.
+
 **On a verifier-only host `push.sh` will refuse**, because the Dolt push runs
 through the `bd-push-dolt` gate and this machine holds no signing key
 (`clavain-cli policy doctor` → `"role":"verifier"`). That is by design; zklw is

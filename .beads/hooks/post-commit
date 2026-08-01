@@ -37,12 +37,22 @@
 # detaches from git's process group (git SIGHUPs it on exit); fail-open, never
 # blocks or fails the commit; output → .beads/push-hook.log. Tracked in git
 # (core.hooksPath=.beads/hooks) so it applies on every machine.
+#
+# setsid is Linux-only. On macOS the block was silently inert — the subshell
+# failed, `|| true` swallowed it, and push-hook.log was never even created, so
+# there was no trace to notice. Harmless on Clavain, which is verifier-only and
+# could not push anyway, but "does nothing and leaves no evidence" is the wrong
+# failure shape for a sync mechanism. Fall back to a plain background job and
+# always write the log, so the file's absence means the hook did not fire rather
+# than the platform lacking a utility.
 (
   root="$(git rev-parse --show-toplevel)" || exit 0
   cd "$root" || exit 0
   if git diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null | grep -qx '.beads/issues.jsonl'; then
     if [[ -x "$root/.beads/push.sh" ]]; then
-      setsid bash -c '
+      _bd_detach=setsid
+      command -v setsid >/dev/null 2>&1 || _bd_detach=""
+      $_bd_detach bash -c '
         cd "$1" || exit 0
         {
           echo "--- $(date -u +%FT%TZ) post-commit dolt auto-push (HEAD $(git rev-parse --short HEAD 2>/dev/null))"
