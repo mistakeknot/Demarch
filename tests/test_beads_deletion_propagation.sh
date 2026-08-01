@@ -137,4 +137,37 @@ if bash scripts/beads-confirm-deletion.sh keep-1 >/dev/null 2>&1; then
 fi
 present keep-1 || fail "the refusal deleted the bead anyway"
 
+# ─── 8: refuses to export over another machine's unimported work ──────
+# The regression: this script exports, and an export writes the local database
+# over the shared file, so any bead the file has and this database lacks is
+# destroyed by it. The first version called `bd export` directly and skipped
+# the guard that beads-auto-export.sh applies for exactly this reason. On zklw,
+# whose import had been killed mid-flight, confirming ONE deletion produced an
+# export with SIX beads missing.
+echo "=== 8: refusing to export when the local database is behind the file ==="
+reset_db
+rm -f .beads/deletions.jsonl
+# The checker the script consults, stubbed to compare the file against the db.
+cat > scripts/check_beads_jsonl_dolt_sync.py <<'CHECK'
+import json, os, sys
+db = os.environ["BD_STUB_DB"]
+local = {l.split("\t")[0] for l in open(db) if l.strip()}
+in_file = set()
+for line in open(".beads/issues.jsonl"):
+    line = line.strip()
+    if line:
+        in_file.add(json.loads(line)["id"])
+print(json.dumps({"missing_in_dolt": sorted(in_file - local)}))
+CHECK
+# The file carries a bead this database has never seen — another machine's work.
+{ printf '{"id":"keep-1"}\n{"id":"target"}\n{"id":"from-elsewhere"}\n'; } > .beads/issues.jsonl
+
+if bash scripts/beads-confirm-deletion.sh --delete-local target >/dev/null 2>&1; then
+  fail "exported over a bead this database had never imported"
+fi
+[ -f .beads/deletions.jsonl ] && fail "recorded a deletion it then refused to carry out"
+grep -q 'from-elsewhere' .beads/issues.jsonl || fail "the other machine's bead was dropped from the file"
+present target || fail "deleted locally before checking whether the export was safe"
+rm -f scripts/check_beads_jsonl_dolt_sync.py
+
 echo "all deletion-propagation scenarios passed"

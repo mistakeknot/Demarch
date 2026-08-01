@@ -298,6 +298,17 @@ the import on `post-merge` and deletes exactly the ids named, refusing any whose
 local row is newer than the deletion record (someone worked it after the other
 machine dropped it) and saying so on stderr.
 
+`beads-confirm-deletion.sh` refuses if this database is missing beads the shared
+file has. It exports, and an export writes the local database over the file, so
+anything the file holds and Dolt lacks is destroyed by it — the same reason
+`beads-auto-export.sh` refuses in that state. The first version called
+`bd export` directly and skipped the check. A probe caught it: zklw's import had
+been killed mid-flight, its database was five beads behind, and confirming one
+deletion produced an export with **six** beads missing — including the bead
+tracking this work. It was on an unmerged branch, so nothing was lost, but that
+was luck. Covered by scenario 8 of `tests/test_beads_deletion_propagation.sh`,
+which fails when the guard is removed.
+
 Measured before and after, on two real Dolt databases with a bare remote between
 them, in both directions:
 
