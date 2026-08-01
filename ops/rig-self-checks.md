@@ -23,8 +23,59 @@ This page exists so that never depends on someone remembering.
 | `autosync-health` — are opted-in repos actually being synced | launchd | systemd timer | daily 09:15 |
 | `hook-liveness` — are the registered hooks actually firing | launchd | systemd timer | daily 09:15 |
 | `peer-agreement` — do this machine and its peers agree on what must match | launchd | systemd timer | daily 09:15 |
+| `publish-drift` — does the published artifact contain the committed source | launchd | systemd timer | daily 09:15 |
+| `settings-history` — did the settings snapshot actually record | launchd | (watchdog) | daily 09:15 |
 | `autosync-repair` — commit and push what the marker promised | — | **systemd timer** | daily 08:45 |
 | settings.json history | SessionStart + daily | **continuous, 10s poll** | see below |
+
+## Could not look is not nothing found
+
+Every check here answers three questions, not two: is it right, is it wrong, and
+**could I tell**. The third is a real answer and it has its own exit code — `3`,
+the same one `rig-peer-agreement.py` reserved and for the same stated reason:
+"I have no peer" and "my peer and I disagree" are opposite statements and must
+not share a code.
+
+The rule exists because the estate kept violating it. On 2026-08-01 a sweep of
+every check found eight sites where a dependency failing produced a GREEN
+verdict:
+
+- `marketplace-divergence` decided by `grep -q 'clones disagree'` and never read
+  ic's exit status, so a missing clone, an erroring ic, or a reworded message all
+  reported "clones agree". Measured, not assumed: from `$HOME` — the vantage the
+  check deliberately uses — `ic publish doctor` ends with "across 0 plugins" and
+  exits 1, while the same command inside the tree says "across 62".
+- `enablement-drift` decided by `grep -q 'DRIFT'`, and the guard prints ZERO
+  BYTES on a clean run. So "no drift" and "the guard did not run" were
+  byte-identical — and the guard returns 1 for exactly the could-not-look cases,
+  the first of which is the four-month outage this whole page exists for.
+- `rig-autosync-check.sh` counted an unreadable repo as clean, an uncomputable
+  ahead-count as pushed, a failed `find` as "no autosync repos here", and dropped
+  every autosync-marked WORKTREE out of the population (`.git` is a file there,
+  not a directory).
+- `report-rig-health.py` — the last mile — skipped any status file that would not
+  parse, so a check could classify its own failure perfectly and still vanish.
+
+Each now returns 0 / 1 / 3, and `rig-health-check.sh` maps 3 to `warn`.
+
+**Deliberately still fail-open, with reasons**, so the list is a decision and not
+an oversight:
+
+- Hook-payload `jq -r … 2>/dev/null` parses across ~10 hooks. A hook that cannot
+  parse its own stdin has nothing to say; exiting quietly is the correct answer,
+  not a withheld one.
+- `guard-tests`, `settings-reference`, `intercore-tests`, `ic-provenance` already
+  read exit status directly, and a dependency failure there reaches `fail`.
+- `settings-history` is not in `EXPECTED`: zklw runs a continuous watchdog
+  instead of the scheduled snapshot, so a missing status file there is correct
+  rather than a finding. Staleness detection still applies once a file exists.
+
+**How to verify one**, and the only way that counts: break the dependency for
+real and force a run under the actual scheduler. Reading the code is not proof.
+`RIG_IC_BIN`, `RIG_INTERCORE_DIR`, `RIG_MARKETPLACE_CLONES`, `RIG_GUARD_HOOK`
+and `RIG_AUTOSYNC_ROOT` exist so the failure paths can be staged without
+vandalising the real estate; the suites in `dotfiles/common/.claude/hooks/tests/`
+run the REAL scripts against those overrides, never a copy of the logic.
 
 Expected steady state, so a drift is auditable against something:
 
