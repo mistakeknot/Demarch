@@ -17,8 +17,17 @@ Dolt database; the JSONL is how they reach each other.
 | Direction | Mechanism | Trigger |
 |---|---|---|
 | Dolt → JSONL | export, then a dedicated commit | `post-commit` |
-| JSONL → Dolt | `bd import` | `post-merge` |
+| JSONL → Dolt | `bd import`, via `scripts/beads-import-merged.sh` | `post-merge` |
 | deletions | `scripts/beads_apply_deletions.py`, after the import | `post-merge` |
+
+`beads-import-merged.sh` hands bd only the rows the merge changed. A full
+`bd import` of the file measures **~49s on Clavain and over 9 minutes on zklw**,
+and it would run on every pull — the retired importer had been avoiding that
+incidentally, by filtering before importing. git already knows which lines
+changed and every issue is one line, so the filter costs nothing and bd still
+applies its guard per row. Measured 49s → 1s. When the diff cannot be
+determined it imports the whole file: slow beats an import that silently skips
+another machine's work.
 
 Both machines set `core.hooksPath = <repo>/.beads/hooks`, so `.git/hooks/` is
 **never executed**. Anything installed there is inert. Confirmed on both.
