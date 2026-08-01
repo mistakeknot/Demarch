@@ -26,6 +26,7 @@ chmod +x "$SANDBOX/scripts/beads-import-merged.sh"
 cat > "$SANDBOX/bin/bd" <<'STUB'
 #!/usr/bin/env bash
 if [ "${1:-}" = import ]; then
+  [ -n "${BD_STUB_HANG:-}" ] && sleep "$BD_STUB_HANG"
   cp "$2" "$IMPORTED_TO"
   echo "Imported $(grep -c . "$2") issues"
 fi
@@ -96,5 +97,30 @@ bash scripts/beads-import-merged.sh "nosuchref-deadbeef" >/dev/null 2>&1
 # ─── 6: the file header is never mistaken for a row ───────────────────
 echo "=== 6: the diff's '+++ b/...' header is not imported as a bead ==="
 grep -q '^+++' "$IMPORTED_TO" 2>/dev/null && fail "a diff header leaked into the import batch"
+
+# ─── 7: a hung import is bounded, and says so ─────────────────────────
+# Observed on zklw: bd import blocked in futex_wait against its own Dolt server,
+# 5s of CPU in 5 minutes. Unbounded, `git pull` never returns and the deletion
+# pass after it never runs — the pull had to be killed by hand.
+echo "=== 7: an import that hangs is timed out, loudly, without failing the pull ==="
+reset_import
+prev="$(git rev-parse HEAD)"
+{ row a 2026-07-01T00:00:00Z; row b 2026-09-09T00:00:00Z; row d 2026-10-01T00:00:00Z; } > .beads/issues.jsonl
+git commit -q -m "add d" -- .beads/issues.jsonl
+if command -v timeout >/dev/null 2>&1 || command -v gtimeout >/dev/null 2>&1; then
+  out="$(BD_STUB_HANG=8 BEADS_IMPORT_TIMEOUT=1 bash scripts/beads-import-merged.sh "$prev" 2>&1 >/dev/null)"
+  rc=$?
+  case "$out" in
+    *"timed out"*) ;;
+    *) fail "a hung import was silent; the database is behind and nothing said so" ;;
+  esac
+  case "$out" in
+    *"bd import .beads/issues.jsonl"*) ;;
+    *) fail "the timeout message does not name the command that fixes it" ;;
+  esac
+  [ "$rc" -eq 0 ] || fail "a timed-out import failed the hook, and so the pull, instead of warning"
+else
+  echo "    (skipped: no timeout/gtimeout on this host)"
+fi
 
 echo "all import-merged scenarios passed"

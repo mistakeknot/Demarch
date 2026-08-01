@@ -21,13 +21,43 @@ Dolt database; the JSONL is how they reach each other.
 | deletions | `scripts/beads_apply_deletions.py`, after the import | `post-merge` |
 
 `beads-import-merged.sh` hands bd only the rows the merge changed. A full
-`bd import` of the file measures **~49s on Clavain and over 9 minutes on zklw**,
-and it would run on every pull — the retired importer had been avoiding that
-incidentally, by filtering before importing. git already knows which lines
-changed and every issue is one line, so the filter costs nothing and bd still
-applies its guard per row. Measured 49s → 1s. When the diff cannot be
-determined it imports the whole file: slow beats an import that silently skips
-another machine's work.
+`bd import` of the file measures ~49s on Clavain, and on zklw it does not finish
+at all — see below. It would run on every pull; the retired importer had been
+avoiding that incidentally, by filtering before importing. git already knows
+which lines changed and every issue is one line, so the filter costs nothing and
+bd still applies its guard per row. When the diff cannot be determined it
+imports the whole file: slow beats an import that silently skips another
+machine's work.
+
+**It helps a lot, and not always.** Measured 3 rows on a same-machine merge
+(49s → 1s) but **3,313 rows** on a cross-machine one — see the actor churn
+below. Sorting does not rescue it; the difference is content, not order.
+
+**The import is bounded at 120s** (`BEADS_IMPORT_TIMEOUT`) and says so on
+timeout. Unbounded, `git pull` never returns: observed twice on zklw, with
+`bd import` blocked in `futex_wait` against its own Dolt server — 5 seconds of
+CPU in 5 minutes, not growing, socket open, other bd processes live. The pull
+had to be killed by hand, and the deletion pass that runs after the import never
+ran until it was. A timeout is not a silent skip: the rows are still in the
+file, and the message names the command that loads them.
+
+### The actor churn behind the 3,300-line diffs
+
+`bd export` is deterministic — two consecutive exports on one machine are
+byte-identical. But bd stamps the **importing** actor onto dependency records
+rather than preserving the original, so the same bead serializes differently on
+each machine: `created_by: "Claude Code"` on zklw, `"mistakeknot"` on Clavain.
+
+About 3,308 beads carry dependencies, so **every export that alternates machines
+rewrites all of them**. That is the source of the recurring `-3805/+3804`
+commits in this file's history, it is why the post-merge import is expensive on
+exactly the cross-machine pulls, and it is why the filter above degrades in the
+case it was written for. Confirmed semantic rather than cosmetic: 3,313 beads
+differ as parsed objects, none differ only in serialization.
+
+Tracked as `Sylveste-zpeh`. The candidate fix — one shared `BEADS_ACTOR` on both
+machines — is cheap, but it collapses an audit field that currently records
+which machine created a dependency, so it is a decision rather than a chore.
 
 Both machines set `core.hooksPath = <repo>/.beads/hooks`, so `.git/hooks/` is
 **never executed**. Anything installed there is inert. Confirmed on both.
