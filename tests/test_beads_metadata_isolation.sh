@@ -79,6 +79,20 @@ build_pair() {   # build_pair <root> <track-metadata: yes|no>
   return 0
 }
 
+echo "=== 0: THIS repository does not track its own pointer ==="
+# The scenarios below all run in a sandbox, and a sandbox cannot notice that the
+# change never landed here. It did not, once: `git rm --cached` staged the
+# removal and a pathspec commit naming the same file re-added it from the
+# working tree, so the ignore rule shipped against a still-tracked path and did
+# nothing. Both the commit and CI were satisfied.
+if git -C "$ROOT" ls-files --error-unmatch .beads/metadata.json >/dev/null 2>&1; then
+  fail ".beads/metadata.json is tracked in this repository; the ignore rule at
+      .beads/.gitignore has no effect on a path git is already tracking.
+      Fix with:  git rm --cached .beads/metadata.json  (then commit the INDEX,
+      not a pathspec naming that file)"
+fi
+[ -f "$ROOT/.beads/metadata.json" ] || echo "    (note: no local metadata.json — bd bootstrap has not run here)"
+
 echo "=== 1: with metadata.json tracked, B's bd init retargets A ==="
 R1="$SANDBOX/tracked"; mkdir -p "$R1"
 if ! build_pair "$R1" yes; then echo "    (skipped: bd init failed in the sandbox)"; exit 0; fi
