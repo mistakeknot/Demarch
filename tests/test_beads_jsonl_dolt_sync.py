@@ -151,29 +151,13 @@ def test_normalize_strips_zone_before_touching_the_separator() -> None:
     assert check.normalize_ts("") == ""
 
 
-def test_normalize_matches_the_safe_import_implementation() -> None:
-    """Two scripts compare these timestamps; they must agree exactly.
-
-    If they drift, the export trigger and the import filter disagree about
-    which side is newer, and the disagreement is invisible until data moves the
-    wrong way.
-    """
-    import importlib.util
-
-    spec = importlib.util.spec_from_file_location(
-        "beads_safe_import", ROOT / "scripts" / "beads_safe_import.py"
-    )
-    assert spec and spec.loader
-    sfi = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(sfi)
-
-    for sample in (
-        "2026-07-31T15:57:07Z",
-        "2026-07-31 15:57:07 +0000 UTC",
-        "2026-08-01 02:14:40 UTC",
-        "",
-    ):
-        assert check.normalize_ts(sample) == sfi.normalize_ts(sample), sample
+# There was a test here asserting this module's normalize_ts agreed exactly
+# with beads_safe_import.py's, because the two compared the same timestamps and
+# a drift between them would move data the wrong way. That second implementation
+# is gone — bd 1.1.2 enforces the staleness rule itself, in its own timestamp
+# handling, so there is no longer a pair to keep in agreement. What replaced the
+# coupling is tests/test_bd_import_guard.py, which tests bd's rule directly
+# instead of testing our copy of it.
 
 
 def test_jsonl_max_updated_ignores_memory_rows(tmp_path: Path) -> None:

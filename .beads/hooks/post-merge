@@ -68,11 +68,21 @@ fi
 # into the local Dolt, so `bd` cannot see them. Two sat invisible here for over
 # a week that way.
 #
-# Deliberately NOT `bd import`: that upserts every record, so an export written
-# elsewhere at an earlier moment reverts anything changed here since — a bead
-# closed locally reopens, silently. beads_safe_import.py applies only records
-# that are absent locally or genuinely newer.
-if [ -f "$(git rev-parse --show-toplevel)/scripts/beads_safe_import.py" ]; then
-  python3 "$(git rev-parse --show-toplevel)/scripts/beads_safe_import.py" --quiet || true
+# This was scripts/beads_safe_import.py until bd 1.1.2. That script existed
+# because a plain `bd import` used to upsert every record, reverting anything
+# changed here since the incoming export was written. bd now enforces the same
+# rule itself — and enforces it inside the upsert rather than as a pre-filter,
+# so a local write landing mid-import is preserved too. Measured equivalent on
+# the reversion case and the equal-timestamp tie before the switch.
+_bd_root="$(git rev-parse --show-toplevel)"
+bd import "$_bd_root/.beads/issues.jsonl" >/dev/null 2>&1 || true
+
+# Then, and only then, apply deletions. `bd import` never deletes, so a bead
+# dropped on the other machine survives here and gets written back out on the
+# next export — the deletion undoes itself. The ledger is what distinguishes a
+# deliberate deletion from an absence. Ordered after the import because the
+# import would otherwise re-create what this removes.
+if [ -f "$_bd_root/scripts/beads_apply_deletions.py" ]; then
+  python3 "$_bd_root/scripts/beads_apply_deletions.py" --quiet || true
 fi
 # --- END SYLVESTE BEADS AUTO-IMPORT ---

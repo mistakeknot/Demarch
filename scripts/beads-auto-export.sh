@@ -110,14 +110,19 @@ if [ "$safe_to_export" != "true" ]; then
   # Two situations produce this state and they need opposite responses, which
   # is exactly why it is not resolved automatically:
   #   - another machine's issues were pulled but never imported -> import them
-  #   - an issue was deleted here                               -> export to
-  #     confirm the deletion (importing would resurrect it)
+  #   - an issue was deleted here                               -> record the
+  #     deletion, so the other machine performs it too
   # Nothing here can tell those apart, so it asks rather than guesses.
+  #
+  # The second answer used to be a bare `bd export`. That drops the row and
+  # loses the intent: the other machine sees only an absence, which is not a
+  # deletion signal, keeps its copy, and writes the bead back on its next
+  # export. beads-confirm-deletion.sh writes the intent down instead.
   log "REFUSED: $missing_count issue(s) exist only in the JSONL; exporting would delete them"
   echo "beads: NOT auto-exporting — $missing_count issue(s) exist only in .beads/issues.jsonl," >&2
   echo "       so exporting now would delete them. Which is it?" >&2
-  echo "         another machine's work  ->  python3 scripts/beads_safe_import.py" >&2
-  echo "         deleted here on purpose ->  bd export --output .beads/issues.jsonl" >&2
+  echo "         another machine's work  ->  bd import .beads/issues.jsonl" >&2
+  echo "         deleted here on purpose ->  scripts/beads-confirm-deletion.sh <id>..." >&2
   echo "       See the list with: python3 scripts/check_beads_jsonl_dolt_sync.py" >&2
   exit 0
 fi
