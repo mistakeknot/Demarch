@@ -34,19 +34,32 @@ before, so each machine silently inherited its bd version's default — 1.0.2
 defaults both to *true*, 1.0.0 and 1.1.x to *false* — which is the whole reason
 one machine exported on every write and the other never did.
 
-**A pull imports automatically too**, via post-merge →
-`scripts/beads_safe_import.py`. That is deliberately not `bd import`: a plain
-import upserts every record, so an export written on another machine at an
-earlier moment reverts anything changed here since — a bead you closed reopens,
-silently. The safe importer applies only records that are absent locally or
-genuinely newer.
+**A pull imports automatically too**, via post-merge → `bd import`, then
+`scripts/beads_apply_deletions.py`. This used to be a local script, because a
+plain import once upserted every record and would revert anything changed here
+since the incoming export was written — a bead you closed reopening, silently.
+bd 1.1.2 enforces that rule itself now, inside the transaction, so the script is
+gone; `tests/test_bd_import_guard.py` holds bd to it.
+
+**To delete a bead, one extra command.** `bd import` never deletes, so a bead
+you delete here survives on the other machine and comes back on its next export.
+
+```
+bd delete <id> --force
+scripts/beads-confirm-deletion.sh <id>     # records intent, exports, commits
+```
+
+That writes `.beads/deletions.jsonl`, which is what makes a deliberate deletion
+distinguishable from an absence. Do not hand-edit it, and do not answer the
+export refusal below with a bare `bd export` — that drops the row and loses the
+intent, which is how the deletion undoes itself.
 
 **When automation stops and asks you.** If issues exist in the JSONL but not in
 Dolt, the auto-export refuses, because exporting would delete them. Two very
 different situations look identical from here, so it asks:
 
-  - another machine's work, pulled but not imported → `python3 scripts/beads_safe_import.py`
-  - something you deleted on purpose → `bd export --output .beads/issues.jsonl`
+  - another machine's work, pulled but not imported → `bd import .beads/issues.jsonl`
+  - something you deleted on purpose → `scripts/beads-confirm-deletion.sh <id>...`
 
 **What `bd backup sync` is.** Not this. It pushes the Dolt database to its
 configured backup destination — here a local directory, `.beads/backup` — and
