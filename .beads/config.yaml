@@ -15,3 +15,29 @@ events-export: true
 backup.enabled: true
 backup.interval: 5m
 backup.git-push: false
+
+# bd's own JSONL auto-export, OFF on purpose — and set explicitly rather than
+# left to the default, because the default is what caused the drift.
+#
+# Neither key was ever set here before. Each machine inherited its bd version's
+# default, and those disagreed: 1.0.0 (Clavain) shipped them false, 1.0.2 (zklw)
+# shipped them true, 1.1.x flipped them back to false. So zklw exported on every
+# write and Clavain exported never, and nobody had chosen either behaviour. That
+# is the whole reason .beads/issues.jsonl sat two days and 63 issues stale on one
+# machine while the other stayed perfectly current.
+#
+# Why off rather than on:
+#   export.auto     bd exports after write commands, but only writes the file —
+#                   it never commits it. Only the committed copy is pushed, so on
+#                   its own this strands a dirty issues.jsonl in the working tree
+#                   indefinitely. scripts/beads-auto-export.sh (post-commit)
+#                   exports AND commits, which is what the transport needs.
+#   export.git-add  stages the export into whatever commit is forming, which
+#                   widens `git commit -- <paths>` beyond the paths named.
+#                   Observed on zklw: a one-path commit produced two files.
+#
+# Being explicit is the point. These are tracked, so both machines read the same
+# values whatever bd version they run, and a future upstream default flip cannot
+# silently reintroduce either behaviour.
+export.auto: false
+export.git-add: false
