@@ -55,9 +55,37 @@ command -v bd >/dev/null 2>&1 || exit 0
 # Ask the same checker that guards commits, so the trigger and the guard can
 # never disagree about what "in sync" means. ~0.3s; a full export is ~3s, which
 # is why this is a probe and not an unconditional export.
-probe="$(python3 "$ROOT/scripts/check_beads_jsonl_dolt_sync.py" --json --strict-extra 2>/dev/null)" || true
+probe_err="$(mktemp "${TMPDIR:-/tmp}/sylveste-probe-err.XXXXXX")" || exit 0
+probe="$(python3 "$ROOT/scripts/check_beads_jsonl_dolt_sync.py" --json --strict-extra 2>"$probe_err")"
+probe_rc=$?
+probe_msg="$(head -1 "$probe_err" 2>/dev/null)"
+rm -f "$probe_err"
+
+# A failing probe means bead state stops being exported. Say so out loud.
+#
+# This used to be `2>/dev/null || true` followed by a silent `exit 0` on empty
+# output, which folded two very different situations into one: bd genuinely
+# absent (a cloud session — correctly silent, nothing to export from), and the
+# probe running and failing (bd broken, schema mismatch, Dolt server down).
+# The second is the same shape as the bug this whole mechanism replaced: the
+# export quietly stops while every commit still succeeds and nothing says why.
+# Observed for real when a schema migration left `bd sql` unable to build a
+# view, so the probe errored on every commit and the log was the only trace.
+#
+# The test is "did it produce a verdict", NOT "did it exit 0". This checker is
+# also the pre-commit guard, so it exits non-zero precisely when it finds drift
+# — which is the case where an export IS wanted. Keying the failure branch on
+# the exit code disables the export exactly when it is needed, which is what the
+# first version of this check did until the ordering suite caught it.
+#
+# bd's presence was checked above, so empty output here is a real failure rather
+# than an absent tool.
 if [ -z "$probe" ]; then
-  log "skip: probe produced no output (cloud session, or bd unavailable)"
+  log "PROBE FAILED rc=$probe_rc: $probe_msg"
+  echo "beads: auto-export probe failed — bead state is NOT being exported." >&2
+  [ -n "$probe_msg" ] && echo "       $probe_msg" >&2
+  echo "       Until this is fixed, export by hand before pushing:" >&2
+  echo "         bd export --output .beads/issues.jsonl" >&2
   exit 0
 fi
 

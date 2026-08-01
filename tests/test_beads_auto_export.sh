@@ -185,4 +185,36 @@ git diff --quiet HEAD -- .beads/issues.jsonl \
   || fail "the export is still uncommitted after the hook ran"
 echo "PASS"
 
+# ─── 8. a broken probe complains instead of going quiet ───────────────
+
+echo "=== 8: a failing probe warns loudly and exports nothing ==="
+# The probe is the only thing standing between "beads changed" and "the export
+# is committed". When it breaks, every commit still succeeds, so a silent skip
+# looks exactly like a repo with no bead changes — which is how the mechanism
+# this replaced managed to report success while going two days stale.
+cat > "$SANDBOX/scripts/check_beads_jsonl_dolt_sync.py" <<'BROKEN'
+import sys
+print("simulated: bd sql failed (schema mismatch)", file=sys.stderr)
+sys.exit(2)
+BROKEN
+
+export DOLT_IDS="a b c d e f g"
+before="$(git rev-parse HEAD)"
+echo work8 > other.txt
+warn="$(git commit -q -m "work8" -- other.txt 2>&1 >/dev/null)"
+
+[ "$(git log -1 --format=%s)" = "work8" ] \
+  || fail "a broken probe still produced an export commit: $(git log -1 --format=%s)"
+[ "$(git rev-list --count "$before"..HEAD)" = "1" ] \
+  || fail "expected exactly one commit when the probe is broken"
+case "$warn" in
+  *"NOT being exported"*) ;;
+  *) fail "a broken probe was silent; stderr was: $warn" ;;
+esac
+case "$warn" in
+  *"schema mismatch"*) ;;
+  *) fail "the underlying error was not surfaced; stderr was: $warn" ;;
+esac
+echo "PASS"
+
 echo "PASS: beads-auto-export ordering"
