@@ -70,6 +70,77 @@ an oversight:
   instead of the scheduled snapshot, so a missing status file there is correct
   rather than a finding. Staleness detection still applies once a file exists.
 
+### A bound is a fourth answer, 2026-08-02
+
+The sweep above asked whether a check could tell "wrong" from "could not look".
+It did not ask whether a check could **return at all**. A run stuck behind an
+unbounded call answers nothing, and the reader then blames the ten checks behind
+it for being stale — a check reporting a fault that is not its own.
+
+The premise this started from was wrong, and how it was wrong is the useful
+part. An `op read` had been seen alive far past the 180s ceiling in
+`rig-backup-freshness.py`, and the conclusion drawn was that Python's timeout
+was defeated: `run()` kills the direct child, then blocks in `communicate()`
+waiting for EOF on a pipe the orphaned grandchild still holds. Plausible,
+historically true, and **not true here**. Measured before anything was changed,
+with a grandchild holding the pipe for 45s past a 3s bound:
+
+| interpreter | returned in | grandchild after |
+|---|---|---|
+| 3.9.6 (stock macOS) | 3.0s | **still alive** |
+| 3.14.5 (homebrew, what launchd resolves) | 3.0s | **still alive** |
+
+On POSIX `run()` does `kill()` then `wait()`, never `communicate()`. The hang
+was fixed upstream years ago. The hanging `op read` was real — it was in
+`rig-escrow-attest-peer.sh`, which runs from `rig-health-check.sh` **before**
+backup-freshness and had no timeout at all, on any of its four `ssh` calls or
+its `op read`. A correct observation attributed to the wrong script; a fix aimed
+only at the stated premise would have left the actual hang untouched.
+
+Three real defects, none of them the one in the premise:
+
+- **The grandchild leaks.** `kill()` signals the direct child; what it spawned
+  runs on, reparented to init. Now every child starts in its own session and the
+  process GROUP is signalled, TERM then KILL. A daemon that calls `setsid` for
+  itself escapes on purpose — `op read` starts a shared `op daemon` which does
+  exactly that, and killing the user's 1Password daemon to tidy up after a
+  health check is not a trade worth making.
+- **A pipe-holding descendant turns success into "did not return."** Quieter
+  than a hang. A command that exits 0 while a background descendant keeps the
+  capture pipe open leaves Python waiting for an EOF that is not coming: it
+  spends the whole ceiling and then reports the successful command as a timeout.
+  At 180s across three escrow entries that is nine minutes converting three good
+  reads into three false could-not-reads. Capture now goes to files, so there is
+  no descriptor to inherit. This removes *our* pipe and not the one `v=$(cmd)`
+  makes inside bash — the escrow read is that shape, and what saves it there is
+  the budget, not the capture.
+- **Bounds sum, and nothing bounded the sum.** Eleven calls at their own
+  ceilings is 1560s, and the health run is sequential. Every call could honour
+  its bound while the run starved everything behind it. One budget per check
+  now, drawn from by every call; once spent, later calls say so without spawning
+  anything.
+
+**What a headless credential should report.** Three escrow secrets with no
+attestation took NEVER PROVEN, counted as findings, and produced:
+
+> 3 backup destinations cannot be shown to hold recoverable history
+
+Every word is a claim about the repositories and none of it was established. The
+repositories are fine; nobody has ever read the escrow from this machine,
+because `op read` needs a session the scheduled run does not have. It splits
+three ways now — read-and-wrong is a recoverability verdict, unproven-past-the-
+window is a verification verdict with its own sentence, and never-once-readable
+is no verdict, **dated** so it escalates after `ATTEST_DAYS` exactly as an
+unreachable repository already does. That reverses an earlier deliberate
+decision, which is recorded in the test beside the new one rather than
+overwritten: it was right about the danger and wrong about the timing.
+
+**Also found while counting:** `test-rig-publish-drift-bead.sh` had been running
+seven checks and reporting them as `OK 7 checks passed`, which is not the shape
+`guard-tests` greps for — so the published estate figure of 121 omitted all
+seven while the suite passed. A tally that silently drops a whole suite is the
+same defect as a check that silently drops a repository.
+
 **How to verify one**, and the only way that counts: break the dependency for
 real and force a run under the actual scheduler. Reading the code is not proof.
 `RIG_IC_BIN`, `RIG_INTERCORE_DIR`, `RIG_MARKETPLACE_CLONES`, `RIG_GUARD_HOOK`
