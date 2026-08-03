@@ -70,12 +70,195 @@ an oversight:
   instead of the scheduled snapshot, so a missing status file there is correct
   rather than a finding. Staleness detection still applies once a file exists.
 
+### A bound is a fourth answer, 2026-08-02
+
+The sweep above asked whether a check could tell "wrong" from "could not look".
+It did not ask whether a check could **return at all**. A run stuck behind an
+unbounded call answers nothing, and the reader then blames the ten checks behind
+it for being stale — a check reporting a fault that is not its own.
+
+The premise this started from was wrong, and how it was wrong is the useful
+part. An `op read` had been seen alive far past the 180s ceiling in
+`rig-backup-freshness.py`, and the conclusion drawn was that Python's timeout
+was defeated: `run()` kills the direct child, then blocks in `communicate()`
+waiting for EOF on a pipe the orphaned grandchild still holds. Plausible,
+historically true, and **not true here**. Measured before anything was changed,
+with a grandchild holding the pipe for 45s past a 3s bound:
+
+| interpreter | returned in | grandchild after |
+|---|---|---|
+| 3.9.6 (stock macOS) | 3.0s | **still alive** |
+| 3.14.5 (homebrew, what launchd resolves) | 3.0s | **still alive** |
+
+On POSIX `run()` does `kill()` then `wait()`, never `communicate()`. The hang
+was fixed upstream years ago. The hanging `op read` was real — it was in
+`rig-escrow-attest-peer.sh`, which runs from `rig-health-check.sh` **before**
+backup-freshness and had no timeout at all, on any of its four `ssh` calls or
+its `op read`. A correct observation attributed to the wrong script; a fix aimed
+only at the stated premise would have left the actual hang untouched.
+
+Three real defects, none of them the one in the premise:
+
+- **The grandchild leaks.** `kill()` signals the direct child; what it spawned
+  runs on, reparented to init. Now every child starts in its own session and the
+  process GROUP is signalled, TERM then KILL. A daemon that calls `setsid` for
+  itself escapes on purpose — `op read` starts a shared `op daemon` which does
+  exactly that, and killing the user's 1Password daemon to tidy up after a
+  health check is not a trade worth making.
+- **A pipe-holding descendant turns success into "did not return."** Quieter
+  than a hang. A command that exits 0 while a background descendant keeps the
+  capture pipe open leaves Python waiting for an EOF that is not coming: it
+  spends the whole ceiling and then reports the successful command as a timeout.
+  At 180s across three escrow entries that is nine minutes converting three good
+  reads into three false could-not-reads. Capture now goes to files, so there is
+  no descriptor to inherit. This removes *our* pipe and not the one `v=$(cmd)`
+  makes inside bash — the escrow read is that shape, and what saves it there is
+  the budget, not the capture.
+- **Bounds sum, and nothing bounded the sum.** Eleven calls at their own
+  ceilings is 1560s, and the health run is sequential. Every call could honour
+  its bound while the run starved everything behind it. One budget per check
+  now, drawn from by every call; once spent, later calls say so without spawning
+  anything.
+
+**What a headless credential should report.** Three escrow secrets with no
+attestation took NEVER PROVEN, counted as findings, and produced:
+
+> 3 backup destinations cannot be shown to hold recoverable history
+
+Every word is a claim about the repositories and none of it was established. The
+repositories are fine; nobody has ever read the escrow from this machine,
+because `op read` needs a session the scheduled run does not have. It splits
+three ways now — read-and-wrong is a recoverability verdict, unproven-past-the-
+window is a verification verdict with its own sentence, and never-once-readable
+is no verdict, **dated** so it escalates after `ATTEST_DAYS` exactly as an
+unreachable repository already does. That reverses an earlier deliberate
+decision, which is recorded in the test beside the new one rather than
+overwritten: it was right about the danger and wrong about the timing.
+
+**Also found while counting:** `test-rig-publish-drift-bead.sh` had been running
+seven checks and reporting them as `OK 7 checks passed`, which is not the shape
+`guard-tests` greps for — so the published estate figure of 121 omitted all
+seven while the suite passed. A tally that silently drops a whole suite is the
+same defect as a check that silently drops a repository.
+
 **How to verify one**, and the only way that counts: break the dependency for
 real and force a run under the actual scheduler. Reading the code is not proof.
 `RIG_IC_BIN`, `RIG_INTERCORE_DIR`, `RIG_MARKETPLACE_CLONES`, `RIG_GUARD_HOOK`
 and `RIG_AUTOSYNC_ROOT` exist so the failure paths can be staged without
 vandalising the real estate; the suites in `dotfiles/common/.claude/hooks/tests/`
 run the REAL scripts against those overrides, never a copy of the logic.
+
+### The shell half, 2026-08-02
+
+`rig_bounded.py` gave every Python subprocess call a group kill, a file capture
+and a shared deadline. The call that would have hidden the entire launchd proof
+was a **shell** call: `rig-health-check.sh` invoked `rig-escrow-attest-peer.sh`
+with `|| true` and no ceiling, and that script made four `ssh` calls carrying
+`BatchMode` but no `ConnectTimeout`, plus an unbounded `op read` — all of it
+running *before* the check whose bound was being fixed. Bounding one language
+and not the other bounds nothing.
+
+38 call sites now carry a bound: 27 in `rig-health-check.sh`, 4 each in
+`rig-autosync-check.sh` and `rig-escrow-attest-peer.sh`, 2 in
+`rig-file-drift-bead.sh`, 1 in `rig-marketplace-divergence.sh`. Every one goes
+through a locally-defined `bound()` that **probes** for the binary:
+
+```
+TIMEOUT_BIN="$(command -v timeout 2>/dev/null || command -v gtimeout 2>/dev/null || true)"
+```
+
+`timeout` is coreutils. It is native on zklw and homebrew-only on the Mac, so
+assuming it is a bound that silently does not exist on a stock macOS PATH. When
+it is missing the call runs unbounded — the pre-existing behaviour, not a new
+failure — and `helper-deployment` reports the machine as unbounded rather than
+letting every check still say `pass`. It is a `warn`, not a `fail`: an unbounded
+run still produces true answers, it just cannot promise to finish.
+
+`ssh` is bounded by its own options rather than by `timeout`, because
+`ConnectTimeout` alone is not a bound. It caps the **handshake** and nothing
+after it, so a session that connects and then stops answering — a lid closing, a
+Tailscale route dropping mid-transfer — never trips it, and ssh waits on a
+connection the kernel will hold open for a very long time. `ServerAliveInterval=5`
+with `ServerAliveCountMax=3` is what bounds that.
+
+**Deliberately unbounded, with reasons**, on the same principle as the fail-open
+list above:
+
+- **Inline `python3 -c '…'` blocks** that manipulate local JSON and files. These
+  are in-process work with no child, no network and no lock; the interpreter
+  cannot outlive its own script. Bounding them would add a dependency on
+  coreutils to code that cannot hang.
+- **`command -v` PATH lookups**, including the `timeout` probe itself. A builtin
+  doing a filesystem stat. Bounding the probe with the tool being probed for is
+  circular.
+- **Coreutils on local files** — `basename`, `sort -u`, `grep -c`, `tail -c`,
+  `mktemp`, `hostname -s`, `date`. Bounded input, no network, no locking. The
+  cost of wrapping every one of these is a `timeout` process per call across a
+  run that already forks heavily, bought against a hang that has no mechanism.
+- **`rig-enablement-drift.sh`, `rig-job-receipt.sh`, `rig-report.sh`** define no
+  `bound()` at all, because none of them invokes anything but the above. That is
+  a property of those scripts today; a network call added to one of them needs a
+  bound, and this list is where that gets noticed.
+
+`rig-marketplace-divergence.sh` is the one that moved. Everything it does itself
+is local file comparison, but `ic publish doctor` is a separate binary that walks
+marketplace clones and may reach the network, invoked as `… || true`. The parent
+health run does bound it — and a bound that exists only in the caller is not a
+property of the call. Run standalone, or invoked from somewhere else later, it
+would be unbounded again. It carries its own 120s now.
+
+**Two defects found by testing this, both the same shape as the thing being
+fixed.** The first: `test-rig-health-bounds.sh` proves bounds fire by wedging
+processes that will not return on their own — so with `timeout` absent it did
+not fail, it **slept**, 120s on one holder and 300s on a `bd` that never answers.
+A suite whose subject is a timeout could not run without a timeout, and it took
+down the very run that was studying it. It probes and skips honestly now, and
+prints the skip count in its tally: a suite reporting `passed: 4 failed: 0`
+while two assertions never ran tells exactly the lie this page is about.
+
+**Shown firing under launchd**, not reasoned about. `RIG_IC_BIN` pointed at a
+`sleep 3000`, ceiling set to 150s, agent booted out and back in so the drill ran
+under the real scheduler rather than from a shell:
+
+```
+health run exceeded its 150s ceiling; 18 check(s) never ran
+
+  guard-tests            pass  +127s  15 suite(s), passed: 185   failed: 0
+  settings-reference     pass  +127s  reference = ~/.claude/settings...
+  [18 others]            warn  +153s  not run: the health run hit its 150s
+                                      ceiling before reaching this check
+```
+
+Two real answers and eighteen honest ones, where before the run would have
+ended with two answers and eighteen files still describing yesterday — read as
+current by anything that does not check mtimes, and read as STALE by the one
+reporter that does, blaming eighteen checks for a fault none of them had.
+
+**The drill also corrected a claim in this file's own code comment.** The
+watchdog kills the run's process GROUP, and the comment said a wedged
+grandchild goes with it. It does not. The wedged `ic` survived the kill on
+PGID 12965 while the run was 99646 — because `timeout` without `--foreground`
+puts its child in a **new** process group; that is *how* it group-kills. So
+every bounded call is deliberately outside the run's group and the ceiling
+cannot reach it.
+
+That is safe, but for a different reason than the comment gave: those subtrees
+carry their own bounds, so the leftover is bounded by construction — the sleeper
+died on its own 120s — and its parent is gone, so it can write nothing. The two
+mechanisms turn out to be complementary rather than redundant: **with** `timeout`
+the children self-bound and the group kill cannot reach them; **without** it
+`bound()` is a passthrough, so the children stay in the run's group and the
+group kill is what catches them. Neither alone covers both cases.
+
+The second: the run-ceiling watchdog is in its own process group on purpose, so
+that the group kill it fires cannot take out the killer mid-write — which also
+means the run's own `EXIT` trap is the only thing that reaps it, and an `EXIT`
+trap does not run under `SIGKILL`. Killing a run left the watchdog alive with
+PPID 1, sleeping toward an 1800s ceiling. Half an hour after the run was over it
+would have written *"not run: hit its ceiling"* over every check in a finished
+run's health dir, then signalled a process **group** that no longer existed —
+and pgids get reused. It waits in slices now and exits silently the moment there
+is nothing left to guard. Isolation added for one direction applies in both.
 
 Expected steady state, so a drift is auditable against something:
 
