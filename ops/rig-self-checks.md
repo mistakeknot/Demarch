@@ -148,6 +148,84 @@ and `RIG_AUTOSYNC_ROOT` exist so the failure paths can be staged without
 vandalising the real estate; the suites in `dotfiles/common/.claude/hooks/tests/`
 run the REAL scripts against those overrides, never a copy of the logic.
 
+### The shell half, 2026-08-02
+
+`rig_bounded.py` gave every Python subprocess call a group kill, a file capture
+and a shared deadline. The call that would have hidden the entire launchd proof
+was a **shell** call: `rig-health-check.sh` invoked `rig-escrow-attest-peer.sh`
+with `|| true` and no ceiling, and that script made four `ssh` calls carrying
+`BatchMode` but no `ConnectTimeout`, plus an unbounded `op read` — all of it
+running *before* the check whose bound was being fixed. Bounding one language
+and not the other bounds nothing.
+
+38 call sites now carry a bound: 27 in `rig-health-check.sh`, 4 each in
+`rig-autosync-check.sh` and `rig-escrow-attest-peer.sh`, 2 in
+`rig-file-drift-bead.sh`, 1 in `rig-marketplace-divergence.sh`. Every one goes
+through a locally-defined `bound()` that **probes** for the binary:
+
+```
+TIMEOUT_BIN="$(command -v timeout 2>/dev/null || command -v gtimeout 2>/dev/null || true)"
+```
+
+`timeout` is coreutils. It is native on zklw and homebrew-only on the Mac, so
+assuming it is a bound that silently does not exist on a stock macOS PATH. When
+it is missing the call runs unbounded — the pre-existing behaviour, not a new
+failure — and `helper-deployment` reports the machine as unbounded rather than
+letting every check still say `pass`. It is a `warn`, not a `fail`: an unbounded
+run still produces true answers, it just cannot promise to finish.
+
+`ssh` is bounded by its own options rather than by `timeout`, because
+`ConnectTimeout` alone is not a bound. It caps the **handshake** and nothing
+after it, so a session that connects and then stops answering — a lid closing, a
+Tailscale route dropping mid-transfer — never trips it, and ssh waits on a
+connection the kernel will hold open for a very long time. `ServerAliveInterval=5`
+with `ServerAliveCountMax=3` is what bounds that.
+
+**Deliberately unbounded, with reasons**, on the same principle as the fail-open
+list above:
+
+- **Inline `python3 -c '…'` blocks** that manipulate local JSON and files. These
+  are in-process work with no child, no network and no lock; the interpreter
+  cannot outlive its own script. Bounding them would add a dependency on
+  coreutils to code that cannot hang.
+- **`command -v` PATH lookups**, including the `timeout` probe itself. A builtin
+  doing a filesystem stat. Bounding the probe with the tool being probed for is
+  circular.
+- **Coreutils on local files** — `basename`, `sort -u`, `grep -c`, `tail -c`,
+  `mktemp`, `hostname -s`, `date`. Bounded input, no network, no locking. The
+  cost of wrapping every one of these is a `timeout` process per call across a
+  run that already forks heavily, bought against a hang that has no mechanism.
+- **`rig-enablement-drift.sh`, `rig-job-receipt.sh`, `rig-report.sh`** define no
+  `bound()` at all, because none of them invokes anything but the above. That is
+  a property of those scripts today; a network call added to one of them needs a
+  bound, and this list is where that gets noticed.
+
+`rig-marketplace-divergence.sh` is the one that moved. Everything it does itself
+is local file comparison, but `ic publish doctor` is a separate binary that walks
+marketplace clones and may reach the network, invoked as `… || true`. The parent
+health run does bound it — and a bound that exists only in the caller is not a
+property of the call. Run standalone, or invoked from somewhere else later, it
+would be unbounded again. It carries its own 120s now.
+
+**Two defects found by testing this, both the same shape as the thing being
+fixed.** The first: `test-rig-health-bounds.sh` proves bounds fire by wedging
+processes that will not return on their own — so with `timeout` absent it did
+not fail, it **slept**, 120s on one holder and 300s on a `bd` that never answers.
+A suite whose subject is a timeout could not run without a timeout, and it took
+down the very run that was studying it. It probes and skips honestly now, and
+prints the skip count in its tally: a suite reporting `passed: 4 failed: 0`
+while two assertions never ran tells exactly the lie this page is about.
+
+The second: the run-ceiling watchdog is in its own process group on purpose, so
+that the group kill it fires cannot take out the killer mid-write — which also
+means the run's own `EXIT` trap is the only thing that reaps it, and an `EXIT`
+trap does not run under `SIGKILL`. Killing a run left the watchdog alive with
+PPID 1, sleeping toward an 1800s ceiling. Half an hour after the run was over it
+would have written *"not run: hit its ceiling"* over every check in a finished
+run's health dir, then signalled a process **group** that no longer existed —
+and pgids get reused. It waits in slices now and exits silently the moment there
+is nothing left to guard. Isolation added for one direction applies in both.
+
 Expected steady state, so a drift is auditable against something:
 
 ```
