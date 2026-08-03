@@ -105,6 +105,12 @@ docs/research/*/
 .claude/session-state.json
 .clavain/cxdb/
 .clavain/intercept/
+# interspect's local instrument store. evidence.db/interspect.db are already
+# covered by .clavain/**/*.db, but delegation-calibration.json is not, and one
+# unignored generated file is enough to leave the whole directory untracked --
+# which is how this repo showed up as "needs a human" with nothing in it a human
+# should decide. Same class as .clavain/gate-tier-calibration.json above.
+.clavain/interspect/
 .clavain/**/*.db
 .clavain/**/*.db-shm
 .clavain/**/*.db-wal
