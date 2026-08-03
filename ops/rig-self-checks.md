@@ -1911,3 +1911,145 @@ no silence distinguishable from a quiet day. The guard does still intercept
 zklw-targeted commands issued from a Mac session — that was demonstrated
 accidentally when it blocked a `git stash list` in an `ssh zklw` command during
 this work — so the exposure is sessions running *on* zklw, not every path to it.
+
+## Registration was mistaken for protection, 2026-08-03
+
+The previous section closed by recording `Sylveste-0dk3` as "present on zklw and
+registered nowhere". Both halves of that need correcting, and the correction is
+worse than the bead.
+
+**The bead was right when filed, and had gone stale by the time it was worked.**
+Three dated backups of zklw's `settings.json` — Jul 26, Jul 27 16:43, Jul 27
+17:01 — each carry zero references to the guard and exactly one `PreToolUse`
+hook, which is precisely what the 07-31 measurement reported. By 08-03 the live
+file registered it. Nothing accounts for the change: neither installer deploys
+`settings.json` (both decline it deliberately, because Claude Code replaces it
+with write-temp-then-rename, which replaces a symlink rather than following it),
+and the only sync path for that file runs **live → repo** (`sync-dotfiles.sh:94`),
+which is the wrong direction to have installed anything. The likeliest agent is a
+tool-using session on zklw at 08-02 20:28–20:36 local, which is when both the
+file and `~/.claude/audit.log` were last written. So the registration arrived by
+a path nothing declares and nothing can reproduce, and it can leave the same way.
+
+**Registration turned out not to be the thing that mattered.** The host matcher
+required the command to contain `ssh … zklw`:
+
+```bash
+if ! echo "$COMMAND" | grep -qE 'ssh\s+(-[^ ]+\s+)*(zklw|slse)|ssh\s+(-[^ ]+\s+)*mk@'; then
+  exit 0  # Not targeting the dev server, allow
+fi
+```
+
+That is true of every destructive command issued **from** the Mac and of none
+issued in a session already running **on** zklw. Measured on zklw before the fix
+by feeding `PreToolUse` JSON to the hook on stdin:
+
+| probe (as a zklw session would issue it) | before | after |
+|---|---|---|
+| `git reset --hard HEAD~1` | **rc=0 allowed** | rc=2 blocked |
+| `git clean -fd` | **rc=0 allowed** | rc=2 blocked |
+| `git stash` | **rc=0 allowed** | rc=2 blocked |
+| `git checkout -- <path>` | **rc=0 allowed** | rc=2 blocked |
+| `ssh zklw '… reset --hard'` | rc=2 blocked | rc=2 blocked |
+| `git status --porcelain` | rc=0 allowed | rc=0 allowed |
+
+So the guard was present, deployed, byte-identical to the repo, registered in
+`settings.json`, and blocking nothing that a session on that machine would ever
+issue. Every level of inspection short of executing it agreed it was fine.
+
+Its own name is part of how it hid. Finding a file called
+`guard-zklw-destructive-git` wired **on zklw** reads as confirmation. It was
+written from the Mac's vantage point, where "targeting zklw" necessarily implies
+an `ssh` prefix, and the name records the target rather than the vantage point.
+
+The fix keys on whether *this host* is the dev server, by hostname (`zklw|slse`)
+or by an explicit `$HOME/.claude/guard-destructive-git-local` opt-in — two ways
+because the hostname has already changed once (`slse` → `zklw`) and a rename must
+not silently downgrade a guard. Mac behaviour is unchanged and verified
+unchanged. Refusal advice is now mode-dependent: "use scp/rsync instead" is
+correct for a Mac session reaching in and meaningless for a session already on
+the box, which has nowhere to copy from — and zklw has no human to reinterpret
+it. The guard also answers `--mode` now, so which of the two modes a host is in
+can be **asked** rather than discovered by issuing something destructive.
+
+### The check that could not have caught it, and the one that now can
+
+`rig-hook-liveness.py` compares the hooks `settings.json` **registers** against
+evidence they ran. It starts from the registration list, so an unregistered hook
+is outside its domain by construction — it cannot report what it never enumerates.
+
+`rig-hook-wiring.py` asks the complementary question: what is present here and
+registered nowhere? Its first firing found two on each machine, neither planted:
+
+| finding | why it matters |
+|---|---|
+| `bd-ensure-server.sh` | tracked, edited as recently as Aug 1, named in no settings file and nowhere in the repo. Its own header says it exists "to prevent silent empty results" — a script written against silent failure, silently not running. |
+| `rtk-rewrite.sh` | a `PreToolUse:Bash` hook that rewrites commands before execution, registered nowhere, while `common/.claude/hooks/.rtk-hook.sha256` is still tracked beside it. |
+
+Cry-wolf was the failure mode to design against. Most files under a hooks
+directory are not meant to be registered: helpers called by another hook, sourced
+libraries, tests, and scripts a scheduler or plugin manifest runs. A naive
+"absent from `settings.json`" check manufactures a finding for each, and a check
+that cries wolf is how the real one hides. So an unregistered script is a finding
+only when **nothing** on the machine names it — no other hook, no settings
+command, no launchd plist or systemd unit, no plugin manifest, no shell rc. All
+derived, no blessed-name list: that mistake was made once already in
+`rig-dotfiles-deployed.py` and had to be replaced within the hour, because an
+allow-list produces a false finding for every hook adopted after it is written.
+
+Exit contract matches the deployment check — 0 clean, 1 findings, 2 cannot
+assess — and 2 is not a milder 1. All three were demonstrated, plus the vacuity
+case: an **empty** hooks directory returns 2, not a quiet 0.
+
+What it does not claim is efficacy. The guard above would have passed this check
+on 08-03 while still blocking nothing. Wiring and effect are separate questions
+and want separate instruments.
+
+### `Sylveste-tozs`: the right binary was already there
+
+zklw emitted policy `schema: 1` against a gate requiring `>= 2`, so every gate
+wrapper on the signer host aborted as "malformed policy". No build was needed:
+`os/Clavain/bin/clavain-cli-go-linux-amd64` on zklw already emitted schema 2 with
+`delegation`, as did the `bin/clavain-cli` wrapper the Mac symlinks to. The fault
+was that `~/.local/bin/clavain-cli` on zklw was an 18 MB **copy** of the Jul 27
+schema-1 binary, shadowing the wrapper. Replacing the copy with a symlink — the
+arrangement the Mac already had — moved it to schema 2.
+
+That is the third instance in three days of the same shape: the correct artifact
+present, and a stale copy in front of it. The estate keeps differing in *how* a
+thing is attached rather than *whether* it is there — `~/.claude/hooks` is a
+symlink into the repo on zklw and a real directory of copies on the Mac;
+`settings.json` is copy-synced live → repo on both; `clavain-cli` was a symlink
+on one and a copy on the other. Each asymmetry is invisible to a check that asks
+only whether the file exists.
+
+The message was fixed separately, and the misdirection was real: three unrelated
+failures all printed "malformed policy (rc=3)" — a CLI that printed no JSON, one
+too old for the schema, and a response missing fields. Only the word "malformed"
+was ever accurate, and "policy" named the one thing not at fault. Each now
+reports itself with the observed number against the required one.
+
+**The workaround does not retire, and the bead's guess was wrong.** `Sylveste-tozs`
+supposed that the standing "use `ic publish --auto --cwd=<abs>`, not the gate
+wrapper" practice was this same root cause worked around rather than diagnosed.
+It is not. That practice was learned 2026-07-22, eight days *before* the
+`schema >= 2` requirement landed (`673ecf1`, 2026-07-30), and its cause is a
+separate bug still present on `main`: `ic-publish-patch.sh` ends in
+`ic publish --patch "$PLUGIN_DIR" "$@"`, where the positional directory parses as
+an exact version. A plausible shared cause is not a shared cause; dating the two
+was what separated them.
+
+### Left undone, deliberately
+
+- `rig-hook-wiring.py` is **tracked but declared in neither installer**, and not
+  wired into `rig-health-check.sh`. Both installers and that surface belong to a
+  live sibling session mid-rewrite of their exit contract. This is the same
+  tracked-but-undeclared class as `Sylveste-y6rl`, accepted knowingly here rather
+  than fought over a file two sessions are editing.
+- The `bd-push-dolt` push on zklw now reaches its **intended** refusal —
+  "requires confirmation; no tty available" — instead of "malformed policy". The
+  remaining step is interactive by design and was not bypassed.
+- A `PreToolUse` refusal captured inside a real session **on** zklw is still
+  missing. Direct invocation of the live hook on that host is proven, and the
+  harness there demonstrably runs hooks from that settings file, but launching a
+  session with `--dangerously-skip-permissions` was correctly refused from here.
