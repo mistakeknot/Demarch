@@ -216,6 +216,40 @@ down the very run that was studying it. It probes and skips honestly now, and
 prints the skip count in its tally: a suite reporting `passed: 4 failed: 0`
 while two assertions never ran tells exactly the lie this page is about.
 
+**Shown firing under launchd**, not reasoned about. `RIG_IC_BIN` pointed at a
+`sleep 3000`, ceiling set to 150s, agent booted out and back in so the drill ran
+under the real scheduler rather than from a shell:
+
+```
+health run exceeded its 150s ceiling; 18 check(s) never ran
+
+  guard-tests            pass  +127s  15 suite(s), passed: 185   failed: 0
+  settings-reference     pass  +127s  reference = ~/.claude/settings...
+  [18 others]            warn  +153s  not run: the health run hit its 150s
+                                      ceiling before reaching this check
+```
+
+Two real answers and eighteen honest ones, where before the run would have
+ended with two answers and eighteen files still describing yesterday — read as
+current by anything that does not check mtimes, and read as STALE by the one
+reporter that does, blaming eighteen checks for a fault none of them had.
+
+**The drill also corrected a claim in this file's own code comment.** The
+watchdog kills the run's process GROUP, and the comment said a wedged
+grandchild goes with it. It does not. The wedged `ic` survived the kill on
+PGID 12965 while the run was 99646 — because `timeout` without `--foreground`
+puts its child in a **new** process group; that is *how* it group-kills. So
+every bounded call is deliberately outside the run's group and the ceiling
+cannot reach it.
+
+That is safe, but for a different reason than the comment gave: those subtrees
+carry their own bounds, so the leftover is bounded by construction — the sleeper
+died on its own 120s — and its parent is gone, so it can write nothing. The two
+mechanisms turn out to be complementary rather than redundant: **with** `timeout`
+the children self-bound and the group kill cannot reach them; **without** it
+`bound()` is a passthrough, so the children stay in the run's group and the
+group kill is what catches them. Neither alone covers both cases.
+
 The second: the run-ceiling watchdog is in its own process group on purpose, so
 that the group kill it fires cannot take out the killer mid-write — which also
 means the run's own `EXIT` trap is the only thing that reaps it, and an `EXIT`
