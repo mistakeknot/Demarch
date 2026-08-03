@@ -48,6 +48,18 @@ services:
   # on first boot (one-way — back up config first). GOTCHA: 3.x runs as node
   # (UID 1000), old 2.x wrote config as root -> EACCES crash-loop on the logs
   # dir. Fix: chown config tree to the run-UID + pin `user:` + `init: true`.
+  #
+  # 3.3.0 -> 3.4.1 on 2026-08-03. A SECURITY update, not a feature one: 3.4.0
+  # patches GHSA-mc6w-69r3-62h8, path traversal -> RCE in the avatar ImageProxy.
+  # Exposure here was low (both vectors need prior access: a compromised
+  # Jellyfin returning a crafted response, or MITM on a connection that runs
+  # over the internal docker bridge) but it is still RCE. Two fixes in the same
+  # pair matter more day to day for this estate, which routinely de-registers
+  # and re-imports media: "don't delete requests when removing media from arr"
+  # and "decline orphaned requests when media is removed from servarr".
+  # Clean update, no EACCES recurrence, 50 requests / 3 users / arr links intact.
+  # Config backed up first to backups/jellyseerr-config-*.tar.gz — the DB
+  # migration is still one-way, so that backup is the only route back.
   jellyseerr:
     image: ghcr.io/seerr-team/seerr:latest
     container_name: jellyseerr
