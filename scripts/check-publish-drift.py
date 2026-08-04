@@ -324,6 +324,25 @@ def main() -> int:
             print("-" * 100)
             for name, r in sorted(drift.items(), key=lambda kv: -kv[1]["count"]):
                 print(f"{name:<16} {r['published']:<10} {r['count']:>9} {r['age']:>7}  {r['detail']}")
+            # SAY WHICH KIND OF RED THIS IS.
+            #
+            # Drift is closed by publishing, and publishing is not something a
+            # scheduled run can do: `ic publish --auto` refuses a plugin an
+            # agent has touched, and the wave runs from the signer machine
+            # (zklw) with CLAVAIN_AUTHZ_PROJECT_ROOT pinned. So this check will
+            # report the same plugins, in the same words, every day until a
+            # human runs it -- and a line that is red every morning is one
+            # people stop reading, which is the failure the response budget
+            # exists to catch.
+            #
+            # It stays a failure: published-behind-source is a real divergence
+            # between what the marketplace advertises and what the repo holds.
+            # It just names who can close it and how, so the reader is not left
+            # to infer that from a count of unshipped commits.
+            print("\n  Closed by publishing, which is a human action: run the wave "
+                  "from the signer machine (zklw), regenerating manifests from the "
+                  "MONOREPO ROOT first, then `ic publish <exact-version>` per plugin. "
+                  "`ic publish --auto` will refuse any plugin an agent has modified.")
         for label, group in (("Published without committing the bump", uncommitted),
                              ("Undetermined", undet)):
             if group:
