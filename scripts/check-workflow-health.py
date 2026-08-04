@@ -38,6 +38,44 @@ def gh_json(path):
         return None
 
 
+def gh_raw(path):
+    p = subprocess.run(
+        ["gh", "api", "-H", "Accept: application/vnd.github.raw", path],
+        capture_output=True, text=True)
+    return p.stdout if p.returncode == 0 else None
+
+
+def triggers(repo, path):
+    """The event names a workflow declares, or None if they cannot be read.
+
+    None rather than an empty set when the file cannot be fetched or parsed:
+    "declares no triggers" and "I could not read its triggers" are different
+    claims, and only the first would justify softening a verdict. Anything
+    unreadable keeps the stricter reading.
+    """
+    txt = gh_raw(f"repos/{OWNER}/{repo}/contents/{path}")
+    if txt is None:
+        return None
+    try:
+        import yaml
+    except ImportError:
+        return None
+    try:
+        doc = yaml.safe_load(txt)
+    except Exception:
+        return None
+    if not isinstance(doc, dict):
+        return None
+    # YAML 1.1 reads a bare `on:` key as the boolean True, so a workflow's most
+    # important line is the one most likely to be missed by a dict lookup.
+    node = doc.get("on", doc.get(True))
+    if isinstance(node, str):
+        return {node}
+    if isinstance(node, (list, dict)):
+        return set(node)
+    return None
+
+
 def estate_repos(root: Path):
     names = []
     clav = root / "os" / "Clavain"
@@ -69,7 +107,7 @@ def main(argv=None):
               f"checkout.", file=sys.stderr)
         return 2
 
-    disabled, never = [], []
+    disabled, never, manual = [], [], []
     inspected = 0
     for repo in repos:
         data = gh_json(f"repos/{OWNER}/{repo}/actions/workflows")
@@ -87,16 +125,32 @@ def main(argv=None):
                 continue
             runs = gh_json(f"repos/{OWNER}/{repo}/actions/workflows/{w['id']}/runs?per_page=1")
             if runs is not None and runs.get("total_count", 0) == 0:
-                never.append((repo, name))
+                # A workflow_dispatch-only workflow has no automatic trigger, so
+                # "never ran" means nobody has needed it yet -- not that anything
+                # is wrong. cxdb-release.yml is a manual cross-compile release
+                # build, and counting it as a fault made this check report a
+                # failure every day for a workflow behaving exactly as designed.
+                #
+                # Still reported, because unvalidated is a real thing to know
+                # about a release path. Just not a failure.
+                ev = triggers(repo, w.get("path", ""))
+                if ev is not None and ev <= {"workflow_dispatch"}:
+                    manual.append((repo, name))
+                else:
+                    never.append((repo, name))
 
     if not args.quiet:
         for repo, name, state in sorted(disabled):
             print(f"DISABLED  {repo:16} {name:30} state={state}")
         for repo, name in sorted(never):
             print(f"NEVER-RAN {repo:16} {name:30} (never validated)")
+        for repo, name in sorted(manual):
+            print(f"MANUAL    {repo:16} {name:30} "
+                  f"(workflow_dispatch only; never dispatched)")
 
+    tail = f", {len(manual)} manual-only never dispatched" if manual else ""
     print(f"{inspected} repo(s) inspected: {len(disabled)} disabled, "
-          f"{len(never)} never ran")
+          f"{len(never)} never ran{tail}")
     if disabled:
         print("  re-enable: gh api --method PUT "
               "repos/mistakeknot/<repo>/actions/workflows/<id>/enable")
