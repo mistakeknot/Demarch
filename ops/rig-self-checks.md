@@ -2096,6 +2096,17 @@ disabled auto-pull on 92 of 93 repos on the canonical machine — and auto-pull 
 the only half of autosync still working there, the `PostToolUse` push half having
 been dead since 2026-07-14.
 
+> **CORRECTED 2026-08-04 — the guard described below was removed, and two claims
+> in this section do not hold.** It probed for a *local* `refs/heads/autosync/*`
+> while the writer creates the lane on the remote, so it was inert by coincidence
+> rather than conditional by design; and the design doc it cites decides the
+> opposite of what the guard did (HEAD stays on `main` precisely so this pull
+> reconciles the machines). `LANE=1` is also 7 repos, not one — "exactly one is on
+> a lane" counted repos whose HEAD *is* a lane branch. Separately, "the push half
+> having been dead since 2026-07-14" was true when written and is no longer: two
+> repos pushed successfully on 07-29 and 07-30. See "Deference is a claim, and it
+> needs a check" below.
+
 The guard is now conditional on the lane model actually being in use — either
 `AUTOSYNC_LANE` is set, or the repo genuinely has a lane branch — which preserves
 the decision without shipping its unwired half. Both directions were demonstrated
@@ -2201,6 +2212,12 @@ names the nudge it should not have emitted.
   suppresses a warning nothing else is covering. Pre-existing on that machine;
   unifying the files did not change it, and changing it is a separate decision
   from unifying them. Filed rather than folded in.
+  > **RESOLVED 2026-08-04 (`Sylveste-kser`), and the diagnosis was wrong twice.**
+  > The push half is dormant, not dead — it pushed on 07-29 and 07-30. And
+  > "nothing else is covering" is false: a daily repair timer keeps all 93 repos
+  > current, which is why exposure measured 0. The thing worth gating on was
+  > therefore never the push hook. Deference is now gated on per-repo freshness
+  > from any mechanism.
 - `git-autosync-pull.sh` releases the lock from its `EXIT` trap even on the
   path where it never acquired one, so a session that gave up waiting would
   `rmdir` the lock the holder was using. Present in both former copies, so
@@ -2210,3 +2227,189 @@ names the nudge it should not have emitted.
   `rig-dotfiles-deployed.py` are now inaccurate. Both are owned by another
   session and were left alone; their code handles the missing directory
   correctly (`isdir()` guard), so nothing is broken, only mis-commented.
+
+## Deference is a claim, and it needs a check, 2026-08-04
+
+Goal: "Make autosync trustworthy on the machine that runs unattended."
+`Sylveste-k0pq` (P1, closed), `Sylveste-kser` (closed). dotfiles `3c5b5b6`,
+`0739f7c`.
+
+Two advisory hooks went silent for any repo carrying a `.git-autosync` marker,
+on the stated grounds that "the autosync system already pulls on start and
+pushes on edit". That sentence is a claim about a subsystem, and nothing checked
+it. What the measurement found is worse than the bead predicted, and in a
+different place.
+
+### Gate on the mechanism doing the work, not the one named in the comment
+
+Across zklw's 93 marked repos: 9 have ever recorded a successful push, 81 have
+no `.git/autosync.log` at all, the median last successful push is 22.1 days old
+— and **0 of 93 currently hold unpushed commits or dirty files**.
+
+That last number is the interesting one. Deference has never been visibly
+harmful because something *is* keeping those repos current. It is not the push
+hook. It is `git-autosync-repair.sh` on a daily timer — a different subsystem
+from the one the deference comment names. The bead's own proposed fix ("gate
+deference on the push half being alive") would therefore have measured the wrong
+thing and still reported healthy. Ratified instead: gate on freshness from *any*
+mechanism, per repo, on direct per-repo evidence.
+
+The rule generalises past this case. When code defers to a subsystem, the
+subsystem it actually depends on is the one that would have to fail for the
+deference to hurt — not the one the comment credits. Those are different
+questions and only the first is worth gating on.
+
+### A failing scheduled job, overwritten by a healthier manual run
+
+The repair timer has exited 1 on **all 11 of its recorded runs since
+2026-07-28**, with a refusal count trending up (16 → 9 → 6 → 4 → 4 → 5 → 13 →
+13). The stored `~/.claude/health/autosync-repair.json` read `pass` throughout,
+because a later manual invocation overwrote the scheduled failure — the file is
+last-writer-wins with no notion that the *scheduled* run is the authoritative
+one. A dashboard that any ad-hoc run can turn green is not a dashboard.
+
+Worse, which 13 repos need a human is **not recoverable from the record**. The
+script writes its detail to stderr, the unit routes stderr to the journal, there
+are no drop-ins overriding that (checked, per the drop-in rule above) — and the
+journal for that run holds only the summary line. So the refusals exist as a
+count and nowhere as a list. That is the "an empty result is not a zero" failure
+one level up: not a wrong number, but a number with no retrievable referent.
+Filed rather than guessed at.
+
+### Inert by coincidence is not safe
+
+A lane guard shipped in `e17a9d0` skipped auto-pull when "the lane model looked
+live" and HEAD was not an `autosync/*` branch. It probed liveness by looking for
+a local `refs/heads/autosync/*`. The writer pushes
+`HEAD:refs/heads/autosync/<machine>`, which appears locally as
+`refs/remotes/origin/autosync/*` — a different namespace. So for all 7 `LANE=1`
+repos the probe answered "not live", the pull happened, and the guard was
+harmless. Two independent coincidences had to hold: the wrong namespace, and no
+`LANE=1` repo happening to carry a local lane branch. One `git branch
+autosync/zklw` would have removed the second.
+
+**"Currently returns the right answer" and "implements the right rule" are
+different properties, and only the second survives a new repo.** This is the
+same shape as the registered-but-inert guard from `0dk3`: everything short of
+executing the specific path agreed it was fine.
+
+The conclusion was independently wrong too. `dual-machine-sync.md`, in the
+revision that supersedes the 2026-06-30 design, decides "HEAD stays on `main`.
+The lane is a push destination, not a checkout", *because* that makes the
+session-start `pull --rebase origin main` the cross-machine reconciliation
+point. The guard came from the `macos/` copy, which encoded the "HEAD *is* the
+lane" model that doc explicitly rejected. Preserving a rejected design behind a
+conditional and calling it respect for a decision is how the rejection gets
+un-made — the previous session's own note that the `macos/` copy "was the design
+this one replaced" was the warning, and it went unread one file over.
+
+### Age is evidence about a lock, not about its holder
+
+`Sylveste-k0pq`. Both autosync hooks shared `.git/autosync.lockdir`, installed
+`trap release_lock EXIT` *before* acquiring, and released unconditionally — so a
+process that waited out its timeout freed the lock the holder was using. The
+push hook's timeout path was `exit 0` *inside* `acquire_lock`, making "give up on
+the lock" and "steal the lock" the same statement. Both also broke any lock older
+than 60s with no liveness check, so two processes could each declare the other's
+lock stale.
+
+`mkdir` was never the problem and stays. What was missing is an owner record and
+a liveness test, in one sourced implementation rather than a copy per hook — a
+mutex with two independently-editable halves is a mutex only until someone edits
+one half, which is the twice-tracked-hook defect in the one place where
+disagreement means two writers running `add`/`commit`/`push` in one repo.
+
+Two refinements that only came out of running it:
+
+- **"Alive" and "cannot determine" must be different states.** The first draft
+  had two states plus an absolute ceiling to prevent deadlock, and its own test
+  caught that the ceiling then applied to a *verifiably running* owner —
+  reintroducing the age-only defect on a 900s fuse instead of a 60s one. Four
+  states now: verified alive (never broken, at any age), verified dead, no owner
+  record (breakable — nothing will ever be shown to hold it), cannot determine
+  (breakable only past the ceiling).
+- **Every tie goes to waiting**, because the costs are asymmetric: a false "dead"
+  gives two concurrent writers, a false "alive" gives one skipped sync that the
+  repair timer picks up.
+
+### Resolve a library from the file, not from the invocation path
+
+Both hooks are reached as `~/.claude/hooks/*.sh` on both machines, by different
+attachment modes — per-file symlink on Clavain, file inside a symlinked
+directory on zklw (see "Attachment mode is a contract" above). Following
+`BASH_SOURCE` through symlinks to the real file lands next to the library in the
+repo under either mode, so the shared library needs **no new deployment step**.
+Verified by firing both hooks through the deployed path on Clavain, where
+`lib-autosync-lock.sh` is *absent* from `~/.claude/hooks` and resolution reaches
+it anyway. Where it cannot be found, both hooks fail closed and log the path
+they looked at.
+
+### Four ways a check lied to itself, all caught by fixtures
+
+The Clavain sweep reports "2 current, exit 0" — one branch of four. Every defect
+below was found by fixtures that forced the other three, not by the sweep:
+
+1. **`.strip()` on column-encoded output.** `git()` returned
+   `r.stdout.strip()`, and `git status --porcelain` encodes state in the first
+   two *columns*: `" M uv.lock"` parsed as `"v.lock"`. The first dirty path of
+   every repo lost a character, so an allowlisted path silently read as
+   unallowlisted and a repo the repair timer handles fine reported as holding
+   work nothing would sync. `rstrip("\n")`, never `strip()`, on anything
+   positional.
+2. **The weakest fact vetoing the strongest.** `classify()` demanded the
+   ahead-count before reading the log, so a repo with a *recent successful push*
+   returned cannot-assess purely because it had no upstream — the evidence
+   proving the mechanism works was never read. Consult evidence before letting
+   an unrelated failure decide. "No upstream" remains a finding; it is no longer
+   a short circuit.
+3. **`ahead = None`, never `0`.** A repo whose ahead-count cannot be computed has
+   not been shown to have nothing unpushed. Collapsing that to 0 is the
+   `|| echo 0` mistake with a different spelling.
+4. **A test that cannot fail measures nothing.** The 15-case lock proof was run
+   against the *pre-fix* semantics to confirm it discriminates; it fails there on
+   the k0pq case and the missing owner record. Two of its own assertions were
+   also wrong at first: `grep -c` prints `0` *and* exits 1, so `|| echo 0`
+   emitted `"0\n0"`; and `verdict | grep -q` under `set -o pipefail` reports the
+   pipeline as failed, because `grep -q` exits on first match and SIGPIPEs the
+   upstream `head`. Both are fallbacks firing on the wrong condition — the same
+   class as the `| tail -3` that hid an entire beads step in `iqfu`.
+
+### Corrections to the record
+
+- **"The push half has been dead since 2026-07-14" was true when written and is
+  now stale**, not fabricated — the logout outage documented earlier in this file
+  was real. But two repos pushed successfully on 07-29 and 07-30, in a `-> main`
+  log format that only exists in code from 07-27, so it recovered at least five
+  days before the claim was last repeated. It is *dormant*: it fires when a
+  session edits a file, and few do on that machine. A dated claim about a live
+  system needs re-measuring before it is restated, not just a citation.
+  Corrected in three hook headers and in `CLAUDE.md`; also still asserted by
+  `mk-q6bl`.
+- **`mk-q6bl` does not reproduce.** Recent zklw sessions reach 59, 42 and 2 tool
+  calls with no authentication errors, so "every scheduled session fails auth
+  before its first tool call" no longer holds. Left open pending a check of
+  whether the *scheduled* path specifically still fails.
+- **`LANE=1` is 7 repos, not 1.** The earlier "exactly one is on a lane" counted
+  repos whose HEAD *is* an `autosync/*` branch (jawnfit alone). The marker flag
+  and the checked-out branch are different questions, and under the current
+  design a lane repo is *expected* to sit on main.
+- **Gated deference is currently a no-op on zklw's fleet**, because all 93 repos
+  are genuinely current. Said plainly rather than presented as a fix with visible
+  effect: it changes what happens the next time something is outstanding, not
+  what is reported today.
+
+### What `git-autosync-repair.sh` covers, and what it does not
+
+Running: yes, daily 08:45 UTC via `git-autosync-repair.timer`, confirmed in the
+journal. There is a second timer, `git-autosync-promote.timer`, hourly, which
+fast-forwards `main` to a green lane tip and was not previously recorded here.
+
+Covers: fetches all 93; `--ff-only` merges a repo that is merely behind; commits
+only the explicit allowlist (`uv.lock`, `.beads/issues.jsonl`, `.git-autosync`,
+`docs/diagrams/*.html`); pushes; and refuses — to a human — on rebase/merge/
+cherry-pick/bisect in progress, detached HEAD, conflicts, anything already
+staged, any path off the allowlist, divergence, a missing remote or upstream, and
+an unreachable remote.
+
+Does not cover: hand-authored source changes, deliberately. Nor does it surface
+its own refusals anywhere durable, which is the finding above.
