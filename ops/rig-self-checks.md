@@ -2023,6 +2023,13 @@ symlink into the repo on zklw and a real directory of copies on the Mac;
 on one and a copy on the other. Each asymmetry is invisible to a check that asks
 only whether the file exists.
 
+> **Wrong, corrected below** (§ *Attachment mode is a contract*, 2026-08-03): the
+> Mac's `~/.claude/hooks` is a real directory of **per-file symlinks**, not of
+> copies. The reading that it held copies is what made the near-miss recorded in
+> `dcaca30` look like a deployment-staleness risk, when the real defect ran the
+> other way and was already live. The general claim in this paragraph — that the
+> estate differs in *how* things attach — held up; this instance of it was wrong.
+
 The message was fixed separately, and the misdirection was real: three unrelated
 failures all printed "malformed policy (rc=3)" — a CLI that printed no JSON, one
 too old for the schema, and a response missing fields. Only the word "malformed"
@@ -2053,3 +2060,153 @@ was what separated them.
   missing. Direct invocation of the live hook on that host is proven, and the
   harness there demonstrably runs hooks from that settings file, but launching a
   session with `--dangerously-skip-permissions` was correctly refused from here.
+
+## Attachment mode is a contract, 2026-08-03
+
+`Sylveste-iqfu` was closed by unifying one hook out of `macos/`, on the reading
+that the four names still tracked in both trees were benign and the risk was a
+future asymmetric edit. Three of the four were already divergent on the morning
+this was written — by 24, 28 and 81 lines. Each machine had been running a
+different version of the same hook for weeks.
+
+| hook | `common/` → zklw | `macos/` → Mac | what it actually was |
+|---|---|---|---|
+| `guard-zklw-destructive-git.sh` | 115 L | 115 L, same sha | identical; duplication latent only |
+| `git-autosync-pull.sh` | 79 L | 103 L, **+ lane guard** | `macos/` newer — and adopting it breaks zklw |
+| `git-sync-check.sh` | 111 L, **+ deference, + stdin echo** | 139 L, **+ fetch-staleness note** | both newer, **neither a superset** |
+| `git-uncommitted-nudge.sh` | 76 L, **+ deference, + stdin echo** | 157 L, **+ timeout contract** | both newer, **neither a superset** |
+
+**"Unify to the newer copy" had no referent.** `macos/` was newer in all three
+divergent cases, which inverts what `iqfu` had trained everyone to expect — but
+`common/` was not simply older. It carried autosync deference and the stdin echo
+that `macos/` lacked. Picking a winner would have dropped working behaviour
+whichever way it went: either the deference that suppresses nagging across 93
+marked repos, or the latency contract that was fixing 120 of 1545 timing-out
+`Stop` events. Each file is now a union, and no host branch was needed —
+nothing in either copy was actually OS-specific.
+
+### The one place a ruling was needed, not a merge
+
+`macos/`'s lane guard skipped the auto-pull unless `HEAD` matched `autosync/*`,
+unconditionally. The lane model was decided 2026-06-30 and never wired, and the
+measurement says so: on zklw **92 of 93** repos carrying a `.git-autosync` marker
+are on `main` or `master`, exactly **one** is on a lane, and this Mac has no
+`autosync/*` branch anywhere. Shipping that copy to both machines would have
+disabled auto-pull on 92 of 93 repos on the canonical machine — and auto-pull is
+the only half of autosync still working there, the `PostToolUse` push half having
+been dead since 2026-07-14.
+
+The guard is now conditional on the lane model actually being in use — either
+`AUTOSYNC_LANE` is set, or the repo genuinely has a lane branch — which preserves
+the decision without shipping its unwired half. Both directions were demonstrated
+on a fixture: a marked repo on `main` pulls, and the same repo skips with the lane
+reason logged once an `autosync/*` branch exists.
+
+### The channel that could have caused it with nobody editing a hook
+
+The Mac's `~/.claude/hooks` is a real directory of **per-file symlinks** into a
+per-OS tree; `install-macos.sh` links each hook individually and iterates
+`common/` before `macos/`, so `macos/` won by last-write. zklw's is a **whole-
+directory** symlink into `common/`. Neither is a directory of copies.
+
+`sync-dotfiles.sh` then copied `~/.claude/hooks/*.sh` into `common/` with `cp -p`
+— and `cp` **dereferences** a symlink, while `[ -f ]` **follows** one, so a
+symlink to a regular file passes the only test that stood between the loop and
+the copy. The loop therefore wrote `macos/` bytes into `common/` under the
+`common/` name: a silent cross-tree overwrite, in the direction of the tree that
+deploys to zklw, needing no hook edit at all — just a sync run. That is how the
+92-of-93 breakage could have arrived on its own.
+
+Proven in a sandbox rather than reasoned about: a `common/` file holding
+`COMMON-VERSION-fixed` came back holding `MACOS-VERSION-stale`. Measured on the
+real machine: **17 of 17** live hooks are symlinks, 13 into `common/` where the
+copy was a file onto itself and `cp`'s complaint was swallowed by `|| true`, and
+4 into `macos/` which were the live hazard. So the loop's entire current effect on
+this Mac was either a no-op or the bug; it had not preserved a local hook in a
+long time, because there are none left to preserve. Fixed by skipping symlinks —
+a symlink into the repo is already tracked and has nothing local to preserve,
+which is precisely the case the loop should never have been copying.
+
+### Two of my own claims, corrected
+
+`dcaca30` recorded that "a live → repo sync propagated my change" into `macos/`.
+It cannot have. **No sync path writes `macos/` at all** — `sync-dotfiles.sh`
+mentions that tree nowhere, and its only hook destination is `common/`. The
+`macos/` copy changed because the Mac's live hook *is* the `macos/` file, so
+writing the live hook wrote the repo directly. Not luck, and not a sync.
+
+The near-miss in that note was real but backwards. It read as: the repo would
+have held a fixed `common/` and a stale `macos/`, and a later `install-macos.sh`
+run would have reverted the Mac. In fact the installer creates **symlinks**, so it
+reverts no content; and the Mac's live guard was *already* the stale `macos/` copy
+at that moment. The exposure was immediate, not deferred — and the actual danger
+was the sync overwriting the **fixed `common/` copy** with the stale `macos/` one,
+which would have un-fixed the machine the guard was fixed for.
+
+### The check, and its own success path
+
+`rig-hook-duplication.py` reports names tracked in more than one tree and whether
+the copies agree, alongside which tree the live hook resolves into. A sibling to
+`rig-hook-wiring.py`, not an extension: wiring asks about this machine's
+`settings.json`, duplication asks about the repo's trees, and a duplicated hook is
+not an unwired one — folding them together would make a non-zero exit ambiguous.
+
+Its first firing named the three divergent pairs on both machines, with the
+`runs here` column correctly differing (`macos/` on the Mac, `common/` on zklw),
+which is the divergence stated as a fact about behaviour rather than about bytes.
+
+It got two things wrong that only running it could reveal:
+
+- It called zklw's arrangement a **copy**. A file inside a symlinked *parent* is
+  an ordinary regular file, so `is_symlink()` on the file alone cannot tell a copy
+  from a live link. A copy is frozen at copy time; a link is the tree's own bytes.
+  Reporting the second as the first tells a reader their repo edit will not reach
+  the machine when it already has — the very mental model the check exists to
+  correct. It now names the mode: per-file symlink, file inside a symlinked
+  directory, hardlink, or independent copy, and for a genuine copy it compares
+  bytes and reports drift.
+- After unification it returned **2, cannot-assess**, because only one tree held
+  hooks. So it went red at the exact moment the defect was eliminated. The rule it
+  was built on is right — an empty input set must not read as clean — but vacuity
+  is about whether the check managed to **look**, not how few things it found.
+  Zero trees is a failed discovery and stays a 2. One tree holding 21 readable
+  hooks is a complete measurement with a definite answer, and is now a 0 that says
+  *structurally impossible*, not merely *absent today*.
+
+The second was invisible to every earlier firing, because all of them ran against
+two trees and never took that branch. **A check's success path is also a path, and
+this one had never been executed.**
+
+### What unifying revealed downstream
+
+Removing the four emptied `macos/.claude/hooks` entirely — they were the whole
+Mac-specific hook layer. The layering mechanism in `install-macos.sh` survives for
+a hook that genuinely needs it; there just is not one today.
+
+`test-git-sync-hooks.sh` had **declined to assert** autosync deference, on the
+explicit grounds that the two copies disagreed and asserting either would cement
+one answer. That abstention was correct then and expired with the ruling, so it is
+a real assertion now — in both directions, because "silent for a marked repo"
+also passes for a hook that is silent about everything. Verified it can fail:
+with the single deference line stripped from a copy, the new check goes red and
+names the nudge it should not have emitted.
+
+### Left undone, deliberately
+
+- Neither `rig-hook-wiring.py` nor `rig-hook-duplication.py` is **declared in
+  either installer** or wired into `rig-health-check.sh`. Those files belong to
+  live sibling sessions mid-rewrite of their exit contract (`sylveste-2fhj`).
+- **Autosync deference on zklw is silence on behalf of a half-running system.**
+  The push half has been dead since 2026-07-14, so deferring for 93 marked repos
+  suppresses a warning nothing else is covering. Pre-existing on that machine;
+  unifying the files did not change it, and changing it is a separate decision
+  from unifying them. Filed rather than folded in.
+- `git-autosync-pull.sh` releases the lock from its `EXIT` trap even on the
+  path where it never acquired one, so a session that gave up waiting would
+  `rmdir` the lock the holder was using. Present in both former copies, so
+  unification doubled its blast radius rather than creating it. Guarded with a
+  `HELD_LOCK` flag in passing; the wider audit of that lock is filed.
+- The stale `macos/.claude/hooks` comments in `rig-health-check.sh` and
+  `rig-dotfiles-deployed.py` are now inaccurate. Both are owned by another
+  session and were left alone; their code handles the missing directory
+  correctly (`isdir()` guard), so nothing is broken, only mis-commented.
