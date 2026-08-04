@@ -728,3 +728,70 @@ endpoint that had nothing to do with the system under investigation.
 
 `EncoderPreset`, the tmpfs transcode directory and Bazarr remain worth having
 for the cases that still transcode. Tracked as `sylveste-3f8x`.
+
+## The 4K tier was never migrated, and the probe number that argued against fixing it was wrong
+
+`/data/movies-4k` held **zero files**. Radarr-4K had 39 titles registered, every
+one `monitored: false`, so it had never searched for anything. Three carried
+`hasFile: true` for files absent from disk — and two of those three were not
+even 4K (`WEBDL-1080p`, `Bluray-1080p`, misfiled into the 4K instance).
+
+Meanwhile all 32 UHD files — 648 GB — sat on jarmusch. Jellyfin's Movies
+library spans `/data/movies` and `/data/movies-4k`; with the latter empty it
+served the only copy it had. Blade Runner 2049 played at 1080p not because
+anything broke but because the 4K copy had never crossed the Atlantic. Same
+root cause as the TV gap: the migration brought the primary tier and left the
+rest.
+
+### The measurement error
+
+The initial recommendation was **don't sync it**, on the grounds that 20 of the
+32 files exceeded the corridor's "evening floor" of 24.5 Mbps and two exceeded
+its "median" of 42.8. Both figures came from `monitor/transit_probe.sh`.
+
+That reasoning quoted a floor as though it were a ceiling. The probe pushes
+**32 MB through ssh**, and both halves of that matter:
+
+    single ssh stream, payload the only variable
+      32 MB :  38.5 Mbps      <-- what the probe reports
+     128 MB :  69.2 Mbps
+     256 MB :  76.7 Mbps      <-- still climbing
+
+At 176 ms RTT a 32 MB transfer is mostly congestion-window ramp, so the probe's
+number is dominated by slow start. Four concurrent streams reached **165 Mbps
+aggregate at ~41 Mbps each** — no per-stream degradation, which proves the path
+was never the constraint at 43 Mbps.
+
+A film is the opposite of a 32 MB transfer: 27 GB delivered over 2.7 hours, the
+most thoroughly slow-start-amortised flow there is. The right comparison for
+Blade Runner 2049's 23.7 Mbps is therefore ≥76.7 Mbps, not 43 — **3.2x
+headroom**, not a deficit. The probe remains valid for what it was built to do
+(compare samples to each other over time, and tell a healthy corridor from one
+delivering 0.085 Mbps); it was simply never an absolute bandwidth figure, as
+`monitor/README.md` says in as many words.
+
+### The asymmetry that does bite
+
+Measured on the same link within minutes:
+
+    grey -> house (home DOWNLOAD, what streaming uses)   76.7 Mbps
+    house -> grey (home UPLOAD, what a sync uses)        ~17 Mbps total
+
+So the 4K tier is **slow to move and fast to watch**. Transferring 648 GB is
+upload-bound and takes days; playing it back afterwards is comfortable. Do not
+let the transfer time argue against the migration — they are different pipes.
+
+### `uhd_sync.sh`, and why its schedule is the mirror of `kg_restore.sh`
+
+Both scripts pull jarmusch → grey, i.e. both consume that one ~17 Mbps upload.
+Rather than add a shared lock or a pause step, the windows are complementary:
+
+    kg_restore.sh   uncapped 00:00-08:00 LA,  1200 KB/s otherwise
+    uhd_sync.sh     1200 KB/s 00:00-08:00 LA, uncapped otherwise
+
+Whichever is uncapped, the other is gentle. Neither needs to know the other
+exists, and in practice each settles near 8-9 Mbps around the clock. The small
+job (648 GB) yields the better window to the large one (~3.3 TB remaining).
+
+Files in `/data/movies` are seeded torrents and are **not** touched — the 4K
+copies land alongside in `/data/movies-4k`, and Jellyfin surfaces both.
