@@ -2413,3 +2413,109 @@ an unreachable remote.
 
 Does not cover: hand-authored source changes, deliberately. Nor does it surface
 its own refusals anywhere durable, which is the finding above.
+
+## A correct tool can still be a data-loss hazard, 2026-08-05
+
+Goal: "Make beads writes provably land, and stop export from being able to
+destroy the file." `sylveste-vqlu` (P0, open, corrected). Sylveste
+`scripts/check_beads_jsonl_no_loss.py`, `.beads/hooks/pre-commit`.
+
+`bd export -o .beads/issues.jsonl` rewrote a tracked 3822-line export down to 458
+rows of a different project's issues, and exited 0. The section below is mostly
+about how I then mis-diagnosed it.
+
+### The mechanism: cwd is invisible in the command line
+
+bd picks its database from the current working directory. Run from
+`~/projects/Sylveste` it resolves `~/projects/Sylveste/.beads/dolt` — 3829 issues,
+all `sylveste-*`. Run from `~/projects`, the parent workspace directory, it
+resolves `~/.beads/embeddeddolt` — 458 issues, all `mk-*`. **Both are correct.**
+The export ran from the parent after the tool shell had been reset there, and
+`-o` pointed at the child repo's tracked file.
+
+Nothing here is a bd bug, which is why the bead stays open on a narrower claim:
+`-o` accepts any path, and nothing ties the output file to the database it came
+from. `-o .beads/issues.jsonl` reads identically whether you are in the repo or
+one level above it, and only one of those is right. A command whose correctness
+depends on invisible ambient state will eventually be run in the wrong ambient
+state.
+
+### Three wrong conclusions, filed at P0 before being checked
+
+Worth recording in full, because the diagnosis cost more than the incident.
+
+1. **"bd resolves the wrong database from this directory."** False. I measured
+   once, in a shell whose cwd I had not verified, and attributed the result to
+   the tool. `bd info` prints the database it resolved and would have answered
+   this immediately. **Before attributing a failure to a tool, re-run the exact
+   command with the ambient state made explicit** — cwd first, because it is the
+   one input that never appears in the command.
+2. **"Four bead writes were misrouted."** False. They landed in the correct
+   database. zklw showed them absent because each machine has its own Dolt DB
+   (`dolt.shared-server: false`) and they exchange state through
+   `.beads/issues.jsonl` in git — absence on the other machine before the export
+   travels is the *designed* state. I read normal sync latency as a data-integrity
+   incident and re-filed two beads on the canonical machine to "fix" it, creating
+   the only real corruption in the episode: two duplicate open P1/P2 records.
+   Closed as duplicates with mk's ruling rather than deleted, so the history says
+   so (`Sylveste-p4fc`, `Sylveste-cgov`).
+3. **"A read-back through the same client proves nothing."** Stated as the lesson
+   of the day. It is true in general and did not apply: the read-back was
+   correct, the writes were fine. A real principle invoked about the wrong
+   failure is still a wrong explanation, and it is more durable than a plain
+   mistake because it sounds like insight.
+
+The pattern across all three: an unexpected observation, one plausible
+mechanism, no attempt to falsify it, and a P0 in a shared tracker within the
+hour. Severity is not a substitute for a second measurement — and filing fast
+made the wrong claim the most visible artifact of the whole goal.
+
+### Check what already guards the path before adding a guard
+
+`.beads/hooks/pre-commit` already ran `check_beads_jsonl_dolt_sync.py
+--strict-extra`, comparing the staged export against live Dolt in both
+directions. With 458 rows staged against 3829 in Dolt, **it would have refused
+the commit.** The truncation was never going to land. I did not look before
+building a second guard.
+
+The new check is still worth having, but for a strictly narrower reason than the
+one I would have claimed: the drift guard can only be as right as Dolt is. If the
+resolved database is not the one the file belongs to, both sides of that
+comparison are wrong *together* and agree. `check_beads_jsonl_no_loss.py`
+compares staged against `HEAD` instead, so a foreign export fails on set
+difference no matter what any database says.
+
+Design points worth keeping:
+
+- **No tolerance band.** Dropping one id refuses, same as dropping all of them.
+  A percentage threshold is an invitation to lose a few quietly.
+- **Deliberate removal stays possible, and legible**: ids recorded in
+  `.beads/deletions.jsonl`, or `BEADS_ALLOW_JSONL_SHRINK=1` for a prune.
+- **Cannot-assess blocks too.** Unparseable staged content, an unreadable file, or
+  a `HEAD` that parses to zero ids all exit 2 and stop the commit. "I could not
+  compare" and "nothing was lost" are the same silence, and it is the silence
+  this repo keeps getting bitten by.
+- 12 test cases in `scripts/tests/`, including a replay of the real incident and
+  an end-to-end commit that is actually blocked with `HEAD` intact.
+
+### The fleet was never corrupted
+
+Measured on both machines: **no repo has a database whose ids are disjoint from
+its committed JSONL.** Clavain 0 prefix mismatches, zklw 0. The one thing the
+sweep did surface: 10 directories on Clavain and 4 on zklw resolve a database
+*outside* themselves — all empty `.conductor/*` worktree dirs inheriting their
+parent repo's DB. Harmless today because the files hold no ids, and the same shape
+as the incident.
+
+That sweep is not shipped as a standing check. It reports cannot-assess for 30 of
+50 directories on Clavain, almost all of them repos with no beads database at all,
+and a check that cannot classify 60% of its input is noise pretending to be
+coverage. Filed instead of shipped — the honest version needs "no database here"
+as a distinct verdict from "could not tell".
+
+### The guard is repo-local, and that is a gap
+
+`check_beads_jsonl_no_loss.py` protects Sylveste only. Every other repo with a
+tracked `issues.jsonl` has no equivalent, and the parent-directory export is
+exactly as easy there. The durable fix belongs in bd, in a shared hook, or in a
+wrapper that refuses `-o` outside the resolved database's repo.
