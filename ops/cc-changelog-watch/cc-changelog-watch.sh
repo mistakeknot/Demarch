@@ -59,20 +59,52 @@ ${delta_trimmed}
 
 Next: in-session mapping pass — map new capabilities to Sylveste plugins, file candidate beads, refresh the digest and AgMoDB's claude-code entry (charter: docs/goals/2026-07-21-cc-changelog-watcher-charter.md)."
 
-existing="$(bd list --status=open 2>/dev/null | grep -Fi "cc-changelog:" | head -1 | awk '{print $1}')"
+# The bead id comes from --json, not from a column position. This line read
+#
+#     bd list --status=open | grep -Fi "cc-changelog:" | head -1 | awk '{print $1}'
+#
+# until 2026-08-06, and column 1 of `bd list` is the STATUS GLYPH:
+#
+#     ○ sylveste-j7vl ● P2 cc-changelog: unreviewed Claude Code releases (...)
+#
+# so "$existing" was literally "○" and every `bd comment` ran against a bead id
+# that cannot exist. It shipped working because this branch is only reachable
+# once an OPEN cc-changelog bead exists: the runs on 07-21 and 07-28 took the
+# create path and succeeded, the run on 08-04 found the bead they had made, and
+# from that point the job could never succeed again. It broke by accumulating
+# its own success.
+#
+# Nine days of that were logged as "will retry next run", which was true of the
+# control flow and false of the outcome. The only thing that noticed was the
+# rig-receipt freshness gate on last-seen, because the state file is
+# deliberately not advanced on failure -- that part worked exactly as designed.
+existing="$(bd list --status=open --json 2>/dev/null | python3 -c '
+import json, sys
+try:
+    rows = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+for r in rows:
+    if "cc-changelog:" in (r.get("title") or ""):
+        print(r.get("id", ""))
+        break
+')"
+# bd errors are reported, not swallowed. `>/dev/null 2>&1` on both calls is why
+# a wrong bead id and a dead database looked identical for nine days: the log
+# said "failed" and nothing said what failed.
 if [ -n "$existing" ]; then
-    if bd comment "$existing" "$body" >/dev/null 2>&1; then
+    if err="$(bd comment "$existing" "$body" 2>&1 >/dev/null)"; then
         echo "cc-changelog-watch: delta ${last_seen} → ${latest} appended to open bead ${existing}"
     else
-        echo "cc-changelog-watch: bd comment failed; state NOT advanced (will retry next run)" >&2
+        echo "cc-changelog-watch: bd comment on '${existing}' failed, state NOT advanced: ${err:-no output}" >&2
         exit 0
     fi
 else
-    if bd create --title="${BEAD_TITLE_PREFIX} (${last_seen} → ${latest})" \
-        --description="$body" --type=task --priority=2 >/dev/null 2>&1; then
+    if err="$(bd create --title="${BEAD_TITLE_PREFIX} (${last_seen} → ${latest})" \
+        --description="$body" --type=task --priority=2 2>&1 >/dev/null)"; then
         echo "cc-changelog-watch: delta ${last_seen} → ${latest} filed as new bead"
     else
-        echo "cc-changelog-watch: bd create failed; state NOT advanced (will retry next run)" >&2
+        echo "cc-changelog-watch: bd create failed, state NOT advanced: ${err:-no output}" >&2
         exit 0
     fi
 fi
