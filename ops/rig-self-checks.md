@@ -2417,8 +2417,14 @@ its own refusals anywhere durable, which is the finding above.
 ## A correct tool can still be a data-loss hazard, 2026-08-05
 
 Goal: "Make beads writes provably land, and stop export from being able to
-destroy the file." `sylveste-vqlu` (P0, open, corrected). Sylveste
-`scripts/check_beads_jsonl_no_loss.py`, `.beads/hooks/pre-commit`.
+destroy the file." `sylveste-vqlu` (P0, corrected, **closed 2026-08-05**).
+
+> **SUPERSEDED, 2026-08-05.** Every path named in this section has moved. The
+> check is now `dotfiles/cloud/pre-commit-beads-no-loss.py`, reached by the shared
+> dispatcher in 110 of 110 tracked-export repos; Sylveste's
+> `scripts/check_beads_jsonl_no_loss.py` and its test suite were deleted with mk's
+> approval. See "One guard, 110 repos, and four rejected checks" below — including
+> the defect the deleted copy turned out to have.
 
 `bd export -o .beads/issues.jsonl` rewrote a tracked 3822-line export down to 458
 rows of a different project's issues, and exited 0. The section below is mostly
@@ -2513,9 +2519,196 @@ and a check that cannot classify 60% of its input is noise pretending to be
 coverage. Filed instead of shipped — the honest version needs "no database here"
 as a distinct verdict from "could not tell".
 
+> **STILL NOT SHIPPED, 2026-08-05, and now for a measured reason.** Splitting "no
+> database" from "could not tell" was necessary but not sufficient: four candidate
+> signals were measured on 78 directories on Clavain and 94 on zklw, and every one
+> failed either coverage or precision. Recorded in
+> `Sylveste/scripts/beads-binding-inventory.py`, which is deliberately
+> not a `rig-` check. Also: the claim above that 14 directories "resolve a database
+> outside themselves" was wrong — bd does not walk up past the repo. Measured in
+> `Sylveste/research/frankentui`, which resolves *no* database even though
+> `~/projects/Sylveste` above it has one.
+
 ### The guard is repo-local, and that is a gap
 
 `check_beads_jsonl_no_loss.py` protects Sylveste only. Every other repo with a
 tracked `issues.jsonl` has no equivalent, and the parent-directory export is
 exactly as easy there. The durable fix belongs in bd, in a shared hook, or in a
 wrapper that refuses `-o` outside the resolved database's repo.
+
+> **RESOLVED, 2026-08-05**, and the guess about where was half wrong. A shared
+> hook was right; a wrapper was not — see the next section. The count was also
+> understated: not "every other repo", but 110 tracked exports across the two
+> machines, of which exactly one was protected.
+
+## One guard, 110 repos, and four rejected checks, 2026-08-05
+
+Goal: "Close the export hazard everywhere, not just in Sylveste." `sylveste-vqlu`
+(closed), `Sylveste-g40g` (P1, filed), `Sylveste-tfvr` (P2, filed),
+`Sylveste-lsh8` (P3, filed). `dotfiles/cloud/pre-commit-beads-no-loss.py`,
+`dotfiles/common/.claude/hooks/guard-bd-export-pinned.py`,
+`Sylveste/scripts/beads-binding-inventory.py`.
+
+The previous section left a guard that protected one repo. Making it protect all
+of them turned out to be the easy part; the instructive part was how many times
+the fleet's actual shape contradicted the shape inferred from Sylveste.
+
+### Measure the attachment surface before choosing where to attach
+
+110 tracked `.beads/issues.jsonl` files: 49 on Clavain, 61 on zklw. Exactly one
+was guarded. The question "where does a shared guard go" looked like it needed a
+design; it needed a measurement, and the measurement answered it outright.
+
+**109 of 110 already reach one file** — `dotfiles/cloud/pre-commit.sh` — by two
+routes: 33 repos symlink `.git/hooks/pre-commit` at it, and 15 call it by path
+from a tracked `.beads/hooks/pre-commit`. So one `run_check` line covered the
+fleet with **zero per-repo edits and no change to any bd-managed marker block**,
+which was the gate mk held: a guard placed inside a `BEGIN/END BEADS INTEGRATION`
+block is a guard with an expiry date, because the installer rewrites it.
+
+The 110th was `Sylveste/apps/auraken`, `git init`-ed hours earlier and holding
+nothing but `*.sample` hooks while 62 tracked ids sat unguarded. Installed as a
+call-by-path hook, **not** a symlink — see the hazard below. Verified by planting
+a foreign export in a throwaway `GIT_INDEX_FILE` so the live repo's index was
+never written; it refused, and `git status` was byte-identical before and after.
+
+### A check whose subject is "the wrong path was used" must not take a path as input
+
+The deleted Sylveste copy accepted a pre-extracted file plus a `--path` that
+defaulted to `.beads/issues.jsonl`, and the hook passed both. Sylveste tracks
+**two** exports. Staging the nested one —
+`research/gsv-portfolio-39/.beads/issues.jsonl` — made the hook extract and
+compare the *root* path: a clean comparison of a file nobody had touched,
+reported as `ok — 500 ids kept`, exit 0.
+
+Proven rather than asserted, before deleting the old file: the same nested fixture
+returns rc=0 from the old implementation and rc=1 from the new one. The
+replacement takes no arguments, finds its own paths from
+`git diff --cached --name-status`, and iterates every export the commit actually
+stages. The path it reads and the path it reports are the same variable.
+
+Corollary that generalises: a guard against a class of mistake must not be
+configurable in the dimension the mistake occurs in.
+
+### Refuse at source, but weigh the blast radius of where you put the refusal
+
+mk's condition asked for a decision between a PATH wrapper on `bd`, an upstream
+change, or both. **Not doing the wrapper**, and the reason is reach rather than
+difficulty: `bd` is invoked by the pre-commit hooks of 110 repos, by
+`bd hooks run pre-commit` *from inside* those hooks, by SessionStart hooks, and by
+autosync timers on both machines. A wrapper that mis-parses one argument stops
+committing everywhere. That is a strictly worse failure than the single incident
+it would prevent.
+
+The same refusal placed on the PreToolUse Bash matcher sees only tool-issued
+commands, so a bug in it cannot reach a timer or a hook. The rule is decidable
+from the command text alone — a file-writing `bd export` must pin its database
+with `-C`, `--db`, or `--directory` — with no cwd inference and no shell
+emulation, because a guard with its own ambient-state dependency is the bug
+wearing a badge. It converts a command whose correctness depends on where you are
+standing into one that states its own source: the difference between a convention
+and a mechanism is that the mechanism makes the convention the only way through.
+
+Deliberately **fail-open**: any parse failure allows the command. A guard that
+blocks every Bash call because its own input surprised it is worse than a missed
+unpinned export, and the commit-time check is the layer that actually prevents
+data loss. 27 assertions, most of them false-positive cases — `export FOO=1 && bd
+list`, `echo bd export -o x`, `grep -rn "bd export -o" docs/`.
+
+### Four signals, none shippable: when the honest deliverable is a measurement
+
+The charter allowed "ship the DB-binding sweep properly **or say plainly that you
+are not." Not shipping it, having measured why:
+
+| signal | coverage | precision |
+|---|---|---|
+| declared `issue-prefix` vs export ids | 7 of 48 repos (14%) | perfect (0 findings) |
+| is there a database inside the repo? | full | 34 standing false alarms |
+| more than one prefix family in one export | full | 10 of 43 false positives |
+| export vs the live database | full | does not complete |
+
+Each rejection was a fact about the fleet that Sylveste could not have told me:
+
+1. **Almost nothing declares a prefix.** 7 of 48 on Clavain, 9 of 59 on zklw. A
+   prefix check reproduces the 87%-silence defect it was meant to fix.
+2. **"No local database" is the normal shape of a research clone**, not a defect —
+   and an export run in such a repo *fails* with "no beads database found" rather
+   than writing foreign data, because bd does not walk up past the repo. A check
+   red on 34 repos daily is a check nobody reads.
+3. **Multiple prefix families are benign**: clones inherit the upstream project's
+   `bd-*` ids alongside their own. `research/ntm` carries `bd`+`br`+`ntm`.
+4. **The real question needs `bd` per repo**, which spawns a Dolt server per
+   database — and does not finish: Nartopo and mediumsetting both fail to open
+   with pending schema migrations on dirty tables (`gastownhall/beads#4566`,
+   filed as `Sylveste-tfvr`). Found only because I went looking for ground truth
+   instead of trusting the filesystem.
+
+Three separate times the design came from Sylveste and the fleet contradicted it.
+Sylveste is the *least* representative repo here: hand-tuned config,
+`dolt.shared-server: false`, its own `dolt/` directory where everything else has
+`embeddeddolt`. That last one silently classified 40 healthy repos as having no
+database, because the marker list was derived from the one repo that is different.
+
+**The rule: when a check must generalise across a fleet, derive its inputs from
+the fleet. The repo you are standing in is a sample of size one, and if it is the
+one you have been tuning, it is the worst available sample.**
+
+The residue is worth keeping, so it shipped as an inventory — exit 0, no findings
+by construction, and its docstring carries the table above. A number in a summary
+is not an alarm, and dressing one up as a check is how a check earns being
+ignored.
+
+It lives in `Sylveste/scripts/` rather than `dotfiles/common/.local/bin/` beside
+its siblings, and the detour is itself worth recording.
+`cloud/pre-commit-config-invariants.sh` refused the commit: *"a tracked file in a
+deploying tree that nothing names is in git and on no machine."* Correct, and the
+two sanctioned remedies — a link line in `install-macos.sh` / `install-server.sh`,
+or a `NOT_DEPLOYED` entry with a reason in `rig-dotfiles-deployed.py` — all land in
+files a live sibling session had committed to 40 minutes earlier. Overriding with
+`SKIP_CONFIG_INVARIANTS=1` was available and wrong: the guard had correctly
+identified that I was about to track a file that would exist nowhere. Moving the
+file was the honest third option, and the tool sweeps `~/projects` from either
+repo.
+
+### Verify the external name, not the one the binary says
+
+The `bd` binary's own strings give `github.com/steveyegge/beads`. That path
+redirects; the canonical repo is `gastownhall/beads`. One `gh repo view` before
+writing it into an artifact, and the drafted report goes to the right place.
+
+### Two of my own suites were not being run at all
+
+Found while checking whether my new suite would be counted, after a sibling
+session fixed one of mine (dotfiles `41c96be`): `rig-health-check.sh` sums the
+estate total with `grep -oE 'passed: [0-9]+ *  *failed: [0-9]+'`, so a suite
+ending "15 passed, 0 failed" reads correctly to a human and matches nothing.
+
+Worse for `test-rig-autosync-freshness.sh`: I had put it in
+`common/.local/bin/tests/`, a directory I created for it, containing only it —
+and `rig-health-check.sh` globs exactly **one** tests directory,
+`common/.claude/hooks/tests/`. Fifteen assertions sat unrun for a day in a
+directory read by nothing. Moved, resolution fixed to the house three-candidate
+pattern, tally corrected; they now run daily.
+
+The estate *does* report untallied suites — the UNTALLIED guard prints a count of
+them. It never names them, and a count without names is not actionable, which is
+exactly why the loop stayed open long enough for me to add to it. My own sweep for
+others was a rough probe and should not be read as an audit: it had false
+negatives (suites using `$PASS`/`$FAIL` rather than `$pass`/`$fail`) and one false
+positive (it matched an earlier `echo` line, not the final conforming `printf`).
+
+### The hazard one level up, filed not fixed
+
+Adding the beads check to `cloud/pre-commit.sh` made that file the enforcement
+point for data integrity across 110 repos as well as for secret scanning. 33 of
+those repos reach it through a **symlink**, and `bd hooks install` appends to the
+hook it finds — through the link, into the shared file. husky replaces its target
+outright. Either way the damage reaches all 110, and it has happened once already
+(`mk-cbz5`, 2026-07-27), which is why 15 repos already call the dispatcher by path
+instead.
+
+Filed as `Sylveste-g40g` (P1) on mk's ruling rather than fixed here: converting 33
+hooks is not what this charter asked for. The remedy is to change the install
+shape in `cloud/install-hooks.sh`, which already verifies each repo by planting a
+credential in a throwaway index — with the ordering care that whatever converts
+them must not itself write through the links it is replacing.

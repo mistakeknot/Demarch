@@ -68,38 +68,21 @@ if [ -f "scripts/check_beads_jsonl_dolt_sync.py" ]; then
 fi
 # --- END SYLVESTE BEADS JSONL/DOLT DRIFT GUARD ---
 
-# --- BEGIN SYLVESTE BEADS JSONL NO-LOSS GUARD ---
-# Complements the drift guard above, which compares the staged export against the
-# live Dolt database. That comparison can only be as right as Dolt is: if bd
-# resolved a database this file does not belong to, both sides can be wrong
-# together and agree. This one compares staged against HEAD, so a foreign export
-# fails loudly no matter what any database says.
+# --- NOTE: THE NO-LOSS GUARD MOVED, DO NOT RE-ADD IT HERE ---
+# A staged-vs-HEAD no-loss check lived here from 2026-08-04 to 2026-08-05. It now
+# runs for every repo from cloud/pre-commit-beads-no-loss.py, reached through the
+# shared dispatcher below, because this repo was 1 of 110 tracked
+# .beads/issues.jsonl files and the other 109 had no equivalent.
 #
-# 2026-08-04: `bd export -o .beads/issues.jsonl` run from ~/projects instead of
-# ~/projects/Sylveste exported the workspace database (458 mk-* issues) over this
-# repo's 3822-line export, and exited 0. Nothing in the command distinguishes the
-# right directory from the wrong one -- bd picks its database from the cwd, and
-# `-o .beads/issues.jsonl` looks identical either way.
-if [ -f "scripts/check_beads_jsonl_no_loss.py" ]; then
-  _staged_files=$(git diff --cached --name-only 2>/dev/null || true)
-  case "$_staged_files" in
-    *".beads/issues.jsonl"*)
-      _noloss_staged=$(mktemp "${TMPDIR:-/tmp}/sylveste-beads-noloss.XXXXXX") || exit 1
-      if git show :'.beads/issues.jsonl' >"$_noloss_staged" 2>/dev/null; then
-        python3 scripts/check_beads_jsonl_no_loss.py --staged-file "$_noloss_staged"
-        _noloss_exit=$?
-      else
-        echo >&2 "sylveste: unable to read staged .beads/issues.jsonl for the no-loss guard"
-        _noloss_exit=2
-      fi
-      rm -f "$_noloss_staged"
-      # Exit 2 (could not tell) blocks as well as exit 1 (would lose ids):
-      # "I could not compare" and "nothing was lost" are the same silence.
-      if [ $_noloss_exit -ne 0 ]; then exit $_noloss_exit; fi
-      ;;
-  esac
-fi
-# --- END SYLVESTE BEADS JSONL NO-LOSS GUARD ---
+# The copy here also had a defect worth remembering: it passed a --path defaulting
+# to `.beads/issues.jsonl`, so staging this repo's OTHER tracked export --
+# research/gsv-portfolio-39/.beads/issues.jsonl -- made it compare the root path
+# instead and report "ok, 500 ids kept" about a file nobody had touched (proven
+# 2026-08-05). A check whose subject is "the wrong path was used" must find its
+# own paths; the shared one iterates whatever the commit actually stages.
+#
+# The drift guard above stays here: it is Dolt-specific and this is the only repo
+# whose Dolt authority it knows how to reach.
 
 # --- BEGIN SHARED PRE-COMMIT DISPATCHER ---
 # Call the shared secret scanner / config-invariant checks. Kept as a call from
