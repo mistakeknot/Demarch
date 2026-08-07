@@ -47,6 +47,26 @@ def read_version(path):
         return f"<unreadable: {exc}>"
 
 
+def usable(version) -> bool:
+    """Whether a value read by read_version can carry a parity verdict.
+
+    A NON-VERSION IS NOT A MATCHING VERSION. The comparison this file is built
+    on is `got != want`, and equality is the wrong test the moment both sides
+    can be absent: two manifests that each lack a `version` key both read None,
+    None equals None, and the pair is declared in parity on the strength of a
+    field neither of them has. Two manifests that are both unreadable are worse,
+    because they fail identically — two empty files produce the same
+    JSONDecodeError text, so their `<unreadable: ...>` markers match and the
+    check reports parity for a plugin whose manifests it could not even parse.
+
+    Measured 2026-08-07 on a synthetic estate: three plugins with empty
+    manifests, `parity ok: 3 plugin(s)`, exit 0. The equality held. It just was
+    not about anything.
+    """
+    return (isinstance(version, str) and bool(version)
+            and not version.startswith("<unreadable"))
+
+
 def plugin_roots(root, estate):
     """Yield plugin roots. A single repo yields itself; an estate walks it."""
     if estate:
@@ -120,6 +140,15 @@ def main(argv=None):
                               "kimi.plugin.json is missing"))
             continue
         got = read_version(generated)
+        if not usable(want) or not usable(got):
+            # Reported as drift rather than as unassessable on purpose. The
+            # `unassessable` bucket below is for facts about THIS MACHINE — a
+            # checkout too stale to judge from — and a manifest with no readable
+            # version is not that. It is a defect in the plugin repo, it travels
+            # with the repo, and pulling will not fix it.
+            drift.append((plugin.name, want, got,
+                          "no readable version to compare"))
+            continue
         if got != want:
             drift.append((plugin.name, want, got,
                           "version bumped without regenerating"))
