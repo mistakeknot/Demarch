@@ -1,0 +1,30 @@
+{
+  "id": "fd-lifecycle-drift",
+  "kind": "base",
+  "parents": [],
+  "domain": "release engineering for a heterogeneous-host plugin fleet (adjacent tier)",
+  "axioms": [
+    "A user who installed last month must end up with a coherent, upgradeable system today",
+    "Version truth must live in exactly one place per artifact; every extra copy can disagree",
+    "Silent mixed-version state is a higher-severity class than a missing feature",
+    "Every binary invoked by markdown workflows needs a freshness gate or version handshake",
+    "Backup-first mutation is only safe if restore is actually possible",
+    "An unwired verifier is equivalent to no verifier"
+  ],
+  "primitives": [
+    "manifest (kimi.plugin.json, agent-rig.json, plugin.json)",
+    "CHANGELOG entry",
+    "install/upgrade/uninstall script path",
+    "prebuilt binary + sha256 manifest",
+    "version handshake / freshness probe",
+    "drift detector (check-install-updates, upstreams.json)",
+    "backup/rollback path"
+  ],
+  "failure_mode": [
+    "Read-only probe: could not run installers or doctors, so runtime behavior of install paths is inferred, not observed",
+    "Did not inspect the interagency-marketplace repo itself or Sylveste/install.sh (a fourth install path)",
+    "Did not verify whether ic publish enforces changelog entries for other plugins",
+    "Treats every declared-vs-actual version disagreement as drift even where a lag is intentional"
+  ],
+  "findings": ["f-009", "f-010", "f-011", "f-012", "f-013", "f-014", "f-015", "f-016", "f-049", "f-050", "f-051", "f-052", "f-053", "f-055"]
+}

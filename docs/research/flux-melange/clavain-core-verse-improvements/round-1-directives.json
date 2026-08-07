@@ -1,0 +1,30 @@
+[
+  {
+    "type": "PROBE-DISAGREEMENT",
+    "target": { "region": "~/.agents/skills symlink layer vs ~/.codex snapshot fleet", "cluster_id": "codex-snapshot-fleet-routing", "finding_ids": ["f-029", "f-014"] },
+    "rationale": "f-029 (heat 27) calls the ~/.codex snapshot fleet pathological apocrypha serving a deprecated flux-research skill; f-014 treats ~/.codex clones as the legitimate install location a drift-checker covers. One is wrong, and f-029 currently leads the report.",
+    "lens": "adjudicator",
+    "budget_weight": 0.15
+  },
+  {
+    "type": "DEEPEN",
+    "target": { "region": "core/intercore publish flow + os/Clavain handoff docs", "cluster_id": "publish-state-hand-recovery", "finding_ids": ["f-017"] },
+    "rationale": "f-017 (P0, heat 27): hand-run sqlite3 DELETE on the live DB is de-facto stuck-publish recovery despite `ic publish unlock` existing — found once, unconfirmed, would lead the report. Confirm the mechanism and size the adoption gap.",
+    "lens": "fd-kernel-contract",
+    "budget_weight": 0.25
+  },
+  {
+    "type": "DEEPEN",
+    "target": { "region": "core/intercore lock/event/gate internals", "cluster_id": "dispatch-integrity", "finding_ids": ["f-038", "f-039", "f-040", "f-041", "f-018", "f-043", "f-048"] },
+    "rationale": "Densest unconfirmed hotspot: lock 5s staleness fuse (f-038, heat 18), nil event recorders on dispatch paths (f-039-41), cursor-advance-on-write (f-018), self-report-only ship gate (f-043), agent-weakenable P1 gates (f-048). One region, five P0/P1 clusters, zero convergence — two probes to cover lock+events vs gates+budgets.",
+    "lens": "fd-kernel-contract",
+    "budget_weight": 0.35
+  },
+  {
+    "type": "FUSE",
+    "target": { "pair": ["fd-lifecycle-drift", "fd-scriptorium-transmission"], "shared_ground": ["os/Clavain/upstreams.json (f-015,f-028)", "version-colophon family (f-012,f-016,f-036)", "PHILOSOPHY blocks (f-003,f-026)"] },
+    "rationale": "Strongest cross-tier pair above the SHARED_HEAT gate: both lenses hit upstreams.json with complementary root causes (coverage gap vs palimpsest resurrection). Intersection question: where does the lifecycle/upgrade machinery itself transmit stale text?",
+    "lens": "fd-provenance-drift (fused)",
+    "budget_weight": 0.25
+  }
+]

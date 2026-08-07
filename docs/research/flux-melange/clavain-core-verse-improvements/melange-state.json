@@ -1,0 +1,222 @@
+{
+  "objective": "identify high leverage opportunities for improvement across the Clavain, intercore, and interverse plugins",
+  "weights": "balanced",
+  "round": 4,
+  "min_rounds": 2,
+  "max_rounds": 4,
+  "budget": {
+    "total": 30,
+    "remaining": 8,
+    "round_cost_floor": 3
+  },
+  "coverage": {
+    "regions": [
+      "os/Clavain (skills/commands/install)",
+      "core/intercore (contracts, cmd/ic, locks, events, gates)",
+      "interverse fleet (~58 plugins, sampled 8-12 deep)",
+      "~/.agents/skills routing layer",
+      "zklw mirror of routing/install layer (first probe, round 2)",
+      "core/intercore internals deep-read (lifecycle/scheduler/relay/audit/replay/dispatch, round 3)",
+      "compact-drift guard adjudication (root scripts + interflux, round 3)",
+      "interverse cold-spot fleet 60-plugin census (round 3)",
+      "graph-plugin three-way adjudication (lattice/intergraph/canongraph, round 4)",
+      "MCP auto-start demand telemetry (pluginUsage x mcpServers fleet cross-reference, round 4)",
+      "upstreams.json final adjudication (disk audit 65 targets, engine wiring, round 4)",
+      "intercore witness machinery fused review (replay/dispatch/coordination/audit/publish, round 4)"
+    ],
+    "tiers_used": [
+      "adjacent",
+      "distant"
+    ],
+    "lens_pairs_fused": [
+      [
+        "fd-lifecycle-drift",
+        "fd-scriptorium-transmission"
+      ],
+      [
+        "fd-kernel-contract",
+        "fd-ecosystem-consolidation"
+      ],
+      [
+        "fd-kernel-contract",
+        "fd-anagama-thermal-state"
+      ]
+    ]
+  },
+  "heat_map": {
+    "regions": [
+      {
+        "region": "core/intercore kernel safety (locks/events/gates/publish)",
+        "yield_density": 13.5,
+        "max_risk": 9,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "~/.agents/skills vs ~/.codex snapshot routing",
+        "yield_density": 13.5,
+        "max_risk": 9,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "core/intercore internals (scheduler/relay/audit/replay/lifecycle wiring)",
+        "yield_density": 13,
+        "max_risk": 9,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "os/Clavain gate-mode weakening + audit surface (clavain-cli, lib-sprint.sh, interphase)",
+        "yield_density": 12,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "interverse cold-spot fleet (60-plugin census: placement/retirement/registry)",
+        "yield_density": 12,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "canonization safety (lib-intercore twins, gitleaks fleet, compact pairs, registries)",
+        "yield_density": 9,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "compact-drift guard adjudication (root guard, interflux hook, canonization revert)",
+        "yield_density": 7,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "core/intercore event-delivery contract (tail/cursor/prune/interspect consumer)",
+        "yield_density": 8,
+        "max_risk": 4,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "os/Clavain upstreams.json / sync-upstreams.sh",
+        "yield_density": 6,
+        "max_risk": 6,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "version colophons (CHANGELOG/manifests/PHILOSOPHY)",
+        "yield_density": 6,
+        "max_risk": 4,
+        "disagreement_flags": 0
+      },
+      {
+        "region": "zklw mirror (skills routing, third Clavain lineage)",
+        "yield_density": 4,
+        "max_risk": 4,
+        "disagreement_flags": 0
+      }
+    ],
+    "lens_pairs": [
+      {
+        "pair": [
+          "fd-lifecycle-drift",
+          "fd-scriptorium-transmission"
+        ],
+        "shared_heat": 3,
+        "complementarity": 2,
+        "redundancy": 0,
+        "score": 5
+      },
+      {
+        "pair": [
+          "fd-kernel-contract",
+          "fd-anagama-thermal-state"
+        ],
+        "shared_heat": 2,
+        "complementarity": 3,
+        "redundancy": 0,
+        "score": 5
+      },
+      {
+        "pair": [
+          "fd-kernel-contract",
+          "fd-ecosystem-consolidation"
+        ],
+        "shared_heat": 3,
+        "complementarity": 3,
+        "redundancy": 1,
+        "score": 5
+      },
+      {
+        "pair": [
+          "fd-menu-engineering-triage",
+          "fd-ecosystem-consolidation"
+        ],
+        "shared_heat": 3,
+        "complementarity": 3,
+        "redundancy": 1,
+        "score": 5
+      }
+    ],
+    "disagreement_flags": [
+      {
+        "location": "os/Clavain/upstreams.json resurrection scenario",
+        "finding_ids": [
+          "f-028",
+          "f-083",
+          "f-090"
+        ],
+        "note": "RESOLVED round 4 (probe-2 adjudication, verifier V4). Ruling: prune + shrink mechanism. f-028 staleness claim upheld in full on disk audit (39/65 dead, incl. RELOCATED targets now under interverse/intertest + interpeer — f-179); resurrection mechanism stays refuted (SKIP:not-present-locally holds in both engines) but demoted to 'incidentally prevented' — guard is presence-based, not intent-based (f-181); deletedLocally confirmed reader-with-no-writer (f-180); catalog append-only, no shrink path (f-182); weekly CI runs the DEPRECATED bash engine (f-178). 3-step migration on record (f-183, raw). No live disagreements remain."
+      },
+      {
+        "location": "scripts/test-compact-freshness.sh KNOWN_SKILLS registry",
+        "finding_ids": [
+          "f-008",
+          "f-122",
+          "f-126",
+          "f-127",
+          "f-128",
+          "f-130"
+        ],
+        "note": "RESOLVED round 3 (probe-0 adjudication, verifier V6). f-122 holds in full -> upheld. f-008 EXISTENCE-claim refuted (a root guard exists and lists 8 Clavain skills), EFFECT-claim stands (guard is broken, unwired, incomplete; interflux's own hook is a dead unregistered file) -> f-008 stays raw with effect confirmed. Recommendation on record: canonize to single SKILL.md per interflux d2a1ded pattern; 15/15 Clavain pairs + 4/4 other registry entries now fail freshness (0% fleet-wide, max drift 126d)."
+      }
+    ]
+  },
+  "gain_history": [
+    {
+      "round": 0,
+      "yield": 46,
+      "novel_cluster_rate": 0.96
+    },
+    {
+      "round": 1,
+      "yield": 19,
+      "novel_cluster_rate": 0.39
+    },
+    {
+      "round": 2,
+      "yield": 11,
+      "novel_cluster_rate": 0.27
+    },
+    {
+      "round": 3,
+      "yield": 20,
+      "novel_cluster_rate": 0.58
+    },
+    {
+      "round": 4,
+      "yield": 9,
+      "novel_cluster_rate": 0.24
+    }
+  ],
+  "frontier": [
+    "f-184",
+    "f-158",
+    "f-084",
+    "f-029",
+    "f-038",
+    "f-063",
+    "f-049",
+    "f-188"
+  ],
+  "should_stop": true,
+  "halt_reason": "CEILING",
+  "notes": "FINAL — round 4 of max 4: DEEPEN(2: graph three-way f-155, intercache f-151+f-156) + PROBE-DISAGREEMENT(1: upstreams f-028xf-083xf-090 CLOSED) + FUSE(1: fd-firing-witness = fd-kernel-contract x fd-anagama-thermal-state) = 4 probes + 1 verifier = 5 budget spent, 8 remaining. 34 findings f-159..f-192: 29 upheld (verifier V1/V3/V4/V5 + DEEPEN direct re-reads/disk audits/greps/telemetry), 1 refuted (f-160 dual-checkout-divergence, V2 — one checkout simply one commit behind; kept for audit), 4 raw (analytical recommendations: f-163 merge plan, f-183 prune+shrink migration, f-191 witness-obligation spec, f-192 tombstone design). 8 new clusters (graph-plugin-three-way-overlap, fleet-mcp-zero-demand, fleet-zero-demand-menu-clutter, mcp-launcher-class-cost, replay-false-certificate, coordination-sweep-divergence, audit-chain-false-tamper, witness-api-no-tx), novel_cluster_rate 0.24, yield 9 (8 clusters + 1 verified emergent f-184). Emergence gate on 9 fused findings: f-184 genuine emergent novelty 3 (V1); f-188 emergent novelty 3 (trust-erosion path); f-185 novelty 2 (new mechanism: CancelByRun bypasses UpdateStatus, distinct from f-039's nil-recorder frame; V5); f-186 DEMOTED to novelty 1 (f-135 already covered cursor-0 re-execution hazard; new content is the command-shaped taxonomy); f-187/f-189/f-190 novelty 2 (new structural facts in settled clusters); f-191/f-192 design specs, raw. No restatements at novelty 0 among fused findings. Status flips: f-155 -> upheld (overlap confirmed/quantified, three-way merge refuted, lattice->intergraph merge recommended); f-156 -> upheld (demand verified near-zero; reclassified demand-generation). Frontier recomputed FINAL by heat (risk.product + novelty, recency tiebreak), upheld only: f-184 enters at top; f-173 (fleet MCP zero-demand, heat 9) just misses the 8-slot cut behind f-188 on P1-in-cluster tiebreak. Stop predicate: round 4 = max_rounds AND budget 8 >= 3 (not BUDGET) AND yield 9 > 1 (not DRY) -> precedence BUDGET > DRY > CEILING => halt CEILING. should_stop=true. RUN CLOSED.",
+  "settled": "All disagreements resolved (f-008xf-122 round 3; f-028xf-083xf-090 round 4). All clusters either settled (mechanism verified, fix designed) or fix-shaped (raw findings are analytical recommendations with concrete migrations on record, not open questions)."
+}

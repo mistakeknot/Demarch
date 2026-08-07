@@ -1,0 +1,53 @@
+{
+  "id": "fd-ecosystem-consolidation",
+  "kind": "base",
+  "parents": [],
+  "domain": "platform-consolidation architecture (adjacent tier)",
+  "axioms": [
+    "Every duplicated procedure definition is a latent bug: copies drift and users cannot tell which is canonical",
+    "Sprawl is measurable by counting how many places encode the same procedure",
+    "The smallest consolidation that removes divergence beats any grand unification",
+    "Some duplication is load-bearing (different host, different lifecycle) and must be distinguished from accidental copies",
+    "A duplicate without a declared canonical home will be improved in one copy and stale in the rest",
+    "Template-stamped artifacts are safe only while bodies stay identical; the drift clock is always ticking"
+  ],
+  "primitives": [
+    "skill/command/agent triple",
+    "shell helper copy",
+    "PHILOSOPHY/AGENTS doctrine block",
+    "SKILL.md / SKILL-compact.md pair",
+    "canonical home",
+    "divergence diff",
+    "stamped-script fleet"
+  ],
+  "failure_mode": [
+    "Did not diff all ~58 PHILOSOPHY.md/AGENTS.md pairs section-by-section; drift counts came from hash bucketing of the doctrine tail only",
+    "Did not compare intercore's Go ic lock internals against interlock's MCP server beyond entry points",
+    "~45 interverse plugins outside the deep-dive list got README skims only",
+    "Systematically assumes consolidation is safe — may misclassify host/lifecycle-specific divergence as accidental duplication"
+  ],
+  "findings": [
+    "f-001",
+    "f-002",
+    "f-003",
+    "f-004",
+    "f-005",
+    "f-006",
+    "f-007",
+    "f-008",
+    "f-126",
+    "f-127",
+    "f-128",
+    "f-129",
+    "f-130",
+    "f-131",
+    "f-159",
+    "f-160",
+    "f-161",
+    "f-162",
+    "f-163",
+    "f-164",
+    "f-165",
+    "f-166"
+  ]
+}
