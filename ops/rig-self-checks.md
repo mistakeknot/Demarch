@@ -2810,6 +2810,17 @@ the dispatcher. `rig-hook-integrity` named all three and reported the coverage d
 — 245 → 242 — within minutes of my causing it. **The check earned its keep by
 catching the person changing it.**
 
+And then two true counts disagreed. With the tree orphaned, the check reported
+*"0 symlink(s) remain"* while `find ~/projects -name pre-commit -type l -lname
+'*cloud/pre-commit.sh'` reported 3. Both were correct: the check enumerates links
+reachable **from a repo**, so orphaning the tree removed those links from its view
+without removing them from the disk. **A check that walks repos cannot see a hazard
+that has stopped belonging to one** — and "nothing points at it" is a weaker
+property than "it does not exist", because one `git init` restores the pointer. The
+three were converted directly with the same generator; `find` now returns 0 on both
+machines. The installer could not do it, and was right not to: its ownership guard
+refused because `~/projects` is itself a git repo on zklw and owns that path.
+
 ### A permanent skip is a permanent hole
 
 The installer's response to a repo-provided hook was to skip and print that a human
