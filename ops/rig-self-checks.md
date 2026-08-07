@@ -279,12 +279,84 @@ different failures:
 | | answers |
 |---|---|
 | `rig-job-receipt.sh` | *did this run succeed?* — where the outcome would evaporate |
+| `rig-job-finding.sh` | *what did it do to each of its targets?* |
 | `rig-job-outcomes.py` | *did everything scheduled produce an outcome at all?* |
 
 What **is** redundant is wrapping systemd and launchd jobs in receipts. Both
 already store the result durably until the next run. **Where the outcome
 survives, read it; where it evaporates, capture it.** Receipts are therefore
 used for cron and nothing else — on this estate, three lines.
+
+### An exit code is not evidence of work (2026-08-07)
+
+The middle row above was added after the wrapper's premise turned out to be
+incomplete. It was written on the strength of a measurement — `claude -p` is
+honest, it exits 1 on an authentication failure — and the conclusion drawn was
+that the exit code existed and cron merely threw it away. Both halves were true
+and the inference was too narrow.
+
+`tierA-review` started at 02:47, spawned a background subagent onto a 2191-line
+diff across 16 files in `jawnbase`, hit the print-mode background-wait ceiling at
+600s, was terminated mid-review, and **exited 0 in 673 seconds**. It filed
+nothing. Its last words were *"I'll … wait for the background review agent to
+finish."* Every layer of the surface read pass.
+
+The night before, the same job hit a quota wall, exited 1, and every layer
+correctly said so. **The estate was catching the honest failure and missing the
+dishonest success** — the worse of the two, because a job that reports success
+while doing nothing decays for exactly as long as nobody checks.
+
+`rig-job-outcomes.py` had already named this in its own docstring: *"a job that
+does nothing exits 0 and writes nothing, and both readings come back clean."*
+The mechanism to prevent it existed. `tierA-review` was **exempt** from it,
+declared `none` on the reasoning that a night with zero changed repos writes
+nothing — which is right for `plan-burndown`, whose empty-queue path genuinely
+leaves no trace, and wrong for a sweep over a *known list*: "no commits" is a
+finding about a repo the job did look at. The exemption was granted by schedule
+adjacency rather than by shape.
+
+So the job now emits one declared row per target, and the receipt is
+`findings <max-age-hours> <count|any>`:
+
+```
+rig-job-finding.sh tierA-review covered     jawnbase "12 commits, 0 P0/P1"
+rig-job-finding.sh tierA-review no-change   jawnfit  "last commit 2026-07-29"
+rig-job-finding.sh tierA-review unreachable ravenous "not present on this host"
+rig-job-finding.sh tierA-review finding     jawnbase "P0: …" --ref jawnbase#mk-abc1
+```
+
+Three things follow from the vocabulary, and each closes a separate hole:
+
+- **The count and the age live in one declaration.** A freshness bound alone is
+  satisfied by a single row, so a sweep that reported on one repo of seven and
+  died would read as fresh *and* complete. Two declarations could be half-written;
+  one cannot. More rows than declared is a finding too — a count that no longer
+  matches the job's list has stopped being able to detect the partial sweep it
+  exists for.
+- **`unreachable` is not `no-change`.** A repo with nothing new and a repo nobody
+  can see produce the same silence and mean opposite things. `autosigil` and
+  `ravenous` are named in the AUTO-TIERA prompt, exist on Clavain, and do not
+  exist on zklw where the sweep runs — reported for two months as *"directory not
+  found (confirmed via filesystem search)"*, a machine-local answer to a
+  fleet-wide question. `ravenous` had a live tmux session and active work. An
+  undeclared unreachable target is a finding; a declared one is a note carrying
+  its own end condition.
+- **A `finding` never changes the exit code, and must name where it was filed.**
+  The defect is news about some *other* repo; routing it through the failure
+  ladder would make a working review read as a broken job. `--ref` is mandatory
+  because the surface points at the durable record rather than becoming one — a
+  health check that accumulated findings would be a permanently red line, which
+  is the failure this whole program was written against.
+
+Runs are grouped by an id `rig-job-receipt.sh` exports and the emitter records,
+never by clock proximity: three rows from a killed run plus four from the next
+one are two half-sweeps, and a time-window reader would report seven.
+
+Found while auditing this, and unrelated to the new kind: `check_receipt` has
+always returned `None` for a receipt it could not parse, and the caller ignored
+it — so a **malformed** declaration fell through to `ok` and the job read as
+passing. Now NO VERDICT, like a job that declares no receipt at all. Declared
+unreadably is no better evidence of work than not declared.
 
 ### Every job declares what non-zero means
 
