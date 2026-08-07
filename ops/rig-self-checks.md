@@ -2890,3 +2890,197 @@ machines meets its stated floor of zero. `ushas` was fixed in passing and was a
 coverage gap rather than a shape one — it had bd's `post-*` and `pre-push` hooks
 and no `pre-commit` at all, and had been failing Clavain's floor since 01:00 that
 day.
+
+## A surface anyone can write is a surface anyone can turn green, 2026-08-07
+
+`~/.claude/health/autosync-repair.json` read `pass … 91 already clean` on
+2026-08-04 while that morning's **scheduled** run had exited 1 with `13 need a
+human`. Eleven consecutive scheduled failures, a refusal count trending up, and a
+dashboard that said everything was fine. `sylveste-sfgi` filed three defects.
+
+**They were one defect with three faces, and the third face names the culprit.**
+
+| Filed as | Actually |
+| --- | --- |
+| The status flipped `fail` → `pass` | One write, from a run nobody was monitoring |
+| The refusal list was "not recoverable" | `detail` is a single field. The same write took it |
+| The buckets did not sum | 93 total, 91 clean, 0 repaired, 0 refused — the signature of a **dry run**, which skipped the branch that would have counted the other two |
+
+A dry run had published to the monitoring surface. So the invariant was never
+"validate the numbers" — it was that **every writer of this surface was
+last-writer-wins and none of them recorded who had written.**
+
+### The obvious rule is wrong, and the reader already said why
+
+The first draft was *a manual run may not improve a stored failure* — refresh an
+equal status, worsen one, never turn `fail` into `pass`. `report-rig-health.py`
+refutes that in its own header: **"The load-bearing case is STALE, not FAIL."**
+Staleness outranks status in the reader, so a session poking a check every few
+hours keeps `ran_at` fresh forever and a scheduler that died in June still looks
+alive. That is the same defect wearing a timestamp instead of a status.
+
+The rule that shipped is stronger *and* simpler — no severity ordering, no
+comparison, no ranking of statuses at all:
+
+> **Only an authoritative run writes the authoritative fields.**
+
+A non-authoritative run touches neither `status` nor `ran_at`. It records itself
+under `last_nonauthoritative` and prints `HELD`, so nothing is lost and the
+disagreement is legible — "scheduled says fail; a session run said pass two hours
+ago" is a sentence worth reading. The cost is intended: after a human fixes
+something the surface stays red until a **scheduled** run confirms it. A
+monitoring surface reports what the monitor saw.
+
+### Provenance had to need no deploy step, so it was measured rather than reasoned
+
+The obvious implementation — have the unit set a variable — creates a deployment
+gap: two schedulers to edit, a plist that is *generated* by `install-macos.sh`,
+and a scheduled run that lost its marker would be classed manual and could then
+never turn the surface green again. So each signal was probed on the real
+machines:
+
+| Signal | Verified | Verdict |
+| --- | --- | --- |
+| `INVOCATION_ID` | present via `systemd-run --user` on zklw | scheduled |
+| `CLAUDECODE` / `CLAUDE_SESSION_ID` | present in a Claude Code Bash env | session |
+| `SSH_CONNECTION` / `SSH_CLIENT` | set by sshd; **absent** from the systemd service env | remote |
+| everything absent | throwaway LaunchAgent: 13 vars, no TTY, `XPC_SERVICE_NAME=0` | scheduled (launchd) |
+
+Two findings only measurement could produce. **The ssh branch is the one that
+matters**: zklw runs no Claude Code sessions, so the 2026-08-04 write arrived over
+ssh from Clavain, and sshd forwards no `CLAUDE*` variables — the first draft
+shipped with that hole open and would have missed the very incident it was built
+for. And **`SSH_AUTH_SOCK` is the wrong variable**: launchd supplies its own
+`Listeners` socket and zklw's systemd session carries a gpg-agent one, so keying on
+it would have classified every scheduled run on both machines as remote and frozen
+the surface permanently.
+
+`XPC_SERVICE_NAME` is worth its own line: it is `0` for every non-XPC job, not the
+label, so launchd can only be recognised by the **absence** of every other signal.
+That is why the launchd branch is the default rather than an error.
+
+### Three implementations of one contract, and the estate had already paid twice
+
+`rig-health-check.sh`, `rig-report.sh` and `git-autosync-repair.sh` each built the
+record themselves. Both prior corrections are recorded *in the files*, and neither
+reached the third:
+
+- `rig-report.sh`: "THE FOURTH ARRIVED LATER AND THIS FILE DID NOT LEARN IT" — the
+  exit-code dialect grew a fourth value elsewhere and this wrapper logged it as
+  `fail: unexpected exit 3`.
+- Its response clock was added separately because its four checks were not merely
+  under-reported without one, they were **exempted**: `rig-finding-age` counts an
+  unstamped finding and moves on because "the next failing run stamps it", and for
+  those four the next failing run stamped nothing, so the day never came.
+
+`git-autosync-repair.sh` never got the clock at all — which is why an eleven-day-old
+failure presented as brand new every morning. All three now call one writer, and
+its 104 call sites in `rig-health-check.sh` moved at once.
+
+### "Could not be evaluated" has two flavours, and conflating them breaks a good design
+
+The writer first *forced* `--not-evaluated` to `fail`. Wiring `rig-report.sh` onto
+it showed that destroys a distinction that file makes on purpose:
+
+- **exit 2** — the check could not run → `fail`. Someone must fix it.
+- **exit 3** — it ran and declines to answer → `warn`, deliberately *not* a fail,
+  because `first_failed_at_epoch` stamps anything that is not a pass, and a
+  response clock on an honest "cannot tell" ages into an overdue defect nobody can
+  ever close.
+
+Both are unevaluated; they are not equally severe. So the flag records that no
+measurement was taken, leaves severity to the caller, and **refuses** the one
+combination that is simply false — `--not-evaluated` with `pass` or `skip` is a
+usage error that writes nothing. A clean verdict from a measurement never taken is
+the entire family of defect here, so it is rejected rather than normalised into
+something true.
+
+An unevaluated `warn` *does* still accrue a clock, checked and left deliberately:
+`rig-finding-age` ages a warn on a 14-day budget because a warn is
+degraded-not-broken, and "this check has been unable to answer for fourteen days"
+is a finding worth surfacing. Exempting it would be the
+grandfathered-into-permanent-exemption case that same file rejects by name.
+
+### Reconcile per unit of work, not per run
+
+`clean + repaired + refused == total` is the wrong assertion: those can
+legitimately **exceed** the total, because a repo that is fast-forwarded and then
+has its push rejected is honestly both repaired and refused. A sum check must
+choose between false alarms on that repo and silence on the real hole. Asking each
+repo "did anything at all happen here" has neither problem.
+
+### A negative control cannot be read off an exit code
+
+`Sylveste-oxcv`, the inverted form of *an empty result is not a zero*. A run of
+`test-autosync-lock.sh` against the pre-fix library reported `6 passed, 9 failed`
+and exited 0 — and against that library **the failures are the expected outcome**,
+so the exit code was read as confirmation. Seven of the nine read `fork: retry:
+Resource temporarily unavailable`. Those subshells never executed.
+
+> A proof whose expected result and whose broken state look alike confirms itself
+> no matter what happens. It needs a third outcome, and it must exit non-zero on
+> *could not be evaluated* as well as on *failed* — because when failure is the
+> expected result, `exit 1` carries no information and only "n could not be
+> evaluated" says the evidence is not evidence.
+
+The suite was never wrong; it reported those fork errors honestly as mismatches.
+What could not distinguish was the reading of its exit code, and the only place to
+fix that once rather than per-caller is in the suite.
+
+**The bead's environmental diagnosis was also wrong**, and it matters. It blamed
+the Claude Code `[sh]` leak (upstream #23484) and treated the pressure as ambient.
+Measured on Clavain at 1694 processes: **1** `sh` process, 24 concurrent sessions,
+**117 MCP servers**, 200 node. It is sessions × MCP servers — structural, so it
+does not drain on its own, and it will do this again to any fork-heavy suite.
+"Re-run it when the machine is quieter" is therefore a request to close sessions,
+not a matter of waiting.
+
+Sweep: of 30 suites, five assert an expected failure; the other four surface a
+fork error as a visible mismatch because they compare specific strings rather than
+a bare exit code. **The defect needs both an expected failure and a caller reading
+only the exit code.** Recorded rather than retrofitted — adding a third counter to
+28 suites that no negative control runs would be motion, not coverage.
+
+### Two things the tests caught in their own first drafts
+
+Both are the defect this section is about, wearing test-harness clothes.
+
+- `test-rig-health-write.sh` unset `RIG_RUN_KIND` alongside the ambient session
+  markers, so eleven write assertions ran as the launchd default and agreed the
+  surface worked **while testing nothing**. And "explicit `RIG_RUN_KIND` wins" was
+  asserted with the value `scheduled`, which is also the default, so it could not
+  fail.
+- `test-rig-report.sh` began failing `test_pass_clears_the_clock`. The pass was
+  correctly refused — the suite runs in a session. *Which tests did not fail is
+  the more useful half*: `test_clock_carries_forward` writes fail then fail, so
+  the discarded second write left the first one's stamp in place and the assertion
+  passed for the wrong reason. Every write after the first was being thrown away
+  and eleven of twelve tests stayed green; only the assertion that required a
+  **change** could notice.
+
+A third belongs with them, from the fixtures rather than the harness:
+`test-git-autosync-repair.sh` passed 26/0 on Clavain and 17/9 on zklw from one
+commit. `mkrepo` omitted `--initial-branch`, so the fixture inherited
+`init.defaultBranch` — `main` on Clavain, `master` on zklw — and the repo under
+test was merely *clean* rather than *behind* on the machine that matters. **A suite
+green where you type and red where the code runs has not told you the code is
+wrong; it has told you the two runs were not the same experiment.**
+
+### The rule
+
+> A monitoring surface must record **who** wrote each verdict, and a run that
+> nobody is monitoring must not be able to speak for one that is — including by
+> refreshing a timestamp. Where a check reports a count, reconcile it against the
+> unit of work rather than the run. Where a proof expects a failure, make "could
+> not be evaluated" a distinct, non-zero outcome, because otherwise every result
+> confirms the hypothesis.
+
+Measured after, on both machines: `run_kind=scheduled` on the live systemd run of
+`git-autosync-repair` (93 repos, **0 unaccounted**, `first_failed_at_epoch`
+correctly inherited from the 08:47 failure rather than reset), on
+`estate-lane-status` through `rig-report.sh` (`exit_code` preserved), and on 22 of
+23 records from a full `rig-health-check.sh` run — the 23rd being `facts.json`,
+which is not a status file. An ssh'd write against a seeded scheduled failure on
+zklw returns `HELD`, which is the 2026-08-04 incident refused at the point it
+happened. Suites: 45 / 26 / 15 / 12 / 7, **0 failed and 0 unevaluated**, identical
+on Clavain and zklw.
