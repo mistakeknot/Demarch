@@ -44,6 +44,10 @@ _SPEC.loader.exec_module(wfh)
 REPOS = [f"r{i:02d}" for i in range(1, 41)]
 PAIRS = [(r, f"mistakeknot/{r}") for r in REPOS]
 
+# Captured before the autouse fixture below replaces it, for the one test that
+# is about estate_repos itself rather than about what main() does with it.
+REAL_ESTATE_REPOS = wfh.estate_repos
+
 
 @pytest.fixture(autouse=True)
 def _offline(monkeypatch):
@@ -201,6 +205,19 @@ def test_origin_slug_parses_the_url_forms_git_actually_emits(monkeypatch, url, w
 
     monkeypatch.setattr(wfh.subprocess, "run", lambda *a, **k: R())
     assert wfh.origin_slug(Path("/nowhere")) == want
+
+
+def test_a_relative_root_still_yields_a_named_repo(monkeypatch, tmp_path):
+    """Path(".").name is the empty string, and `--root .` is an ordinary call.
+
+    Unresolved, the monorepo's own entry printed with a blank label — which
+    reads as a formatting glitch rather than as the missing name it is.
+    """
+    monkeypatch.setattr(wfh, "origin_slug", lambda p: "mistakeknot/Sylveste")
+    monkeypatch.chdir(tmp_path)
+    labels = [label for label, _ in REAL_ESTATE_REPOS(Path("."))]
+    assert labels == [tmp_path.resolve().name]
+    assert "" not in labels
 
 
 def test_origin_slug_is_none_when_git_cannot_answer(monkeypatch):

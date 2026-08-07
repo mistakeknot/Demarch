@@ -135,6 +135,11 @@ def estate_repos(root: Path):
     dropped, so it surfaces as unreachable instead of vanishing. Nothing here is
     allowed to leave the list silently — that is the whole lesson of this file.
     """
+    # Resolved, because Path(".").name is the empty string and `--root .` is a
+    # perfectly ordinary way to invoke this. Unresolved it printed a repo whose
+    # label was blank, which reads as a formatting glitch rather than as the
+    # missing name it actually is.
+    root = root.resolve()
     found = []
     clav = root / "os" / "Clavain"
     if (clav / ".git").is_dir():
