@@ -2712,3 +2712,170 @@ hooks is not what this charter asked for. The remedy is to change the install
 shape in `cloud/install-hooks.sh`, which already verifies each repo by planting a
 credential in a throwaway index — with the ordering care that whatever converts
 them must not itself write through the links it is replacing.
+
+> **RESOLVED, and the number was wrong by an order of magnitude.** Not 33 links but
+> **389**, across the two machines. See "The unit of a hazard is not the unit you
+> happen to be counting" below: 33 was Clavain's tracked-export repos only, and
+> repos were never the right unit in the first place.
+
+## The unit of a hazard is not the unit you happen to be counting, 2026-08-06
+
+`Sylveste-g40g` was chartered as "convert the 33 symlinks". Three of those five
+words were wrong.
+
+**Not 33.** That figure came from the previous goal's scan, which had been scoped
+to repos carrying a tracked `.beads/issues.jsonl` on Clavain. The estate-wide
+count is 206 on Clavain and 183 on zklw.
+
+**Not "the symlinks", as though repos held them.** 416 repos read those 389 files.
+A worktree has no hooks directory: `git rev-parse --git-path hooks` resolves
+through the **common** dir, so every worktree reads its parent's hook. One file in
+`shadow-work/.husky/` is read by nine checkouts — the repo, two sibling clones and
+six `.claude/worktrees/`.
+
+That single fact dissolved the charter's own gate. It had asked which
+`.claude/worktrees/*` and `elf-revel-sessions/*` snapshots were disposable enough
+to delete rather than convert, and whether `shadow-work-f2` and
+`shadow-work-spike-wf` pointing at another repo's `.husky` needed separate
+handling. The answer to all of it is that they own nothing: converting the parent
+converts every reader, and **nothing needed deleting**. A question that looks like
+a judgement call is sometimes just a measurement not yet taken.
+
+It was also a live bug in the check. Its dedupe keyed on the path **string**, and
+git returns `/private/var/...` for a worktree where `os.path.join` produces
+`/var/...`, so one shared file counted twice. Keyed on the realpath of the
+**directory** now — realpath of the *file* would follow the very symlink under
+inspection and collapse the whole estate to a count of one.
+
+### The row of the table that was false
+
+`rig-hook-integrity.py` existed to prevent recurrence of `mk-cbz5` and carried a
+table of which hook directories a tool regenerates:
+
+| location | owner it claimed | regenerated | true? |
+|---|---|---|---|
+| `.husky/_/pre-commit` | husky | yes | yes |
+| `.beads/hooks/pre-commit` | beads | yes | yes |
+| `.husky/pre-commit` | user | no | yes |
+| **`.git/hooks/pre-commit`** | **git** | **no** | **NO** |
+
+205 of Clavain's 206 links and 180 of zklw's 183 sat in that last row. So the check
+reported *"none in a regenerated directory"* and passed, over an estate where a
+single `bd hooks install` in any repo would have edited the file all of them share.
+
+Falsified by measurement, not by argument. `bd hooks install --help` states its
+default target **is** `.git/hooks/`, and a decoy probe against bd 1.1.2 — a symlink
+at `.git/hooks/pre-commit` pointing at a sentinel file, in a throwaway repo —
+modified the sentinel and left the link intact, in all three modes (`default`,
+`--force`, `--chain`). 84 of the 389 links were in a repo with such a tool already
+installed; the other 305 were defended by nobody having run `bd init` there yet.
+
+`.git/hooks` is not git's private directory. It is the **default target of every
+hook installer there is**, which makes it the most exposed location in the table
+rather than the one that needed no entry.
+
+### Two more blind spots, and one that would have arrived with the fix
+
+Links were probed at four paths **relative to each repo**. Three on zklw lived in
+an absolute `core.hooksPath` target outside their repo and were invisible — see
+the phantom tree below.
+
+And the liveness guard was `linked == 0 → NO VERDICT`. True only while linking was
+how repos reached the dispatcher. The remedy for the hazard is to stop linking, so
+a fully converted, fully healthy estate would have answered *"nothing was
+verified"* on the very run that proved the repair worked. It asks about **reach**
+now, satisfied by a link, a copy or a call-by-path shim alike. **A check whose
+liveness guard is written in terms of the defect cannot survive the defect being
+fixed.**
+
+### The phantom tree, and what it was hiding
+
+`~/projects/Demarch/` on zklw: a real directory, not a symlink, not a git repo,
+created 05:24 on 2026-07-27 and containing nothing but empty scaffolding and three
+hook symlinks. `install-hooks.sh` documents this failure as the thing its guard
+prevents — a repo carrying another machine's absolute `core.hooksPath`, where
+`mkdir -p` builds a hooks tree nothing reads. The guard only rejects paths
+**outside `$HOME`**, and `/home/mk/projects/Demarch/...` is inside it, so the tree
+got built.
+
+Three Sylveste subrepos pointed at it. They looked protected, and were — through a
+directory nobody owned. What that concealed is the part worth keeping: each of the
+three **already had its own bd-generated `.beads/hooks/pre-commit`**, and the
+absolute `core.hooksPath` had been overriding it since 27 July. Their own beads
+hooks had not run in ten days, and nothing said so.
+
+Repointing them at their own (now **relative**) `.beads/hooks` restored those hooks
+and immediately cost the three their secret scan, because a bd hook does not call
+the dispatcher. `rig-hook-integrity` named all three and reported the coverage drop
+— 245 → 242 — within minutes of my causing it. **The check earned its keep by
+catching the person changing it.**
+
+### A permanent skip is a permanent hole
+
+The installer's response to a repo-provided hook was to skip and print that a human
+should wire the dispatcher in. That ending only works if someone is that human.
+Nobody was, so three repos that **commit unattended** went unscanned, and the daily
+check would have named the same three every day — which is how a check earns being
+ignored.
+
+It now **augments**: the call is prepended, above the tool's block, outside bd's
+markers, which bd documents it preserves across installs. The tool's block is
+untouched. Narrow to `.beads/hooks` on purpose — that file is a generated artifact,
+where `shadow-work/.husky/pre-commit` is a hand-written repo gate and still a
+human's to wire. Prepended rather than appended because the block below can exit 0
+early, and a scan placed after it does not run on the commits that take that path.
+
+### Proving the ordering rather than asserting it
+
+Every write in the sweep happens on a path that may still be a symlink at the one
+shared file, and `> "$hook"` on such a path truncates the **target**. The first
+repair of the 2026-07-27 incident did exactly that while reporting the repo FIXED.
+
+So `install-hooks.sh` hashes the dispatcher before and after every run and fails
+loudly if it changed, because *"the code unlinks first"* is a claim about the code.
+`write_hook()` unlinks first **and** refuses if the path survives the unlink; the
+suite's mutation test found those are two independent protections, since deleting
+the unlink alone did not clobber — the refusal branch caught it.
+
+Hook content is generated by one function rather than written per repo, because
+hand-writing it had already drifted three ways for the same three lines
+(`|| exit 1` without `"$@"` in two repos, `"$@" || exit $?` in the installer).
+
+A separate `convert` mode rewrites only what is already wired. Under `SELECT=all`,
+plain `install` would also have added hooks to third-party checkouts and vendored
+eval corpora — a change in **coverage**, which is a different decision with
+different arguments behind it, and afterwards nothing could have said which repos
+the change actually touched.
+
+### Two tests that were passing for the wrong reason
+
+Five assertions in `test-rig-hook-integrity.sh` failed against the corrected table
+and were right to: their fixtures built healthy repos out of symlinks. Two of them
+had never tested anything.
+
+- The **tracked-hook** test ran fixtures outside `$HOME`, where the installer's own
+  guard skips every repo. It asserted that an untouched file was untouched by a
+  sweep that never reached it. It now also asserts the sweep *reported* the skip.
+- The **broken-link** test moved the dispatcher aside, which makes the check fail
+  one step earlier — "the dispatcher is unreadable" — and return before the link
+  scan runs. It asserted only `rc == 1`, so it passed without ever exercising a
+  broken link. It now plants a link whose target is absent and asserts the wording.
+
+**An assertion on an exit code alone cannot tell which of several findings produced
+it.** Both of these passed for years on the strength of a number that many
+different failures can produce.
+
+### The rule
+
+A file shared by N consumers must not be writable through any one consumer's
+tooling. The supported shape is a real file that calls the shared file by path:
+a rewrite then costs one repo its checks, loudly and locally, instead of costing
+every repo its checks, silently.
+
+Measured after, on both machines: **0 symlinks remain**, 521 repos rejected a
+planted credential through a throwaway index (276 Clavain, 245 zklw), **0 did
+not**, 93/93 unattended repos on zklw scan, and every pushable repo on both
+machines meets its stated floor of zero. `ushas` was fixed in passing and was a
+coverage gap rather than a shape one — it had bd's `post-*` and `pre-push` hooks
+and no `pre-commit` at all, and had been failing Clavain's floor since 01:00 that
+day.
