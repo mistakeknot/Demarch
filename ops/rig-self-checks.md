@@ -3087,9 +3087,9 @@ on Clavain and zklw.
 
 ## Nothing compared the two machines, 2026-08-07
 
-Thirty-odd checks, twenty-two registered in `ALL_CHECKS`, and **every one of them
-compares a machine against its own repository.** That is not carelessness in any
-individual check; it is a shape. A deployment gap lives in the difference between
+Thirty-three suites and twenty-one checks registered in `ALL_CHECKS`, and **every
+one of them compares a machine against its own repository.** That is not
+carelessness in any individual check; it is a shape. A deployment gap lives in the difference between
 two hosts, so the evidence a single-machine check would need is on the other
 machine, and no amount of care inside one process reaches it.
 
@@ -3160,6 +3160,31 @@ Required here, unshippable here, **silent on both sides.** The absence is correc
 the guard would have broken the Mac with no check predicting it. Now
 `REQUIRED-WRONG-PACKAGE`, narrowed to names dotfiles ships somewhere.
 
+### And then the new suite did it again, to a different program
+
+The first scheduled run carrying the new suite reported `31 suite(s), passed: 713,
+failed: 0` **plus** `(4 suite(s) printed no tally this reads, so their assertions
+are not counted here)`. All 31 had printed a tally — checked by running each one
+individually in the scheduled invocation shape: 31 suites, 31 tallies.
+
+The inflation was in `SUITES_SEEN`, which counts `^=== ` lines to learn how many
+suites *started*. That marker is written by `rig-health-check.sh` before each suite
+runs — **the reporter's convention, not the suites'** — and the new suite shipped
+with four `=== section ===` headers. 35 started against 31 tallied, so a complete
+run was disclosed as though an eighth of it were unmeasured.
+
+Nothing was wrong with the aggregation, and nothing was visible where the suite was
+run by hand, because there the headers are just headers. *The parse that breaks
+belongs to a different program, on the machine where the job actually runs* — which
+is the same shape as the three gaps this suite was written about, arriving by way of
+the suite itself.
+
+The regression guard went into `test-rig-guard-tests-tally.sh`, checked across every
+suite in the directory, because **a rule each participant has to remember about
+itself is a rule the next file added forgets.** It carries a positive control on its
+own detector, since a regex that matches nothing would make the assertion pass
+forever.
+
 ### The sweep, and the control on the instrument
 
 The three machine-config differences were measured rather than assumed:
@@ -3173,7 +3198,10 @@ The three machine-config differences were measured rather than assumed:
 Thirteen suites create git repos. Rather than grep for `git init` and guess, every
 suite was run twice — once under this host's config, once under a zklw-shaped
 `GIT_CONFIG_GLOBAL` — and any suite whose tally changed is host-dependent *by
-measurement*.
+measurement*. **Result: 0 of 33.** The exposure that remains is latent, not active,
+so it is recorded here rather than retrofitted into thirteen files — the same call
+as the third counter on 2026-08-07, and for the same reason: changing suites no
+control exercises is motion, not coverage.
 
 **That sweep needed its own positive control**, and this is the part worth keeping:
 `GIT_CONFIG_GLOBAL` requires git ≥ 2.32, and had it been ignored, every "same"
@@ -3191,7 +3219,9 @@ apparatus look alike has not run.*
 > of an exemption table must read it or it will report the thing the table exists
 > to explain. A fixture that cannot read host configuration cannot diverge
 > between hosts, so prefer `git add` over `git commit` and pin what you cannot
-> avoid.
+> avoid. And when a marker is one program's convention, **enforce it in that
+> program's own suite across every participant** — a rule each file has to remember
+> about itself is a rule the next file added forgets.
 
 ### Measured after
 
@@ -3206,6 +3236,34 @@ apparatus look alike has not run.*
   four mutations that each remove a guard and require the answer to change:
   intersect-only, the empty-intersection guard, the collector's vacuity guard, and
   the `MACHINE_EXEMPT` table.
-- One pre-existing finding, not caused by this work and not fixed by it: zklw's
-  `intercore` clone is **8 days behind** Clavain's, both pushed. That is the check
-  working, and it is the exact case `rig-facts.py` was built for.
+- The watchdog claim was tested rather than read off `ALL_CHECKS` membership: a run
+  under a 12s ceiling wrote `warn` + *"not run: the health run hit its 12s ceiling
+  before reaching this check"* for **21 of 21** registered checks, `peer-agreement`
+  among them. `RIG_RUN_KIND=scheduled` was required to see it at all — without it
+  every one of those writes is correctly HELD, and the proof would have proved
+  nothing, which is the 2026-08-07 harness lesson arriving one day later.
+- Suites: **730 passed, 0 failed on both machines**, across 33 suites — 728 measured
+  end-to-end on each, plus the two assertions the delimiter guard added afterwards,
+  re-measured on both hosts at 33 and 14. The first comparison read 728 against 719
+  and **the gap was in the instrument**, not the machines: the zklw glob covered
+  `test-*.sh` and not `liveproof-*.sh`, which is exactly 9 — the missing suite's own
+  count.
+- The real `rig-health.service` was triggered on zklw rather than run over ssh,
+  because an ssh-invoked run is correctly non-authoritative and would have written
+  nothing. **23 of 27 records refreshed, every one `run_kind: scheduled`**;
+  `dotfiles-deployed` passes with the new finding class in place; `guard-tests`
+  reports `31 suite(s), passed: 715, failed: 0, skipped: 3` with **no shortfall
+  clause**, where the run before the delimiter fix read 713 and claimed four suites
+  unmeasured. 680 + 33 + 2 = 715, exactly.
+- Four findings and one warning remain on that surface, none of them from this
+  work: `finding-age`, `job-outcomes`, `publish-drift` (4 drifted plugins),
+  `peer-agreement` (the `intercore` item below), and `backup-freshness` (3 escrowed
+  secrets unreadable). The run exits 1 because of them, which is the surface
+  working.
+- One pre-existing finding, not caused by this work and not fixed by it, and the
+  first reading of it was wrong. `intercore_commit` diverges, and the ancestry note
+  says "the peer is behind" — true of the *clone*. But `ic_commit` is `1230d7fb` on
+  **both** machines, so what actually happened is that Clavain pulled `intercore`
+  and did not rebuild `ic`; zklw is internally consistent. **Pulling on zklw would
+  make it worse**, trading an agreement finding for a provenance one. *An ancestry
+  annotation names which tree moved, not where the remedy is.*
