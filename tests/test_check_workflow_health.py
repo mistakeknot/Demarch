@@ -120,6 +120,38 @@ def test_partial_coverage_above_the_floor_still_cannot_claim_the_estate(monkeypa
     assert wfh.main(["--require-repos", "30"]) == 2
 
 
+def test_the_floor_outranks_a_finding_when_coverage_collapses(monkeypatch):
+    """15 of 40 with a disabled workflow among them is still exit 2, not 1.
+
+    This is the ONLY test that can tell the two floors apart, and it exists
+    because a mutation proved the others could not. Every other scenario has
+    `unreachable` non-empty, and the unreachable check returns 2 as well — so
+    swapping the floor back to `len(repos)`, which IS the original bug, left the
+    whole suite green. Here the mutation changes the answer: with the floor on
+    the directory listing, 40 >= 30 passes, the finding is reported, and exit 1
+    claims a verdict drawn from a third of the estate.
+
+    Order matters and this pins it: a finding you cannot situate is not a
+    verdict. 25 unreachable repos might hold twenty more of the same.
+    """
+    _api(monkeypatch, unreachable=set(REPOS[:25]), disabled={"r30"})
+    assert wfh.main(["--require-repos", "30"]) == 2
+
+
+def test_one_unresolvable_checkout_is_enough_to_withhold_a_verdict(monkeypatch):
+    """40 healthy repos plus a single orphan is not an all-clear.
+
+    Also written because a mutation survived: the earlier orphan test put the
+    floor exactly at the repo count, so dropping the orphan failed the floor
+    instead of failing the thing under test. Here coverage clears the floor
+    easily, so the orphan is the only reason the verdict is withheld.
+    """
+    monkeypatch.setattr(wfh, "estate_repos",
+                        lambda root: PAIRS + [("orphan", None)])
+    _api(monkeypatch)
+    assert wfh.main(["--require-repos", "30"]) == 2
+
+
 def test_a_finding_stands_despite_partial_coverage(monkeypatch):
     """A disabled workflow is disabled whether or not some other repo answered.
 
