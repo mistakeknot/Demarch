@@ -426,6 +426,26 @@ A start date with no stated reason, or one that cannot be read as a date, is
 refused rather than honoured — if a malformed exemption cost nothing, the way to
 silence a check would be to misspell its date.
 
+Two things about that were wrong in the first version, and **both were found by
+running the check against the real config rather than by reading it** — after
+the suite was already green:
+
+- **A bare date is midnight, and midnight is too early.** `receipt-from
+  2026-08-07` resolves to 00:00 UTC; `plan-burndown` ran at 01:23 UTC that same
+  night, so the declaration covered a run it postdates and demanded rows that
+  run could not have emitted. This is the *common* case — receipts get written
+  during the day for jobs that ran overnight. `interwatch-drift` only worked
+  because its last run was four days earlier, which hid the flaw rather than
+  avoiding it. `YYYY-MM-DDTHH:MMZ` is now accepted and is the honest form for a
+  same-day declaration.
+- **A future start date could never expire.** The grace check asks whether
+  `now - start` has passed the receipt's bound; with a date that has not
+  arrived, that difference is negative, so it never passes. A receipt dated next
+  year would defer itself for a year — the exact unbounded escape hatch the
+  mechanism is shaped to avoid, left open by the version that claimed to close
+  it. Now refused, so the only way to write one is to say when you actually
+  wrote it.
+
 ### Every job declares what non-zero means
 
 A naive alert on `--failed` would fire forever on two units that are working
