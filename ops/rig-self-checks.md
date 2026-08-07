@@ -319,9 +319,12 @@ So the job now emits one declared row per target, and the receipt is
 `findings <max-age-hours> <count|any>`:
 
 ```
+# exactly one COVERAGE row per target — this is what the count counts
 rig-job-finding.sh tierA-review covered     jawnbase "12 commits, 0 P0/P1"
 rig-job-finding.sh tierA-review no-change   jawnfit  "last commit 2026-07-29"
 rig-job-finding.sh tierA-review unreachable ravenous "not present on this host"
+
+# then zero or more FINDINGS, which are news and are not coverage
 rig-job-finding.sh tierA-review finding     jawnbase "P0: …" --ref jawnbase#mk-abc1
 ```
 
@@ -330,9 +333,11 @@ Three things follow from the vocabulary, and each closes a separate hole:
 - **The count and the age live in one declaration.** A freshness bound alone is
   satisfied by a single row, so a sweep that reported on one repo of seven and
   died would read as fresh *and* complete. Two declarations could be half-written;
-  one cannot. More rows than declared is a finding too — a count that no longer
+  one cannot. More targets than declared is a finding too — a count that no longer
   matches the job's list has stopped being able to detect the partial sweep it
-  exists for.
+  exists for. What is counted is **distinct subjects of coverage rows**, not rows:
+  a repo with three defects filed against it is one repo looked at, and a defect
+  filed about a repo that was never reviewed must not fill that repo's slot.
 - **`unreachable` is not `no-change`.** A repo with nothing new and a repo nobody
   can see produce the same silence and mean opposite things. `autosigil` and
   `ravenous` are named in the AUTO-TIERA prompt, exist on Clavain, and do not
@@ -357,6 +362,69 @@ always returned `None` for a receipt it could not parse, and the caller ignored
 it — so a **malformed** declaration fell through to `ok` and the job read as
 passing. Now NO VERDICT, like a job that declares no receipt at all. Declared
 unreadably is no better evidence of work than not declared.
+
+### A log written by a redirect is not a receipt (2026-08-07)
+
+The same day, two of the three cron automations were still exempt, and the
+argument for one of them was careful and wrong on an interesting axis.
+
+`interwatch-drift` was declared `file 200 <log>`, justified like this: it is a
+`claude -p` run whose output is redirected to that log, and `claude -p` emits its
+analysis whether or not it finds drift, so there is no completion path that
+writes nothing — *the log is written by the work rather than by the wrapper*.
+
+Every sentence of that is true, and the axis is wrong. The property that matters
+is not **written by the work vs. by the wrapper**, it is **distinguishes
+work-done from work-attempted**. A `>> log 2>&1` redirect fails that: the
+process writes to it while dying exactly as readily as while succeeding.
+Measured on the run that proved it — `tierA-review` started 02:47:01, ran 673s,
+reviewed nothing, exited 0, and its log's mtime is **02:58:14**, the dead run's
+end to the second. A `file` receipt would have read fresh, and passing.
+
+`plan-burndown` was `none` on the reasoning that an empty plan queue leaves
+nothing behind. The measurement under that was sound (its interspect row really
+is absent on the empty-queue path, so *that* receipt would have failed a healthy
+job) but the conclusion did not follow: "I looked, and there was nothing" is a
+finding about a queue it did look at, which is the same sentence written one
+paragraph away about `tierA-review`'s repos. Its own contract says *"Never
+process a second bead"*, so the honest count is exactly **1** — not `any`.
+
+`interwatch-drift` gets `any` instead, because it **discovers** its targets
+(23 repos on the last scan). A count nobody can state in advance cannot be
+checked against one, and inventing a number would be declaring a fact. That
+leaves a real gap — `any` catches a run that emitted nothing, not a sweep that
+covered 9 of 23 and died — and the gap is named in the config rather than
+papered over, because closing it would mean letting the job declare its own
+denominator, which is a job grading its own exam.
+
+### A declaration must not judge the runs that predate it
+
+Adding a receipt to a weekly job makes it red until that job next runs.
+Declared on a Friday, `interwatch-drift` next fires on Monday: three days of a
+red line whose only available action is *wait*. That is this whole program's
+purpose inverted — a surface that cries wolf teaches its reader to scroll past
+it, and the reader it teaches is the one who scrolls past a real failure next
+month. The tempting alternative, leaving the receipt off until convenient, keeps
+the hole open for exactly as long as closing it is inconvenient.
+
+So a declaration can carry a start date, and until the job's next run it is a
+**note**, not a verdict:
+
+```
+interwatch-drift findings 200 any
+interwatch-drift receipt-from 2026-08-07 the first scan under this receipt is Monday 2026-08-10
+```
+
+What stops it being an off switch is that the grace period is not a number
+anyone chooses: it is **the receipt's own max-age**, already declared one line
+above for a different purpose. 200 hours after that date with still no
+qualifying run, the declaration has outlived the freshness it demands of its own
+job and is reported as a failure. A post-dated receipt buys exactly one window,
+and buying a second means widening the bound the check then holds you to.
+
+A start date with no stated reason, or one that cannot be read as a date, is
+refused rather than honoured — if a malformed exemption cost nothing, the way to
+silence a check would be to misspell its date.
 
 ### Every job declares what non-zero means
 
