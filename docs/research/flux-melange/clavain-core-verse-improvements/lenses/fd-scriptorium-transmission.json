@@ -1,0 +1,52 @@
+{
+  "id": "fd-scriptorium-transmission",
+  "kind": "base",
+  "parents": [],
+  "domain": "Medieval scriptorium practice and textual criticism of manuscript transmission (stemmatics, colophons, exemplar/copy hierarchies)",
+  "axioms": [
+    "Every copied text drifts; the corpus's failure mode is untracked copying, not wrong content",
+    "An index that disagrees with the corpus it indexes routes every reader wrongly",
+    "A text without a colophon (version, upstream, last-verified date) cannot be judged living or residue",
+    "Cross-references must be maintained like a concordance or knowledge accretes as unreachable folios",
+    "Exactly one exemplar must be declared for every duplicated folio; unmarked duplicates are apocrypha",
+    "A sync mechanism fed a stale catalog will re-materialize deleted texts over the living corpus"
+  ],
+  "primitives": [
+    "exemplar (canonical source)",
+    "copy / folio (derived document)",
+    "colophon (provenance metadata)",
+    "concordance (index doc: PHILOSOPHY.md, README, upstreams.json, fleet-registry)",
+    "palimpsest (doc describing a superseded corpus state)",
+    "apocrypha (non-canonical live copy)",
+    "cross-reference / citation"
+  ],
+  "failure_mode": [
+    "Cannot judge whether any individual skill is good — a well-transmitted bad text passes every check",
+    "Treats the ~/.codex snapshot fleet as purely pathological when it may be a deliberate install cache",
+    "Per-skill content review skipped for ~40 plugins beyond doc-vs-actual sampling",
+    "Stays at the document layer: blind to runtime behavior, irreversibility, and orchestration mechanics"
+  ],
+  "findings": [
+    "f-026",
+    "f-027",
+    "f-028",
+    "f-029",
+    "f-030",
+    "f-031",
+    "f-032",
+    "f-033",
+    "f-034",
+    "f-035",
+    "f-036",
+    "f-037",
+    "f-049",
+    "f-050",
+    "f-054",
+    "f-178",
+    "f-179",
+    "f-180",
+    "f-181",
+    "f-182",
+    "f-183"
+  ]
+}

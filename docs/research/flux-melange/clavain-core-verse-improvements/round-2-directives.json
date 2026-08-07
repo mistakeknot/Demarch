@@ -1,0 +1,30 @@
+[
+  {
+    "type": "DEEPEN",
+    "target": { "region": "install machinery GitHub exemplar constants + zklw mirror", "cluster_id": "exemplar-misdeclaration-github", "finding_ids": ["f-084"] },
+    "rationale": "f-084 (heat 27, emergent, frontier #1 tie): install/refresh machinery treats GitHub clones as exemplar over the Sylveste canonical source, and the zklw mirror host is unprobed. Confirm the mechanism, the intent, and the mirror side.",
+    "lens": "fd-provenance-drift",
+    "budget_weight": 0.3
+  },
+  {
+    "type": "DEEPEN",
+    "target": { "region": "gate_mode resolution surface (agency-spec.yaml, lib-sprint.sh, clavain-cli)", "cluster_id": "gate-mode-self-weakening", "finding_ids": ["f-051", "f-075", "f-081"] },
+    "rationale": "Self-weakening lever confirmed (gate_mode off/shadow, no audit event, 14 fail-open vs 8 fail-closed call sites, bash/Go opposite defaults) but the fix surface is unscoped: enumerate every gate_mode resolution site and the minimal audit+policy change.",
+    "lens": "fd-kernel-contract",
+    "budget_weight": 0.25
+  },
+  {
+    "type": "DEEPEN",
+    "target": { "region": "core/intercore event consumer contract (events tail, cursor, interspect consumer)", "cluster_id": "event-delivery-at-most-once", "finding_ids": ["f-018"] },
+    "rationale": "f-018 (heat 12) upheld: cursor-advance-on-write drops batches on consumer crash. Mechanism confirmed; what remains is the contract design — minimal ack/replay/TTL semantics that fix it without breaking the sole consumer.",
+    "lens": "fd-kernel-contract",
+    "budget_weight": 0.2
+  },
+  {
+    "type": "FUSE",
+    "target": { "pair": ["fd-kernel-contract", "fd-ecosystem-consolidation"], "shared_ground": ["lib-intercore.sh duplicated wrappers (f-001,f-025,f-078)", "stamped-script fleet (gitleaks 37-copy orphan, f-086)"] },
+    "rationale": "shared_heat 2, complementarity 1: consolidation sees duplicates needing a canonical home; kernel-contract sees divergent failure semantics under identical version stamps. Intersection: WHERE does consolidation change semantics — which copies are load-bearing divergence vs accidental, and what breaks if you canonize the wrong twin?",
+    "lens": "fd-canonization-safety (fused)",
+    "budget_weight": 0.25
+  }
+]

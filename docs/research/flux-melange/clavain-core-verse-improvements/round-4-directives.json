@@ -1,0 +1,30 @@
+[
+  {
+    "type": "DEEPEN",
+    "target": { "region": "lattice vs intergraph vs canongraph graph-plugin overlap", "cluster_id": "graph-plugin-three-way-overlap", "finding_ids": ["f-155"] },
+    "rationale": "f-155 (raw) is charter-level inference about real duplication cost. One probe reading the three schemas either confirms a merge candidate or documents boundaries.",
+    "lens": "fd-ecosystem-consolidation",
+    "budget_weight": 0.3
+  },
+  {
+    "type": "DEEPEN",
+    "target": { "region": "intercache MCP server consumer verification (+ interbrowse f-156 add-on)", "cluster_id": "intercache-zero-consumers", "finding_ids": ["f-151", "f-156"] },
+    "rationale": "f-151 upheld structurally but the consumer question is open: intercache auto-starts with zero documented consumers — verifying whether anything queries its store settles demote-or-prove.",
+    "lens": "fd-menu-engineering-triage",
+    "budget_weight": 0.25
+  },
+  {
+    "type": "PROBE-DISAGREEMENT",
+    "target": { "region": "upstreams.json sync semantics", "cluster_id": "upstreams-catalog-staleness", "finding_ids": ["f-028", "f-083", "f-090"] },
+    "rationale": "Last live disagreement: f-028's resurrection mechanism refuted (SKIP:not-present-locally holds) but catalog staleness confirmed; f-083 says deletions never propagate (deletion-amnesia). Close it with a final adjudication of what upstreams.json should become.",
+    "lens": "adjudicator",
+    "budget_weight": 0.2
+  },
+  {
+    "type": "FUSE",
+    "target": { "pair": ["fd-kernel-contract", "fd-anagama-thermal-state"], "shared_ground": ["nil-recorder fleet × replay holes (f-039 × f-045)", "coordination cursor zero (f-135)", "audit chain never imported (V4)", "ic sweep witness obligations (f-158)"] },
+    "rationale": "Last unfused score-5 pair with fresh round-3 material (dead thermocouple f-133, recovery-inert replay f-134). Intersection: where the witness machinery itself corrupts the irreversible transitions it records — directly shapes the cursor-contract / ic-sweep / audit-wiring remediations.",
+    "lens": "fd-firing-witness (fused)",
+    "budget_weight": 0.25
+  }
+]

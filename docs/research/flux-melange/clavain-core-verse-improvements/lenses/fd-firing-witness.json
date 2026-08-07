@@ -1,0 +1,44 @@
+{
+  "id": "fd-firing-witness",
+  "kind": "fusion",
+  "parents": [
+    "fd-kernel-contract",
+    "fd-anagama-thermal-state"
+  ],
+  "domain": "Intersection of kernel-contract engineering and anagama thermal-state: places where the instrumentation that witnesses irreversible state transitions (events, cursors, gates, audit) mis-records, under-records, or falsely certifies the transitions it exists to witness",
+  "spec": "/Users/sma/projects/Sylveste/.claude/flux-gen-specs/clavain-core-verse-improvements-fusion-3.json",
+  "axioms": [
+    "Every consumer-visible behavior must be explicit, versioned contract, never an accident of the current implementation (parent A)",
+    "Event delivery semantics (ordering, at-least-once, replay, cursor TTL) are contract and must be documented (parent A)",
+    "Committed transitions are one-way; irreversibility must be by design, never by accident (parent B)",
+    "Every state mutation must leave an entry in the firing record — an unlogged stoke makes replay certify a curve that never happened (parent B)",
+    "CONTRADICTION (investigated, not resolved): contract engineering treats instrumentation as a description of state; firing practice treats instrumentation as PART of the irreversible process — a wrong witness doesn't just misreport the firing, it corrupts every later decision that trusts the record",
+    "A witness written after and outside the irreversible act is optional plumbing, and optional plumbing is what gets dropped under transactional pressure",
+    "A witness that falsely declares the record corrupt is worse than no witness — it burns the record's credibility for every later decision"
+  ],
+  "primitives": [
+    "witness obligation (per-transition, in-tx, with evidence payload)",
+    "completeness certificate (events_expected vs events_found, sparsity in exit code)",
+    "command-shaped event (re-delivery commits irreversible effects) vs informational event",
+    "chain fork vs tamper (verifier must distinguish)",
+    "classified tombstone (witness write precedes/replaces the destructive DELETE)",
+    "cursor as firing machinery (a zeroed cursor re-fires logged stokes)"
+  ],
+  "failure_mode": [
+    "Settled premises (f-039 nil-recorder, f-045 replay holes, f-135 cursor-0, V4 audit-dead) are owned as premises — re-litigating them is out of charter",
+    "Contingent-design findings (f-188/f-189) bite only when the audit wiring lands; harm is real but conditional on the remediation being executed naively",
+    "Cannot weigh the performance cost of making every witness write transactional",
+    "fd-canonization-safety owns duplicate-merging semantics — witness/instrumentation ground only"
+  ],
+  "findings": [
+    "f-184",
+    "f-185",
+    "f-186",
+    "f-187",
+    "f-188",
+    "f-189",
+    "f-190",
+    "f-191",
+    "f-192"
+  ]
+}
