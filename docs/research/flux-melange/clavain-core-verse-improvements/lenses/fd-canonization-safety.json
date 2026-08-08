@@ -1,0 +1,46 @@
+{
+  "id": "fd-canonization-safety",
+  "kind": "fusion",
+  "parents": [
+    "fd-kernel-contract",
+    "fd-ecosystem-consolidation"
+  ],
+  "domain": "Intersection of kernel-contract engineering and platform-consolidation: where consolidating duplicated scripts/wrappers changes runtime semantics — distinguishing load-bearing divergence from accidental copies before naming a canonical home",
+  "axioms": [
+    "Every consumer-visible behavior must be explicit, versioned contract, never an accident of the current implementation (parent A)",
+    "Every duplicated procedure definition is a latent bug; the smallest consolidation that removes divergence beats grand unification (parent B)",
+    "Some duplication is load-bearing: the divergence between copies may BE the de-facto contract consumers depend on — the parents contradict here, and the contradiction is investigated, not resolved",
+    "A guard that watches the wrong signal (dead path, identical version string, stale registry) is blinder than the drift it guards",
+    "The executed copy and the edited copy are the two candidates for canonical; canonizing the one no consumer runs flips behavior fleet-wide",
+    "'Informational' text can have behavioral consumers via content hashes — canonizing it changes exit codes, not just prose"
+  ],
+  "primitives": [
+    "canonical-home declaration (which copy consumers actually execute)",
+    "divergence classification: load-bearing (semantic) vs accidental (drift)",
+    "reconciliation guard (sync test, marker grep, freshness registry) and the signal it actually watches",
+    "provenance marker / version witness (comment, machine stamp, doc citation)",
+    "overwrite-protection contract (SKIP semantics) vs re-attachment mechanism (hash allowlist, migration stamp)",
+    "content-hash behavioral consumer (orientation manifest, exit-code contract)"
+  ],
+  "failure_mode": [
+    "Single-parent findings are out of charter: anything consolidation alone or contract analysis alone would catch must be discarded — may under-report plain drift",
+    "Read-only probe: canonization paths designed but none executed, so the 5-step twin-canonization path is unvalidated in practice",
+    "Consumer census limited to runtime hooks; build-time/CI consumers of the core twin inferred from test-integration.sh only",
+    "Did not re-litigate settled clusters (lock, dispatch events, ship gate, publish state) — assumes their upheld readings as fact base"
+  ],
+  "findings": [
+    "f-120",
+    "f-121",
+    "f-122",
+    "f-123",
+    "f-124",
+    "f-125",
+    "f-126",
+    "f-127",
+    "f-128",
+    "f-129",
+    "f-130",
+    "f-131",
+    "f-132"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "fd-anagama-thermal-state",
+  "kind": "base",
+  "parents": [],
+  "domain": "Japanese anagama wood-kiln ceramics — multi-day atmospheric firing, kiln loading geometry, pyrometric cones, firing-curve discipline",
+  "axioms": [
+    "Committed transitions are one-way; irreversibility must be by design, never by accident",
+    "Every state mutation must leave an entry in the firing record — an unlogged stoke makes replay certify a curve that never happened",
+    "Atmosphere is shared: budgets, locks, and the event log degrade every co-resident run together",
+    "Failures bake in during unobserved windows between checkpoints and are only discoverable at unloading",
+    "A gate passed on the potter's confidence (self-report) is no gate; only a cone pack in the chamber (executed verification) counts",
+    "Mutual exclusion held only by a staleness timer is no mutual exclusion"
+  ],
+  "primitives": [
+    "run / firing",
+    "phase / firing-curve segment",
+    "gate / pyrometer reading",
+    "dispatch / stoke",
+    "event log / stoking record",
+    "budget + lock / chamber atmosphere",
+    "replay / shelf-by-shelf unloading",
+    "stall detector / thermocouple",
+    "cold spot / unrouted plugin"
+  ],
+  "failure_mode": [
+    "Treats all unevented mutations as defects, but some (telemetry counters, replay-capture tolerance for unmigrated DBs) are deliberate engineering trade-offs a potter has no analog for",
+    "Cannot weigh the performance cost of making every mutation transactional-with-events",
+    "Skipped deep review of internal/agency, coordination beyond lock events, scoring, and portfolio",
+    "Reads markdown skills only as gate definitions — blind to corpus-level drift and duplication"
+  ],
+  "findings": [
+    "f-038",
+    "f-039",
+    "f-040",
+    "f-041",
+    "f-042",
+    "f-043",
+    "f-044",
+    "f-045",
+    "f-046",
+    "f-047",
+    "f-048",
+    "f-133",
+    "f-134",
+    "f-184",
+    "f-185",
+    "f-186",
+    "f-187",
+    "f-188",
+    "f-189",
+    "f-190",
+    "f-191",
+    "f-192"
+  ]
+}

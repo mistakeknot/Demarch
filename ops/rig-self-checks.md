@@ -3050,3 +3050,511 @@ machines meets its stated floor of zero. `ushas` was fixed in passing and was a
 coverage gap rather than a shape one — it had bd's `post-*` and `pre-push` hooks
 and no `pre-commit` at all, and had been failing Clavain's floor since 01:00 that
 day.
+
+## A surface anyone can write is a surface anyone can turn green, 2026-08-07
+
+`~/.claude/health/autosync-repair.json` read `pass … 91 already clean` on
+2026-08-04 while that morning's **scheduled** run had exited 1 with `13 need a
+human`. Eleven consecutive scheduled failures, a refusal count trending up, and a
+dashboard that said everything was fine. `sylveste-sfgi` filed three defects.
+
+**They were one defect with three faces, and the third face names the culprit.**
+
+| Filed as | Actually |
+| --- | --- |
+| The status flipped `fail` → `pass` | One write, from a run nobody was monitoring |
+| The refusal list was "not recoverable" | `detail` is a single field. The same write took it |
+| The buckets did not sum | 93 total, 91 clean, 0 repaired, 0 refused — the signature of a **dry run**, which skipped the branch that would have counted the other two |
+
+A dry run had published to the monitoring surface. So the invariant was never
+"validate the numbers" — it was that **every writer of this surface was
+last-writer-wins and none of them recorded who had written.**
+
+### The obvious rule is wrong, and the reader already said why
+
+The first draft was *a manual run may not improve a stored failure* — refresh an
+equal status, worsen one, never turn `fail` into `pass`. `report-rig-health.py`
+refutes that in its own header: **"The load-bearing case is STALE, not FAIL."**
+Staleness outranks status in the reader, so a session poking a check every few
+hours keeps `ran_at` fresh forever and a scheduler that died in June still looks
+alive. That is the same defect wearing a timestamp instead of a status.
+
+The rule that shipped is stronger *and* simpler — no severity ordering, no
+comparison, no ranking of statuses at all:
+
+> **Only an authoritative run writes the authoritative fields.**
+
+A non-authoritative run touches neither `status` nor `ran_at`. It records itself
+under `last_nonauthoritative` and prints `HELD`, so nothing is lost and the
+disagreement is legible — "scheduled says fail; a session run said pass two hours
+ago" is a sentence worth reading. The cost is intended: after a human fixes
+something the surface stays red until a **scheduled** run confirms it. A
+monitoring surface reports what the monitor saw.
+
+### Provenance had to need no deploy step, so it was measured rather than reasoned
+
+The obvious implementation — have the unit set a variable — creates a deployment
+gap: two schedulers to edit, a plist that is *generated* by `install-macos.sh`,
+and a scheduled run that lost its marker would be classed manual and could then
+never turn the surface green again. So each signal was probed on the real
+machines:
+
+| Signal | Verified | Verdict |
+| --- | --- | --- |
+| `INVOCATION_ID` | present via `systemd-run --user` on zklw | scheduled |
+| `CLAUDECODE` / `CLAUDE_SESSION_ID` | present in a Claude Code Bash env | session |
+| `SSH_CONNECTION` / `SSH_CLIENT` | set by sshd; **absent** from the systemd service env | remote |
+| everything absent | throwaway LaunchAgent: 13 vars, no TTY, `XPC_SERVICE_NAME=0` | scheduled (launchd) |
+
+Two findings only measurement could produce. **The ssh branch is the one that
+matters**: zklw runs no Claude Code sessions, so the 2026-08-04 write arrived over
+ssh from Clavain, and sshd forwards no `CLAUDE*` variables — the first draft
+shipped with that hole open and would have missed the very incident it was built
+for. And **`SSH_AUTH_SOCK` is the wrong variable**: launchd supplies its own
+`Listeners` socket and zklw's systemd session carries a gpg-agent one, so keying on
+it would have classified every scheduled run on both machines as remote and frozen
+the surface permanently.
+
+`XPC_SERVICE_NAME` is worth its own line: it is `0` for every non-XPC job, not the
+label, so launchd can only be recognised by the **absence** of every other signal.
+That is why the launchd branch is the default rather than an error.
+
+### Three implementations of one contract, and the estate had already paid twice
+
+`rig-health-check.sh`, `rig-report.sh` and `git-autosync-repair.sh` each built the
+record themselves. Both prior corrections are recorded *in the files*, and neither
+reached the third:
+
+- `rig-report.sh`: "THE FOURTH ARRIVED LATER AND THIS FILE DID NOT LEARN IT" — the
+  exit-code dialect grew a fourth value elsewhere and this wrapper logged it as
+  `fail: unexpected exit 3`.
+- Its response clock was added separately because its four checks were not merely
+  under-reported without one, they were **exempted**: `rig-finding-age` counts an
+  unstamped finding and moves on because "the next failing run stamps it", and for
+  those four the next failing run stamped nothing, so the day never came.
+
+`git-autosync-repair.sh` never got the clock at all — which is why an eleven-day-old
+failure presented as brand new every morning. All three now call one writer, and
+its 104 call sites in `rig-health-check.sh` moved at once.
+
+### "Could not be evaluated" has two flavours, and conflating them breaks a good design
+
+The writer first *forced* `--not-evaluated` to `fail`. Wiring `rig-report.sh` onto
+it showed that destroys a distinction that file makes on purpose:
+
+- **exit 2** — the check could not run → `fail`. Someone must fix it.
+- **exit 3** — it ran and declines to answer → `warn`, deliberately *not* a fail,
+  because `first_failed_at_epoch` stamps anything that is not a pass, and a
+  response clock on an honest "cannot tell" ages into an overdue defect nobody can
+  ever close.
+
+Both are unevaluated; they are not equally severe. So the flag records that no
+measurement was taken, leaves severity to the caller, and **refuses** the one
+combination that is simply false — `--not-evaluated` with `pass` or `skip` is a
+usage error that writes nothing. A clean verdict from a measurement never taken is
+the entire family of defect here, so it is rejected rather than normalised into
+something true.
+
+An unevaluated `warn` *does* still accrue a clock, checked and left deliberately:
+`rig-finding-age` ages a warn on a 14-day budget because a warn is
+degraded-not-broken, and "this check has been unable to answer for fourteen days"
+is a finding worth surfacing. Exempting it would be the
+grandfathered-into-permanent-exemption case that same file rejects by name.
+
+### Reconcile per unit of work, not per run
+
+`clean + repaired + refused == total` is the wrong assertion: those can
+legitimately **exceed** the total, because a repo that is fast-forwarded and then
+has its push rejected is honestly both repaired and refused. A sum check must
+choose between false alarms on that repo and silence on the real hole. Asking each
+repo "did anything at all happen here" has neither problem.
+
+### A negative control cannot be read off an exit code
+
+`Sylveste-oxcv`, the inverted form of *an empty result is not a zero*. A run of
+`test-autosync-lock.sh` against the pre-fix library reported `6 passed, 9 failed`
+and exited 0 — and against that library **the failures are the expected outcome**,
+so the exit code was read as confirmation. Seven of the nine read `fork: retry:
+Resource temporarily unavailable`. Those subshells never executed.
+
+> A proof whose expected result and whose broken state look alike confirms itself
+> no matter what happens. It needs a third outcome, and it must exit non-zero on
+> *could not be evaluated* as well as on *failed* — because when failure is the
+> expected result, `exit 1` carries no information and only "n could not be
+> evaluated" says the evidence is not evidence.
+
+The suite was never wrong; it reported those fork errors honestly as mismatches.
+What could not distinguish was the reading of its exit code, and the only place to
+fix that once rather than per-caller is in the suite.
+
+**The bead's environmental diagnosis was also wrong**, and it matters. It blamed
+the Claude Code `[sh]` leak (upstream #23484) and treated the pressure as ambient.
+Measured on Clavain at 1694 processes: **1** `sh` process, 24 concurrent sessions,
+**117 MCP servers**, 200 node. It is sessions × MCP servers — structural, so it
+does not drain on its own, and it will do this again to any fork-heavy suite.
+"Re-run it when the machine is quieter" is therefore a request to close sessions,
+not a matter of waiting.
+
+Sweep: of 30 suites, five assert an expected failure; the other four surface a
+fork error as a visible mismatch because they compare specific strings rather than
+a bare exit code. **The defect needs both an expected failure and a caller reading
+only the exit code.** Recorded rather than retrofitted — adding a third counter to
+28 suites that no negative control runs would be motion, not coverage.
+
+### Two things the tests caught in their own first drafts
+
+Both are the defect this section is about, wearing test-harness clothes.
+
+- `test-rig-health-write.sh` unset `RIG_RUN_KIND` alongside the ambient session
+  markers, so eleven write assertions ran as the launchd default and agreed the
+  surface worked **while testing nothing**. And "explicit `RIG_RUN_KIND` wins" was
+  asserted with the value `scheduled`, which is also the default, so it could not
+  fail.
+- `test-rig-report.sh` began failing `test_pass_clears_the_clock`. The pass was
+  correctly refused — the suite runs in a session. *Which tests did not fail is
+  the more useful half*: `test_clock_carries_forward` writes fail then fail, so
+  the discarded second write left the first one's stamp in place and the assertion
+  passed for the wrong reason. Every write after the first was being thrown away
+  and eleven of twelve tests stayed green; only the assertion that required a
+  **change** could notice.
+
+A third belongs with them, from the fixtures rather than the harness:
+`test-git-autosync-repair.sh` passed 26/0 on Clavain and 17/9 on zklw from one
+commit. `mkrepo` omitted `--initial-branch`, so the fixture inherited
+`init.defaultBranch` — `main` on Clavain, `master` on zklw — and the repo under
+test was merely *clean* rather than *behind* on the machine that matters. **A suite
+green where you type and red where the code runs has not told you the code is
+wrong; it has told you the two runs were not the same experiment.**
+
+### The rule
+
+> A monitoring surface must record **who** wrote each verdict, and a run that
+> nobody is monitoring must not be able to speak for one that is — including by
+> refreshing a timestamp. Where a check reports a count, reconcile it against the
+> unit of work rather than the run. Where a proof expects a failure, make "could
+> not be evaluated" a distinct, non-zero outcome, because otherwise every result
+> confirms the hypothesis.
+
+Measured after, on both machines: `run_kind=scheduled` on the live systemd run of
+`git-autosync-repair` (93 repos, **0 unaccounted**, `first_failed_at_epoch`
+correctly inherited from the 08:47 failure rather than reset), on
+`estate-lane-status` through `rig-report.sh` (`exit_code` preserved), and on 22 of
+23 records from a full `rig-health-check.sh` run — the 23rd being `facts.json`,
+which is not a status file. An ssh'd write against a seeded scheduled failure on
+zklw returns `HELD`, which is the 2026-08-04 incident refused at the point it
+happened. Suites: 45 / 26 / 15 / 12 / 7, **0 failed and 0 unevaluated**, identical
+on Clavain and zklw.
+
+## Nothing compared the two machines, 2026-08-07
+
+Thirty-three suites and twenty-one checks registered in `ALL_CHECKS`, and **every
+one of them compares a machine against its own repository.** That is not
+carelessness in any individual check; it is a shape. A deployment gap lives in the difference between
+two hosts, so the evidence a single-machine check would need is on the other
+machine, and no amount of care inside one process reaches it.
+
+Three gaps surfaced in one session, each found by accident:
+
+| gap | how it looked | why nothing saw it |
+| --- | --- | --- |
+| A helper needed no symlink | every local test green | `rig-health-write.py` is imported by realpath; a deployed copy would have been the bug |
+| `git-autosync-promote` started 3s before its checkout pulled | a record honestly missing a new field | the unit and the pull are not ordered with respect to each other |
+| One commit, 26/0 on Clavain and 17/9 on zklw | a suite that "found a bug" | the fixture inherited `init.defaultBranch` |
+
+### What shipped, and why it needed no new surface
+
+The exchange already existed. `rig-health-fetch-peers.sh` pushes this machine's
+`facts.json` up and pulls the peer's status files down **on one connection**, and
+`peer-agreement` is already in `ALL_CHECKS` — so the watchdog can already name it
+when a run does not reach it. Adding a fourth surface for a question an existing
+transport answers would have repeated the defect `sylveste-sfgi` was filed for.
+
+So `rig-facts.py` gained one fact: the digest of the bytes at
+`~/.local/bin/<name>`, resolved, for every program this machine's schedulers
+reach. **A commit cannot answer that question** — a hand-made copy does not change
+when `HEAD` moves, which is how the `estate-*` units sat as copies on zklw for
+weeks, and an uncommitted edit changes the file without changing `HEAD`.
+
+Two filters, and the second is not optional. Reachability comes from
+`rig-dotfiles-deployed.py`'s transitive closure, **imported rather than
+reimplemented**. The second requires a dotfiles-tracked source in *this machine's*
+packages, and it is what keeps compiled binaries out: Clavain is darwin/arm64 and
+zklw is linux/amd64, so `ic`, `cass`, `claude`, `cloudflared` and `remontoire` can
+never share a digest. Including them would have built the wall of expected errors
+that `rig-facts.py`'s own header refuses to build.
+
+### The severity claim was checked, not assumed
+
+`rig-facts.py`'s standard is that a compared fact must have a failure mode that
+does not self-heal. A digest skew *looks* like something a pull fixes, so it was
+measured: **neither checkout carries a `.git-autosync` marker**, and no systemd
+unit or launchd plist pulls the dotfiles repo on either machine. zklw's `HEAD`
+moved that day only by pulls typed by hand. Nothing converges these two trees.
+
+That same measurement settles the promote race, and the answer is **accept it, and
+say so**: a three-second window is bounded by the pull, the next scheduled run
+corrects it, and a check sampling once a day cannot see it and does not need to.
+What is worth detecting is the state with no mechanism to close it. *A decision to
+accept is only worth anything when it names what it is accepting and what it is
+not.*
+
+### I built the wall I had just written the comment against
+
+The first cross-machine run reported `rig-escrow-attest-peer.sh` as `(absent)` on
+zklw — which is correct on both sides. zklw is the *subject* of the escrow
+attestation and cannot broker a 1Password session, and
+`rig-dotfiles-deployed.py`'s `MACHINE_EXEMPT` had carried that reason since it was
+written. The collector did not consult it, so it would have reported a permanent
+divergence, daily, about a program one machine is right never to run. **An
+exemption table is only load-bearing for the checks that read it**, and a new
+consumer of an old inventory inherits none of its judgment for free.
+
+### A blind spot found on the way, in the closure itself
+
+The closure is computed over one machine's packages but its *frontier* includes
+`common/`, which both machines own. So `rig-health-check.sh` puts
+`rig-unit-overrides.py` in the Mac's required set while the file ships in
+`server/` only — and the inventory dropped it as another machine's package.
+Required here, unshippable here, **silent on both sides.** The absence is correct
+(`command -v systemctl` guards the call), but nothing asserted that, so removing
+the guard would have broken the Mac with no check predicting it. Now
+`REQUIRED-WRONG-PACKAGE`, narrowed to names dotfiles ships somewhere.
+
+### And then the new suite did it again, to a different program
+
+The first scheduled run carrying the new suite reported `31 suite(s), passed: 713,
+failed: 0` **plus** `(4 suite(s) printed no tally this reads, so their assertions
+are not counted here)`. All 31 had printed a tally — checked by running each one
+individually in the scheduled invocation shape: 31 suites, 31 tallies.
+
+The inflation was in `SUITES_SEEN`, which counts `^=== ` lines to learn how many
+suites *started*. That marker is written by `rig-health-check.sh` before each suite
+runs — **the reporter's convention, not the suites'** — and the new suite shipped
+with four `=== section ===` headers. 35 started against 31 tallied, so a complete
+run was disclosed as though an eighth of it were unmeasured.
+
+Nothing was wrong with the aggregation, and nothing was visible where the suite was
+run by hand, because there the headers are just headers. *The parse that breaks
+belongs to a different program, on the machine where the job actually runs* — which
+is the same shape as the three gaps this suite was written about, arriving by way of
+the suite itself.
+
+The regression guard went into `test-rig-guard-tests-tally.sh`, checked across every
+suite in the directory, because **a rule each participant has to remember about
+itself is a rule the next file added forgets.** It carries a positive control on its
+own detector, since a regex that matches nothing would make the assertion pass
+forever.
+
+### The sweep, and the control on the instrument
+
+The three machine-config differences were measured rather than assumed:
+
+| setting | Clavain | zklw |
+| --- | --- | --- |
+| `init.defaultBranch` | `main` | unset → `master` |
+| `commit.gpgsign` | `true` | unset |
+| `user.name` | `mistakeknot` | `mk` |
+
+Thirteen suites create git repos. Rather than grep for `git init` and guess, every
+suite was run twice — once under this host's config, once under a zklw-shaped
+`GIT_CONFIG_GLOBAL` — and any suite whose tally changed is host-dependent *by
+measurement*. **Result: 0 of 33.** The exposure that remains is latent, not active,
+so it is recorded here rather than retrofitted into thirteen files — the same call
+as the third counter on 2026-08-07, and for the same reason: changing suites no
+control exercises is motion, not coverage.
+
+**That sweep needed its own positive control**, and this is the part worth keeping:
+`GIT_CONFIG_GLOBAL` requires git ≥ 2.32, and had it been ignored, every "same"
+would have been two identical runs reported as evidence of independence. So it was
+verified to flip `main`→`master`, drop `gpgsign`, and put a fixture repo on
+`refs/heads/master`. *An experiment whose negative result and whose broken
+apparatus look alike has not run.*
+
+### The rule
+
+> Where two machines are supposed to run the same program, something must compare
+> **the bytes they will actually execute** — a check that only ever interrogates
+> one machine cannot see a deployment gap at all, because the evidence is on the
+> other host. An **intended** absence is not a divergence, and every new consumer
+> of an exemption table must read it or it will report the thing the table exists
+> to explain. A fixture that cannot read host configuration cannot diverge
+> between hosts, so prefer `git add` over `git commit` and pin what you cannot
+> avoid. And when a marker is one program's convention, **enforce it in that
+> program's own suite across every participant** — a rule each file has to remember
+> about itself is a rule the next file added forgets.
+
+### Measured after
+
+- **19 programs compared and matching** across the two machines (21 keys on
+  Clavain, 29 on zklw, 2 macos-only, 10 server-only) — non-vacuous, and both
+  machines reach the verdict independently.
+- The deployed comparator, given real inventories with one digest perturbed, names
+  the program and says **"both checkouts are at 7f46b56, so no pull will close
+  this: it is an uncommitted edit or a copy that stopped tracking the file"** —
+  which is the actionable half.
+- `test-rig-facts-deploy-skew.sh`: **33 assertions, 0 failed, 0 unevaluated**, with
+  four mutations that each remove a guard and require the answer to change:
+  intersect-only, the empty-intersection guard, the collector's vacuity guard, and
+  the `MACHINE_EXEMPT` table.
+- The watchdog claim was tested rather than read off `ALL_CHECKS` membership: a run
+  under a 12s ceiling wrote `warn` + *"not run: the health run hit its 12s ceiling
+  before reaching this check"* for **21 of 21** registered checks, `peer-agreement`
+  among them. `RIG_RUN_KIND=scheduled` was required to see it at all — without it
+  every one of those writes is correctly HELD, and the proof would have proved
+  nothing, which is the 2026-08-07 harness lesson arriving one day later.
+- Suites: **730 passed, 0 failed on both machines**, across 33 suites — 728 measured
+  end-to-end on each, plus the two assertions the delimiter guard added afterwards,
+  re-measured on both hosts at 33 and 14. The first comparison read 728 against 719
+  and **the gap was in the instrument**, not the machines: the zklw glob covered
+  `test-*.sh` and not `liveproof-*.sh`, which is exactly 9 — the missing suite's own
+  count.
+- The real `rig-health.service` was triggered on zklw rather than run over ssh,
+  because an ssh-invoked run is correctly non-authoritative and would have written
+  nothing. **23 of 27 records refreshed, every one `run_kind: scheduled`**;
+  `dotfiles-deployed` passes with the new finding class in place; `guard-tests`
+  reports `31 suite(s), passed: 715, failed: 0, skipped: 3` with **no shortfall
+  clause**, where the run before the delimiter fix read 713 and claimed four suites
+  unmeasured. 680 + 33 + 2 = 715, exactly.
+- Four findings and one warning remain on that surface, none of them from this
+  work: `finding-age`, `job-outcomes`, `publish-drift` (4 drifted plugins),
+  `peer-agreement` (the `intercore` item below), and `backup-freshness` (3 escrowed
+  secrets unreadable). The run exits 1 because of them, which is the surface
+  working.
+- One pre-existing finding, not caused by this work and not fixed by it, and the
+  first reading of it was wrong. `intercore_commit` diverges, and the ancestry note
+  says "the peer is behind" — true of the *clone*. But `ic_commit` is `1230d7fb` on
+  **both** machines, so what actually happened is that Clavain pulled `intercore`
+  and did not rebuild `ic`; zklw is internally consistent. **Pulling on zklw would
+  make it worse**, trading an agreement finding for a provenance one. *An ancestry
+  annotation names which tree moved, not where the remedy is.*
+- **Amended 2026-08-08, third reading.** The remedy above is still wrong about which
+  action closes it. `intercore_commit` reads the *checkout*, not the binary, so a
+  rebuild on Clavain closes nothing — only zklw pulling does, and that pull must be
+  paired with a rebuild or zklw inherits the stale-binary state Clavain was in. The
+  "pulling alone makes it worse" half was right. Two corrections to one item, both
+  from reasoning about the fact's *name* instead of reading what it collects.
+
+## A true statement is not a diagnosis, 2026-08-08
+
+`scheduled_program_digests` fired for real for the first time, one day after it
+shipped, and got the cause wrong while stating it as fact.
+
+    scheduled_program_digests: 1 entry disagrees -- the checkouts are at different commits
+        rig-file-drift-bead.sh   here=053df9970260   Clavain=f28cce012262
+
+Both clauses are true. The checkouts *were* at different commits. And they have
+nothing to do with each other:
+
+- `rig-file-drift-bead.sh` is **byte-identical at both commits** — `git show
+  <zklw-commit>:<path>` and `git show <clavain-HEAD>:<path>` both hash to
+  `053df997`. No commit in the differing range touches the file.
+- The real cause was an **uncommitted 628-byte edit** in Clavain's worktree (4419
+  bytes deployed against a 3791-byte blob), left by a sibling session.
+- So the remedy the annotation implies — pull the behind side — **would have changed
+  nothing**, and would have left whoever ran it believing the finding was closed.
+
+*A statement that is true, relevant, and not the cause is worse than "cause
+unknown", because it terminates the search.* The reader stops at the first
+plausible explanation offered with confidence.
+
+What makes this one instructive is that **the knowledge was already in the file**.
+The equal-commits branch of the same annotation reasons correctly — it says equal
+commits mean "an uncommitted edit or a drifted copy", so the disjunction was
+understood when the code was written. The unequal-commits branch simply never
+re-checks, and asserts the commits as sufficient explanation. *Being right about the
+disjunction and wrong about which branch you are in is a specific failure, and it
+looks exactly like being right.*
+
+The fix is not "compare the file at both commits". A peer's commit may not be
+fetched locally, so that is not always computable, and a check that can only
+sometimes answer will quietly fall back to guessing. What every machine can always
+answer about **itself** is whether its deployed digest matches its own `HEAD` blob.
+Carry that bit per program and the cases separate without needing the peer's
+history: both sides faithful → the commits explain it and a pull closes it; either
+side unfaithful → that side has an uncommitted edit or a copy that stopped tracking
+the file, and no pull will help.
+
+Two measurement errors of my own, both from truncation and both worth naming:
+
+- `git status --porcelain | head -6` hid the second dirty file, which was the one
+  that mattered. The first report of this instance named the wrong cause because the
+  evidence for the right one was on line 7. *A `head` on a status listing is a
+  sampling decision disguised as formatting.*
+- A `git diff --stat <a>..<b> -- '*name.sh'` glob pathspec came back empty and was
+  read as "identical". It was, by luck, the correct answer here — confirmed
+  afterwards with an exact path and two `git show | shasum` comparisons — but an
+  empty diff from an unmatched pathspec and an empty diff from identical content are
+  the same output, which is the 2026-08-07 lesson about queries whose failure and
+  whose negative result look alike.
+
+### The mechanism the severity argument called hypothetical is running next door
+
+`rig-peer-agreement.py`'s justification for treating divergence as `fail` argued
+from the absence of any convergence mechanism, and closed with *"if dotfiles ever
+gains an autosync marker"*. Re-measured 2026-08-08:
+
+| repo | zklw |
+|---|---|
+| `~/projects/dotfiles` | **absent** |
+| `~/projects/Sylveste` | MARKED |
+| `~/projects/Sylveste/core/intercore` | MARKED |
+
+The claim about dotfiles holds — no marker on either machine. But the framing was
+wrong: **dotfiles is the exception among its own siblings**, not a repo waiting on
+something nobody built. `core/intercore` was observed moving `1230d7fb` →
+`590d9bb3` with no pull in any transcript, which is also the belated explanation for
+a peer divergence that resolved itself earlier that day. Corrected in dotfiles
+`0e0b65a`, which states plainly that whether dotfiles *should* join that
+convergence is a policy call about a repo carrying hooks, settings references and
+unit files whose autosync PostToolUse half auto-commits — and not a call that file
+gets to make by assuming an answer in either direction.
+
+*A severity defended only by an argument invites re-litigation; one defended by an
+instance does not.* That severity now has an instance, recorded above — and the
+instance turned out to be a case the annotation misread, which is the more useful
+finding of the two.
+
+## Exit 0 covered only the last stage, 2026-08-08
+
+`ic publish` shipped interrank 0.3.5 to the marketplace, returned **0**, and left
+the version bump uncommitted. Every clone of the plugin said 0.3.4. That is
+precisely the divergence `check-publish-drift.py` exists to detect, manufactured by
+the tool the estate publishes with, and it would have been reported the next morning
+as a human's mistake.
+
+The sequence reproduces for any plugin carrying a generated manifest:
+
+1. The bump writes `plugin.json`. Nothing regenerates `kimi.plugin.json`, which is
+   derived **from** that version, so the monorepo's pre-commit parity hook rejects
+   the version commit. *The bump is what creates the staleness the hook refuses*, so
+   the first attempt cannot pass its own gate — for all 66 plugins.
+2. The natural retry finds `plugin.json` already at the target and takes the
+   sync-only path, whose premise is "the developer already bumped" — meaning already
+   *committed*. Nothing checked that premise. The entire validation block, including
+   both dirty-worktree checks, sits inside `if !syncOnly`.
+3. The release canary recorded `PriorVersion` from the local manifest, which on that
+   path equals the version being published. `resolveRollbackTarget` ignores a record
+   whose prior equals its current, so the genuinely prior version was pruned as an
+   orphan. interrank retains one cache version; interkasten and clavain each retain
+   two, which is the intended shape.
+
+Three guards, each individually correct — require a clean worktree, refuse a stale
+generated manifest, bump and commit atomically — composed so that the **correct
+outcome was unreachable**. Every route either failed or discarded the rollback net;
+the only one that completed was the one that shipped a phantom version. *A missing
+step that every guard correctly notices is missing, and none can supply, presents as
+four separate bugs.*
+
+Fixed in intercore `aa693df`: regenerate between bump and commit, verify the
+committed version on the sync-only path, and take the canary's prior from the
+marketplace. Four tests, each shown to fail with its fix reverted. 41 packages green
+on both machines.
+
+- **The tell was a missing log line, not the exit code.** interrank printed
+  `Syncing`; interkasten, after the fix, printed `Committing plugin...` then
+  **`Pushing plugin...`**. Sync-only jumps past both. *When a pipeline's stages are
+  its only evidence of having run, an absent stage is a finding.*
+- The verification that caught it was reading the plugin repo — branch, dirty files,
+  and `git show HEAD:.claude-plugin/plugin.json` — **not** re-running the publish
+  command or trusting its status. The drift check would have caught it too, a day
+  later, and blamed the wrong actor.
