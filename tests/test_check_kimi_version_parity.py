@@ -87,6 +87,57 @@ def test_unreadable_manifest_does_not_silently_pass(tmp_path):
     assert parity.main(["--root", str(tmp_path), "--require-plugins", "1"]) == 1
 
 
+def test_BOTH_manifests_unreadable_does_not_pass(tmp_path):
+    """One corrupt manifest was already covered. Two was the hole.
+
+    The check compares `got != want`, and read_version turns an unparseable file
+    into a `<unreadable: ...>` marker built from the exception text. Two files
+    that are broken the same way raise the same exception, so their markers are
+    equal, so the comparison succeeds — on a plugin whose manifests could not be
+    parsed at all. Measured before the fix: three plugins with empty manifests
+    reported `parity ok: 3 plugin(s)` and exit 0.
+
+    The test above stops one step short of this because it corrupts only the
+    generated side, leaving the canonical side readable and the two markers
+    unequal. That is why it passed throughout.
+    """
+    _plugin(tmp_path, "1.0.0", "1.0.0")
+    (tmp_path / ".claude-plugin" / "plugin.json").write_text("")
+    (tmp_path / "kimi.plugin.json").write_text("")
+    assert parity.main(["--root", str(tmp_path), "--require-plugins", "1"]) == 1
+
+
+def test_no_version_key_in_either_manifest_does_not_pass(tmp_path):
+    """None == None is not parity; it is the absence of the thing being checked."""
+    (tmp_path / ".claude-plugin").mkdir(parents=True)
+    (tmp_path / ".claude-plugin" / "plugin.json").write_text('{"name": "x"}\n')
+    (tmp_path / "kimi.plugin.json").write_text('{"name": "x"}\n')
+    assert parity.main(["--root", str(tmp_path), "--require-plugins", "1"]) == 1
+
+
+def test_an_empty_version_string_is_not_a_version(tmp_path):
+    _plugin(tmp_path, "", "")
+    assert parity.main(["--root", str(tmp_path), "--require-plugins", "1"]) == 1
+
+
+def test_an_unreadable_generated_manifest_is_not_called_a_stale_bump(tmp_path, capsys):
+    """The exit code is 1 either way here, so the REASON is the whole test.
+
+    A mutation that checks only the canonical side survived every exit-code
+    assertion in this file, because an unreadable generated manifest also fails
+    the plain `got != want` comparison and lands on exit 1 regardless. What it
+    loses is the diagnosis: it tells you the version was bumped without
+    regenerating, which sends you to run the generator on a file that cannot be
+    parsed. Wrong instruction, confidently given.
+    """
+    _plugin(tmp_path, "1.0.0", "1.0.0")
+    (tmp_path / "kimi.plugin.json").write_text("{ not json\n")
+    assert parity.main(["--root", str(tmp_path), "--require-plugins", "1"]) == 1
+    err = capsys.readouterr().err
+    assert "no readable version to compare" in err
+    assert "version bumped without regenerating" not in err
+
+
 @pytest.mark.parametrize("required", [1, 60])
 def test_live_estate_is_in_parity(required):
     """The real estate, which this session brought to 0 drift."""
