@@ -1,0 +1,23 @@
+[
+  {
+    "type": "PROBE-DISAGREEMENT",
+    "target": { "region": "compact-drift guard registry vs B4 canonization decision", "cluster_id": "compact-guard-registry-contradiction", "finding_ids": ["f-008", "f-122"] },
+    "rationale": "f-008 says no compact-drift guard exists for Clavain pairs; f-122 found a root guard whose registry is stale and demands re-creating deliberately deleted compact files (flux-drive) + 2 phantoms. Existence-claim vs effect-claim — adjudicate what the guard should actually do.",
+    "lens": "adjudicator",
+    "budget_weight": 0.2
+  },
+  {
+    "type": "DEEPEN",
+    "target": { "region": "core/intercore unread internals (portfolio/relay.go, audit chain, MIGRATION.md, stall detector, replay gap)", "cluster_id": "intercore-internals-unread", "finding_ids": ["f-044", "f-045"] },
+    "rationale": "f-044/f-045 are raw and unconfirmed in the one kernel region no probe has read. Confirm/refute them and sweep the remaining unread internals — the kernel is the highest-yield-density region this run.",
+    "lens": "fd-kernel-contract",
+    "budget_weight": 0.4
+  },
+  {
+    "type": "STEER-WIDE",
+    "target": { "region": "interverse cold-spot fleet (43 plugins never opened, incl. 8 missing from marketplace.json)", "note": "Coverage exception, documented: novel_cluster_rate (0.27) reflects two deliberately narrow DEEPEN rounds, not target dryness — ~75% of the interverse fleet is unopened and the GOAL spans all three layers. One wide probe, not a per-round wildcard." },
+    "rationale": "f-033 found ghost plugins and 43 cold spots by index analysis; nobody has opened the directories. Dead/broken/duplicate plugins in the unopened fleet are direct high-leverage findings for the GOAL.",
+    "lens": "fd-menu-engineering-triage (new distant lens: menu engineering — portfolio triage into stars/puzzles/plowhorses/dogs by demand×margin)",
+    "budget_weight": 0.4
+  }
+]

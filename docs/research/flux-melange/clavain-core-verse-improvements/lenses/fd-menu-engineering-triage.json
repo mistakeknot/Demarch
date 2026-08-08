@@ -1,0 +1,54 @@
+{
+  "id": "fd-menu-engineering-triage",
+  "kind": "base",
+  "parents": [],
+  "domain": "restaurant menu engineering / product-portfolio triage (distant tier)",
+  "axioms": [
+    "Every item on the menu consumes kitchen capacity whether or not anyone orders it — an installed/rigged plugin costs session-start time, context, and maintenance even at zero demand",
+    "Classify every item by popularity x profitability (stars / puzzles / plowhorses / dogs) so each carries an explicit decision: promote, re-place, maintain cheaply, or retire",
+    "A deprecated item still installed is worse than an absent one: it occupies the slot, the profile, and the install path that its successor needs",
+    "Presence in a registry is not demand; demand is installs, rig-profile membership, live skill symlinks, and documented consumers",
+    "Retirement is an action, not an announcement — a deprecation notice without removal from marketplace, rig, and installs is a lie of omission",
+    "Puzzles (real implementation, no placement) are a placement failure, not an implementation failure; the fix is menu position, not more cooking"
+  ],
+  "primitives": [
+    "census quadrant (star / puzzle / plowhorse / dog)",
+    "demand evidence (installed_plugins.json, agent-rig.json profiles, live ~/.agents/skills links)",
+    "menu entry (marketplace.json listing)",
+    "load-bearing dog (deprecated item still wired into machinery)",
+    "hidden star / shelved successor",
+    "retirement candidate (announced but unexecuted)",
+    "single-patron item (personal plugin on a shared menu)"
+  ],
+  "failure_mode": [
+    "Census classifications are analytical, not falsifiable code claims — demand is unverifiable for plugins with no telemetry or README",
+    "Git recency is not a differentiator when the whole fleet is actively committed; only orders (demand evidence) distinguish",
+    "Does not read implementation internals — overlap flags (graph plugins, gate runtimes) are charter-level inferences, not verified consumer conflicts",
+    "Sees the menu, not the kitchen: cannot judge whether an unplaced puzzle deserves promotion on quality grounds"
+  ],
+  "findings": [
+    "f-146",
+    "f-147",
+    "f-148",
+    "f-149",
+    "f-150",
+    "f-151",
+    "f-152",
+    "f-153",
+    "f-154",
+    "f-155",
+    "f-156",
+    "f-157",
+    "f-167",
+    "f-168",
+    "f-169",
+    "f-170",
+    "f-171",
+    "f-172",
+    "f-173",
+    "f-174",
+    "f-175",
+    "f-176",
+    "f-177"
+  ]
+}

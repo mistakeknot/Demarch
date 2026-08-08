@@ -7,7 +7,17 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts" / "render_backlog.py"
+
+# The generator lives in interpath; scripts/sync-roadmap-json.sh is a shim.
+# These tests point at the real implementation on purpose. They already
+# asserted every behaviour the plugin copy lacked — deferred rendering, a Z
+# suffix on generated_at, populated blocked_by, a backlog file existing at all
+# — but they only ever ran against the monorepo fork, so the copy that was
+# actually wrong was the one no test could see. Aiming them here is what makes
+# them a drift guard rather than a description of one branch of a fork.
+GENERATOR = ROOT / "interverse" / "interpath" / "scripts" / "sync-roadmap-json.sh"
+SCRIPT = ROOT / "interverse" / "interpath" / "scripts" / "render_backlog.py"
+SHIM = ROOT / "scripts" / "sync-roadmap-json.sh"
 
 
 def run_renderer(tmp_path: Path, payload: dict) -> subprocess.CompletedProcess[str]:
@@ -115,8 +125,16 @@ def test_roadmap_sync_regenerates_backlog_with_machine_output(tmp_path: Path) ->
     repo = tmp_path / "repo"
     scripts = repo / "scripts"
     scripts.mkdir(parents=True)
-    shutil.copy2(ROOT / "scripts" / "sync-roadmap-json.sh", scripts)
-    shutil.copy2(SCRIPT, scripts)
+    shutil.copy2(SHIM, scripts)
+
+    # The fake repo mirrors the real layout: shim in scripts/, generator and
+    # renderer in interverse/interpath/scripts/. Exercising the shim end to end
+    # is the point — it is the delegation, not either file alone, that broke
+    # when the two copies drifted.
+    plugin_scripts = repo / "interverse" / "interpath" / "scripts"
+    plugin_scripts.mkdir(parents=True)
+    shutil.copy2(GENERATOR, plugin_scripts)
+    shutil.copy2(SCRIPT, plugin_scripts)
 
     manifest = repo / "interverse" / "demo" / ".claude-plugin" / "plugin.json"
     manifest.parent.mkdir(parents=True)

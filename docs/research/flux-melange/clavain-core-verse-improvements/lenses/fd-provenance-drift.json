@@ -1,0 +1,57 @@
+{
+  "id": "fd-provenance-drift",
+  "kind": "fusion",
+  "parents": [
+    "fd-lifecycle-drift",
+    "fd-scriptorium-transmission"
+  ],
+  "domain": "Install/upgrade/sync machinery as a manuscript-transmission channel: where lifecycle tooling itself copies, freezes, mislabels, or loses text across the Clavain/intercore/interverse fleet",
+  "axioms": [
+    "The certifier and the copyist must not be the same machine: a channel that both transmits a text and attests the transmission has no witness",
+    "Copies converge toward whatever exemplar the machinery declares by constant — which may silently override the ecosystem's documented canon",
+    "A guard that reads provenance marks literally (marker greps, BEGIN/END blocks, version stamps inside the payload they vouch for) converts the safety mechanism into the freeze mechanism",
+    "Deletions and deprecations are transmissions too; machinery that cannot propagate a negative event certifies fossils as living",
+    "An index copy installed by the fleet drifts with the fleet: the concordance is itself a folio",
+    "behind=0 against the wrong exemplar is a green dashboard over a fork"
+  ],
+  "primitives": [
+    "exemplar declaration (plugin_repo_url constant, git archive HEAD, active agent-rig profile)",
+    "sync pointer (upstreams.json lastSyncedCommit) + diff window",
+    "colophon / provenance marker (managed-by comment, BEGIN/END block, version stamp)",
+    "deletion registry (syncConfig.deletedLocally)",
+    "install-cache copy fleet (~/.codex clones, plugin-cache config copies, managed plugin overlays)",
+    "freshness attestation (doctor checks, version parity, behind counts)"
+  ],
+  "failure_mode": [
+    "Single-host probe: zklw-side mirror of the same machinery unexamined (GitHub-vs-canonical finding implies a mirror image there)",
+    "Stayed at the document/script/install layer per anti_overlap — intercore Go internals deferred to fd-kernel-contract",
+    "Verified copies and pointers on disk but did not execute any installer, doctor, or sync engine (read-only), so runtime invocation frequency is inferred",
+    "Cannot judge whether GitHub-as-exemplar is ever an intentional publish line vs an accident of a hardcoded constant"
+  ],
+  "findings": [
+    "f-083",
+    "f-084",
+    "f-085",
+    "f-086",
+    "f-087",
+    "f-088",
+    "f-089",
+    "f-090",
+    "f-091",
+    "f-092",
+    "f-093",
+    "f-094",
+    "f-095",
+    "f-096",
+    "f-097",
+    "f-098",
+    "f-099",
+    "f-100",
+    "f-178",
+    "f-179",
+    "f-180",
+    "f-181",
+    "f-182",
+    "f-183"
+  ]
+}
