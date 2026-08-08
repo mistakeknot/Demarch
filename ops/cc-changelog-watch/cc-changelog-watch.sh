@@ -78,7 +78,14 @@ Next: in-session mapping pass — map new capabilities to Sylveste plugins, file
 # control flow and false of the outcome. The only thing that noticed was the
 # rig-receipt freshness gate on last-seen, because the state file is
 # deliberately not advanced on failure -- that part worked exactly as designed.
-existing="$(bd list --status=open --json 2>/dev/null | python3 -c '
+#
+# --limit 0 is belt and braces against the same shape one layer down. bd's table
+# output pages at 50 and --json does not (measured on bd 1.1.2, both machines:
+# 474 rows either way), but this bead sits at position 80 of the open list, so
+# the day --json inherits that cap the lookup returns empty, the else branch
+# reads it as "no open bead", and the job files a duplicate every week -- a
+# failure quieter than the one being fixed, because it would still exit 0.
+existing="$(bd list --status=open --limit 0 --json 2>/dev/null | python3 -c '
 import json, sys
 try:
     rows = json.load(sys.stdin)
