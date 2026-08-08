@@ -3558,3 +3558,100 @@ on both machines.
   and `git show HEAD:.claude-plugin/plugin.json` — **not** re-running the publish
   command or trusting its status. The drift check would have caught it too, a day
   later, and blamed the wrong actor.
+
+## The convergence decision, and the severity that did not follow it, 2026-08-08
+
+mk ruled on the dotfiles convergence gate: **option (a), a pull-only timer, with the
+skew check's severity staying `fail`.** Recorded here because the ruling is the part
+that outlives the code, and because one premise of the goal it answers turned out to
+be wrong.
+
+**Why pull-only and not the marker the other 93 repos use.** dotfiles was the
+exception among its own siblings — `~/projects/Sylveste` and
+`~/projects/Sylveste/core/intercore` both carry `.git-autosync` markers on zklw and
+are pulled with nobody typing anything, while the repo holding every `rig-*` check,
+every estate unit and every Claude Code hook was reached only when somebody
+remembered. But autosync's PostToolUse half **auto-commits**, and an auto-commit in
+this particular repo can deploy a half-written hook to both machines before anyone
+reads it. So the deploy gap is closed by the half that pulls, and the half that
+commits is declined.
+
+The refusal is **structural, not procedural**: `dotfiles-converge.sh` contains no
+push, commit, stash, reset or checkout verb anywhere, and its suite asserts their
+absence from the source text directly rather than only on the paths it exercises. *A
+prohibition a program cannot violate is worth more than one its author has to keep
+choosing.*
+
+Three behaviours, each decided rather than defaulted:
+
+| state | action | why |
+|---|---|---|
+| behind | fast-forward, stamp | `--ff-only` cannot author a commit and fails rather than overwriting a dirty file |
+| ahead | exit 0, stamp | a machine with unpushed commits has work in it, not a convergence failure; a daily red trains someone to ignore the surface |
+| diverged | refuse, loudly | no fast-forward exists, and the alternative is a timer authoring a merge nobody reviewed |
+
+**SELF-UPDATE HAZARD, worth generalising.** The script lives in the repo it updates,
+and bash reads a script incrementally as it runs, so a fast-forward that rewrites the
+file mid-run can feed the interpreter a splice of old and new bytes. The whole body is
+a function invoked on the last line, which forces a full parse before anything
+executes. *Any program that updates its own source needs this, and the failure it
+prevents would look like a random syntax error on the one morning it happened.*
+
+### The severity did not drop, and the old comment had promised it would
+
+`rig-peer-agreement.py` justified `fail` from the ABSENCE of any convergence
+mechanism, and closed with "if dotfiles ever gains an autosync marker … warn until a
+cycle has passed becomes the honest severity". The goal inherited that promise as a
+DONE WHEN clause. It is withdrawn rather than kept, and the reason is the more useful
+half of the day:
+
+    a pull CLOSES     the checkouts being at different commits
+    a pull CANNOT     a deployed copy that no longer matches its own commit
+
+Both classes occurred on 2026-08-08, hours apart, **on the same program** —
+`rig-file-drift-bead.sh` was an uncommitted edit first, then a plain commit
+difference once a sibling committed it. A blanket `warn` would have understated the
+class nothing closes in order to describe the class the new timer handles. Because
+`deployed_copies_off_head` now names which class a divergence is in, `fail` stays and
+the per-program note carries the distinction.
+
+*A severity is a claim about what happens if nobody acts. Adding a mechanism changes
+that claim only for the failures the mechanism actually reaches, and a check that
+cannot say which failure it is looking at has no business claiming any of them
+self-heal.*
+
+### Proven on one machine, not two, and the reason is not "more work"
+
+Clavain: LaunchAgent installed and loaded, `launchctl` exit 0, `RunAtLoad` fired,
+stamp written, `rig-dotfiles-deployed.py` reporting *"every dotfiles-owned path is
+deployed as declared"*. Suites green — converge 25/0 with two mutations, deploy-skew
+44/0.
+
+zklw: **not landed.** Tailscale SSH required re-authentication mid-session, so the
+systemd timer is uninstalled and the cross-machine propagation proof — a real commit
+arriving without a hand-typed pull — has not been observed. Recorded as unproven
+rather than described as done: half a convergence mechanism is exactly the state this
+whole section exists to make visible.
+
+### A suite that fails differently on two runs is reporting the machine
+
+`test-rig-health-bounds.sh` failed during this work — once as `11 passed / 1 failed`,
+once as eleven passes and no tally at all — and a third run of the same code returned
+`12 passed / 0 failed`. Its last of six tests runs a full health check under a
+stubbed PATH with a 600s ceiling and no outer timeout, the most fork-hungry thing in
+the tree. Clavain was at **2078 processes climbing to 2727, with bare `sh` going 162
+→ 489 and load 21.34** — the `[sh]` subprocess explosion, alert threshold 2000,
+healthy 600–800. Stopping the session's own background jobs did not reduce it.
+
+*Two different failure modes from one unchanged suite is a machine measurement, not a
+code measurement.* The cost was real: the failure was read as a regression, a fix was
+written for it, and an unverified causal claim — that per-file `git show` forking had
+pushed the collector over the ceiling — was committed into a source comment before
+the timeline contradicted it. Bounds had passed at 34 suites / 761 assertions with
+that same per-file version in place. The batching was kept on its own measured merit
+(0.28s for the collector) and the comment was corrected in place.
+
+Which makes this section's own subject recursive, and the lesson worth stating
+plainly: **the estate's measurements are only as trustworthy as the machine taking
+them, and nothing on the health surface reports the process count.** That is the gap
+`Sylveste-oxcv` names, and it fabricated a finding today.
