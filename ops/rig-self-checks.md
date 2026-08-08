@@ -3267,3 +3267,134 @@ apparatus look alike has not run.*
   and did not rebuild `ic`; zklw is internally consistent. **Pulling on zklw would
   make it worse**, trading an agreement finding for a provenance one. *An ancestry
   annotation names which tree moved, not where the remedy is.*
+- **Amended 2026-08-08, third reading.** The remedy above is still wrong about which
+  action closes it. `intercore_commit` reads the *checkout*, not the binary, so a
+  rebuild on Clavain closes nothing — only zklw pulling does, and that pull must be
+  paired with a rebuild or zklw inherits the stale-binary state Clavain was in. The
+  "pulling alone makes it worse" half was right. Two corrections to one item, both
+  from reasoning about the fact's *name* instead of reading what it collects.
+
+## A true statement is not a diagnosis, 2026-08-08
+
+`scheduled_program_digests` fired for real for the first time, one day after it
+shipped, and got the cause wrong while stating it as fact.
+
+    scheduled_program_digests: 1 entry disagrees -- the checkouts are at different commits
+        rig-file-drift-bead.sh   here=053df9970260   Clavain=f28cce012262
+
+Both clauses are true. The checkouts *were* at different commits. And they have
+nothing to do with each other:
+
+- `rig-file-drift-bead.sh` is **byte-identical at both commits** — `git show
+  <zklw-commit>:<path>` and `git show <clavain-HEAD>:<path>` both hash to
+  `053df997`. No commit in the differing range touches the file.
+- The real cause was an **uncommitted 628-byte edit** in Clavain's worktree (4419
+  bytes deployed against a 3791-byte blob), left by a sibling session.
+- So the remedy the annotation implies — pull the behind side — **would have changed
+  nothing**, and would have left whoever ran it believing the finding was closed.
+
+*A statement that is true, relevant, and not the cause is worse than "cause
+unknown", because it terminates the search.* The reader stops at the first
+plausible explanation offered with confidence.
+
+What makes this one instructive is that **the knowledge was already in the file**.
+The equal-commits branch of the same annotation reasons correctly — it says equal
+commits mean "an uncommitted edit or a drifted copy", so the disjunction was
+understood when the code was written. The unequal-commits branch simply never
+re-checks, and asserts the commits as sufficient explanation. *Being right about the
+disjunction and wrong about which branch you are in is a specific failure, and it
+looks exactly like being right.*
+
+The fix is not "compare the file at both commits". A peer's commit may not be
+fetched locally, so that is not always computable, and a check that can only
+sometimes answer will quietly fall back to guessing. What every machine can always
+answer about **itself** is whether its deployed digest matches its own `HEAD` blob.
+Carry that bit per program and the cases separate without needing the peer's
+history: both sides faithful → the commits explain it and a pull closes it; either
+side unfaithful → that side has an uncommitted edit or a copy that stopped tracking
+the file, and no pull will help.
+
+Two measurement errors of my own, both from truncation and both worth naming:
+
+- `git status --porcelain | head -6` hid the second dirty file, which was the one
+  that mattered. The first report of this instance named the wrong cause because the
+  evidence for the right one was on line 7. *A `head` on a status listing is a
+  sampling decision disguised as formatting.*
+- A `git diff --stat <a>..<b> -- '*name.sh'` glob pathspec came back empty and was
+  read as "identical". It was, by luck, the correct answer here — confirmed
+  afterwards with an exact path and two `git show | shasum` comparisons — but an
+  empty diff from an unmatched pathspec and an empty diff from identical content are
+  the same output, which is the 2026-08-07 lesson about queries whose failure and
+  whose negative result look alike.
+
+### The mechanism the severity argument called hypothetical is running next door
+
+`rig-peer-agreement.py`'s justification for treating divergence as `fail` argued
+from the absence of any convergence mechanism, and closed with *"if dotfiles ever
+gains an autosync marker"*. Re-measured 2026-08-08:
+
+| repo | zklw |
+|---|---|
+| `~/projects/dotfiles` | **absent** |
+| `~/projects/Sylveste` | MARKED |
+| `~/projects/Sylveste/core/intercore` | MARKED |
+
+The claim about dotfiles holds — no marker on either machine. But the framing was
+wrong: **dotfiles is the exception among its own siblings**, not a repo waiting on
+something nobody built. `core/intercore` was observed moving `1230d7fb` →
+`590d9bb3` with no pull in any transcript, which is also the belated explanation for
+a peer divergence that resolved itself earlier that day. Corrected in dotfiles
+`0e0b65a`, which states plainly that whether dotfiles *should* join that
+convergence is a policy call about a repo carrying hooks, settings references and
+unit files whose autosync PostToolUse half auto-commits — and not a call that file
+gets to make by assuming an answer in either direction.
+
+*A severity defended only by an argument invites re-litigation; one defended by an
+instance does not.* That severity now has an instance, recorded above — and the
+instance turned out to be a case the annotation misread, which is the more useful
+finding of the two.
+
+## Exit 0 covered only the last stage, 2026-08-08
+
+`ic publish` shipped interrank 0.3.5 to the marketplace, returned **0**, and left
+the version bump uncommitted. Every clone of the plugin said 0.3.4. That is
+precisely the divergence `check-publish-drift.py` exists to detect, manufactured by
+the tool the estate publishes with, and it would have been reported the next morning
+as a human's mistake.
+
+The sequence reproduces for any plugin carrying a generated manifest:
+
+1. The bump writes `plugin.json`. Nothing regenerates `kimi.plugin.json`, which is
+   derived **from** that version, so the monorepo's pre-commit parity hook rejects
+   the version commit. *The bump is what creates the staleness the hook refuses*, so
+   the first attempt cannot pass its own gate — for all 66 plugins.
+2. The natural retry finds `plugin.json` already at the target and takes the
+   sync-only path, whose premise is "the developer already bumped" — meaning already
+   *committed*. Nothing checked that premise. The entire validation block, including
+   both dirty-worktree checks, sits inside `if !syncOnly`.
+3. The release canary recorded `PriorVersion` from the local manifest, which on that
+   path equals the version being published. `resolveRollbackTarget` ignores a record
+   whose prior equals its current, so the genuinely prior version was pruned as an
+   orphan. interrank retains one cache version; interkasten and clavain each retain
+   two, which is the intended shape.
+
+Three guards, each individually correct — require a clean worktree, refuse a stale
+generated manifest, bump and commit atomically — composed so that the **correct
+outcome was unreachable**. Every route either failed or discarded the rollback net;
+the only one that completed was the one that shipped a phantom version. *A missing
+step that every guard correctly notices is missing, and none can supply, presents as
+four separate bugs.*
+
+Fixed in intercore `aa693df`: regenerate between bump and commit, verify the
+committed version on the sync-only path, and take the canary's prior from the
+marketplace. Four tests, each shown to fail with its fix reverted. 41 packages green
+on both machines.
+
+- **The tell was a missing log line, not the exit code.** interrank printed
+  `Syncing`; interkasten, after the fix, printed `Committing plugin...` then
+  **`Pushing plugin...`**. Sync-only jumps past both. *When a pipeline's stages are
+  its only evidence of having run, an absent stage is a finding.*
+- The verification that caught it was reading the plugin repo — branch, dirty files,
+  and `git show HEAD:.claude-plugin/plugin.json` — **not** re-running the publish
+  command or trusting its status. The drift check would have caught it too, a day
+  later, and blamed the wrong actor.
