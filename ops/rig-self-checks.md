@@ -279,12 +279,172 @@ different failures:
 | | answers |
 |---|---|
 | `rig-job-receipt.sh` | *did this run succeed?* — where the outcome would evaporate |
+| `rig-job-finding.sh` | *what did it do to each of its targets?* |
 | `rig-job-outcomes.py` | *did everything scheduled produce an outcome at all?* |
 
 What **is** redundant is wrapping systemd and launchd jobs in receipts. Both
 already store the result durably until the next run. **Where the outcome
 survives, read it; where it evaporates, capture it.** Receipts are therefore
 used for cron and nothing else — on this estate, three lines.
+
+### An exit code is not evidence of work (2026-08-07)
+
+The middle row above was added after the wrapper's premise turned out to be
+incomplete. It was written on the strength of a measurement — `claude -p` is
+honest, it exits 1 on an authentication failure — and the conclusion drawn was
+that the exit code existed and cron merely threw it away. Both halves were true
+and the inference was too narrow.
+
+`tierA-review` started at 02:47, spawned a background subagent onto a 2191-line
+diff across 16 files in `jawnbase`, hit the print-mode background-wait ceiling at
+600s, was terminated mid-review, and **exited 0 in 673 seconds**. It filed
+nothing. Its last words were *"I'll … wait for the background review agent to
+finish."* Every layer of the surface read pass.
+
+The night before, the same job hit a quota wall, exited 1, and every layer
+correctly said so. **The estate was catching the honest failure and missing the
+dishonest success** — the worse of the two, because a job that reports success
+while doing nothing decays for exactly as long as nobody checks.
+
+`rig-job-outcomes.py` had already named this in its own docstring: *"a job that
+does nothing exits 0 and writes nothing, and both readings come back clean."*
+The mechanism to prevent it existed. `tierA-review` was **exempt** from it,
+declared `none` on the reasoning that a night with zero changed repos writes
+nothing — which is right for `plan-burndown`, whose empty-queue path genuinely
+leaves no trace, and wrong for a sweep over a *known list*: "no commits" is a
+finding about a repo the job did look at. The exemption was granted by schedule
+adjacency rather than by shape.
+
+So the job now emits one declared row per target, and the receipt is
+`findings <max-age-hours> <count|any>`:
+
+```
+# exactly one COVERAGE row per target — this is what the count counts
+rig-job-finding.sh tierA-review covered     jawnbase "12 commits, 0 P0/P1"
+rig-job-finding.sh tierA-review no-change   jawnfit  "last commit 2026-07-29"
+rig-job-finding.sh tierA-review unreachable ravenous "not present on this host"
+
+# then zero or more FINDINGS, which are news and are not coverage
+rig-job-finding.sh tierA-review finding     jawnbase "P0: …" --ref jawnbase#mk-abc1
+```
+
+Three things follow from the vocabulary, and each closes a separate hole:
+
+- **The count and the age live in one declaration.** A freshness bound alone is
+  satisfied by a single row, so a sweep that reported on one repo of seven and
+  died would read as fresh *and* complete. Two declarations could be half-written;
+  one cannot. More targets than declared is a finding too — a count that no longer
+  matches the job's list has stopped being able to detect the partial sweep it
+  exists for. What is counted is **distinct subjects of coverage rows**, not rows:
+  a repo with three defects filed against it is one repo looked at, and a defect
+  filed about a repo that was never reviewed must not fill that repo's slot.
+- **`unreachable` is not `no-change`.** A repo with nothing new and a repo nobody
+  can see produce the same silence and mean opposite things. `autosigil` and
+  `ravenous` are named in the AUTO-TIERA prompt, exist on Clavain, and do not
+  exist on zklw where the sweep runs — reported for two months as *"directory not
+  found (confirmed via filesystem search)"*, a machine-local answer to a
+  fleet-wide question. `ravenous` had a live tmux session and active work. An
+  undeclared unreachable target is a finding; a declared one is a note carrying
+  its own end condition.
+- **A `finding` never changes the exit code, and must name where it was filed.**
+  The defect is news about some *other* repo; routing it through the failure
+  ladder would make a working review read as a broken job. `--ref` is mandatory
+  because the surface points at the durable record rather than becoming one — a
+  health check that accumulated findings would be a permanently red line, which
+  is the failure this whole program was written against.
+
+Runs are grouped by an id `rig-job-receipt.sh` exports and the emitter records,
+never by clock proximity: three rows from a killed run plus four from the next
+one are two half-sweeps, and a time-window reader would report seven.
+
+Found while auditing this, and unrelated to the new kind: `check_receipt` has
+always returned `None` for a receipt it could not parse, and the caller ignored
+it — so a **malformed** declaration fell through to `ok` and the job read as
+passing. Now NO VERDICT, like a job that declares no receipt at all. Declared
+unreadably is no better evidence of work than not declared.
+
+### A log written by a redirect is not a receipt (2026-08-07)
+
+The same day, two of the three cron automations were still exempt, and the
+argument for one of them was careful and wrong on an interesting axis.
+
+`interwatch-drift` was declared `file 200 <log>`, justified like this: it is a
+`claude -p` run whose output is redirected to that log, and `claude -p` emits its
+analysis whether or not it finds drift, so there is no completion path that
+writes nothing — *the log is written by the work rather than by the wrapper*.
+
+Every sentence of that is true, and the axis is wrong. The property that matters
+is not **written by the work vs. by the wrapper**, it is **distinguishes
+work-done from work-attempted**. A `>> log 2>&1` redirect fails that: the
+process writes to it while dying exactly as readily as while succeeding.
+Measured on the run that proved it — `tierA-review` started 02:47:01, ran 673s,
+reviewed nothing, exited 0, and its log's mtime is **02:58:14**, the dead run's
+end to the second. A `file` receipt would have read fresh, and passing.
+
+`plan-burndown` was `none` on the reasoning that an empty plan queue leaves
+nothing behind. The measurement under that was sound (its interspect row really
+is absent on the empty-queue path, so *that* receipt would have failed a healthy
+job) but the conclusion did not follow: "I looked, and there was nothing" is a
+finding about a queue it did look at, which is the same sentence written one
+paragraph away about `tierA-review`'s repos. Its own contract says *"Never
+process a second bead"*, so the honest count is exactly **1** — not `any`.
+
+`interwatch-drift` gets `any` instead, because it **discovers** its targets
+(23 repos on the last scan). A count nobody can state in advance cannot be
+checked against one, and inventing a number would be declaring a fact. That
+leaves a real gap — `any` catches a run that emitted nothing, not a sweep that
+covered 9 of 23 and died — and the gap is named in the config rather than
+papered over, because closing it would mean letting the job declare its own
+denominator, which is a job grading its own exam.
+
+### A declaration must not judge the runs that predate it
+
+Adding a receipt to a weekly job makes it red until that job next runs.
+Declared on a Friday, `interwatch-drift` next fires on Monday: three days of a
+red line whose only available action is *wait*. That is this whole program's
+purpose inverted — a surface that cries wolf teaches its reader to scroll past
+it, and the reader it teaches is the one who scrolls past a real failure next
+month. The tempting alternative, leaving the receipt off until convenient, keeps
+the hole open for exactly as long as closing it is inconvenient.
+
+So a declaration can carry a start date, and until the job's next run it is a
+**note**, not a verdict:
+
+```
+interwatch-drift findings 200 any
+interwatch-drift receipt-from 2026-08-07 the first scan under this receipt is Monday 2026-08-10
+```
+
+What stops it being an off switch is that the grace period is not a number
+anyone chooses: it is **the receipt's own max-age**, already declared one line
+above for a different purpose. 200 hours after that date with still no
+qualifying run, the declaration has outlived the freshness it demands of its own
+job and is reported as a failure. A post-dated receipt buys exactly one window,
+and buying a second means widening the bound the check then holds you to.
+
+A start date with no stated reason, or one that cannot be read as a date, is
+refused rather than honoured — if a malformed exemption cost nothing, the way to
+silence a check would be to misspell its date.
+
+Two things about that were wrong in the first version, and **both were found by
+running the check against the real config rather than by reading it** — after
+the suite was already green:
+
+- **A bare date is midnight, and midnight is too early.** `receipt-from
+  2026-08-07` resolves to 00:00 UTC; `plan-burndown` ran at 01:23 UTC that same
+  night, so the declaration covered a run it postdates and demanded rows that
+  run could not have emitted. This is the *common* case — receipts get written
+  during the day for jobs that ran overnight. `interwatch-drift` only worked
+  because its last run was four days earlier, which hid the flaw rather than
+  avoiding it. `YYYY-MM-DDTHH:MMZ` is now accepted and is the honest form for a
+  same-day declaration.
+- **A future start date could never expire.** The grace check asks whether
+  `now - start` has passed the receipt's bound; with a date that has not
+  arrived, that difference is negative, so it never passes. A receipt dated next
+  year would defer itself for a year — the exact unbounded escape hatch the
+  mechanism is shaped to avoid, left open by the version that claimed to close
+  it. Now refused, so the only way to write one is to say when you actually
+  wrote it.
 
 ### Every job declares what non-zero means
 
