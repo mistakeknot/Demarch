@@ -3737,7 +3737,7 @@ hosts. It follows `test-rig-guard-tests-tally.sh` and for the reason that file
 already states: *a rule each participant has to remember about itself is a rule
 the next file added forgets.*
 
-- 41 suites scanned, **one** exemption (itself, whose control fixtures carry the
+- 42 suites scanned, **one** exemption (itself, whose control fixtures carry the
   pattern deliberately), and the exemption **count** is asserted so a future one
   cannot be added silently.
 - A positive control on the detector, because a regex matching nothing would pass
@@ -3748,6 +3748,34 @@ the next file added forgets.*
 - `test-git-remote-refresh.sh` fixed — both inits pinned, and its seed push **no
   longer silenced**, which is the more general repair. Four further suites pinned
   as house convention.
+
+### The guard made the same mistake it was built to catch, within the hour
+
+The first version detected `git init` and nothing else. These fixtures mostly
+build repos in a sandbox rather than `cd`-ing into them, so the form they
+actually use is `git -C "$dir" init` — and the lint passed straight over **seven
+files**, printing *"every fixture names the branch it creates"*. It was found by
+reading a fixture for an unrelated reason, not by the guard.
+
+**The positive control passed the whole time**, and that is the part to keep. It
+proved the detector fired — on the one form the control itself used. A positive
+control demonstrates a detector is not dead; it says nothing about the forms it
+never sees, and when the control is built from the same mental model as the
+detector, the gap is invisible from both sides. The instrument and its calibration
+shared an author and therefore shared a blind spot.
+
+Which lands the section's own subject one level up: a sweep's conclusion decays
+because the population grows, and a *detector's* clean verdict decays because the
+syntax space is larger than the examples that built it. **A lint that is merely
+mostly right is worse than none, because its output is a clean verdict.**
+
+Fixed by matching the git *subcommand* rather than the string: global options are
+consumed explicitly (`-C`, `-c`, `--git-dir=`, `--work-tree=`, `--no-pager`, `-p`)
+and `init` must be the next token. The same boundary keeps `git -C "$d" commit
+-qm init` out, since after `commit` the option run has ended and a commit
+*message* reading "init" is not a repo creation — both directions now controlled,
+because the first version was wrong in exactly one of them. 14 further sites
+pinned across 6 files; guard 9/0.
 
 `commit.gpgsign` and `user.name` are deliberately **not** linted. Fixtures
 already set both per-repo, and unlike the branch name a wrong value there fails
