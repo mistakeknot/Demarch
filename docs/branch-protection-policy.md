@@ -71,6 +71,84 @@ is always a clean fast-forward with nothing to adjudicate. See
 `dotfiles/projects/docs/dual-machine-sync.md` for why this overrides that doc's
 original "live on the lane" model.
 
+## That gate stopped holding when lanes went private, 2026-08-14
+
+The paragraph above says a red lane "is refused and stays parked on the lane".
+That was true of the three lane repos it was written about, all public. It has
+not been true of the estate for some time, and the reason is a billing boundary
+rather than anything in the design: **required status checks are a paid feature
+on private repositories**, so a private repo cannot carry the gate the lane
+model delegates to.
+
+Measured across all eight lane repos on 2026-08-14:
+
+| Lane repo | Visibility | What actually gates `main` |
+|---|---|---|
+| Sylveste | public | required check: `Generator and parity checkers` |
+| interchart | public | required check: `generate.sh refuses bad input` |
+| interflux | public | required check: `audit` |
+| tldr-swinton | public | protected — on **required signatures**, which never reads CI |
+| intermute | public | protected — on **PR reviews**, which never reads CI |
+| fluxrig-data | private | nothing; not protected at all |
+| fluxrig | private | nothing; not protected at all |
+| Khouri | private | nothing; not protected at all |
+
+**Five of eight promoted red and green alike.** The two worth naming are
+tldr-swinton and intermute: their `main`s *are* protected, so every audit that
+asks "is this branch protected" gets a yes, and neither protection reads a check
+run. A gate that is present but pointed at something else is harder to see than
+one that is absent.
+
+### What changed
+
+`git-autosync-promote.sh` now asks GitHub about its own gate before it moves
+`main`:
+
+- `main` **names required status checks** → delegate to the push, exactly as
+  before. GitHub remains the single source of truth wherever it has anything to
+  say, which is what the original design was protecting.
+- `main` **names none** → read the check runs on the lane tip and refuse a
+  failure.
+
+That is one authority answered twice, not two opinions. The drift the original
+design feared was drift from a rule GitHub was enforcing; the second path only
+ever runs where GitHub is enforcing nothing.
+
+**It reads check runs, never check suites.** Every repo in this estate carries
+check suites from Apps that are installed but never run here — railway, vercel,
+netlify, cursor, fly-io — and those sit `queued` indefinitely; six of them have
+been queued on one interflux commit since 2026-08-04. Waiting on a pending suite
+would freeze `main` permanently. Those suites contain zero check runs, so
+reading runs makes them correctly invisible: a suite that reported nothing has
+no verdict. Runs also **accumulate** on a commit — a nightly `gitleaks` cron had
+put ten of itself on one interflux commit — so they are deduplicated by name
+with the newest id winning, which is how GitHub itself resolves a required check
+to a single verdict.
+
+**Refusing is the fail-closed direction, deliberately.** If GitHub cannot be
+reached at all — an expired `gh` token is a failure this estate has had, and a
+silent one — the promoter reports `UNVERIFIED` and does not promote. A gate that
+opens when it cannot reach its authority is not a gate, and a frozen `main` is
+recoverable in a way a shipped red one is not. The refusal is counted in the
+summary line so it cannot be silent twice.
+
+A repo with **no workflows at all** still promotes, reported as `[NO-CI]`.
+Khouri is that repo, and intermute is the second shape of the same thing: its
+workflows trigger on `branches: [main]`, so a lane tip carries no run either.
+Nothing was ever going to report, which is not the same as reporting badly —
+the `rig-report.sh` distinction, applied to a branch instead of a check.
+
+Verified 2026-08-14 against real lane branches, deleted afterwards: a
+deliberately failing tip was refused with `main` unmoved on GitHub, a green tip
+promoted, a workflow-less repo promoted unchanged, and a simulated broken `gh`
+refused rather than defaulted open.
+
+**GitHub Pro is still the other answer** and is not foreclosed by this. It would
+buy server-side protection that cannot be bypassed by editing a script on the
+box, on private repos, for money. This is the no-money route to the same
+verdict, and it is enforced on the machine that promotes rather than by GitHub.
+
+
 **Live as of 2026-07-28** — 6 repos on lanes; 3 of them carry required checks,
 which are the only repos in the estate with genuine drift gates:
 
