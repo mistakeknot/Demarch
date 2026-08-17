@@ -156,7 +156,7 @@ watchables:
     threshold: 40
 
 - name: clavain-agents-md
-  path: os/clavain/AGENTS.md
+  path: os/Clavain/AGENTS.md
   generator: interdoc:interdoc
   generator_args: {}
   staleness_days: 7
