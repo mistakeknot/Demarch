@@ -1,6 +1,6 @@
 # Sylveste — Agent Development Guide
 
-Open-source autonomous software development agency platform. Six pillars (Intercore, Clavain, Skaffen, Interverse, Autarch, Interspect) across three layers (L1 kernel, L2 OS, L3 apps). 60 Interverse plugin manifests, 19 with MCP servers.
+Open-source autonomous software development agency platform. Six pillars (Intercore, Clavain, Skaffen, Interverse, Autarch, Interspect) across three layers (L1 kernel, L2 OS, L3 apps). 66 Interverse plugin manifests, 19 with MCP servers.
 
 ## Quick Reference
 
