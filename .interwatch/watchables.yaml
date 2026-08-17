@@ -108,7 +108,7 @@ watchables:
 # Monitor the 5 most active modules. These drift fastest during sprints.
 
 - name: autarch-agents-md
-  path: apps/autarch/AGENTS.md
+  path: apps/Autarch/AGENTS.md
   generator: interdoc:interdoc
   generator_args: {}
   staleness_days: 7
