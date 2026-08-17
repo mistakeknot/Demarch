@@ -124,7 +124,7 @@ watchables:
     threshold: 40
 
 - name: intercom-agents-md
-  path: apps/intercom/AGENTS.md
+  path: apps/Intercom/AGENTS.md
   generator: interdoc:interdoc
   generator_args: {}
   staleness_days: 7
