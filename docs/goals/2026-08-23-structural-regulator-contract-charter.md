@@ -120,9 +120,14 @@ The structural regulator contract is complete when ALL of the following are surf
 
 On completion, do **not** automatically carve the module. Propose the successor only if the day-30 review clears K1–K4 and meets S3 and S4. If it does, the successor is: name and extract the L2 structural governor as a headless peer to Ockham (`os/`), moving the schema to it, leaving `intermap` as the agent-facing reader and Clavain as the sole enforcement authority, with the Ockham-style "what it is NOT" boundary doc written first. If the review does not clear, the successor is instead a rescoping goal that records which of the four claims failed and whether the contract survives as a plugin-local format.
 
+## Decisions taken (2026-08-24)
+
+Recorded here as decision evidence; both were raised as open questions at charter time and settled before `/goal`.
+
+- **D1 — Schema home: `sdk/interbase`.** The alternative was keeping the schema inside `intermap` for the window and moving it on promotion. That is cheaper, but it makes the second producer import its contract from a plugin — precisely the coupling interbase exists to prevent (`docs/plans/2026-02-25-interverse-plugin-decomposition-design.md`: "No per-split shared libraries, no copy-and-diverge"). Interbase is an SDK rather than a contract registry, which is a real mismatch; it is accepted as the lesser one. Scope item 1 and R1 stand as written.
+- **D2 — Two producers, not one.** `intermap` stays in scope alongside `scripts/build-architecture-map.py`. Dropping it would make this a one-sprint hygiene goal that proves nothing about module-worthiness: a schema with a single producer is a file format, and the successor decision (carve the L2 module) needs evidence that the contract holds across independent producers. The doubled cost is accepted for that reason. Scope item 2 and R3/R4 stand as written.
+
 ## Open questions for review
 
-1. **Schema home.** `sdk/interbase` is the documented anti-divergence mechanism, but it is an SDK, not a contract registry. Alternative: keep the schema inside intermap for this window and move it on promotion — cheaper, but then the second producer imports from a plugin, which is the coupling interbase exists to prevent.
-2. **Shadow-mode duration.** 30 days is proposed. Shorter gets to enforcement sooner; longer gives S3/S4 more samples. The estate has no precedent value here — interwatch's graduated report-only→auto-refresh ladder is the closest analogue.
-3. **Two producers now, or one?** Including `intermap` doubles the work but is the only real test of the contract. Dropping it makes this a one-sprint hygiene goal that proves nothing about module-worthiness.
-4. **G4 measurement.** No current instrument measures per-plugin MCP output size; interstat measures sessions. This guardrail may need a cheap manual baseline instead.
+1. **Shadow-mode duration.** 30 days is proposed. Shorter gets to enforcement sooner; longer gives S3/S4 more samples. The estate has no precedent value here — interwatch's graduated report-only→auto-refresh ladder is the closest analogue. Settleable during execution.
+2. **G4 measurement.** No current instrument measures per-plugin MCP output size; interstat measures sessions. This guardrail may need a cheap manual baseline instead. Settleable during execution.
