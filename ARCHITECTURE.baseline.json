@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "purpose": "Waivers for undeclared strong dependencies that already existed when the structural check was introduced. The checker reports a violation only if it is absent here, so the gate fires on NEW structural debt instead of failing every commit on day one.",
+  "rules": [
+    "Waivers are matched on the exact (plugin, missing_peer) pair. A baselined plugin that acquires a different undeclared peer is a new violation, not a covered one.",
+    "Nothing is added here automatically. Adding an entry is a decision to carry the debt, and it needs a reason and an owner.",
+    "Fixing a violation makes its entry stale; the checker names stale entries so they can be pruned deliberately."
+  ],
+  "created": "2026-08-24",
+  "source": "ARCHITECTURE.json warnings as generated 2026-07-31 and committed at that state; regenerate and re-triage rather than trusting these counts after the map is refreshed.",
+  "entries": [
+    {
+      "plugin": "interchart",
+      "missing_peers": [
+        "interkasten"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interdeep",
+      "missing_peers": [
+        "interknow",
+        "interlens"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interdoc",
+      "missing_peers": [
+        "intercheck",
+        "interlore",
+        "interwatch"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interfer",
+      "missing_peers": [
+        "interlab"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interfluence",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interflux",
+      "missing_peers": [
+        "intercept",
+        "interknow",
+        "interpeer",
+        "interrank",
+        "interspect",
+        "interstat",
+        "intersynth",
+        "intertrust"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interject",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interkasten",
+      "missing_peers": [
+        "interdoc",
+        "interflux",
+        "interpath",
+        "interwatch"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interlab",
+      "missing_peers": [
+        "interlock"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interleave",
+      "missing_peers": [
+        "interpath"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interline",
+      "missing_peers": [
+        "intercheck",
+        "interlock",
+        "interphase",
+        "interspect",
+        "interstat"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interpath",
+      "missing_peers": [
+        "interdoc",
+        "interleave",
+        "interwatch"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interphase",
+      "missing_peers": [
+        "interject",
+        "interspect"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interplug",
+      "missing_peers": [
+        "interskill"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interscout",
+      "missing_peers": [
+        "interject"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interspect",
+      "missing_peers": [
+        "interflux",
+        "interstat",
+        "tool-time"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interstat",
+      "missing_peers": [
+        "interflux"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "intertree",
+      "missing_peers": [
+        "interkasten"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "intertrust",
+      "missing_peers": [
+        "interspect"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "interwatch",
+      "missing_peers": [
+        "interdoc",
+        "interpath"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "lattice",
+      "missing_peers": [
+        "interlens"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "tldr-swinton",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "tool-time",
+      "missing_peers": [
+        "intercheck",
+        "interspect"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    },
+    {
+      "plugin": "tuivision",
+      "missing_peers": [
+        "intercheck"
+      ],
+      "kind": "undeclared_strong_dependency",
+      "reason": "Pre-existing when the structural check was introduced; carried unreviewed so the gate can fire on new debt. Not yet triaged into declare-the-peer vs remove-the-reference.",
+      "owner": "mistakeknot"
+    }
+  ]
+}

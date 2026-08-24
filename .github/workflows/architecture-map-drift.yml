@@ -1,0 +1,88 @@
+name: Architecture map drift
+
+# No `paths:` filter, deliberately — same reasoning as kimi-manifest-drift.yml.
+# A path-filtered workflow does not run on a commit that misses the filter, and
+# GitHub does not treat "did not run" as "passed", so a required context would
+# stay pending forever. The job is a pytest run; it costs nothing to always run.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# What this workflow can and cannot check
+# ---------------------------------------
+# It guards the CHECKER, not the estate. The monorepo .gitignore's os/, core/,
+# interverse/ and sdk/*, so a fresh actions/checkout contains none of the
+# plugins. Running `build-architecture-map.py --check` here would inspect zero
+# plugins and — without the vacuity guard — report no drift and exit 0, a green
+# check that looked at nothing.
+#
+# So: unit-test the checker against synthetic estates, and prove the vacuity
+# guard refuses to report on a plugin-less tree. Estate-level enforcement lives
+# where the plugins are materialised: the pre-commit hook on the workstation.
+jobs:
+  checkers:
+    name: Architecture map checker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest
+        run: python3 -m pip install --quiet pytest
+
+      - name: Checker tests
+        run: python3 -m pytest tests/test_build_architecture_map.py -q
+
+      # The one that matters. If this step ever passes with exit 0, --check has
+      # become capable of reporting success having compared nothing, which is
+      # precisely the defect the guard exists to prevent.
+      - name: Vacuity guard refuses a plugin-less root
+        run: |
+          set +e
+          python3 scripts/build-architecture-map.py --check \
+            --root "$(mktemp -d)" --require-plugins 60
+          rc=$?
+          set -e
+          echo "exit=$rc"
+          test "$rc" -eq 2 || {
+            echo "expected exit 2 (cannot assess) on a tree with no plugins, got $rc" >&2
+            echo "rc=0 would mean --check passed having compared nothing;" >&2
+            echo "rc=1 would mean it called an unseen estate drifted." >&2
+            exit 1
+          }
+
+      # This checkout is itself a plugin-less root, so the same guard must fire
+      # on the real repo — not only on a synthetic empty directory.
+      - name: Vacuity guard fires on this checkout too
+        run: |
+          set +e
+          python3 scripts/build-architecture-map.py --check --require-plugins 60
+          rc=$?
+          set -e
+          test "$rc" -eq 2 || {
+            echo "expected exit 2 on the monorepo checkout (interverse/ is gitignored), got $rc" >&2
+            exit 1
+          }
+
+      - name: Report where real enforcement lives
+        run: |
+          {
+            echo "### Architecture map drift"
+            echo
+            echo "Checker verified. **This job does not check the estate** —"
+            echo "the monorepo gitignores \`os/\`, \`core/\`, \`interverse/\` and"
+            echo "\`sdk/*\`, so a cloud checkout has none of the plugins."
+            echo
+            echo "Estate enforcement:"
+            echo "- the pre-commit hook, which runs where the monorepo is materialised"
+            echo "- \`scripts/build-architecture-map.py --check --require-plugins 60\`"
+            echo "  on a full local checkout"
+            echo
+            echo "Waivers for pre-existing violations: \`ARCHITECTURE.baseline.json\`."
+          } >> "$GITHUB_STEP_SUMMARY"
