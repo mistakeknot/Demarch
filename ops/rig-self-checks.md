@@ -3363,6 +3363,11 @@ so it is recorded here rather than retrofitted into thirteen files — the same 
 as the third counter on 2026-08-07, and for the same reason: changing suites no
 control exercises is motion, not coverage.
 
+> **Corrected 2026-08-14.** The result reproduces; the conclusion drawn from it
+> does not. "0 of 33 changed their tally" is not the same claim as "0 of 33 are
+> host-independent", and one of the suites was already vacuous on zklw when this
+> was written. See *A sweep is a measurement of a population that grows*, below.
+
 **That sweep needed its own positive control**, and this is the part worth keeping:
 `GIT_CONFIG_GLOBAL` requires git ≥ 2.32, and had it been ignored, every "same"
 would have been two identical runs reported as evidence of independence. So it was
@@ -3655,3 +3660,125 @@ Which makes this section's own subject recursive, and the lesson worth stating
 plainly: **the estate's measurements are only as trustworthy as the machine taking
 them, and nothing on the health surface reports the process count.** That is the gap
 `Sylveste-oxcv` names, and it fabricated a finding today.
+
+## A sweep is a measurement of a population that grows, 2026-08-14
+
+On 2026-08-07 every suite that creates a git repo was run twice — once under this
+host's config, once under a zklw-shaped `GIT_CONFIG_GLOBAL` — and any suite whose
+tally changed was called host-dependent by measurement. **Result: 0 of 33**, and
+the call recorded was that the exposure "is latent, not active, so it is recorded
+here rather than retrofitted."
+
+The number was right. The conclusion was wrong twice, in two different ways, and
+only one of them is the obvious one.
+
+### It decays, which is the ordinary half
+
+A sweep measures a population at a moment. The population grows.
+`test-dotfiles-converge.sh` was written the **next day** and was host-dependent:
+25/0 on Clavain, 18/7 on zklw, one commit. Its `mkroot` omitted
+`--initial-branch`, so the bare repo's HEAD named a branch that was never
+created, and every assertion after the failed setup tested the wrong state.
+
+Nothing re-runs a sweep when a suite is born. The conclusion was stale the day
+after it was written, and it could only fail on the machine that happened to be
+unreachable that afternoon.
+
+### It measured the wrong thing, which is the half worth keeping
+
+The sweep compared **tallies**. That is not a proxy for host-independence, and
+the gap is not narrow.
+
+A suite whose fixture collapses under the other host's config — but whose
+assertions never depended on the fixture working — prints the *same tally in both
+arms* and is scored "same". Re-running the sweep every day would never have found
+it, because the sweep is looking at the one number that does not move.
+
+Measured 2026-08-14, and this one was live the whole time.
+`test-git-remote-refresh.sh`'s `mkpair` built its seed repo with an unpinned `git
+init`. Under zklw's config the seed committed to `master`, the following
+`push origin main` failed with *"src refspec main does not match any"*, and
+`git clone` produced an **empty repository**. The suite then reported
+
+```
+OK    passed: 11   failed: 0
+```
+
+— identical to the healthy arm, and green on the machine where the code actually
+runs. It had been vacuous on zklw for as long as it had existed, and the sweep
+designed to find exactly this had already looked straight at it and moved on.
+
+Reproduced natively on zklw before it was touched, rather than inferred from an
+override on the Mac.
+
+This is the estate's own recurring rule, arriving in a new costume. *An
+experiment whose negative result and whose broken apparatus look alike has not
+run* — already written down here about the **instrument** (`GIT_CONFIG_GLOBAL`
+being silently ignored would have made every "same" two identical runs). It was
+never applied to the **suites under test**, where the same failure was live.
+
+### The rule
+
+> A sweep answers for the population it ran on, at the moment it ran; a rule
+> enforced at birth answers for the ones not written yet. Where the two are
+> available, prefer the guard — and never record a sweep's *result* as though it
+> were a *conclusion* about files that do not exist yet. When a sweep compares a
+> summary statistic, say which failures that statistic cannot move: a fixture
+> that collapses identically in both arms is scored "same" by any tally
+> comparison, so **"the number did not change" is evidence about the number, not
+> about the experiment.**
+
+### What shipped
+
+`test-fixture-host-config.sh` lints every `test-*.sh` and `liveproof-*.sh` in the
+directory for a `git init` that does not name its branch — the structural form,
+because a fixture that cannot read host configuration cannot diverge between
+hosts. It follows `test-rig-guard-tests-tally.sh` and for the reason that file
+already states: *a rule each participant has to remember about itself is a rule
+the next file added forgets.*
+
+- 42 suites scanned, **one** exemption (itself, whose control fixtures carry the
+  pattern deliberately), and the exemption **count** is asserted so a future one
+  cannot be added silently.
+- A positive control on the detector, because a regex matching nothing would pass
+  forever; a non-vacuity floor on the scan, because a scan that reached no files
+  would report a clean estate having looked at nothing; and a negative control on
+  its own FAIL branch.
+- Mutation-proven: removing one pin gives 6/1, restoring gives 7/0.
+- `test-git-remote-refresh.sh` fixed — both inits pinned, and its seed push **no
+  longer silenced**, which is the more general repair. Four further suites pinned
+  as house convention.
+
+### The guard made the same mistake it was built to catch, within the hour
+
+The first version detected `git init` and nothing else. These fixtures mostly
+build repos in a sandbox rather than `cd`-ing into them, so the form they
+actually use is `git -C "$dir" init` — and the lint passed straight over **seven
+files**, printing *"every fixture names the branch it creates"*. It was found by
+reading a fixture for an unrelated reason, not by the guard.
+
+**The positive control passed the whole time**, and that is the part to keep. It
+proved the detector fired — on the one form the control itself used. A positive
+control demonstrates a detector is not dead; it says nothing about the forms it
+never sees, and when the control is built from the same mental model as the
+detector, the gap is invisible from both sides. The instrument and its calibration
+shared an author and therefore shared a blind spot.
+
+Which lands the section's own subject one level up: a sweep's conclusion decays
+because the population grows, and a *detector's* clean verdict decays because the
+syntax space is larger than the examples that built it. **A lint that is merely
+mostly right is worse than none, because its output is a clean verdict.**
+
+Fixed by matching the git *subcommand* rather than the string: global options are
+consumed explicitly (`-C`, `-c`, `--git-dir=`, `--work-tree=`, `--no-pager`, `-p`)
+and `init` must be the next token. The same boundary keeps `git -C "$d" commit
+-qm init` out, since after `commit` the option run has ended and a commit
+*message* reading "init" is not a repo creation — both directions now controlled,
+because the first version was wrong in exactly one of them. 14 further sites
+pinned across 6 files; guard 9/0.
+
+`commit.gpgsign` and `user.name` are deliberately **not** linted. Fixtures
+already set both per-repo, and unlike the branch name a wrong value there fails
+loudly instead of silently producing an empty clone. Recorded in the suite header
+so the absence is a decision rather than an oversight — the third-counter call of
+2026-08-07 applied to a case where it still holds.
