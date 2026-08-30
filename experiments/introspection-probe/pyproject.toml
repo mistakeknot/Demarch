@@ -1,0 +1,34 @@
+[project]
+name = "introspection-probe"
+version = "0.1.0"
+description = "Is a model's stated confidence grounded in an internal uncertainty signal, or confabulated? (Step 2 flagship)"
+readme = "DESIGN.md"
+requires-python = ">=3.11"
+# The GPU-independent analysis core (probe fitting, dissociation, metric reuse) needs only
+# numpy. Activation capture + steering deps are isolated in the [interp] extra so CI and the
+# scaffold tests stay free, fast, and CPU-only.
+dependencies = [
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+# Installed only on the GPU host (desktop/WSL2) for capture_activations / steer_and_reelicit.
+interp = [
+    "nnsight>=0.3",
+    "torch>=2.2",
+    "transformers>=4.44",
+]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+# run `pytest` from the experiment root; lets tests do `from src.probe import ...` and lets
+# _calmetrics resolve the sibling calibration-eval/src/metrics.py by path.
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

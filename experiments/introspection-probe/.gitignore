@@ -1,0 +1,16 @@
+# Python envs / caches
+.venv/
+uv.lock
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# Captured activations (regenerate on the GPU host; can be large) and run outputs
+activations/
+runs/*
+!runs/.gitkeep
+
+# Secrets (Tailscale auth key, HF token, etc.)
+.env
