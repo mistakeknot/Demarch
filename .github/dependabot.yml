@@ -1,3 +1,12 @@
+# Supply-chain cooldown: dependency update PRs wait out the same 7-day window
+# that .npmrc's min-release-age enforces locally, so a compromised release has
+# a week to be caught before it reaches a branch. Security-advisory PRs are
+# exempt from cooldown by design, so CVE fixes still arrive promptly.
+#
+# This half is enforced by GitHub, not by the local toolchain — it applies
+# regardless of which npm wins on PATH. See
+# ops/scripts/check-supply-chain-cooldown.sh for the local half, which is
+# silently ignored by npm < 11.10.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -5,6 +14,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     labels:
       - "ci-drift"
     commit-message:
