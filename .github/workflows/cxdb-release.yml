@@ -89,7 +89,7 @@ jobs:
         env:
           CXDB_VERSION: ${{ inputs.cxdb_version }}
           CXDB_REF: ${{ inputs.cxdb_ref }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: cxdb-${{ inputs.cxdb_version }}
           name: "CXDB ${{ inputs.cxdb_version }}"
