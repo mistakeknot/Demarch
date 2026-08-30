@@ -39,7 +39,7 @@ jobs:
             artifact: cxdb-server-darwin-aarch64
     steps:
       - name: Checkout CXDB source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: strongdm/cxdb
           ref: ${{ inputs.cxdb_ref }}
