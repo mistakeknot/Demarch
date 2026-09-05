@@ -27,22 +27,45 @@ Four claims, all of which must be true for Sylveste to be right:
 
 If any of these claims is wrong, the project is misguided.
 
-#### The OODARC Lens
+<a id="the-oodarc-lens"></a>
+#### The OODARCS Lens
 
-The flywheel (authority → actions → evidence → authority) is an instance of **OODARC** — Observe, Orient, Decide, Act, Reflect, Compound — operating at nested timescales:
+The flywheel (authority → actions → evidence → authority) is an instance of
+**OODARCS** — Observe, Orient, Decide, Act, Reflect, Compound, Synthesize —
+operating at nested timescales across coding, research, planning, and documentation.
+Observe actual evidence; Orient against the goal and constraints; Decide the next
+proportionate action and verification; Act within the existing scope and authority.
 
-- **Per-turn:** Agent observes tool results, orients on context, decides next action, acts, reflects on the outcome, and compounds by updating working memory.
-- **Per-sprint:** Phase gates observe artifacts, orient on sprint state, decide phase transitions, advance phases, reflect at sprint end, and compound by calibrating estimates and persisting learnings.
-- **Cross-session:** Interspect observes evidence, orients via pattern classification, decides routing proposals, acts via override application, reflects via canary monitoring, and compounds by writing routing overrides that change future behavior.
+- **Reflect** identifies what the outcome taught us: what happened, what was
+  expected, and what differed.
+- **Compound** preserves a useful improvement in an authorized artifact: a fix,
+  test, requested document, calibration, or project tracker record. Memory writes
+  remain subject to separate authorization.
+- **Synthesize** reconciles that learning with existing evidence and goals,
+  updating the working understanding and next priorities within the agreed scope.
+  Contradictory evidence can change a conclusion or priority; make that revision
+  explicit rather than retaining incompatible claims or silently expanding scope.
 
-OODARC extends Boyd's OODA loop with two phases, not one:
+At task scale, use real results to revise the next action. At sprint scale,
+reconcile verification and review outcomes with acceptance criteria. Across
+sessions, compare retained lessons with new evidence before applying them again.
+A saved lesson is evidence to assess, not an automatic authority grant.
 
-- **Reflect** extracts the lesson: what happened, what was expected, what differed. This is observation of one's own process — per-sprint, ephemeral until captured.
-- **Compound** persists the lesson in a form that changes future behavior: calibration files that adjust estimates, routing overrides that reclassify agents, solution docs that prevent repeated mistakes. This is what closes the loop — without it, Reflect is journaling.
+Apply the loop proportionally. Trivial requests need no skill ceremony; substantive
+work does not require seven response headings, an invented lesson, an automatic
+memory write, or unrelated follow-up work. If there is no worthwhile authorized
+artifact to improve, retain the learning in the response or current working
+understanding. Review, release, and model-routing authority remain unchanged.
 
-The distinction matters because Reflect without Compound is write-only learning (OODA with a diary). Compound without Reflect is cargo-culting (copying patterns without understanding why). The **Closed-loop by default** principle (below) is the operational implementation of Compound: the 4-stage calibration pattern (defaults → collect → calibrate → fallback) is how the C in OODARC feeds back into O (Orient) for the next cycle.
+This is an operating-contract clarification. Existing **OODARC** telemetry names,
+event identifiers, database schemas, and execution phases remain compatible;
+there is no execution-phase or telemetry migration. The existing OODARC section
+anchor is retained for incoming links.
 
-Situation assessments are prompt aids, not ground truth. Always verify recent evidence against cached assessments.
+The **Closed-loop by default** principle below implements calibration; Synthesize
+asks whether the accumulated results still support the current understanding and
+goals. Situation assessments are prompt aids, not ground truth. Verify recent
+evidence against cached assessments.
 
 ---
 
