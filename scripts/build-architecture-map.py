@@ -14,16 +14,31 @@ Output:
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
 from collections import defaultdict
 from pathlib import Path
 
-INTERVERSE = Path(__file__).resolve().parent.parent / "interverse"
-OUT_DIR = Path(__file__).resolve().parent.parent
-OUT_JSON = OUT_DIR / "ARCHITECTURE.json"
-OUT_MD = OUT_DIR / "ARCHITECTURE.md"
+DEFAULT_ROOT = Path(__file__).resolve().parent.parent
+
+# Exit codes, matching scripts/gen-kimi-manifests.py and
+# scripts/check-kimi-version-parity.py:
+#   0  the map on disk agrees with the estate
+#   1  drift — the map is stale, or a new structural violation appeared
+#   2  cannot assess — nothing was inspected, or the count fell below the
+#      --require-plugins floor. Exit 2 is never a claim that something is
+#      wrong; it is the refusal to make one.
+OK, DRIFT, CANNOT_ASSESS = 0, 1, 2
+
+
+def paths_for(root: Path) -> tuple[Path, Path, Path, Path]:
+    """Resolve the four paths this script reads and writes, under one root."""
+    return (root / "interverse",
+            root / "ARCHITECTURE.json",
+            root / "ARCHITECTURE.md",
+            root / "ARCHITECTURE.baseline.json")
 
 # Regex for cross-plugin references in skill/command/agent bodies.
 # Matches: interspect:foo, plugin_interflux_*, intersynth:synthesize-review,
@@ -43,10 +58,12 @@ REF_RE = re.compile(
 )
 
 
-def discover_plugins() -> list[Path]:
+def discover_plugins(interverse: Path) -> list[Path]:
     """Find every directory under interverse/ that has .claude-plugin/plugin.json."""
     out = []
-    for child in sorted(INTERVERSE.iterdir()):
+    if not interverse.is_dir():
+        return out
+    for child in sorted(interverse.iterdir()):
         if child.is_dir() and (child / ".claude-plugin" / "plugin.json").exists():
             out.append(child)
     return out
@@ -235,27 +252,163 @@ def render_md(graph: dict) -> str:
     return "\n".join(lines)
 
 
-def main() -> int:
-    if not INTERVERSE.exists():
-        print(f"interverse/ not found at {INTERVERSE}", file=sys.stderr)
-        return 1
+def violation_pairs(graph: dict) -> set[tuple[str, str]]:
+    """Flatten warnings into (plugin, missing_peer) pairs.
 
-    plugin_dirs = discover_plugins()
+    Pairs, not per-plugin entries, because a plugin already carrying a
+    baselined violation can acquire a NEW undeclared peer. Comparing whole
+    warning entries would let that second peer ride in silently under the
+    first one's waiver — the baseline would grow scope without anyone
+    deciding to grant it.
+    """
+    return {
+        (w["plugin"], peer)
+        for w in graph.get("warnings", [])
+        for peer in w.get("missing_peers", [])
+    }
+
+
+def load_baseline(path: Path) -> tuple[set[tuple[str, str]], str | None]:
+    """Read the waiver file. Returns (pairs, error) — never raises.
+
+    A baseline that cannot be read is NOT an empty baseline. Treating an
+    unreadable or malformed file as "nothing is waived" would flag all 23
+    pre-existing violations as new on the first parse error, and the noise
+    would train everyone to ignore the check. The caller turns the error into
+    exit 2 (cannot assess) rather than exit 1 (drift).
+    """
+    if not path.is_file():
+        return set(), None
+    try:
+        doc = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        return set(), f"baseline unreadable at {path}: {exc}"
+    entries = doc.get("entries")
+    if not isinstance(entries, list):
+        return set(), f"baseline at {path} has no 'entries' list"
+    pairs = set()
+    for e in entries:
+        plugin, peers = e.get("plugin"), e.get("missing_peers")
+        if not isinstance(plugin, str) or not isinstance(peers, list):
+            return set(), f"baseline entry is malformed: {e!r}"
+        if not e.get("reason") or not e.get("owner"):
+            return set(), (f"baseline entry for {plugin} lacks a reason or an "
+                           f"owner; a waiver nobody signed is not a waiver")
+        pairs.update((plugin, peer) for peer in peers)
+    return pairs, None
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Build or verify the interagency plugin architecture map.")
+    parser.add_argument("--root", default=str(DEFAULT_ROOT),
+                        help="repo root containing interverse/ (default: the "
+                             "Sylveste checkout this script lives in)")
+    parser.add_argument("--check", action="store_true",
+                        help="verify the committed map matches the estate and "
+                             "no unbaselined violation exists; write nothing")
+    parser.add_argument("--json", action="store_true",
+                        help="emit a machine-readable report")
+    parser.add_argument("--require-plugins", type=int, default=0, metavar="N",
+                        help="refuse to report (exit 2) if fewer than N "
+                             "plugins were inspected; use in any automated "
+                             "caller so a checkout without interverse/ cannot "
+                             "pass vacuously")
+    parser.add_argument("--baseline", default=None,
+                        help="path to the waiver file for pre-existing "
+                             "violations (default: ARCHITECTURE.baseline.json "
+                             "beside the map)")
+    args = parser.parse_args(argv)
+
+    root = Path(args.root).resolve()
+    interverse, out_json, out_md, default_baseline = paths_for(root)
+    baseline_path = Path(args.baseline) if args.baseline else default_baseline
+
+    report: dict = {"root": str(root), "checked": args.check}
+
+    def emit(status: str, code: int, message: str, **extra) -> int:
+        report.update(status=status, message=message, **extra)
+        if args.json:
+            print(json.dumps(report, indent=2, sort_keys=True))
+        else:
+            print(message, file=sys.stderr if code else sys.stdout)
+        return code
+
+    plugin_dirs = discover_plugins(interverse)
+    report["plugins_inspected"] = len(plugin_dirs)
+
+    # Vacuity guard, before any verdict. A checkout that gitignores interverse/
+    # inspects zero plugins; without this it would find zero drift and report
+    # success having looked at nothing.
     if not plugin_dirs:
-        print("no plugins found", file=sys.stderr)
-        return 1
+        return emit("cannot_assess", CANNOT_ASSESS,
+                    f"inspected 0 plugins: no plugin manifests under "
+                    f"{interverse}. Nothing was compared, so no verdict is "
+                    f"available — this is not a pass.")
+    if len(plugin_dirs) < args.require_plugins:
+        return emit("cannot_assess", CANNOT_ASSESS,
+                    f"inspected {len(plugin_dirs)} plugin(s), below the "
+                    f"--require-plugins floor of {args.require_plugins}; "
+                    f"refusing to report on a partial estate.")
 
     all_names = {p.name for p in plugin_dirs}
-    plugins = [scan_plugin(p, all_names) for p in plugin_dirs]
-    graph = build_graph(plugins)
+    graph = build_graph([scan_plugin(p, all_names) for p in plugin_dirs])
+    md = render_md(graph)
+    json_text = json.dumps(graph, indent=2) + "\n"
 
-    OUT_JSON.write_text(json.dumps(graph, indent=2) + "\n")
-    OUT_MD.write_text(render_md(graph))
+    baselined, baseline_error = load_baseline(baseline_path)
+    if baseline_error and args.check:
+        # Only a VERDICT needs a readable baseline. Regeneration must stay
+        # possible with a broken waiver file, since regenerating is how you
+        # fix the drift that a broken baseline would otherwise trap you in.
+        return emit("cannot_assess", CANNOT_ASSESS, baseline_error)
 
-    print(f"wrote {OUT_JSON} ({len(plugins)} plugins)")
-    print(f"wrote {OUT_MD}")
-    print(f"warnings: {len(graph['warnings'])}")
-    return 0
+    found = violation_pairs(graph)
+    new_violations = sorted(found - baselined)
+    stale_waivers = sorted(baselined - found)
+    report.update(plugin_count=graph["plugin_count"],
+                  violations=len(found),
+                  baselined=len(baselined),
+                  new_violations=[list(v) for v in new_violations],
+                  stale_waivers=[list(v) for v in stale_waivers])
+
+    if not args.check:
+        out_json.write_text(json_text)
+        out_md.write_text(md)
+        warn = f" [warning: {baseline_error}]" if baseline_error else ""
+        return emit("written", OK,
+                    f"wrote {out_json} and {out_md} "
+                    f"({graph['plugin_count']} plugins, {len(found)} "
+                    f"violation(s), {len(new_violations)} unbaselined)" + warn,
+                    baseline_error=baseline_error)
+
+    problems = []
+    for path, want in ((out_json, json_text), (out_md, md)):
+        if not path.is_file():
+            problems.append(f"{path.name} is missing")
+        elif path.read_text() != want:
+            problems.append(f"{path.name} is stale — regenerate it")
+    report["stale_artifacts"] = list(problems)  # copy: problems grows below
+
+    for plugin, peer in new_violations:
+        problems.append(
+            f"{plugin} references {peer} 3+ times without declaring it in "
+            f"peerDependencies, and it is not in {baseline_path.name}")
+
+    if problems:
+        return emit("drift", DRIFT,
+                    "structural drift:\n  - " + "\n  - ".join(problems))
+
+    note = ""
+    if stale_waivers:
+        # Not drift: a waived violation that got fixed is the outcome the
+        # waiver was for. Say so, so the baseline can be pruned deliberately.
+        note = (f" ({len(stale_waivers)} baseline entr"
+                f"{'y' if len(stale_waivers) == 1 else 'ies'} no longer "
+                f"needed: {', '.join(f'{a}->{b}' for a, b in stale_waivers)})")
+    return emit("ok", OK,
+                f"map matches the estate: {graph['plugin_count']} plugins, "
+                f"{len(found)} violation(s), all baselined{note}")
 
 
 if __name__ == "__main__":
